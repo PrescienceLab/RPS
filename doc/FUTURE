@@ -1,0 +1,13 @@
+Future Plans
+============
+
+rps-help@cs.northwestern.edu
+
+A number of additions to RPS are in progress:
+
+1. Wavelet representations for measurement streams
+2. Wavelet-based prediction schemes
+3. Kalman filtering
+4. Additional sensors
+5. A "mini idl compiler" to make it easier to use Mirror like an ORB
+

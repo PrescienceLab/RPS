@@ -5,14 +5,16 @@
 ####################################################################################
 
 # The directory in which we are installed
-RPS_DIR  = /home/RPS/RPS
+RPS_DIR  = /home/pdinda/Codes/RPS-development
 
 # which tools to use to build
-CC      = c++
-F77     = f77
-AR      = ar
+CC      = g++
+F77     = g77
+AR      = ar 
 RANLIB  = ranlib
 LD      = c++
+JAVA    = java
+JAVAH   = javah
 
 # Whether to compile and optimized version: YES, NO
 OPTIMIZE = NO
@@ -23,8 +25,8 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = I386
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
-OS       = LINUX
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, CYGWIN
+OS       = CYGWIN
 
 
 ####################################################################################
@@ -46,17 +48,44 @@ HAVE_TIMESERIES = YES
 # Notice that you need a fortran 77 compiles (f77) to build this
 HAVE_FRACDIFF = YES
 
-# Whether to build the LoadMon library and tools
-# This provides the various components listed in the tech report, the 
-# mirror template communication library, and lots of other things. 
-# Despite its name, this also includes the flow bandwidth tools
+# Whether to build the Mirror template library and tools
+HAVE_MIRROR = YES
+
+# Whether to build the RPS interface library
+HAVE_RPSINT = YES
+
+# Whether to build the Remos interface library
+HAVE_REMOSINT = YES
+
+
+# This provides the various prediction components listed in the tech report
 #
-HAVE_LOADMON = YES
+HAVE_PREDCOMP = YES
+
+# This provides the java GUI
+#
+HAVE_JAVAGUI = NO
 
 # Whether to build the Spin library and tools
 # This provides components for constructing scheduling experiments,
 # including a cycle server, scheduling tools, load playback tool, etc.
 HAVE_SPIN = YES
+
+
+# Whether to build the load trace access tools and playback tool
+HAVE_TRACE = YES
+
+# Whether to build the Running Time Advisor and testing tools
+HAVE_RTA = YES
+
+# Whether to build the Real-time Scheduling Advisor and testing tools
+HAVE_RTSA = YES
+
+# Whether to build the Component finder library
+HAVE_FINDER = YES
+
+# Whether to build various research tools
+HAVE_RESEARCHTOOLS = YES
 
 
 ####################################################################################
@@ -83,7 +112,7 @@ USE_UPTIME = NO
 # To build and use the GetFlowBW library, you need REMOS built and installed
 #
 HAVE_REMOS = NO
-REMOS_DIR = /afs/cs/project/cmcl-pdinda-3/REMOS
+REMOS_DIR = /home/Remos/Remos
 
 ####################################################################################
 #
@@ -100,7 +129,7 @@ REMOS_DIR = /afs/cs/project/cmcl-pdinda-3/REMOS
 # This is slightly different from where the recipes build process leaves 
 # things
 #
-HAVE_NUMERICAL_RECIPES = YES
+HAVE_NUMERICAL_RECIPES = NO
 RECIPES_DIR = /home/RPS/recipes_c-ansi
 
 #
@@ -126,7 +155,7 @@ PVM_ARCH = I386
 
 ####################################################################################
 #
-# Configuration Options for the LoadMon Library and tools
+# Configuration Options for the Mirror Template Library and tools
 #
 ####################################################################################
 
@@ -134,6 +163,39 @@ PVM_ARCH = I386
 #
 HAVE_EXPAT     = NO
 EXPAT_DIR      = /afs/cs/project/cmcl-pdinda-3/XML/EXPAT
+
+####################################################################################
+#
+# Configuration Options for the RPS interface library
+#
+####################################################################################
+#
+# Currently none
+
+
+####################################################################################
+#
+# Configuration Options for the prediction components
+#
+####################################################################################
+#
+# Currently none
+
+####################################################################################
+#
+# Configuration Options for the prediction components
+#
+####################################################################################
+#
+# Currently none
+
+####################################################################################
+#
+# Configuration Options for the Java GUI
+#
+####################################################################################
+JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
+
 
 
 ####################################################################################
@@ -145,15 +207,51 @@ EXPAT_DIR      = /afs/cs/project/cmcl-pdinda-3/XML/EXPAT
 # currently none
 #
 
-
-# These should figure themselves out
+####################################################################################
 #
+# Configuration Options for the Trace library and tools
 #
-GETLOADAVG_DIR    = $(RPS_DIR)/GetLoadAvg
-GETFLOWBW_DIR     = $(RPS_DIR)/GetFlowBW
-TS_DIR            = $(RPS_DIR)/TS
-FRACDIFF_DIR      = $(TS_DIR)/FracDiff
-LOADMON_DIR       = $(RPS_DIR)/LoadMon
-SPIN_DIR          = $(RPS_DIR)/Spin
+####################################################################################
+#
+# currently none
+#
 
+####################################################################################
+#
+# Configuration Options for the RTA library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the RTSA library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the Finder library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the Research TOols
+#
+####################################################################################
+#
+# currently none
+#
+
+
+include $(RPS_DIR)/build/Makefile.conf.shared
 

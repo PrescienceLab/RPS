@@ -15,8 +15,7 @@ This is RPS, a toolkit for building resource prediction systems.  It
 is software designed to support the author's research in predicting
 the dynamic behavior of distributed computing environments. It is
 offered with no guarantees.  RPS is described in considerable detail
-in this technical report:
-http://reports-archive.adm.cs.cmu.edu/anon/1999/abstracts/99-138.html.
+in the technical report in doc/rps-techreport.pdf (CMU-CS-99-138).
 There are a number of papers on the author's home page that present
 research results derived from using RPS.
 
@@ -42,7 +41,9 @@ Look at ROADMAP and doc/*
 
 To get help for RPS:  rps-help@cs.northwestern.edu.  
 
-To discuss RPS: rps-list@cs.northwestern.edu.
+To discuss RPS: rps-list@cs.northwestern.edu.  To subscribe, send
+email to majordomo@cs.northwestern.edu with the line 
+"subscribe rps-list yourlogin@yourdomain"
 
 Please do not send mail directly to the author.  It will likely be
 ignored.

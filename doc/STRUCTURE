@@ -21,6 +21,10 @@ All releases contain the following:
    $RPS_DIR            Makefile, RPS.dsw for Windows, README, LICENSE, ROADMAP
      build             Config makefiles, and other tools
      doc               Documentation
+     config            Configuration files (not currently used)
+     bin               executables (per-platform as above)
+     include           include files (from ALL packages)
+     lib               libraries (per-platform as above)
      JavaGUI           Simple Java GUI
      Mirror            Mirror Template Library
      PredComp          Prediction Components

@@ -3,3 +3,25 @@ RPS and Remos
 
 rps-help@cs.northwestern.edu
 
+A very early version of RPS shipped with (and still ships with) the
+CMU Remos system, which is available from
+http://www.cs.cmu.edu/~remos.  That early version is named "PPS".
+This current RPS version has been tested with the current, 2.0,
+release of Remos.
+
+The current interactions between RPS and Remos are the following:
+
+1. RPS's GetFlowBW sensor is based on Remos
+2. Remos's modeler can talk to an RPS host load measurement and
+prediction system (start_hostloadmeasure.pl, start_hostloadpred.pl) 
+to get host information.
+3. Remos's modeler can talk to RPS's pred_reqresp_server to get
+one-off predictions.
+
+Future interactions are planned.  These are described in 
+
+Peter Dinda, Thomas Gross, Roger Karrer, Bruce Lowekamp, Nancy Miller,
+Peter Steenkiste, and Dean Sutherland, The Architecture of the Remos
+System, 10th IEEE Symposium on High-Performance Distributed Computing
+(HPDC'01), IEEE, August 2001, San Francisco.
+

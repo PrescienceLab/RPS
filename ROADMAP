@@ -7,6 +7,8 @@ README     - overall readme file for RPS
 LICENSE    - license terms for RPS
 ROADMAP    - this file
 
+doc/rps-techreport.pdf - a technical report on RPS
+
 doc/STRUCTURE   - the structure of the RPS code
 doc/ENDPOINTS   - describes how communication in RPS is described
 
@@ -15,6 +17,10 @@ doc/REMOS       - how to use RPS with CMU's Remos system
 doc/BUILD       - how to build RPS
 doc/RUN         - how to run RPS components
 doc/USE         - how to use the tools in RPS
+
+doc/WINDOWS     - info on native windows build
+
+doc/FUTURE      - future plans
 
 doc/README.*    - per-package readmes
 
