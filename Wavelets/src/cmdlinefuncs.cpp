@@ -279,23 +279,21 @@ void OutputMRACoefs(ostream &os,
 {
   for (unsigned i=0; i<MAX(approxlevels.size(), detaillevels.size()); i++) {
     if (i < approxlevels.size()) {
-      *os.tie() << i << "\tA\t" << approxlevels[i].size() << "\t";
+      *os.tie() << endl << i << "\tA\t" << approxlevels[i].size();
       vector<wosd> &approxout = approxlevels[i];
       for (unsigned j=0; j<approxout.size(); j++) {
-	*os.tie() << approxout[j].GetSampleLevel() << " "
-		  << approxout[j].GetSampleValue() << "\t";
+	*os.tie() << "\t" << approxout[j].GetSampleLevel() << " "
+		  << approxout[j].GetSampleValue();
       }
-      *os.tie() << endl;
     }
 
     if (i < detaillevels.size()) {
-      *os.tie() << i << "\tD\t" << detaillevels[i].size() << "\t";
+      *os.tie() << endl << i << "\tD\t" << detaillevels[i].size();
       vector<wosd> &detailout = detaillevels[i];
       for (unsigned j=0; j<detailout.size(); j++) {
-	*os.tie() << detailout[j].GetSampleLevel() << " "
-		  << detailout[j].GetSampleValue() << "\t";
+	*os.tie() << "\t" << detailout[j].GetSampleLevel() << " "
+		  << detailout[j].GetSampleValue();
       }
-      *os.tie() << endl;
     }
   }
 }

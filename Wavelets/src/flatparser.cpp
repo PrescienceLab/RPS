@@ -127,7 +127,7 @@ bool FlatParser::ParseMRACoefsSample(vector<wosd> &acoefs,
   if (in.eof()) {
     return false;
   }
-
+   
   unsigned sampletime, numsamples;
   char mratype;
   int levelnum;
