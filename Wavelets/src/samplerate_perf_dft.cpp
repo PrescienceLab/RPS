@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
   unsigned blocksize = atoi(argv[4]);
   if (blocksize == 0) {
-    cerr << "samplerate_perf_sfwt: Must be greater than 0.\n";
+    cerr << "samplerate_perf_dft: Must be greater than 0.\n";
     exit(-1);
   }
 

@@ -22,8 +22,10 @@ void usage()
   cerr << "  [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
-  cerr << "[input-file]        = The name of the file containing wavelet\n";
-  cerr << "                      coefficients.  Can also be stdin.\n";
+  cerr << "[input-file]        = The name of the file containing time-\n";
+  cerr << "                      domain samples.  (The DWT is run first\n";
+  cerr << "                      in order to obtain the input blocks).\n";
+  cerr << "                      Input file can also be stdin.\n";
   cerr << "\n";
   cerr << "[wavelet-type-init] = The type of wavelet.  The choices are\n";
   cerr << "                      {DAUB2 (Haar), DAUB4, DAUB6, DAUB8,\n";
@@ -34,6 +36,14 @@ void usage()
   cerr << "\n";
   cerr << "[transform-type]    = The reconstruction type may be of type\n";
   cerr << "                      TRANSFORM.\n";
+  cerr << "\n";
+  cerr << "[blocksize]         = The size of the blocks to be used in the\n";
+  cerr << "                      analysis.\n";
+  cerr << "\n";
+  cerr << "[sleep-rate]        = This rate is the sleep rate.  The value\n";
+  cerr << "                      is in microseconds and is long integer.\n";
+  cerr << "\n";
+  cerr << "[numtests]          = This is the number of tests to run.\n";
   cerr << "\n";
   cerr << "[flat]              = Whether the output is flat or human\n";
   cerr << "                      readable.  flat | noflat to choose.\n";
@@ -49,7 +59,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=6) {
+  if (argc!=9) {
     usage();
     exit(-1);
   }
@@ -68,10 +78,25 @@ int main(int argc, char *argv[])
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
+  TransformType tt=TRANSFORM;
   if (toupper(argv[3][0])!='T') {
     cerr << "samplerate_perf_drt: Invalid transform type.  Must be type TRANSFORM.\n";
     exit(-1);
   }
+
+  unsigned blocksize = atoi(argv[4]);
+  if (blocksize == 0) {
+    cerr << "samplerate_perf_drt: Must be greater than 0.\n";
+    exit(-1);
+  }
+
+  bool sleep=true;
+  unsigned long sleeptime_us = atoi(argv[5]);
+  if (sleeptime_us == 0) {
+    sleep=false;
+  }
+
+  unsigned numtests = atoi(argv[6]);
 
   bool flat=true;
   if (toupper(argv[4][0])=='N') {
@@ -95,37 +120,66 @@ int main(int argc, char *argv[])
     outstr = &outfile;
   }
 
-  DiscreteWaveletOutputSampleBlock<wosd> waveletcoefs;
+  unsigned i;
 
-  // Read in the wavelet coefficients
+  deque<wisd> samples;
   FlatParser fp;
-  fp.ParseWaveletCoefsBlock(waveletcoefs, *is);
+  fp.ParseTimeDomain(samples, *is);
+  infile.close();
 
-  if (!flat) {
-    OutputLevelMetaData(*outstr, waveletcoefs, TRANSFORM);
+  WaveletInputSampleBlock<wisd> inputblock(samples);
+  vector<WaveletInputSampleBlock<wisd> > blocks;
+  unsigned numblocks = samples.size() / blocksize;
+  for (i=0; i<numblocks; i++) {
+    deque<wisd> dwisd;
+    inputblock.GetSamples(dwisd, i*blocksize, i*blocksize+blocksize);
+    blocks.push_back(WaveletInputSampleBlock<wisd>(dwisd));
+    dwisd.clear();
+  }
+
+  // Get the blocks from the dwt
+  ForwardDiscreteWaveletTransform<double, wosd, wisd> fdwt(wt,0);
+  vector<DiscreteWaveletOutputSampleBlock<wosd> > waveletcoefblocks;
+  for (i=0; i<blocks.size(); i++) {
+    DiscreteWaveletOutputSampleBlock<wosd> forwardoutput;
+    fdwt.DiscreteWaveletTransformOperation(forwardoutput, blocks[i]);
+    waveletcoefblocks.push_back(forwardoutput);
   }
 
   // Instantiate a reverse discrete wavelet transform
   ReverseDiscreteWaveletTransform<double, wisd, wosd> rdwt(wt);
 
   // Create output buffers
-  WaveletInputSampleBlock<wisd> reconst;
+  WaveletInputSampleBlock<wisd> reconst, finaloutput;
 
-  // The operation
-  rdwt.DiscreteWaveletTransformOperation(reconst, waveletcoefs);
+  // The operations
 
-  if (!flat) {
-    *outstr << "The real-time system delay is no less than "
-		  << waveletcoefs.GetBlockSize() << endl;
+  double usrbegin, sysbegin, usrend, sysend;
+  for (unsigned test=0; test<numtests; test++) {
+
+    GetRusage(sysbegin, usrbegin);
+    for (i=0; i<waveletcoefblocks.size(); i++) {
+      rdwt.DiscreteWaveletTransformOperation(reconst, waveletcoefblocks[i]);
+      finaloutput.AppendBlockBack(reconst);
+      reconst.ClearBlock();
+    }
+    GetRusage(sysend, usrend);
+
+    // Print the output with appropriate tag
+    if (flat) {
+      *outstr << sleeptime_us << " " << wt << " " << blocksize << " " << tt << " "
+	      << usrend - usrbegin << " "
+	      << sysend - sysbegin;
+    } else {
+      *outstr << "Sleeptime (us) = " << sleeptime_us << endl;
+      *outstr << "Wavelet type = " << wt << endl;
+      *outstr << "Block size= " << blocksize << endl;
+      *outstr << "Transform type = " << tt << endl;
+      *outstr << "User time = " << usrend - usrbegin << endl;
+      *outstr << "System time = " << sysend - sysbegin << endl;
+    }
     *outstr << endl;
-    *outstr << "Index\tValue\n" << endl;
-    *outstr << "-----\t-----\n" << endl << endl;
   }
-
-  for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
-    *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
-  }
-  *outstr << endl;
 
   return 0;
 }
