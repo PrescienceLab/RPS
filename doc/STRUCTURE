@@ -34,8 +34,11 @@ All releases contain the following:
      Sensors           Sensor libraries
       GetLoadAvg       Load Average Sensor
       GetFlowBW        Flow Bandwidth Sensor
+      WatchTowerRPS    Windows Performance Counter Sensor
+      Proc             Linux /proc Sensor
      TimeSeries        Time Series Prediction Library
       FracDiff         ARFIMA models
+     Wavelets          Tsunami Wavelet Library
      Trace             Load trace access tools
      Spin              Spin Server and other tools
      RTA               Running time advisor

@@ -10,16 +10,23 @@ use Time::HiRes qw(usleep gettimeofday);
 
 #Arguments passed by user
 $Getopt::Long::ignorecase = 0;
+
+$showtimestamp=0;
+$width=0;
+
 %optcl = ('rate=f'   , \$rate,
 	  'max=i'    , \$max,
           'period=i' , \$period,
           'h', \$help,
           'help', \$help,
-	  'ignorepids',\$ignorepids);
+	  'ignorepids',\$ignorepids,
+	  'timestamp',\$showtimestamp,
+	  'width=i',\$width);
+
 GetOptions(%optcl);
 
 if ($help) {
-    print "usage: proc_spit.pl [--rate=Hz] [--max=numsamples] [--period=usec] [--ignorepids] [--help]\n";
+    print "usage: proc_spit.pl [--rate=Hz] [--max=numsamples] [--period=usec] [--ignorepids] [--timestamp] [--width=numcols] [--help]\n";
     exit;
 }
 
@@ -48,7 +55,14 @@ if (!($period )){
 
 for ($i = 0; $i < $max; $i++){
     $t = gettimeofday(); print "$t\t";
-    take_snapshot(); print "\n";
+    $col=0;
+    take_snapshot(); 
+    if ($width>0) {
+	for ($i=$col;$i<$width;$i++) {
+	    print "\t0";
+	}
+    }
+    print "\n";
     usleep($period);
 }
 
@@ -63,13 +77,13 @@ sub take_snapshot
 	chdir($root);
 	$root = `pwd`;
 	chomp($root);
-	
 	# Add trailing slash if missing
 	$root .= '/' unless ( substr($root, -1, 1) eq '/' );
 	next if (!(-d $root));
 	process_dir($root);
     }
 }
+
 sub process_dir 
 {  # ($dirname, $level)
     my $dirname = $_[0];
@@ -100,8 +114,13 @@ sub process_dir
 		{
 		    if ($word =~ /^\d+\.*\d*$/)
 		    {#is the word a number (of any sort)?
-			 my $num=$word+0;
-			 print "\t", $num;
+			 if ($width==0 || $col<$width) {
+			     my $num=$word+0;
+			     print "\t", $num;
+			     $col++;
+			 } else {
+			     return;
+			 }
 		     }
 		}  
 	    }

@@ -1,0 +1,24 @@
+RPS's WatchTowerRPS Package
+===========================
+
+rps-help@cs.northwestern.edu
+
+WatchTowerRPS is a sensor that provides access to any Windows performance
+counter.  It can be incorporated into RPS using the text2measure component.
+
+INCLUDE FILES
+-------------
+
+none
+
+LIBRARIES
+---------
+
+none
+
+
+BINARIES
+--------
+
+WatchTowerRPS.exe
+

@@ -1,0 +1,28 @@
+RPS's Proc Package
+==================
+
+rps-help@cs.northwestern.edu
+
+Proc is a sensor that can pull data from the Linux /proc filesystem.
+It was written by Luka Spoljaric.  It can be incorporated into
+RPS using the text2measure component.  Documentation for Proc is available
+from the RPS web page.
+
+INCLUDE FILES
+-------------
+
+none
+
+LIBRARIES
+---------
+
+none
+
+BINARIES
+--------
+
+proc_ns.pl
+proc_spit.pl
+proc_zerofill.pl
+
+
