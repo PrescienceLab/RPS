@@ -56,7 +56,7 @@ class Buffer {
 
 class SerializeableInfo {
  private:
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
   static int BOUNDARY;
 #else
   static const int BOUNDARY=0xdeadbeef;

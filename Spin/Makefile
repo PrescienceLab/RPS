@@ -22,9 +22,9 @@ else
 endif
 
 CFLAGS += -I$(INCDIR) \
-          $(GETLOADAVG_CFLAGS) \
-          $(TIMESERIES_CFLAGS) \
           $(RPSINT_CFLAGS) \
+          $(GETLOADAVG_CFLAGS) \
+	  $(TIMESERIES_CFLAGS) \
           $(MIRROR_CFLAGS) \
 
 LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
@@ -34,7 +34,7 @@ LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
            $(TIMESERIES_LDFLAGS) \
            $(FRACDIFF_LDFLAGS) \
            $(RECIPES_LDGLAGS) \
-          -lm 
+           -lm 
 
 ifeq ($(OS),SOLARIS)
   LD3FLAGS = -lsocket -lkvm -lelf
@@ -42,36 +42,17 @@ else
   LD3FLAGS = 
 endif
 
-EXECLIST = find_tau \
-           test_apply \
-           genload defilter_trace \
-           select_from_binary_trace_file \
-           alpha_to_network \
-           network_to_alpha \
-           network_to_ascii \
-           ascii_to_network \
-           alpha_to_ascii   \
+EXECLIST = test_apply       \
            calibrate        \
            testspin         \
-           loadmodeltest    \
            spinserver       \
-           spinclient       \
-           spinservertest   \
-           test_pred        \
-           test_pred_vartau        \
-           play             \
-           test_sched       \
-           test_sched_aggressive
+           spinclient
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
 LIBOBJSLIST = timing.o \
               apply.o \
-              LoadTrace.o \
-              Spin.o \
-              SpinServer.o \
-              EstimateExecTime.o \
-              TRACE.o
+              SpinCore.o 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
 LIBOBJS = $(foreach m, $(LIBOBJSLIST),$(OBJDIR)/$(m))

@@ -60,68 +60,117 @@ else
   HSP_DEP =
 endif
 
-PROJS = $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP)
+ifeq ($(HAVE_TRACE),YES)
+  HT_DEP = Trace
+else
+  HT_DEP =
+endif
+
+ifeq ($(HAVE_RTA),YES)
+  HRTA_DEP = RTA
+else
+  HRTA_DEP =
+endif
+
+ifeq ($(HAVE_RTSA),YES)
+  HRTSA_DEP = RTSA
+else
+  HRTSA_DEP =
+endif
+
+HSE_DEP = Sensors
+
+PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP)
 
 all:  $(PROJS)
 
 rebuild_all: clean depend all
 
+shared: $(PROJS)
+	cp `find $(SHARED_DIR)/include -type f` $(RPS_DIR)/include
+
 GetLoadAvg: force
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(GETLOADAVG_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(GETLOADAVG_DIR)/bin/$(ARCH)/$(OS)/test $(RPS_DIR)/bin/$(ARCH)/$(OS)/test_getloadavg
+	cp `find $(GETLOADAVG_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS) -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(GETLOADAVG_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 GetFlowBW: force
 	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(GETFLOWBW_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS)/test $(RPS_DIR)/bin/$(ARCH)/$(OS)/test_getflowbw
+	cp `find $(GETFLOWBW_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS) -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+Sensors : $(HGLA_DEP) $(HGFB_DEP) force
+	cp `find $(SENSORS_DIR)/include -type f` $(RPS_DIR)/include
 
 TimeSeries: $(HFD_DEP)
 	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
-	cp $(TS_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(TS_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(TS_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(TS_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(TS_DIR)/lib/$(ARCH)/$(OS) -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(TS_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 FracDiff: force
 	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(FRACDIFF_DIR)/include/*.h $(RPS_DIR)/include
-	cp $(FRACDIFF_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(FRACDIFF_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(FRACDIFF_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(FRACDIFF_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 Mirror:  force
 	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(MIRROR_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(MIRROR_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(MIRROR_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(MIRROR_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(MIRROR_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(MIRROR_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-RPSInterface:  $(HGLA_DEP) $(HGFB_DEP) $(HTS_DEP) $(HMT_DEP) force
+RPSInterface:  $(HSE_DEP) $(HTS_DEP) $(HMT_DEP) force
 	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(RPSINT_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(RPSINT_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(RPSINT_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(RPSINT_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(RPSINT_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RPSINT_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 RemosInterface:  $(HRPSI_DEP) force
 	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(REMOSINT_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(REMOSINT_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(REMOSINT_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(REMOSINT_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(REMOSINT_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(REMOSINT_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-PredComp:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+
+PredComp: PredComp_build
+	cp `find $(PREDCOMP_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(PREDCOMP_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+PredComp_build:  $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(PREDCOMP_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-JavaGUI:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+JavaGUI:  $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
 	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(JAVAGUI_DIR)/*.so $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(JAVAGUI_DIR)/*.class $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-Spin: $(HMT_DEP) force
+Spin: $(HMT_DEP) $(HRPSI_DEP) force
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp $(SPIN_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp $(SPIN_DIR)/include/*.h $(RPS_DIR)/include
-	-cp $(SPIN_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(SPIN_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(SPIN_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(SPIN_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+Trace: $(HGLA_DEP) $(HSP_DEP) force
+	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(TRACE_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(TRACE_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(TRACE_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+RTA: $(HSP_DEP) $(HT_DEP) $(HPC_DEP) force
+	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(RTA_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(RTA_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RTA_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+RTSA: $(HRTA_DEP) force
+	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(RTSA_DIR)/include -type f` $(RPS_DIR)/include
+	cp `find $(RTSA_DIR)/lib/$(ARCH)/$(OS)/ -type f` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RTSA_DIR)/bin/$(ARCH)/$(OS) -type f` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 clean:
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean ;
@@ -134,8 +183,11 @@ clean:
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
-	-rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/*.a
-	-rm -f $(RPS_DIR)/bin/$(ARCH)/$(OS)/*
+	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	rm -f `find $(RPS_DIR)/lib/$(ARCH)/$(OS) -type f`
+	rm -f `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f`
 
 depend:
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend ;
@@ -148,5 +200,8 @@ depend:
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 
 force: ;

@@ -1,21 +1,7 @@
 #ifndef _TimeStamp
 #define _TimeStamp
 
-#if defined(WIN32) 
-#if !defined(WIN32_GETTIMEOFDAY)
-#define WIN32_GETTIMEOFDAY
-#include <time.h>
-#include <winsock.h> // for struct timeval
-inline int gettimeofday(struct timeval *tv, void *junk) {
-  tv->tv_sec = time(0);
-  tv->tv_usec =0;
-  return 0;
-}
-#endif
-#else
-#include <sys/time.h>
-#endif
-
+#include "Timers.h"
 
 #include "Serializable.h"
 

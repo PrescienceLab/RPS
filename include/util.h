@@ -15,9 +15,5 @@
 #endif
 #define ABS(x) ((x)> 0 ? (x) : (-(x)))
 #define SQUARE(x) ((x)*(x))
-//#ifdef WIN32
 #define LOG2(x) (log(x)/log(2))
-//#else
-//#define LOG2(x) (log2(x))
-//#endif
 #endif

@@ -32,6 +32,10 @@ extern "C" {
 
 #define ARGBUFSIZE 256
 
+#ifndef HUGE
+#define HUGE 9999999999e99
+#endif
+
 static int get_endpoint(int kind, 
 			const char* ipaddr_str,
 			char *argbuf) {

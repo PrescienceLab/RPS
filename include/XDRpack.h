@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#ifndef WIN32
+#if !defined(WIN32) || defined(__CYGWIN__)
 #if defined(IEEE_FLOAT_LSB)
 #warning This is a IEEE_FLOAT_LSB machine
 #endif

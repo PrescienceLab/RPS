@@ -8,49 +8,46 @@ BINDIR = $(ROOT)/bin/$(ARCH)/$(OS)
 SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
+LIBNAME = trace
 
-CFLAGS = -I$(INCDIR) \
-         $(GETLOADAVG_CFLAGS) \
-         $(GETFLOWBW_CFLAGS) \
-         $(TIMESERIES_CFLAGS) \
-         $(FRACDIFF_CFLAGS) \
-         $(RECIPES_CFLAGS) \
-         $(RPSINT_CFLAGS) \
-         $(MIRROR_CFLAGS) \
-         $(REMOS_MODELER_CFLAGS) \
-         $(LISTPACK_CFLAGS) \
-         $(EXPAT_CFLAGS)
+LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
-ifeq ($(OPTIMIZE),YES)
-  CFLAGS +=  -O
-  LD1FLAGS = -O 
+
+ifeq ($(OPTIMIZE),YES) 
+  CFLAGS = -O
+  LD1FLAGS = -O
 else
-  CFLAGS += -g -gstabs+ -ggdb
+  CFLAGS = -g -gstabs+ -ggdb
   LD1FLAGS = -g  -gstabs+ -ggdb 
 endif
 
-LD1FLAGS+=  $(GETLOADAVG_LDFLAGS) \
-            $(GETFLOWBW_LDFLAGS)\
-            $(REMOS_MODELER_LDFLAGS) \
-            $(LISTPACK_LDFLAGS)
-LD2FLAGS =  $(RPSINT_LDFLAGS) \
-            $(TIMESERIES_LDFLAGS) \
-            $(FRACDIFF_LDFLAGS)  \
-            $(RECIPES_LDFLAGS) \
-            $(MIRROR_LDFLAGS) \
-            $(EXPAT_LDFLAGS) \
-            -lm
+CFLAGS += -I$(INCDIR) \
+	  $(SPIN_CFLAGS) \
+          $(GETLOADAVG_CFLAGS) \
+
+LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
+           $(SPIN_LDFLAGS) \
+           $(GETLOADAVG_LDFLAGS) \
+          -lm 
+
 ifeq ($(OS),SOLARIS)
   LD3FLAGS = -lsocket -lkvm -lelf
 else
   LD3FLAGS = 
 endif
 
-EXECLIST =
+EXECLIST = genload \
+           defilter_trace \
+           select_from_binary_trace_file \
+           alpha_to_network \
+           network_to_alpha \
+           network_to_ascii \
+           ascii_to_network \
+           alpha_to_ascii
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
-LIBOBJSLIST = cloadbufferint.o
+LIBOBJSLIST = LoadTrace.o 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
 LIBOBJS = $(foreach m, $(LIBOBJSLIST),$(OBJDIR)/$(m))
@@ -64,10 +61,7 @@ SRCS = $(foreach m, $(SRCSLIST), $(SRCDIR)/$(m))
 OBJS  = $(LIBOBJS) $(APPOBJS)
 
 
-LIBNAME = Remosint
-LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
-
-all: $(LIBFILE)
+all: $(LIBFILE) $(EXECS)
 
 $(LIBFILE) : $(LIBOBJS)
 	ar ruv $(LIBFILE) $(LIBOBJS)

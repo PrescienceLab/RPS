@@ -75,7 +75,7 @@ int ChainingHashTable<T,K,C,H>::GetStats(unsigned *numitems,
 					 double   *mean,
 					 double   *sdevlistlen)
 {
-  int i;
+  unsigned i;
   
   *numitems=0;
   for (i=0;i<size;i++) {
@@ -108,7 +108,7 @@ int ChainingHashTable<T,K,C,H>::GetStats(unsigned *numitems,
 template <class T, class K, class C, class H>
 int ChainingHashTable<T,K,C,H>::DumpListLengths(FILE *out)
 {
-  int i;
+  unsigned i;
   
   for (i=0;i<size;i++) {
     fprintf(out,"%d : %d\n",i,list[i].GetNumItems());

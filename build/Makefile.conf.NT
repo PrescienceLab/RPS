@@ -72,7 +72,14 @@ HAVE_JAVAGUI = NO
 HAVE_SPIN = YES
 
 
+# Whether to build the load trace access tools and playback tool
+HAVE_TRACE = YES
 
+# Whether to build the Running Time Advisor and testing tools
+HAVE_RTA = YES
+
+# Whether to build the Real-time Scheduling Advisor and testing tools
+HAVE_RTSA = NO
 
 ####################################################################################
 #
@@ -194,9 +201,37 @@ JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
 #
 
 
+####################################################################################
+#
+# Configuration Options for the Trace library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the RTA library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the RTSA library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
 # These should figure themselves out
 #
 #
+SHARED_DIR        = $(RPS_DIR)/shared
 SENSORS_DIR       = $(RPS_DIR)/Sensors
 TS_DIR            = $(RPS_DIR)/TimeSeries
 MIRROR_DIR        = $(RPS_DIR)/Mirror
@@ -205,6 +240,9 @@ REMOSINT_DIR      = $(RPS_DIR)/RemosInterface
 PREDCOMP_DIR      = $(RPS_DIR)/PredComp
 JAVAGUI_DIR       = $(RPS_DIR)/JavaGUI
 SPIN_DIR          = $(RPS_DIR)/Spin
+TRACE_DIR         = $(RPS_DIR)/Trace
+RTA_DIR           = $(RPS_DIR)/RTA
+RTSA_DIR          = $(RPS_DIR)/RTSA
 
 
 FRACDIFF_DIR      = $(TS_DIR)/FracDiff
@@ -219,11 +257,14 @@ GETFLOWBW_DIR     = $(SENSORS_DIR)/GetFlowBW
 #
 #
 
+
 GETLOADAVG_LIB_DIR = $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS)
 GETLOADAVG_INC_DIR = $(GETLOADAVG_DIR)/include
 
 GETFLOWBW_LIB_DIR = $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS)
 GETFLOWBW_INC_DIR = $(GETFLOWBW_DIR)/include
+
+SENSORS_INC_DIR = $(SENSORS_DIR)/include
 
 TS_LIB_DIR = $(TS_DIR)/lib/$(ARCH)/$(OS)
 TS_INC_DIR = $(TS_DIR)/include
@@ -242,6 +283,18 @@ RPSINT_LIB_DIR = $(RPSINT_DIR)/lib/$(ARCH)/$(OS)
 
 PREDCOMP_INC_DIR = $(PREDCOMP_DIR)/include
 PREDCOMP_LIB_DIR = $(PREDCOMP_DIR)/lib/$(ARCH)/$(OS)
+
+SPIN_INC_DIR = $(SPIN_DIR)/include
+SPIN_LIB_DIR = $(SPIN_DIR)/lib/$(ARCH)/$(OS)
+
+TRACE_INC_DIR = $(TRACE_DIR)/include
+TRACE_LIB_DIR = $(TRACE_DIR)/lib/$(ARCH)/$(OS)
+
+RTA_INC_DIR = $(RTA_DIR)/include
+RTA_LIB_DIR = $(RTA_DIR)/lib/$(ARCH)/$(OS)
+
+RTSA_INC_DIR = $(RTSA_DIR)/include
+RTSA_LIB_DIR = $(RTSA_DIR)/lib/$(ARCH)/$(OS)
 
 JAVAGUI_INC_DIR = $(JAVAGUI_DIR)
 JAVAGUI_LIB_DIR = $(JAVAGUI_DIR)
@@ -324,11 +377,19 @@ else
 endif
 
 ifeq ($(HAVE_PREDCOMP),YES) 
-   PREDCOMP_LDFLAGS = 
+   PREDCOMP_LDFLAGS = -lwsock32
    PREDCOMP_CFLAGS = -DHAVE_PREDCOMP -I$(PREDCOMP_INC_DIR)
 else
-   RPSINT_LDFLAGS = 
-   RPSINT_CFLAGS = 
+   PREDCOMP_LDFLAGS =
+   PREDCOMP_CFLAGS = 
+endif
+
+ifeq ($(HAVE_SPIN),YES) 
+   SPIN_LDFLAGS = -L$(SPIN_LIB_DIR) -lspin
+   SPIN_CFLAGS = -DHAVE_SPIN -I$(SPIN_INC_DIR)
+else
+   SPIN_LDFLAGS =
+   SPIN_CFLAGS =
 endif
 
 ifeq ($(HAVE_LISTPACK),YES) 
@@ -348,4 +409,4 @@ else
 endif
 
 
-CC += -D$(ARCH) -D$(OS)
+CC += -D$(ARCH) -D$(OS) -Wall

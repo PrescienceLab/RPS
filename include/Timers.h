@@ -2,8 +2,8 @@
 #define _timers
 
 // Generic timers
-#if defined(WIN32) 
-#if!defined(WIN32_GETTIMEOFDAY)
+#if defined(WIN32) && !defined(__CYGWIN__)
+#if !defined(WIN32_GETTIMEOFDAY)
 #define WIN32_GETTIMEOFDAY
 #include <time.h>
 #include <winsock.h> // for struct timeval

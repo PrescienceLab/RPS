@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "socks.h"
 #include "Serializable.h"
-#include "Mirror.h"
+#include "MirrorTemplate.h"
 #include "EndPoint.h"
 
 #include "junk.h"
@@ -88,6 +88,7 @@ class Reference {
     case EndPoint::EP_TARGET:
     case EndPoint::EP_CONNECT:
     case EndPoint::EP_UNKNOWN:
+    default:
       return -1;
       break;
     }
@@ -166,6 +167,7 @@ class Reference {
 	return -1;
       }
       ctype=CONNECT_REMOTE;
+      return 0;
     } else {
       if ((fd=open(pathname,O_RDWR|O_CREAT|O_TRUNC,0644))<0) {
 	perror("Client::ConnectTo can't open file");
@@ -196,13 +198,13 @@ class Reference {
       break;
     case CONNECT_FILE:
     case CONNECT_REMOTE:
-      close(fd);
+      CLOSE(fd);
       ctype=CONNECT_UNCONNECTED;
       return 0;
       break;
     case CONNECT_REMOTE_MULTICAST:
       LeaveMulticastGroup(fd,adx);
-      close(fd);
+      CLOSE(fd);
       ctype=CONNECT_UNCONNECTED;
       return 0;
       break;
