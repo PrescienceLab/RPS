@@ -542,6 +542,7 @@ class ReverseDiscreteWaveletTransform {
 private:
   WaveletType wavetype;
   CQFWaveletCoefficients wavecoefs;
+  int lowest_inlvl;
 
   unsigned index;
 
@@ -555,7 +556,8 @@ private:
 		  const vector<SAMPLETYPE> &lowout);
 
 public:
-  ReverseDiscreteWaveletTransform(const WaveletType wavetype=DAUB2);
+  ReverseDiscreteWaveletTransform(const WaveletType wavetype=DAUB2,
+				  const int lowest_inlvl=0);
   ReverseDiscreteWaveletTransform(const ReverseDiscreteWaveletTransform &rhs);
   virtual ~ReverseDiscreteWaveletTransform();
 
@@ -564,6 +566,9 @@ public:
 
   inline unsigned GetIndexNumber() const;
   inline void SetIndexNumber(const unsigned newindex);
+
+  inline int GetLowestInputLevel() const;
+  inline void SetLowestInputLevel(const int lowest_inlvl);
 
   inline WaveletType GetWaveletType() const;
   bool ChangeWaveletType(const WaveletType wavetype);
@@ -574,13 +579,14 @@ public:
 
   unsigned DiscreteWaveletTransformZeroFillOperation
     (SampleBlock<OUTSAMPLE> &outblock,
-     const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
+     DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
      const vector<int> &zerolevels);
 
   unsigned DiscreteWaveletMixedOperation
     (SampleBlock<OUTSAMPLE> &outblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &approxblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &detailblock,
+     const unsigned numlevels,
      const SignalSpec &spec);
 
   ostream & operator<<(ostream &os) const {
@@ -2702,10 +2708,12 @@ MultiplyAccumulateVectorsAndScale(vector<SAMPLETYPE> &output,
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ReverseDiscreteWaveletTransform(const WaveletType wavetype) :
+ReverseDiscreteWaveletTransform(const WaveletType wavetype,
+				const int lowest_inlvl) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
+  this->lowest_inlvl = lowest_inlvl;
   this->index = 0;
 }
 
@@ -2714,8 +2722,9 @@ ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ReverseDiscreteWaveletTransform(const ReverseDiscreteWaveletTransform &rhs) :
   wavecoefs(rhs.wavetype)
 {
-  this->wavetype = wavetype;
-  this->index = 0;
+  this->wavetype = rhs.wavetype;
+  this->lowest_inlvl = rhs.lowest_inlvl;
+  this->index = rhs.index;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -2730,6 +2739,7 @@ operator=(const ReverseDiscreteWaveletTransform &rhs)
 {
   this->wavetype = rhs.wavetype;
   this->wavecoefs = rhs.wavecoefs;
+  this->lowest_inlvl = rhs.lowest_inlvl;
   this->index = rhs.index;
   return *this;
 }
@@ -2746,6 +2756,21 @@ void ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 SetIndexNumber(const unsigned newindex)
 {
   index = newindex;
+}
+
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+int ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetLowestInputLevel() const
+{
+  return this->lowest_inlvl;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetLowestInputLevel(const int lowest_inlvl)
+{
+  this->lowest_inlvl = lowest_inlvl;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -2855,21 +2880,64 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletTransformZeroFillOperation
 (SampleBlock<OUTSAMPLE> &outblock,
- const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
+ DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
  const vector<int> &zerolevels)
 {
-  return 5;
+  unsigned numlevels=inblock.GetNumberLevels();
+  for (unsigned i=0; i<zerolevels.size(); i++) {
+    unsigned lvl_index = zerolevels[i] - this->lowest_inlvl;
+    unsigned lvl_size = (lvl_index==numlevels-1) ? 
+      (0x1 << (numlevels - lvl_index - 2)) :
+      (0x1);
+    deque<INSAMPLE> zeros(lvl_size,INSAMPLE(0,0));
+    inblock.SetSamplesAtLevel(zeros, zerolevels[i]);
+  }
+
+  this->DiscreteWaveletTransformOperation(outblock, inblock);
+
+  return blocksize;
 }
 
+// Function assumes that the structure optimizer was run before calling
+// this routine, and there is therefore 0 or 1 approximation levels
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletMixedOperation
 (SampleBlock<OUTSAMPLE> &outblock,
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &approxblock,
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &detailblock,
+ const unsigned numlevels,
  const SignalSpec &spec)
 {
-  return 5;
+  unsigned blocksize=0x1 << (numlevels-1);
+
+  // Zero out a DiscreteWaveletOutputSampleBlock
+  deque<INSAMPLE> zeros(blocksize,INSAMPLE(0,0));
+  DiscreteWaveletOutputSampleBlock<INSAMPLE> dwosb(numlevels,
+						   this->lowest_inlvl,
+						   TRANSFORM);
+  dwosb.SetSamples(zeros);
+
+  // Place approximations and details into the dwosb block
+  deque<INSAMPLE> samps;
+  if (approxblock.size()) {
+    int level=approxblock[0].GetBlockLevel();
+    approxblock[0].GetSamples(samps);
+    dwosb.SetSamplesAtLevel(samps,level);
+  }
+
+  samps.clear();
+  for (unsigned i=0; i<detailblock.size(); i++, samps.clear()) {
+    if (detailblock[i].GetBlockSize()) {
+      int level=detailblock[i].GetBlockLevel();
+      detailblock[i].GetSamples(samps);
+      dwosb.SetSamplesAtLevel(samps,level);
+    }
+  }
+
+  this->DiscreteWaveletTransformOperation(outblock, dwosb);
+
+  return blocksize;
 }
 
 /*******************************************************************************

@@ -13,6 +13,7 @@ typedef WaveletOutputSample<double> wosd;
 
 WaveletType GetWaveletType(const char *x, const char *filename);
 void ParseSignalSpec(SignalSpec &spec, ifstream &file);
+void ParseZeroSpec(vector<int> &spec, ifstream &file);
 
 void OutputWaveletCoefsNonFlat(ostream &os,
 			       const vector<deque<wosd> *> &levels,

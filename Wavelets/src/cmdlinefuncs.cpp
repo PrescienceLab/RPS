@@ -61,6 +61,30 @@ void ParseSignalSpec(SignalSpec &spec, ifstream &file)
   }
 }
 
+void ParseZeroSpec(vector<int> &spec, ifstream &file)
+{
+  const char pound = '#';
+  const char space = ' ';
+  char c;
+
+  unsigned i;
+  unsigned numlevels;
+  int levelnum;
+
+  while ( (c=file.get()) != EOF) {
+    if (c == pound) {
+      file.ignore(SHRT_MAX, '\n');
+    } else {
+      file.ignore(SHRT_MAX, space);
+      file >> numlevels;
+      for (i=0; i<numlevels; i++) {
+	file >> levelnum;
+	spec.push_back(levelnum);
+      }
+    }
+  }
+}
+
 void OutputWaveletCoefsNonFlat(ostream &os,
 			       const vector<deque<wosd> *> &levels,
 			       const unsigned numlevels)

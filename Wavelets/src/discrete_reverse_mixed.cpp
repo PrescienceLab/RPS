@@ -17,8 +17,8 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " block_static_mixed_srwt [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [specification-file] [flat] [output-file]\n\n";
+  cerr << " discrete_reverse_mixed [input-file] [wavelet-type-init]\n";
+  cerr << "  [specification-file] [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]         = The name of the file containing wavelet\n";
@@ -30,10 +30,6 @@ void usage()
   cerr << "                       DAUB20}.  The 'DAUB' stands for\n";
   cerr << "                       Daubechies wavelet types and the order\n";
   cerr << "                       is the number of coefficients.\n";
-  cerr << "\n";
-  cerr << "[numstages-init]     = The number of stages to use in the\n";
-  cerr << "                       reconstruction.  The number of levels\n";
-  cerr << "                       is equal to the number of stages + 1.\n";
   cerr << "\n";
   cerr << "[specification-file] = Mixed signal specification.\n";
   cerr << "\n";
@@ -51,19 +47,19 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=7) {
+  if (argc!=6) {
     usage();
     exit(-1);
   }
 
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
-    cerr << "block_static_mixed_srwt: stdin is not allowed in this utility.\n";
+    cerr << "discrete_reverse_mixed: stdin is not allowed in this utility.\n";
     exit(-1);
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_mixed_srwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "discrete_reverse_mixed: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -71,37 +67,31 @@ int main(int argc, char *argv[])
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
-  int numstages = atoi(argv[3]);
-  if (numstages <= 0) {
-    cerr << "block_static_mixed_srwt: Number of stages must be positive.\n";
-    exit(-1);
-  }
-
   ifstream specfile;
-  specfile.open(argv[4]);
+  specfile.open(argv[3]);
   if (!specfile) {
-    cerr << "block_static_mixed_srwt: Cannot open specification file " << argv[4] << ".\n";
+    cerr << "discrete_reverse_mixed: Cannot open specification file " << argv[3] << ".\n";
     exit(-1);
   }
 
   bool flat=true;
-  if (toupper(argv[5][0])=='N') {
+  if (toupper(argv[4][0])=='N') {
     flat = false;
-  } else if (toupper(argv[5][0])!='F') {
-    cerr << "sample_static_srwt: Need to choose flat or noflat for human readable.\n";
+  } else if (toupper(argv[4][0])!='F') {
+    cerr << "discrete_reverse_mixed: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[6],"stdout")) {
+  if (!strcasecmp(argv[5],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[6],"stderr")) {
+  } else if (!strcasecmp(argv[5],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[6]);
+    outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "block_static_mixed_srwt: Cannot open output file " << argv[6] << ".\n";
+      cerr << "discrete_reverse_mixed: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
@@ -111,70 +101,67 @@ int main(int argc, char *argv[])
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
 
+  // Find the number of stages represented in the signal specification
+  unsigned numstages=0;
+  for (unsigned i=0; i<sigspec.approximations.size(); i++) {
+    if ((unsigned)sigspec.approximations[i] > numstages) {
+      numstages = sigspec.approximations[i];
+    }
+  }
+  for (unsigned i=0; i<sigspec.details.size(); i++) {
+    if ((unsigned)sigspec.details[i] > numstages) {
+      numstages = sigspec.details[i];
+    }
+  }
+
   // Optimize the operations
   SignalSpec optim_spec;
   unsigned optim_stages;
-  bool transform=StructureOptimizer(optim_spec, optim_stages, numstages, 0, sigspec);
+  StructureOptimizer(optim_spec, optim_stages, numstages, 0, sigspec);
 
-  // Parameterize and instantiate the delay block
-  unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[optim_stages+1];
-  CalculateWaveletDelayBlock(wtcoefnum, optim_stages+1, delay);
-  DelayBlock<wosd> dlyblk(optim_stages+1, 0, delay);
-
-  // Instantiate a static reverse wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(optim_stages,wt,2,2,0);
+  // Instantiate a reverse discrete wavelet transform
+  ReverseDiscreteWaveletTransform<double, wisd, wosd> rdwt(wt);
 
   // Create output buffers
+  vector<WaveletOutputSampleBlock<wosd> > t_approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
-  vector<WaveletOutputSampleBlock<wosd> > wavecoefs;
   for (unsigned i=0; i<optim_stages; i++) {
-    approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
+    t_approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
     detailcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
-    wavecoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
   }
-  wavecoefs.push_back( WaveletOutputSampleBlock<wosd>(optim_stages));
-
-  vector<WaveletOutputSampleBlock<wosd> > dlysamples;
   WaveletInputSampleBlock<wisd> reconst;
 
   // Read in the MRA coefficients
   FlatParser fp;
-  fp.ParseMRACoefsBlock(optim_spec, approxcoefs, detailcoefs, cin);
+  fp.ParseMRACoefsBlock(optim_spec, t_approxcoefs, detailcoefs, cin);
 
-  // Transform the coefficients into wavecoefs and change level of approx
-  for (unsigned i=0; i<optim_stages; i++) {
-    if (approxcoefs[i].GetBlockSize() > 0) {
-      approxcoefs[i].SetBlockLevel( approxcoefs[i].GetBlockLevel()+1);
-      wavecoefs[approxcoefs[i].GetBlockLevel()] = approxcoefs[i];
-    }
-
-    if (detailcoefs[i].GetBlockSize() > 0) {
-      wavecoefs[i] = detailcoefs[i];
+  // Could possible look at available approximation levels and optimize
+  // that way, but for now if the one sample approximation is not in
+  // the representation, then no approximations are used.
+  for (unsigned i=0; i>optim_stages; i++) {
+    if (t_approxcoefs[i].GetBlockSize() == 1) {
+      approxcoefs.push_back(t_approxcoefs[i]);
     }
   }
 
   if (!flat) {
-    OutputLevelMetaData(outstr, wavecoefs, optim_stages+1);
+    *outstr.tie() << "APPROX LEVELS:" << endl;
+    OutputLevelMetaData(outstr, approxcoefs, optim_stages);
+    *outstr.tie() << "DETAIL LEVELS:" << endl;
+    OutputLevelMetaData(outstr, detailcoefs, optim_stages);
   }
 
   // The operations
-  dlyblk.StreamingBlockOperation(dlysamples, wavecoefs);
-
-  if (transform) {
-    srwt.StreamingTransformBlockOperation(reconst, dlysamples);
-  } else {
-    vector<int> zerospec;
-    vector<int> specs;
-    FlattenSignalSpec(specs, optim_spec);
-    InvertSignalSpec(zerospec, specs, optim_stages+1, 0);
-    srwt.StreamingTransformZeroFillBlockOperation(reconst, dlysamples, zerospec);
-  }
+  rdwt.DiscreteWaveletMixedOperation(reconst,
+				     approxcoefs,
+				     detailcoefs,
+				     optim_stages+1,
+				     optim_spec);
 
   if (!flat) {
-    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,optim_stages)-1;
-    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
+    *outstr.tie() << "The real-time system delay is no less than "
+		  << reconst.GetBlockSize() << endl;
     *outstr.tie() << endl;
     *outstr.tie() << "Index\tValue\n" << endl;
     *outstr.tie() << "-----\t-----\n" << endl << endl;
@@ -184,11 +171,6 @@ int main(int argc, char *argv[])
     *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
   *outstr.tie() << endl;
-
-  if (delay != 0) {
-    delete[] delay;
-    delay=0;
-  }
 
   return 0;
 }

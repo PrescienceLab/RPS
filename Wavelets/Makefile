@@ -51,6 +51,7 @@ EXECLIST = setup_wavelet_delay			\
 	   discrete_reverse_transform           \
 	   discrete_forward_mixed               \
 	   discrete_reverse_mixed               \
+	   discrete_reverse_zerofill_transform  \
 	   discrete_transform_test
 
 APPOBJSLIST = $(EXECLIST:=.o)
