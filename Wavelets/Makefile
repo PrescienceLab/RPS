@@ -40,7 +40,8 @@ LIBOBJSLIST = coefficients.o \
               sampleout.o \
               sampleblockout.o \
               waveletsample.o \
-              waveletsampleout.o
+              waveletsampleout.o \
+              stage.o
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
 LIBOBJS = $(foreach m, $(LIBOBJSLIST),$(OBJDIR)/$(m))

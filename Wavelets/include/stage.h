@@ -12,15 +12,7 @@
 #include "waveletinfo.h"
 #include "util.h"
 
-// AbstractStage is used simply for multi-methods on the operator= member
-class AbstractStage {
-  virtual AbstractStage & operator=(const AbstractStage &rhs)=0;
-  virtual AbstractStage & operator=(const Stage &rhs)=0;
-  virtual AbstractStage & operator=(const TransformStage &rhs)=0;
-  virtual AbstractStage & operator=(const InverseStage &rhs)=0;
-};
-
-class Stage : public AbstractStage {
+class Stage {
 protected:
   WaveletType         wavetype;
   WaveletCoefficients wavecoefs;
@@ -32,10 +24,7 @@ public:
   Stage(const Stage &rhs);
   virtual ~Stage();
 
-  virtual Stage & operator=(const AbstractStage &rhs);
-  virtual Stage & operator=(const Stage &rhs);
-  virtual Stage & operator=(const TransformStage &rhs);
-  virtual Stage & operator=(const InverseStage &rhs);
+  Stage & operator=(const Stage &rhs);
 
   void     ChangeWaveletType(WaveletType wavetype);
   string   GetWaveletName();
@@ -51,7 +40,7 @@ public:
   virtual ostream & Print(ostream &os) const;
 };
 
-
+#if 0
 class TransformStage : public Stage {
 private:
   DownSample          downsampler_l;
@@ -69,10 +58,7 @@ public:
 		 int         outlevel_h);
   virtual ~TransformStage();
 
-  virtual TransformStage & operator=(const AbstractStage &rhs);
-  virtual TransformStage & operator=(const Stage &rhs);
-  virtual TransformStage & operator=(const TransformStage &rhs);
-  virtual TransformStage & operator=(const InverseStage &rhs);
+  TransformStage & operator=(const TransformStage &rhs);
 
   void     SetDownSampleRateLPF(unsigned rate);
   unsigned GetDownSampleRateLPF();
@@ -109,10 +95,7 @@ public:
   InverseStage(WaveletType wavetype, unsigned rate_l, unsigned rate_h);
   virtual ~InverseStage();
 
-  virtual InverseStage & operator=(const AbstractStage &rhs);
-  virtual InverseStage & operator=(const Stage &rhs);
-  virtual InverseStage & operator=(const TransformStage &rhs);
-  virtual InverseStage & operator=(const InverseStage &rhs);
+  InverseStage & operator=(const InverseStage &rhs);
 
   void     SetUpSampleRateLPF(unsigned rate);
   unsigned GetUpSampleRateLPF();
@@ -129,7 +112,9 @@ public:
   unsigned PerformBlockOperation(SampleBlock    &output,
 				 SampleBlockOut &input);
 
-  virtual ostream & Print(ostream &os) const;
+  ostream & Print(ostream &os) const;
 };
+
+#endif
 
 #endif

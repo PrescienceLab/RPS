@@ -92,6 +92,11 @@ void WaveletInputSampleBlock::GetSample(WaveletInputSample *samp, unsigned i)
     *samp = samples[i];
 }
 
+void WaveletInputSampleBlock::ClearBlock()
+{
+  samples.clear();
+}
+
 unsigned WaveletInputSampleBlock::GetBlockSize()
 {
   return samples.size();

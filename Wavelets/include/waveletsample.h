@@ -35,6 +35,7 @@ public:
   inline virtual void GetSamples(vector<WaveletInputSample> &outbuf);
   inline virtual void SetSample(WaveletInputSample &input);
   virtual void GetSample(WaveletInputSample *samp, unsigned i);
+  inline virtual void ClearBlock();
   inline virtual unsigned GetBlockSize();
 
   virtual ostream & Print(ostream &os) const;

@@ -35,6 +35,7 @@ public:
   virtual void GetSamples(vector<sampleType> &buf)=0;
   virtual void SetSample(sampleType &input)=0;
   virtual void GetSample(sampleType *samp, unsigned i)=0;
+  virtual void ClearBlock()=0;
   virtual unsigned GetBlockSize()=0;
   
   virtual ostream & Print(ostream &os) const =0;

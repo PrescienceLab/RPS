@@ -1,6 +1,7 @@
 #include "stage.h"
 
-Stage::Stage(WaveletType wavetype=DAUB2)
+Stage::Stage(WaveletType wavetype=DAUB2) :
+  WaveletType(wavetype), 
 {
   vector<double> &coefs;
 
