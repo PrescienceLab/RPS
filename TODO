@@ -1,6 +1,4 @@
 Sensors
-  => Document WatchTowerRPS sensor in readme
-  => Document proc sensors in readme
 
 Wavelets
   => Need README.Wavelets
@@ -8,23 +6,43 @@ Wavelets
 
 TimeSeries
   => Fix costly variance recompute bug in managed predictors
+  => Wavelet Predictor
+
+
+RPSInterface
+
+void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const
+{
+  // WRITE THIS
+}
+
+void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m)
+{
+  // WRITE THIS
+}
+
+void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const
+{
+  // WRITE THIS
+}
+
+void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m)
+{
+  // WRITE THIS
+}
 
 
 PredComp
   => New tools
+    => Low pass (Measurement->Measurement
+    => look at wavelet_streaming_denoise
     => Wavelet tools to build
       => wavelet_interval_query
-      => wavelet_predserver
       => wavelet_reqresp_server
             Written, compiled, but buggy.  Looks like discrete transforms could also use some work.
-
-    => pred tools
-      => managed_predserver
-         wavelet_buffer, bufferclient
-         wavelet_predserver 
-         wavelet_reqresp_client/server
-         wavelet_streaming_server, wavelet_streaming_selection, wavelet_streaming_query, wavelet_streaming_client
-         wavelet_predict
+            After above converters are written, fixing this should be easy.
+      => move generate*delay, etc from ResearchTools/ and ResarchTools/scripts to Wavelets
+      => Fix wavelet_reqresp_server - discrete wavelet transform
 
 
 Windows build env

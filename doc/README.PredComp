@@ -127,6 +127,40 @@ evalfit
  - continuous evaluation of prediction quality and auto-refitting
 
 
+WAVELETS
+
+wavelet_buffer
+ - stores wavelet transformed data
+wavelet_bufferclient
+ - access to wavelet_buffer data
+
+wavelet_reqresp_server
+wavelet_reqresp_client
+ - one-off discrete wavelet transforms
+
+
+wavelet_streaming_server
+wavelet_streaming_client
+ - streaming wavelet transform with
+   client and full reconstruction if needed
+
+wavelet_streaming_selection
+ - selection of levels from transform
+
+wavelet_streaming_denoise
+ - selection of values based on quantity
+
+wavelet_streaming_query
+ - wavelet reconstruction to needed resolution
+
+wavelet_interval_query
+ - average over interval query - NOTE: DOES NOT WORK
+
+wavelet_predict
+ - prediction-based approach to dealing with
+   wavelet real-time delay problem
+
+
 OTHER
 
 sensorperf

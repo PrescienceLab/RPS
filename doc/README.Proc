@@ -6,7 +6,13 @@ rps-help@cs.northwestern.edu
 Proc is a sensor that can pull data from the Linux /proc filesystem.
 It was written by Luka Spoljaric.  It can be incorporated into
 RPS using the text2measure component.  Documentation for Proc is available
-from the RPS web page.
+from the RPS web page, http://www.cs.northwestern.edu/~RPS
+
+There are essentially two tools, proc_ns.pl and proc_spit.pl.
+proc_spit.pl recursively descends /proc and prints a vector of ever
+number that it finds.  proc_ns.pl lets the user identify a specific
+set of named values that should be printed in the vector.
+
 
 INCLUDE FILES
 -------------
@@ -20,7 +26,6 @@ none
 
 BINARIES
 --------
-
 proc_ns.pl
 proc_spit.pl
 proc_zerofill.pl

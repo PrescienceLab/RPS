@@ -38,6 +38,8 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 				    const unsigned num,
 				    double        *output)
 {
+  unsigned numlevels = (unsigned) LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
+
   // assume that the input block is time domain and make a sampleblock from it
   SampleBlock<WISD> inblock;
   for (unsigned i=0;i<num;i++) {
@@ -65,9 +67,14 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 
   unsigned n = outblock.GetBlockSize();
 
-  for (unsigned i=0;i<MIN(num,n);i++) {
-    output[i]=outblock[i].GetSampleValue();
+  for (unsigned i=0, level=numlevels-1;level>=0;level--) { 
+    deque<WOSD> levelout;
+    outblock.GetSamplesAtLevel(levelout,level);
+    for (;i<pow;i++) {
+      output[i]=levelout[i];
+    }
   }
+
   return 0;
 }
 
@@ -88,14 +95,23 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
   // assume that the input block is time domain and make a sampleblock from it
   DiscreteWaveletOutputSampleBlock<WOSD> inblock;
 
+  ReverseDiscreteWaveletTransform<double,WISD,WOSD> trans(wtype);
+
+  SampleBlock<WISD> outblock;
+
   unsigned numlevels = (unsigned) LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
 
+  for (unsigned i=0, level=numlevels-1;level>=0;level--) { 
+    deque<WOSD> levelout;
+    for (;;i++) {
+      levelout[i]=input[i];
+    }
+    outblock.GetSamplesAtLevel(levelout,level);
+  }
 
-  int curlevel=numlevels-1;
-  
   for (unsigned i=0,prevpow2=0,nextpow2=1;i<num;i++) {
     //
-    // PROBABLY WRONcG
+    // PROBABLY WRONG
     //
     inblock.PushSampleBack(WOSD(input[i],curlevel,i-prevpow2));
     if ((i+1)==nextpow2) {
@@ -105,9 +121,6 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
     }
   }
   
-  ReverseDiscreteWaveletTransform<double,WISD,WOSD> trans(wtype);
-
-  SampleBlock<WISD> outblock;
 
   switch (rtype) {
 #if 0

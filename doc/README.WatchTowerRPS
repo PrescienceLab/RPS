@@ -3,8 +3,27 @@ RPS's WatchTowerRPS Package
 
 rps-help@cs.northwestern.edu
 
-WatchTowerRPS is a sensor that provides access to any Windows performance
-counter.  It can be incorporated into RPS using the text2measure component.
+WatchTowerRPS is a sensor that provides access to any Windows
+performance counter.  It was written by Michael Knop.  It can be
+incorporated into RPS using the text2measure component.  
+
+Additional information about WatchTower, including several papers, can
+be found at http://www.cs.northwestern.edu/~knop/watchtower.html.
+
+WatchTowerRPS is available only on I386 WIN32 and I386 CYGWIN.  
+Several wrapper scripts are provided to show how to use it.  
+
+Run WatchTowerRPS.exe without arguments for usage.   The following scripts 
+can also be run:
+
+wt_cpu.pl        - Get CPU usage information
+wt_usercpu.pl    - Get CPU user usage information
+wt_diskbw.pl     - Get Disk usage information
+wt_memused.pl    - Get Memory usage information
+wt_readyqueue.pl - Get length of ready queue
+wt_pred.pl       - Example of how to wrap a predictor around a WatchTower counter
+
+wt_wrapper.pl    - General wrapper for all WatchTower counters for use with RPS.
 
 INCLUDE FILES
 -------------
@@ -21,4 +40,13 @@ BINARIES
 --------
 
 WatchTowerRPS.exe
+wt_cpu.pl   
+wt_usercpu.pl
+wt_diskbw.pl 
+wt_memused.pl
+wt_readyqueue.pl 
+wt_pred.pl       
+
+wt_wrapper.pl    
+
 
