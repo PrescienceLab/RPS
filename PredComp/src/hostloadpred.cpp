@@ -64,7 +64,7 @@ public:
       fprintf(stderr,"Fitted chosen model\n");
       modeltemplate->Print(stderr);
     }
-    predresp.tag=ntohl(GetMyIPAddress());
+    predresp.tag=GetMyIPAddress();
     predresp.flags = PREDFLAG_IPADX;
     if (cur<numfit) {
       predresp.modelinfo = *startuptemplate;

@@ -4,7 +4,7 @@ main()
 {
   LoadMeasurement lm;
 
-  lm.ipaddress=ntohl(GetMyIPAddress());
+  lm.ipaddress=GetMyIPAddress();
   lm.timestamp=TimeStamp(0);
   lm.period_usec=1000000;
   lm.smoothingtype=SMOOTH_MACH;

@@ -68,19 +68,26 @@ int LoadMeasurement::Unpack(Buffer &buf)
   return 0;
 }
 
+#define LOOKUP_HOST 1
 
 void LoadMeasurement::Print(FILE *out) 
 {
-  struct in_addr ia; ia.s_addr=ipaddress;
-  
+  struct in_addr ia; ia.s_addr=htonl(ipaddress);
+ 
+#if LOOKUP_HOST
   struct hostent *he=gethostbyaddr((const char *)&(ia),
 				   sizeof(ia),
 				   AF_INET);
+#endif
   
   double hz = 1.0/(1.0e-6*((double)(period_usec)));
   
   fprintf(out,"%-40s (%s %8.5f Hz) @ %f: %f\t[%f\t%f\t%f]\n",
+#if LOOKUP_HOST
 	  he ? he->h_name : inet_ntoa(ia),
+#else
+          inet_ntoa(ia),
+#endif
 	  smoothingtype == SMOOTH_MACH ? "MACH" :
 	  (smoothingtype == SMOOTH_UNIX ? "UNIX" : "????"),
 	  hz,

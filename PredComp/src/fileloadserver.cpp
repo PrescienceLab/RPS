@@ -89,7 +89,7 @@ public:
     measure.Serialize(buf);
   }
   virtual void GetData(LoadMeasurement &measure) {
-    measure.ipaddress=ntohl(GetMyIPAddress());
+    measure.ipaddress=GetMyIPAddress();
     if (gettimeofday(&(measure.timestamp),0)) {
       perror("fileloadserver can't get time");
       exit(-1);
