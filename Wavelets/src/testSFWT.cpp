@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <deque>
 
 #include "waveletsample.h"
 #include "waveletsampleblock.h"
@@ -73,7 +74,16 @@ int main(int argc, char *argv[])
   }
   infile.close();
 
+  unsigned numlevels=numstages+1;
   unsigned i;
+
+  // Create vectors for the level outputs
+  vector<deque<WaveletOutputSample> *> levels;
+  for (i=0; i<numlevels; i++) {
+    deque<WaveletOutputSample>* pwos = new deque<WaveletOutputSample>();
+    levels.push_back(pwos);
+  }
+
   cout << "The Samples of the input file: " << endl;
   for (i=0; i<samples.size(); i++) {
     cout << "\t" << samples[i];
@@ -87,8 +97,41 @@ int main(int argc, char *argv[])
     cout << "Output for input sample " << i << ":" << endl;
     for (unsigned j=0; j<outsamples.size(); j++) {
       cout << outsamples[j];
+
+      int samplelevel = outsamples[j].GetSampleLevel();
+      levels[samplelevel]->push_front(outsamples[j]);
     }
+
     outsamples.clear();
   }
+
+  for (i=0; i<numlevels; i++) {
+    cout << "Level " << i << "\tIndex\t";
+  }
+  cout << endl;
+  for (i=0; i<numlevels; i++) {
+    cout << "-------\t-----\t";
+  }
+  cout << endl;
+
+  for (i=0; i<levels[0]->size(); i++) {
+
+    for (unsigned j=0; j<numlevels; j++) {
+      if (!levels[j]->empty()) {
+	WaveletOutputSample wos;
+	wos = levels[j]->back();
+	cout << wos.GetSampleValue() << "\t";
+	cout << wos.GetSampleIndex() << "\t";
+	levels[j]->pop_back();
+      }
+    }
+    cout << endl;
+  }
+
+  for (i=0; i<numlevels; i++) {
+    delete levels[i];
+  }
+  levels.clear();
+
   return 0;
 }

@@ -63,8 +63,8 @@ public:
   inline unsigned GetIndexNumberOfLevel(int level);
   inline void SetIndexNumberOfLevel(int level, unsigned newindex);
 
-  bool StreamInSample(INSAMPLE &in);
-  bool StreamingSampleOperation(vector<OUTSAMPLE> &out, INSAMPLE &in);
+  bool StreamInSample(Sample<SAMPLETYPE> &in);
+  bool StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in);
 
   unsigned StreamInBlock(SampleBlock<INSAMPLE> &inblock);
   unsigned StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
@@ -121,8 +121,10 @@ public:
 			  unsigned    rate_h);
 
   inline void ClearAllDelayLines();
+  inline bool SamplePairReady(unsigned level1, unsigned level2);
 
-  bool StreamingSampleOperation(OUTSAMPLE &out, vector<INSAMPLE> &in);
+
+  bool StreamingSampleOperation(Sample<SAMPLETYPE> &out, vector<INSAMPLE> &in);
 
   unsigned StreamingBlockOperation(SampleBlock<OUTSAMPLE>          &outblock,
 				   vector<SampleBlock<INSAMPLE> *> &inblock);
@@ -438,7 +440,7 @@ SetIndexNumberOfLevel(int level, unsigned newindex)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamInSample(INSAMPLE &in)
+StreamInSample(Sample<SAMPLETYPE> &in)
 {
   bool result = false;
   ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* pfws;
@@ -467,7 +469,7 @@ StreamInSample(INSAMPLE &in)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingSampleOperation(vector<OUTSAMPLE> &out, INSAMPLE &in)
+StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
 {
   bool result = false;
   ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* pfws;
@@ -791,7 +793,16 @@ ClearAllDelayLines()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingSampleOperation(OUTSAMPLE &out, vector<INSAMPLE> &in)
+SamplePairReady(unsigned level1, unsigned level2)
+{
+  if ((level1 < 0) || (level2 < 0) || (level1 > numlevels) || (level2 > numlevels))
+    return false;
+  return !(insignals[level1]->empty() || insignals[level2]->empty());
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+StreamingSampleOperation(Sample<SAMPLETYPE> &out, vector<INSAMPLE> &in)
 {
   bool result=false;
   bool jitter=true;
@@ -849,15 +860,22 @@ StreamingSampleOperation(OUTSAMPLE &out, vector<INSAMPLE> &in)
     // Perform the operation on matched levels of input signal
     ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* prws;
     INSAMPLE  in_h, in_l;
-    if (insignals[numlevels-1]->size() && insignals[numlevels-2]->size()) {
 
-      in_l = insignals[numlevels-1]->back();
-      insignals[numlevels-1]->pop_back();
-      for (int j=numstages; j>=0; j--) {
-	in_h = insignals[i]->back();
-	insignals[i]->pop_back();
+    for (int j=numstages-1; j>=0; j--) {
+      prws = stages[j];
+
+      if (SamplePairReady(j+1,j)) {
+	if ((unsigned) j+1 == numstages) {
+	  in_l = insignals[numstages]->back();
+	  insignals[numstages]->pop_back();
+	}
+	  
+	deque<INSAMPLE>* pd = insignals[j];
+	in_h = pd->back();
+	pd->pop_back();
+
 	if (!prws->PerformSampleOperation(out, in_l, in_h)) {
-	  break;
+	  continue;
 	} else {
 	  if (j == 0) {
 	    result=true;

@@ -35,17 +35,15 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(unsigned rate=1)
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(unsigned rate=1) :
+  rate(rate), samplecount(0)
 {
-  this->rate = rate;
-  samplecount = 0;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(const UpSample &rhs)
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(const UpSample &rhs) :
+  rate(rhs.rate), samplecount(rhs.samplecount)
 {
-  rate = rhs.rate;
-  samplecount = rhs.samplecount;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
