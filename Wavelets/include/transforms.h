@@ -2826,8 +2826,8 @@ DiscreteWaveletTransformOperation
     unsigned m=0x1 << (i-1);
     for (j=0; j<m; j++) {
       for (k=0, z_vector.clear(), zz_vector.clear(); k<N/2; k++) {
-	unsigned index=m+j-N/2+k+1;
-	while (index < m) { index += m; }
+	int index=m+j-N/2+k+1;
+	while (index < (int)m) { index += m; }
 	z_vector.push_back(inblock[index].GetSampleValue());
 	zz_vector.push_back(f_vector[index-m]);
       }

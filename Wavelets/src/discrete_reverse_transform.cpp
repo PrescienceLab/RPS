@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     OutputLevelMetaData(outstr, waveletcoefs, TRANSFORM);
   }
 
-  // Instantiate a static reverse wavelet transform
+  // Instantiate a reverse discrete wavelet transform
   ReverseDiscreteWaveletTransform<double, wisd, wosd> rdwt(wt);
 
   // Create output buffers

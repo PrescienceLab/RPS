@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
   WaveletInputSampleBlock<wisd> inputblock(samples);
 
-  // Instantiate a static forward wavelet transform
+  // Instantiate a forward discrete wavelet transform
   ForwardDiscreteWaveletTransform<double, wosd, wisd> fdwt(wt,0);
 
   // Create result buffers
