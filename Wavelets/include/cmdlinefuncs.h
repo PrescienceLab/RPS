@@ -38,7 +38,8 @@ void OutputMRACoefsFlat(ostream &os,
 void OutputWaveletCoefs(ostream &os, vector<vector<wosd> > &levels);
 
 void OutputWaveletCoefs(ostream &os,
-			vector<WaveletOutputSampleBlock<wosd> > &levels);
+			vector<WaveletOutputSampleBlock<wosd> > &levels,
+			const TransformType tt);
 
 void OutputMRACoefs(ostream &os,
 		    vector<vector<wosd> > &approxlevels,

@@ -136,7 +136,9 @@ int main(int argc, char *argv[])
   vector<wisd> reconst;
 
   FlatParser fp;
-  while ( fp.ParseMRACoefsSample(optim_spec, approxcoefs, detailcoefs, cin) ) {
+  while (!cin.eof()) {
+    fp.ParseMRACoefsSample(optim_spec, approxcoefs, detailcoefs, cin);
+
     // Transfer the coefficients into wavecoefs and change level of approx
     if (approxcoefs.size()) {
       wosd asamp=approxcoefs[0];

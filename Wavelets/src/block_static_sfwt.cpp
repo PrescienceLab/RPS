@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
     OutputLevelMetaData(outstr, forwardoutput, numlevels);
   }
 
-  OutputWaveletCoefs(outstr, forwardoutput);
+  OutputWaveletCoefs(outstr, forwardoutput, tt);
 
   return 0;
 }

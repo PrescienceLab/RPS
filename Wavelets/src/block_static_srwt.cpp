@@ -117,6 +117,10 @@ int main(int argc, char *argv[])
   FlatParser fp;
   fp.ParseWaveletCoefsBlock(waveletcoefs, cin);
 
+  if (!flat) {
+    OutputLevelMetaData(outstr, waveletcoefs, numlevels);
+  }
+
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages+1];

@@ -233,7 +233,8 @@ void OutputWaveletCoefs(ostream &os, vector<vector<wosd> > &levels)
 }
 
 void OutputWaveletCoefs(ostream &os,
-			vector<WaveletOutputSampleBlock<wosd> > &levels)
+			vector<WaveletOutputSampleBlock<wosd> > &levels,
+			const TransformType tt)
 {
   unsigned i, j, k;
   unsigned numlevels=levels.size();
@@ -253,10 +254,24 @@ void OutputWaveletCoefs(ostream &os,
     *os.tie() << i << "\t";
 
     unsigned numsamples=0;
-    for (j=0; j<numlevels; j++) {
-      if (!levels[j].Empty() && (i % (2 << j)) == 0) {
-	numsamples++;
-	indices.push_back(j);
+    if (tt==TRANSFORM) {
+      for (j=0; j<numlevels-1; j++) {
+	if (!levels[j].Empty() && (i % (2 << j)) == 0) {
+	  numsamples++;
+	  indices.push_back(j);
+
+	  if (j==numlevels-2) {
+	    numsamples++;
+	    indices.push_back(numlevels-1);
+	  }
+	}
+      }
+    } else {
+      for (j=0; j<numlevels; j++) {
+	if (!levels[j].Empty() && (i % (2 << j)) == 0) {
+	  numsamples++;
+	  indices.push_back(j);
+	}
       }
     }
 

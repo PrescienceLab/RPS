@@ -79,10 +79,11 @@ bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
 				     vector<wosd> &dcoefs,
 				     istream &in)
 {
-  if (in.eof()) {
-    return false;
-  }
-
+  //  if (in.eof()) {
+  //    return false;
+  //  }
+  
+  bool moredata=true;
   unsigned sampletime, numsamples;
   char mratype;
   int levelnum;
@@ -114,9 +115,10 @@ bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
       }
     } else {
       cerr << "Invalid MRA type.\n";
+      moredata=false;
     }
   }
-  return true;
+  return moredata;
 }
 
 
