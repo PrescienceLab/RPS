@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is=&cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -65,7 +66,7 @@ int main(int argc, char *argv[])
       cerr << "sample_static_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -98,19 +99,20 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  //  ostream outstr;
+  ostream *outstr=&cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
-    outstr.tie(&cout);
+    //    outstr.tie(&cout);
   } else if (!strcasecmp(argv[6],"stderr")) {
-    outstr.tie(&cerr);
+    outstr->tie(&cerr);
   } else {
     outfile.open(argv[6]);
     if (!outfile) {
       cerr << "sample_static_sfwt: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr->tie(&outfile);
   }
 
   unsigned i;
@@ -158,10 +160,10 @@ int main(int argc, char *argv[])
 
   if (!flat) {
     // Output size data of each level
-    OutputLevelMetaData(outstr, levels, numlevels);
+    OutputLevelMetaData(*outstr, levels, numlevels);
   }
 
-  OutputWaveletCoefs(outstr, levels);
+  OutputWaveletCoefs(*outstr, levels);
 
   return 0;
 }
