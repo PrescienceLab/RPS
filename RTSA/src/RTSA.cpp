@@ -16,12 +16,18 @@ RTSARequest::~RTSARequest()
 
 int RTSAAdviseTask(RTSARequest &req, RTSAResponse &resp)
 {
+  static bool inited=false;
   int i;
   bool valid[req.numhosts];
   PredBufferRef           pref[req.numhosts];
   BufferDataRequest                   breq;
   BufferDataReply<PredictionResponse> brepl[req.numhosts];
 
+
+  if (!inited) {
+    InitRandom();
+    inited=true;
+  }
 
   breq.num=1;
   for (i=0;i<req.numhosts;i++) {
