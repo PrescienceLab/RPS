@@ -224,6 +224,11 @@ int main(int argc, char *argv[])
       if (!forwardoutput[j].Empty()) {
 	wosd wos;
 	wos = forwardoutput[j].Front();
+
+	if (flat) {
+	  *outstr.tie() << wos.GetSampleLevel() << " ";
+	}
+
 	*outstr.tie() << wos.GetSampleValue() << "\t";
 	forwardoutput[j].PopSampleFront();
       }

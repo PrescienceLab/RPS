@@ -16,7 +16,7 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " sample_static_srwt [input-file] [wavelet-type-init]\n";
+  cerr << " block_static_srwt [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [output-file] [flat]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
@@ -87,12 +87,12 @@ int main(int argc, char *argv[])
 
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
-    cerr << "sample_static_srwt: stdin is not allowed in this utility.\n";
+    cerr << "block_static_srwt: stdin is not allowed in this utility.\n";
     exit(-1);
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "sample_static_srwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "block_static_srwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -102,12 +102,13 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "sample_static_srwt: Number of stages must be positive.\n";
+    cerr << "block_static_srwt: Number of stages must be positive.\n";
     exit(-1);
   }
+  unsigned numlevels=numstages+1;
 
   if (toupper(argv[4][0])!='T') {
-    cerr << "sample_static_srwt: Invalid transform type.  Must be type TRANSFORM.\n";
+    cerr << "block_static_srwt: Invalid transform type.  Must be type TRANSFORM.\n";
     exit(-1);
   }
 
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "sample_static_srwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "block_static_srwt: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
@@ -130,18 +131,55 @@ int main(int argc, char *argv[])
   if (toupper(argv[6][0])=='N') {
     flat = false;
   } else if (toupper(argv[6][0])!='F') {
-    cerr << "sample_static_sfwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "sample_static_srwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
   typedef WaveletInputSample<double> wisd;
   typedef WaveletOutputSample<double> wosd;
 
+  vector<WaveletOutputSampleBlock<wosd> > waveletcoefs;
+  for (unsigned i=0; i<numlevels; i++) {
+    waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>() );
+  }
+
+  // Read in the wavelet coefficients
+  unsigned indextime, numsamples;
+  int levelnum;
+  double sampvalue;
+  map<int, unsigned, less<int> > indices;
+  while (!cin.eof()) {
+    cin >> indextime >> numsamples;
+    for (unsigned i=0; i<numsamples; i++) {
+      cin >> levelnum >> sampvalue;
+      if (indices.find(levelnum) == indices.end()) {
+	indices[levelnum] = 0;
+      } else {
+	indices[levelnum] += 1;
+      }
+      wosd sample(sampvalue, levelnum, indices[levelnum]);
+      waveletcoefs[i].PushSampleBack(sample);
+    }
+  }
+
+
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages+1];
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
   DelayBlock<wosd> dlyblk(numstages+1, 0, delay);
+
+  // Instantiate a static reverse wavelet transform
+  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
+
+  // Create output buffers
+  vector<WaveletOutputSampleBlock<wosd> > delayoutput;
+  WaveletInputSampleBlock<wisd> reconst;
+
+  // The operations
+  dlyblk.StreamingBlockOperation(delayoutput, waveletcoefs);
+  srwt.StreamingTransformBlockOperation(reconst, delayoutput);
+
 
   if (!flat) {
     unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
@@ -151,43 +189,7 @@ int main(int argc, char *argv[])
     *outstr.tie() << "-----\t-----\n" << endl << endl;
   }
 
-  // Instantiate a static reverse wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
-
-  // Create buffers
-  vector<wosd> waveletcoefs;
-  vector<wosd> delaysamples;
-  vector<wisd> currentoutput;
-  vector<wisd> reconst;
-
-  unsigned sampletime, numsamples;
-  int levelnum;
-  double sampvalue;
-  map<int, unsigned, less<int> > indices;
-  while (!cin.eof()) {
-    cin >> sampletime >> numsamples;
-    for (unsigned i=0; i<numsamples; i++) {
-      cin >> levelnum >> sampvalue;
-      if (indices.find(levelnum) == indices.end()) {
-	indices[levelnum] = 0;
-      } else {
-	indices[levelnum] += 1;
-      }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      waveletcoefs.push_back(sample);
-    }
-
-    dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs);
-    if (srwt.StreamingTransformSampleOperation(currentoutput, delaysamples)) {
-      for (unsigned j=0; j<currentoutput.size(); j++) {
-	reconst.push_back(currentoutput[j]);
-      }
-      waveletcoefs.clear();
-      currentoutput.clear();
-    }
-  }
-
-  for (unsigned i=0; i<reconst.size(); i++) {
+  for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
     *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
   *outstr.tie() << endl;

@@ -39,6 +39,7 @@ EXECLIST = testcoefs  \
 	   sample_static_sfwt \
 	   block_static_sfwt \
 	   sample_static_srwt \
+	   block_static_srwt \
 	   sample_static_streaming_test
 
 
