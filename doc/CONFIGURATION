@@ -18,6 +18,7 @@ F77     = your Fortran 77 compiler if you have one
 AR      = your library archiver
 RANLIB  = your ranlib 
 LD      = your linker
+STRIP   = your strip tool
 JAVA    = your java compiler
 JAVAH   = your java JNI header generator (javah)
 
@@ -31,16 +32,18 @@ OS       = your operating system
 What to set if you only have GNU Make and a C++ compiler
 --------------------------------------------------------
 
-RPS_DIR, CC, AR, RANLIB, LD, OPTIMIZE, DEBUG, ARCH, OS
+RPS_DIR, CC, AR, RANLIB, LD, STRIP, OPTIMIZE, DEBUG, ARCH, OS
 
 Then
 
 HAVE_GETLOADAVG = YES
 HAVE_GETFLOWBW = YES
  HAVE_REMOS = NO
+HAVE_WATCHTOWER = YES
+HAVE_PROC = YES
 HAVE_TIMESERIES = YES
- HAVE_NUMERICAL_RECIPES = NO
  HAVE_PVM = NO
+HAVE_WAVELETS = YES
 HAVE_FRACDIFF = NO
 HAVE_MIRROR = YES
  HAVE_EXPAT = NO
@@ -77,22 +80,26 @@ HAVE_REMOS = YES | NO
 
 REMOS_DIR = Remos installation directory
 
+WatchTowerRPS
+-------------
+
+HAVE_WATCHTOWER = YES | NO
+  Whether to build WatchTowerRPS (Windows monitoring)
+
+Proc
+----
+
+HAVE_PROC = YES | NO
+  Whether to build Linux /proc monitoring tools
 
 
 TimeSeries
 ----------
 
+Note that Numerical Recipes is no longer required
+
 HAVE_TIMESERIES = YES | NO
   Whether to build TimeSeries
-
-HAVE_NUMERICAL_RECIPES = YES | NO
-RECIPES_DIR = directory of numerical recipes installation
-  The Numerical Recipes library is needed for MA, ARMA, and ARIMA models
-  If you set this to NO, then these modellers will return null
-  Notice that we expect to find the numerical recipes includes in 
-  $(RECIPES_DIR)/include  and the library in $(RECIPES_DIR)/lib/$(ARCH)/$(OS)
-  This is slightly different from where the recipes build process leaves 
-  things
 
 HAVE_PVM = YES | NO
 PVM_DIR  = directory of PVM 3.3.3 or later installation
@@ -109,6 +116,14 @@ FracDiff
 HAVE_FRACDIFF = YES | NO
   Whether to build the FracDiff library (used to implement ARFIMA models)
   Notice that you need a fortran 77 compiler (f77) to build this
+
+
+Wavelets
+--------
+
+HAVE_WAVELETS = YES | NO
+  Whether to build the Tsunami library and tools
+
 
 Mirror
 ------

@@ -9,12 +9,11 @@ Needed Software
 
 The minimum required tools for RPS on a Unix or Unix-like system are
 are a C++ compiler and GNU Make.  On windows, Visual Studio 6.0 is the
-bare minimum.  
+bare minimum, although it is easier to use cygwin.  
 
 For additional functionality, other software is needed:
 
   - Fortran 77 compiler :  ARFIMA models (FracDiff)
-  - Numerical Recipes in C : MA, ARMA, ARIMA models
   - CMU Remos : flow bandwidth measurement
   - PVM 3.3.3 or better : parallel offline time series evaluation codes
   - Java : simple java gui 
@@ -49,6 +48,7 @@ To build on a Unix or Unix-like (cygwin) system:
       the build process will fail.
 5. make rebuild_all
 
+
 To build on native windows using Visual C++  (Not all components are built)
 
 0. set RPS_DIR=your rps directory, RPS_OS=WIN32, RPS_ARCH=I386
@@ -61,6 +61,30 @@ $RPS_DIR/include, where ARCH and OS are the obvious things.
 
 Here are the platforms on which this version of RPS has been
 successfully built and tested along with comments on each.
+
+
+Installation Support for Unix Systems
+-------------------------------------
+
+The result of the build process is that all binaries, includes, and
+libraries land in the appropriate places in $RPS_DIR, for example,
+binaries land in $RPS_DIR/bin/$RPS_ARCH/$RPS_OS.  You can also do a
+trimmed down installation of the software in the following way, after
+you have built everything:
+
+make RPS_INSTALL_DIR=/where/you/want/RPS install
+
+This will create a traditional directory tree:
+
+$RPS_INSTALL_DIR
+  bin
+  doc
+  lib
+  include
+
+In addition to binaries, the appropriate scripts will be copied 
+into the bin subdirectory
+
 
 Red Hat Linux 6.2 on Intel
 --------------------------

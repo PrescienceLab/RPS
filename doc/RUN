@@ -13,6 +13,10 @@ package).
 Setup
 -----
 
+If you did a simplified installation of RPS (make install), then
+simply source $RPS_INSTALL_DIR/ENV from your .bashrc.  Otherwise, do
+the following.
+
 First set the environment variable RPS_DIR to the root of your RPS
 tree.  The assumption here is that you are using an sh-derived shell.
 
@@ -72,6 +76,58 @@ Display measurements and predictions on a host:
 
 run_gui_on.pl host
 
+
+Wrapping Any Tool to be an RPS Measurement and Prediction Source
+----------------------------------------------------------------
+
+Any tool that produces a stream of one (value) or two column
+(timestamp, value) numerical output can be made into an RPS
+measurement source, prediction source, or both.  
+
+
+Wrapping a tool as a measurement source with streaming and buffering
+access modes (TCP-only): 
+
+measurement_source.pl stream_port buffer_port numitems period TOOL
+
+Wrapping a tool with a predictor that provides both streaming and
+buffered access to predictions (TCP-only): 
+
+prediction_source.pl num-steps-ahead control_port 
+  stream_port buffer_port numitems period TOOL
+
+By default, a managed AR(16) model is used.  You may also supply your
+own choice of model using --model='....'.  The expectation is that it
+is a managed model variant, however.
+
+Wrapping a tool with a measurement source and a predictor 1that
+provides both streaming and buffered access to measurements and
+predictions (TCP-only): 
+
+measurement_and_prediction_source.pl period measurement_stream_port 
+  measurement_buffer_port num_measurements num_steps_ahead
+  prediction_control_port prediction_stream_port
+  prediction_buffer_port num_predictions TOOL
+
+Example: predict windows disk usage using WatchTowerRPS.  (wt_disk.pl
+is a wrapper provided in the WatchTowerRPS package):
+
+measurement_and_prediction_source.pl ... wt_disk.pl
+
+
+Predictions of Task Running Time (Running Time Advisor)
+-------------------------------------------------------
+
+A host load predictor must be running on the host.
+
+test_rta task_size confidence_level host
+
+Real-time Scheduling Advisor
+----------------------------
+
+A host load predictor must be running on each of the hosts.
+
+test_rtsa task_size confidence_level slack_factor host+
 
 
 Use the individual components

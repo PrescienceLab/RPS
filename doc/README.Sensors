@@ -4,4 +4,10 @@ RPS's Sensors Package
 rps-help@cs.northwestern.edu
 
 Sensors is the default package into which sensor subpackages are
-expected to be placed.
+expected to be placed.  Currently, there are four sensors:
+
+GetLoadAvg    - Get Unix and Mach load averages
+GetFlowBW     - Get bandwidth on a path through the network using CMU Remos
+Proc          - Access all of /proc on Linux
+WatchTowerRPS - Access all Windows performance counters
+

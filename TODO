@@ -53,3 +53,12 @@ Windows build env
    
 Test
   => build on windows, cygwin, linux, 
+
+
+JAVAGUI
+  => Fix timeout issue and get continuous operation
+  => Configuration
+  => Clean up gnuplot scripts as well.
+
+Include Windows GUI?
+

@@ -6,6 +6,15 @@ rps-help@cs.northwestern.edu
 RPS components use the following environmental variables.  
 Many variables are set by $RPS_DIR/build/setup_rps_env
 
+
+Simplified Configuration for Installed RPS
+------------------------------------------
+
+If you did a simplified installation of RPS (make install), then
+$RPS_INSTALL_DIR/ENV is a customized, bash-specific, environment that
+you can simply source in your .bashrc.
+
+
 General Approach To Setting Variables
 -------------------------------------
 
@@ -13,9 +22,7 @@ In your .bashrc or .cshrc, set RPS_DIR, RPS_ARCH, RPS_OS and source
 $RPS_DIR/build/setup_rps_env edit $RPS_DIR/build/setup_rps_env if
 needed.
 
-Require
-
-d Variables
+Required Variables
 ------------------
 
 RPS_DIR 
@@ -28,9 +35,8 @@ RPS_OS
  The operating system RPS is running on (LINUX,FREEBSD,WIN32,CYGWIN,DUX,SOLARIS)
 
 RPS_WELL_KNOWN_HOST
- A host that RPS can make a one-time
-
 RPS_WELL_KNOWN_PORT
+ A host and port that RPS can make a one-time request to.
 
 PATH
  You should put $RPS_DIR/Scripts:$RPS_DIR/ResearchScripts:$RPS_DIR/bin/$RPS_ARCH/$RPS_OS
