@@ -99,8 +99,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  //  ostream outstr;
-  ostream *outstr=&cout;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
   } else if (!strcasecmp(argv[6],"stderr")) {
