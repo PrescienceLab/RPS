@@ -1,4 +1,5 @@
 #include <new>
+#include <string.h>
 #include "etathetapred.h"
 #include "util.h"
 

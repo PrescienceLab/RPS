@@ -1370,7 +1370,7 @@ StreamingMixedSampleOperation(vector<OUTSAMPLE> &out,
     // Find the minimum approximation level in the signal spec
     min_approx = spec.approximations[0];
     for (i=1; i<spec.approximations.size(); i++) {
-      min_approx = MIN<int>(spec.approximations[i], min_approx);
+      min_approx = MIN(spec.approximations[i], min_approx);
     }
 
     // Put approximation in the new input with updated level
@@ -1571,7 +1571,7 @@ StreamingMixedBlockOperation
     // Find the minimum approximation level in the signal spec
     min_approx = spec.approximations[0];
     for (i=1; i<spec.approximations.size(); i++) {
-      min_approx = MIN<int>(spec.approximations[i], min_approx);
+      min_approx = MIN(spec.approximations[i], min_approx);
     }
 
     // Put approximation in the new input block with updated level

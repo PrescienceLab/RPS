@@ -1,5 +1,5 @@
 #include <new>
-
+#include <string.h>
 #include "arfima.h"
 #include "ar.h"
 #include "poly.h"

@@ -1,4 +1,5 @@
 #include <new>
+#include <string.h>
 #include "ar.h"
 #include "tools.h"
 #include "util.h"

@@ -1,6 +1,7 @@
 #include "poly.h"
 #include "NewQueues.h"
 #include <stdlib.h>
+#include <ctype.h>
 #include "banner.h"
 
 #ifdef __GNUC__  //SUCKS
