@@ -3,23 +3,19 @@
 
 #include "util.h"
 
-class Sample {
-private:
-  double value;
-
+template <sampleType>
+class InputSample {
 public:
-  Sample() { value = 0.0;};
-  Sample(const Sample &rhs) { value = rhs.value;};
-  Sample(double value) { this->value = value;};
-  virtual ~Sample() {};
+  Sample();
+  Sample(const Sample &rhs);
+  virtual ~Sample();
 
-  Sample & operator=(const Sample &rhs) { value=rhs.value; return *this;};
+  virtual Sample & operator=(const Sample &rhs)=0;
 
-  inline void SetSampleValue(double sample) { value = sample;};
-  inline double GetSampleValue() { return value;};
+  virtual void SetSampleValue(sampleType sample)=0;
+  virtual sampleType GetSampleValue()=0;
 
-  ostream & Print(ostream &os) const {
-    os << "Sample Value: " << value << endl; return os;};
+  virtual ostream & Print(ostream &os) const = 0;
 };
 
 #endif

@@ -30,6 +30,10 @@ Stage::~Stage()
 {
 }
 
+Stage & Stage::operator=(const AbstractStage &rhs)
+{
+}
+
 Stage & Stage::operator=(const Stage &rhs)
 {
   wavetype = rhs.wavetype;

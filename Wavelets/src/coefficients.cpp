@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <cassert>
 #include <math.h>
 
 #include "coefficients.h"
@@ -193,20 +193,7 @@ WaveletCoefficients::WaveletCoefficients(WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
-  numcoefs = numCoefTable[wt];
-  waveletname = waveletNames[wt];
-
-  CHK_DEL(g_coefs);
-  CHK_DEL(h_coefs);
-
-  g_coefs = new double[numcoefs];
-  h_coefs = new double[numcoefs];
-
-  for (unsigned i=0; i<numcoefs; ++i) {
-    const double *coefptr = coefTable[wt];
-    g_coefs[i] = coefptr[i];
-    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,i+1);
-  }
+  init(wt);
 }
 
 WaveletCoefficients::~WaveletCoefficients()
@@ -229,25 +216,14 @@ void WaveletCoefficients::Initialize(WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
-  numcoefs = numCoefTable[wt];
-  waveletname = waveletNames[wt];
-
-  CHK_DEL(g_coefs);
-  CHK_DEL(h_coefs);
-
-  g_coefs = new double[numcoefs];
-  h_coefs = new double[numcoefs];
-
-  for (unsigned i=0; i<numcoefs; ++i) {
-    const double *coefptr = coefTable[wt];
-    g_coefs[i] = coefptr[i];
-    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,i+1);
-  }
+  init(wt);
 }
 
 void WaveletCoefficients::ChangeType(WaveletType wt)
 {
-  Initialize(wt);
+  assert(wt<=NUM_WAVELET_TYPES);
+  this->wt = wt;
+  init(wt);
 }
 
 string WaveletCoefficients::GetWaveletName()
@@ -301,4 +277,23 @@ ostream & WaveletCoefficients::Print(ostream &os) const
     os << "  " << g_coefs[i] << ",\t\t" << h_coefs[i] << endl;
   }
   return os;
+}
+
+// Private functions
+void WaveletCoefficients::init(WaveletType wt)
+{
+  numcoefs = numCoefTable[wt];
+  waveletname = waveletNames[wt];
+
+  CHK_DEL(g_coefs);
+  CHK_DEL(h_coefs);
+
+  g_coefs = new double[numcoefs];
+  h_coefs = new double[numcoefs];
+
+  for (unsigned i=0; i<numcoefs; ++i) {
+    const double *coefptr = coefTable[wt];
+    g_coefs[i] = coefptr[i];
+    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,i+1);
+  }
 }

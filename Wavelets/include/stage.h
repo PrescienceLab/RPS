@@ -14,10 +14,10 @@
 
 // AbstractStage is used simply for multi-methods on the operator= member
 class AbstractStage {
-  virtual void set(const AbstractStage *astage)=0;
-  virtual void set(const Stage *stage)=0;
-  virtual void set(const TransformStage *tstage)=0;
-  virtual void set(const InverseStage *istage)=0;
+  virtual AbstractStage & operator=(const AbstractStage &rhs)=0;
+  virtual AbstractStage & operator=(const Stage &rhs)=0;
+  virtual AbstractStage & operator=(const TransformStage &rhs)=0;
+  virtual AbstractStage & operator=(const InverseStage &rhs)=0;
 };
 
 class Stage : public AbstractStage {

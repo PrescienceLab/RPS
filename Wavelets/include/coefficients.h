@@ -15,6 +15,8 @@ private:
   unsigned    numcoefs;
   double      *g_coefs, *h_coefs;
 
+  void        init(WaveletType wt);
+
 public:
   WaveletCoefficients();
   WaveletCoefficients(const WaveletCoefficients &rhs);
