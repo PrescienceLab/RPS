@@ -200,27 +200,36 @@ int main(int argc, char *argv[])
       *outstr.tie() << "-------        ";
     }
     *outstr.tie() << endl;
+  }
 
-    unsigned loopsize = forwardoutput[0].GetBlockSize();
-    for (i=0; i<loopsize; i++) {
-      *outstr.tie() << i << "\t";
 
-      for (unsigned j=0; j<numlevels; j++) {
-	if (!forwardoutput[j].Empty()) {
-	  wosd wos;
-	  wos = forwardoutput[j].Front();
-	  *outstr.tie() << wos.GetSampleValue() << "\t";
-	  levels[j]->pop_back();
-	}
+  unsigned loopsize = forwardoutput[0].GetBlockSize();
+  for (i=0; i<loopsize; i++) {
+    *outstr.tie() << i << "\t";
+
+
+    // Find number of samples for this line
+    unsigned numsamples=0;
+    for (unsigned j=0; j<numlevels; j++) {
+      if (!forwardoutput[j].Empty()) {
+	numsamples++;
       }
-      *outstr.tie() << endl;
     }
+
+    if (flat) {
+      *outstr.tie() << numsamples << "\t";
+    }
+
+    for (unsigned j=0; j<numsamples; j++) {
+      if (!forwardoutput[j].Empty()) {
+	wosd wos;
+	wos = forwardoutput[j].Front();
+	*outstr.tie() << wos.GetSampleValue() << "\t";
+	forwardoutput[j].PopSampleFront();
+      }
+    }
+    *outstr.tie() << endl;
   }
   
-  for (i=0; i<numlevels; i++) {
-    CHK_DEL(levels[i]);
-  }
-  levels.clear();
-
   return 0;
 }

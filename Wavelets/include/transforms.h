@@ -996,7 +996,7 @@ StreamingApproxBlockOperation
 (vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
  const SampleBlock<INSAMPLE> &inblock)
 {
-  vector<SampleBlock<OUTSAMPLE> > unused;
+  vector<WaveletOutputSampleBlock<OUTSAMPLE> > unused;
   return StreamingBlockOperation(approx_outblock, unused, inblock);
 }
 
@@ -1006,7 +1006,7 @@ StreamingDetailBlockOperation
 (vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
  const SampleBlock<INSAMPLE> &inblock)
 {
-  vector<SampleBlock<OUTSAMPLE> > unused;
+  vector<WaveletOutputSampleBlock<OUTSAMPLE> > unused;
   return StreamingBlockOperation(unused, detail_outblock, inblock);
 }
 
