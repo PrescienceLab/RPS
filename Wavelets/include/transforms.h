@@ -13,8 +13,9 @@
 #include "waveletsampleblock.h"
 #include "util.h"
 
-#define MOREWORK 1
+const unsigned BITS_PER_BYTE=8;
 
+#define MOREWORK 1
 
 struct SignalSpec {
   vector<int> approximations;
@@ -370,7 +371,11 @@ private:
   WaveletCoefficients wavecoefs;
 
   int lowest_outlvl;
-  unsigned index[MAX_STAGES+1];
+  unsigned index_a[MAX_STAGES+1];
+  unsigned index_d[MAX_STAGES+1];
+
+  // functions
+  unsigned NumberOfLevels(const unsigned length);
 
 public:
   ForwardDiscreteWaveletTransform(const WaveletType wavetype=DAUB2,
@@ -384,12 +389,19 @@ public:
   inline int GetLowestOutputLevel() const;
   inline void SetLowestOutputLevel(const int lowest_outlvl);
 
-  inline unsigned GetIndexNumberOfLevel(const int level) const;
-  inline void SetIndexNumberOfLevel(const int level, const unsigned newindex);
+  inline unsigned GetIndexNumberOfApproxLevel(const int level) const;
+  inline unsigned GetIndexNumberOfDetailLevel(const int level) const;
+
+  inline void SetIndexNumberOfApproxLevel(const int level,
+					  const unsigned newindex);
+  inline void SetIndexNumberOfDetailLevel(const int level,
+					  const unsigned newindex);
 
   inline WaveletType GetWaveletType() const;
   bool ChangeWaveletType(const WaveletType wavetype);
 
+  // This routine implements the circular wavelet transform based on the work
+  //  by Mallat and Strang (See tech report for citations)
   bool DiscreteWaveletOperation
     (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &approxblock,
      DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &detailblock,
@@ -2044,7 +2056,8 @@ ForwardDiscreteWaveletTransform(const WaveletType wavetype,
   this->wavetype = wavetype;
   this->lowest_outlvl = lowest_outlvl;
   for (unsigned i=0; i<MAX_STAGES+1; i++) {
-    index[i] = 0;
+    index_a[i] = 0;
+    index_d[i] = 0;
   }
 }
 
@@ -2056,7 +2069,8 @@ ForwardDiscreteWaveletTransform(const ForwardDiscreteWaveletTransform &rhs) :
   this->wavetype = rhs.wavetype;
   this->lowest_outlvl = rhs.lowest_outlvl;
   for (unsigned i=0; i<MAX_STAGES+1; i++) {
-    this->index[i] = rhs.index[i];
+    this->index_a[i] = rhs.index_a[i];
+    this->index_d[i] = rhs.index_d[i];
   }
 }
 
@@ -2074,7 +2088,8 @@ operator=(const ForwardDiscreteWaveletTransform &rhs)
   this->wavecoefs = rhs.wavecoefs;
   this->lowest_outlvl = rhs.lowest_outlvl;
   for (unsigned i=0; i<MAX_STAGES+1; i++) {
-    this->index[i] = rhs.index[i];
+    this->index_a[i] = rhs.index_a[i];
+    this->index_d[i] = rhs.index_d[i];
   }
   return *this;
 }
@@ -2095,10 +2110,21 @@ SetLowestOutputLevel(const int lowest_outlvl)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-GetIndexNumberOfLevel(const int level) const
+GetIndexNumberOfApproxLevel(const int level) const
 {
   if ((level >= 0) && (level < MAX_STAGES+1)) {
-    return index[level];
+    return index_a[level];
+  } else {
+    return 0;
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetIndexNumberOfDetailLevel(const int level) const
+{
+  if ((level >= 0) && (level < MAX_STAGES+1)) {
+    return index_d[level];
   } else {
     return 0;
   }
@@ -2106,10 +2132,19 @@ GetIndexNumberOfLevel(const int level) const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetIndexNumberOfLevel(const int level, const unsigned newindex)
+SetIndexNumberOfApproxLevel(const int level, const unsigned newindex)
 {
   if ((level >= 0) && (level < MAX_STAGES+1)) {
-    index[level] = newindex;
+    index_a[level] = newindex;
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetIndexNumberOfDetailLevel(const int level, const unsigned newindex)
+{
+  if ((level >= 0) && (level < MAX_STAGES+1)) {
+    index_d[level] = newindex;
   }
 }
 
@@ -2153,7 +2188,8 @@ DiscreteWaveletOperation
  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &detailblock,
  const SampleBlock<INSAMPLE> &inblock)
 {
-#if MOREWORK==1
+  unsigned J=NumberOfLevels(inblock.GetBlockSize());
+  unsigned lenofblock = 0x1 << J
 
   unsigned M=inblock.GetBlockSize();
   unsigned i, L, bitsum=0, bittest=M;
@@ -2288,6 +2324,33 @@ DiscreteWaveletMixedOperation
  const SignalSpec &spec)
 {
   return true;
+}
+
+/********************************************************************************
+ * Private member functions
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+NumberOfLevels(const unsigned length)
+{
+  unsigned J=0, bitsum=0, bittest=length;
+  for (unsigned i=0; i<sizeof(unsigned)*BITS_PER_BYTE; i++) {
+    if ((bittest & 0x1) == 1) {
+      J=i;
+      bitsum++;
+    }
+    bittest = bittest >> 1;
+  }
+
+  // This next test could be used in order to increase the level to J+1, and 
+  //  append zeros.  At this time it has been decided not to append zeros and
+  //  to simply use the first 2^J samples for computing the DWT.
+  //
+  //if (bitsum != 1) {
+  //  J++;
+  //}
+
+  return J;
 }
 
 /********************************************************************************
