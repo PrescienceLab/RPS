@@ -300,7 +300,7 @@ sub RPSHandleRTAQuery {
   my $size=$hash{"size"};
   my $conf=$hash{"conf"};
 
-  my $result = `test_rta $size $conf $endpoint $host`;
+  my $result = `test_rta $size $conf $host`;
 
 my $out=<<END;
 <html>

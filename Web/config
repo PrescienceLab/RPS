@@ -24,4 +24,6 @@
 UNDERLYING,HOSTLOAD,BUFFER,skysaw,client:tcp:skysaw:5151
 MEASUREMENT,HOSTLOAD,BUFFER,skysaw,client:tcp:skysaw:5201
 PREDICTION,HOSTLOAD,BUFFER,skysaw,client:tcp:skysaw:5001
-
+UNDERLYING,HOSTLOAD,BUFFER,stingray,client:tcp:stingray:5151
+MEASUREMENT,HOSTLOAD,BUFFER,stingray,client:tcp:stingray:5201
+PREDICTION,HOSTLOAD,BUFFER,stingray,client:tcp:stingray:5001
