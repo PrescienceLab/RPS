@@ -31,7 +31,6 @@ void FlatParser::ParseTimeDomain(deque<wisd> &samples, istream &in)
 bool FlatParser::ParseWaveletCoefsSample(vector<wosd> &wavecoefs, istream &in)
 {
   bool read=true;
-
   unsigned sampletime, numsamples;
   int levelnum;
   double sampvalue;
@@ -173,7 +172,6 @@ void FlatParser::ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &aco
   double sampvalue;
   while (in >> indextime) {
     in >> mratype >> numsamples;
-
     if (mratype == 'A') {
       for (unsigned i=0; i<numsamples; i++) {
 	in >> levelnum >> sampvalue;
