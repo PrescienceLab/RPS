@@ -4,7 +4,12 @@ use POSIX;
 use FileHandle;
 use Getopt::Long;
 
-$usage = "w_plot.pl inputbufferport  outputbufferport num refresh host\n";
+$usage = "w_plot.pl [--timestamps] inputbufferport  outputbufferport num refresh host\n";
+
+$timestamps=0;
+
+&GetOptions("timestamps"=>\$timestamps);
+
 $#ARGV==4 or die $usage;
 
 $inputport=shift;
@@ -29,7 +34,11 @@ while (1) {
   while (<IN>) {
     chomp;
     split;
-    print OUT "$i\t$_[2]\n";
+    if ($timestamps) { 
+      print OUT "$_[1]\t$_[2]\n";
+    } else {
+      print OUT "$i\t$_[2]\n";
+    }
     $i++;
   }
   close(IN);
@@ -43,7 +52,11 @@ while (1) {
   while (<IN>) {
     chomp;
     split;
-    print OUT "$i\t$_[2]\n";
+    if ($timestamps) { 
+      print OUT "$_[1]\t$_[2]\n";
+    } else {
+      print OUT "$i\t$_[2]\n";
+    }
     $i++;
   }
   close(IN);

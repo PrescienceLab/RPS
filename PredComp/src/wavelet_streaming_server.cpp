@@ -22,15 +22,6 @@ public:
     return new StreamingWaveletServerMirrorInputHandler(*this);
   }
   int HandleRead(const int fd, Selector &s) {
-    if (firsttime) { 
-      xform = new StaticForwardWaveletTransform<double,WOSD,WISD>(outputrep.levels-1,
-								  outputrep.wtype,
-								  2,
-								  2,
-								  0);
-      firsttime=false;
-    }
-
     // The expectation is that the input is a measurement.
     // The output is 0 or more WaveletIndividualSamples
     // Since this is currently doing nothing, wavelet-wise, 
@@ -43,6 +34,17 @@ public:
 
     Measurement m;
     m.Unserialize(fd);
+
+    if (firsttime) { 
+      outputrep.period_usec=m.period_usec;
+      xform = new StaticForwardWaveletTransform<double,WOSD,WISD>(outputrep.levels-1,
+								  outputrep.wtype,
+								  2,
+								  2,
+								  0);
+      firsttime=false;
+    }
+
 
     vector<WOSD> output;
 
@@ -63,7 +65,7 @@ public:
       }
       
       for (unsigned j=0;j<output.size();j++) {
-	cerr << output[j]<<endl;
+	//cerr << output[j]<<endl;
 	WaveletIndividualSample w(m.tag,TimeStamp(0),outputrep,0,0,0);
 	w.GetFromWaveletOutputSample(output[j]);
 	Buffer b;
@@ -156,6 +158,10 @@ int main(int argc, char *argv[])
 
   wt=GetWaveletType(argv[1]);
   numlevels=atoi(argv[2]);
+  if (numlevels<2) {
+    cerr << "Sorry, must have at least two levels\n";
+    exit(-1);
+  }
    if (toupper(argv[3][0])=='D') {
      rt=WAVELET_DOMAIN_DETAIL;
    } else if (toupper(argv[3][0])=='A') {

@@ -82,7 +82,10 @@ EXECLIST = loadclient 				\
 	wavelet_reqresp_client			\
 	wavelet_streaming_server		\
 	wavelet_streaming_selection             \
-	wavelet_streaming_client
+	wavelet_streaming_client                \
+        wavelet_buffer                          \
+        wavelet_bufferclient                    \
+	wavelet_streaming_query
 
 #	wavelet_reqresp_server			\
 

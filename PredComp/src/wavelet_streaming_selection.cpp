@@ -18,8 +18,8 @@ public:
     // and call forward if it is.
     WaveletIndividualSample s;
     s.Unserialize(fd);
-    cerr << s << ":";
-    if (s.rinfo.rtype==WAVELET_DOMAIN_DETAIL) { 
+    //    cerr << s << ":";
+    if (s.rinfo.rtype==WAVELET_DOMAIN_TRANSFORM) { 
       if (s.level>=levellow && s.level<=levelhigh) { 
 	Buffer b;
 	s.Serialize(b);
