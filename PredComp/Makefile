@@ -73,7 +73,8 @@ EXECLIST = loadclient 				\
         flowbwbuffer                            \
         flowbwbufferclient                      \
         flowbw2measure                          \
-        flowbwreconfig                          
+        flowbwreconfig                          \
+        text2measure
 
 
 ifeq ($(HAVE_GETLOADAVG),YES)
