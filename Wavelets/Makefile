@@ -14,8 +14,6 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
 CFLAGS = -I$(INCDIR)
 
-OPTIMIZE = YES
-
 ifeq ($(OPTIMIZE),YES)
   CFLAGS +=  -O2 -funroll-all-loops -ffast-math
   LD1FLAGS = -O2 -funroll-all-loops -ffast-math
@@ -68,12 +66,7 @@ EXECLIST = setup_wavelet_delay			\
            perf_sfwt                            \
 	   perf_srwt                            \
            perf_dft                             \
-	   perf_drt				\
-	   perf_dft1                            \
-	   perf_drt1				\
-	   perf_sfwt1				\
-	   perf_srwt1
-
+	   perf_drt
 
 
 APPOBJSLIST = $(EXECLIST:=.o)
