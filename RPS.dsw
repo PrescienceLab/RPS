@@ -1076,6 +1076,24 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name Finder
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RTA
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RTSA
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
 }}}
 
 ###############################################################################

@@ -22,22 +22,28 @@ research results derived from using RPS.
 
 Licensing (this is not "free" software):
 
-Read the file ./LICENSE
+Read the file LICENSE
 
 To build:
 
-Read the file build/BUILD.
+Read the file doc/BUILD.
 
 To run:
 
-Read the file build/RUN.
+Read the file doc/RUN.
 
 To extend:
 
 Read the technical report noted above
 
-To get help:
+For more documents:
 
-send mail to rps-help@cs.nwu.edu.  Please do not send mail directly to
-the author.  It will likely be ignored.
+Look at ROADMAP and doc/*
+
+To get help for RPS:  rps-help@cs.northwestern.edu.  
+
+To discuss RPS: rps-list@cs.northwestern.edu.
+
+Please do not send mail directly to the author.  It will likely be
+ignored.
 

@@ -10,6 +10,9 @@ copy %RPS_DIR%\Mirror\include\*.h %RPS_DIR%\include
 copy %RPS_DIR%\TimeSeries\include\*.h %RPS_DIR%\include
 copy %RPS_DIR%\RPSInterface\include\*.h %RPS_DIR%\include
 copy %RPS_DIR%\RemosInterface\include\*.h %RPS_DIR%\include
+copy %RPS_DIR%\RTA\include\*.h %RPS_DIR%\include
+copy %RPS_DIR%\RTSA\include\*.h %RPS_DIR%\include
+copy %RPS_DIR%\Finder\include\*.h %RPS_DIR%\include
 
 copy %RPS_DIR%\Sensors\GetLoadAvg\%TYPE%\*.exe %RPS_DIR%\bin\I386\WIN32
 copy %RPS_DIR%\Sensors\GetLoadAvg\%TYPE%\*.lib %RPS_DIR%\lib\I386\WIN32
@@ -27,3 +30,11 @@ copy %RPS_DIR%\RPSInterface\%TYPE%\*.lib %RPS_DIR%\lib\I386\WIN32
 copy %RPS_DIR%\RemosInterface\%TYPE%\*.lib %RPS_DIR%\lib\I386\WIN32
 
 copy %RPS_DIR%\PredComp\%TYPE%\*.exe %RPS_DIR%\bin\I386\WIN32
+
+copy %RPS_DIR%\Finder\%TYPE%\*.lib %RPS_DIR%\lib\I386\WIN32
+
+copy %RPS_DIR%\RTA\%TYPE%\*.exe %RPS_DIR%\bin\I386\WIN32
+copy %RPS_DIR%\RTA\%TYPE%\*lib %RPS_DIR%\lib\I386\WIN32
+
+copy %RPS_DIR%\RTSA\%TYPE%\*.exe %RPS_DIR%\bin\I386\WIN32
+copy %RPS_DIR%\RTSA\%TYPE%\*.lib %RPS_DIR%\lib\I386\WIN32
