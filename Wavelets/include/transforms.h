@@ -95,14 +95,15 @@ protected:
 
   inline bool BlockPairReady(SampleBlock<INSAMPLE>  &block_l,
 			     SampleBlock<INSAMPLE>  &block_h) const;
-  inline bool BlockPairReady(SampleBlock<OUTSAMPLE> &inter_l,
-			     SampleBlock<INSAMPLE>  &block_h) const;
 
-  void AddRemainderToSignals(SampleBlock<INSAMPLE> &block,
-			     unsigned              minsize);
-  void AddRemainderToSignals(SampleBlock<INSAMPLE> &block,
-			     unsigned              minsize,
-			     int                   level);
+  void AddRemainingBlockToInsignals(SampleBlock<INSAMPLE> &block,
+				    unsigned              minsize,
+				    unsigned              level);
+
+  void AddRemainingBlockToIntersignals(SampleBlock<INSAMPLE> &block,
+				       unsigned              minsize,
+				       unsigned              level);
+
 public:
   StaticReverseWaveletTransform(unsigned numstages=1);
   StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs);
@@ -460,28 +461,51 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
 
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws;
   SampleBlock<OUTSAMPLE> out_l, out_h;
-  SampleBlock<OUTSAMPLE>* psbo;
-  unsigned blocklen=0;
+  unsigned blocklen=0, i;
 
-  // Top stage
   SampleBlock<INSAMPLE> newinput(inblock);
-  pfws = stages[0];
-  psbo = outblock[0];
-  blocklen += pfws->PerformBlockOperation(out_l, out_h, newinput);
 
-  // Rest of stages
-  for (unsigned i=1; i<numstages; i++) {
-    SampleBlock<OUTSAMPLE> interout(out_l);
+  // Start with the lowest stage
+  if (numstages == 1) {
+    blocklen = first_stage->PerformBlockOperation(out_l, out_h, newinput);
+    out_h.SetBlockIndex(index[0]);
+    out_l.SetBlockIndex(index[1]);
+    index[0] += blocklen; index[1] += blocklen;
+    
+    outblock[0]->AppendBlockBack(out_h);
+    outblock[1]->AppendBlockBack(out_l);
+  } else {
+    blocklen = first_stage->PerformBlockOperation(out_l, out_h, newinput);
+    if (blocklen) {
+      out_h.SetBlockIndex(index[0]);
+      index[0] += blocklen;
 
-    pfws = stages[i];
-    psbo = outblock[i];
-    blocklen += pfws->PerformBlockOperation(out_l, out_h, interout);
+      outblock[0]->AppendBlockBack(out_h);
 
-    psbo->AppendBlockBack(out_h);
-    if (i == numstages-1) {
-      psbo = outblock[i+1];
-      psbo->AppendBlockBack(out_l);
-      break;
+      SampleBlock<OUTSAMPLE> nextinput(out_l);
+
+      for (i=0; i<numstages-1; i++) {
+	pfws = stages[i];
+	out_l.ClearBlock(); out_h.ClearBlock();
+	unsigned blocksize = pfws->PerformBlockOperation(out_l, out_h, nextinput);
+	if (blocksize) {
+	  out_h.SetBlockIndex(index[i+1]);
+	  index[i+1] += blocksize;
+	  blocklen += blocksize;
+
+	  outblock[i+1]->AppendBlockBack(out_h);
+
+	  if (i == numstages-2) {
+	    out_l.SetBlockIndex(index[i+2]);
+	    index[i+2] += blocksize;
+	    blocklen += blocksize;
+
+	    outblock[i+2]->AppendBlockBack(out_l);
+	  }
+	} else {
+	  break;
+	}
+      }
     }
   }
   return blocklen;
@@ -769,44 +793,33 @@ BlockPairReady(SampleBlock<INSAMPLE> &block_l, SampleBlock<INSAMPLE> &block_h) c
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-BlockPairReady(SampleBlock<OUTSAMPLE> &inter_l, SampleBlock<INSAMPLE> &block_h) const
-{
-  bool result=false;
-  if (inter_l.GetBlockSize() == block_h.GetBlockSize()) {
-    result = true;
-  }
-  return result;
-}
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-AddRemainderToSignals(SampleBlock<INSAMPLE> &block, 
-		      unsigned              minsize)
+AddRemainingBlockToInsignals(SampleBlock<INSAMPLE> &block, 
+			     unsigned              minsize,
+			     unsigned              level)
 {
-  int blocklevel = block.GetBlockLevel();
-  if ( (blocklevel != -1) && (blocklevel <= numlevels-1) ) {
+  if ( (level >= 0) && (level <= numlevels-1) ) {
     // Transfer samples [minsize, blocksize] into insignals
     INSAMPLE samp;
     for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
-      block.GetSample(samp, i);
-      insignals[blocklevel].push_front(samp);
+      block.GetSample(&samp, i);
+      insignals[level]->push_front(samp);
     }
   }
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-AddRemainderToSignals(SampleBlock<INSAMPLE> &block, 
-		      unsigned              minsize,
-		      int                   level)
+AddRemainingBlockToIntersignals(SampleBlock<INSAMPLE> &block, 
+				unsigned              minsize,
+				unsigned              level)
 {
   if ( (level >= 0) && (level <= numlevels-1) ) {
     // Transfer samples [minsize, blocksize] into intersignals
     INSAMPLE samp;
     for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
-      block.GetSample(samp, i);
-      intersignals[level].push_front(samp);
+      block.GetSample(&samp, i);
+      intersignals[level]->push_front(samp);
     }
   }
 }
@@ -905,6 +918,59 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
   return out.size();
 }
 
+// Some macros for StreamingBlockOperation
+
+#define HANDLE_UNEVEN_BLOCK_LENGTH_2_INSIGNALS(p_stage, out, low, high) \
+  unsigned l_blksize = (low).GetBlockSize();                            \
+  unsigned h_blksize = (high).GetBlockSize();                           \
+  if (h_blksize < l_blksize) {                                          \
+    deque<INSAMPLE> newblock;                                           \
+    (low).GetSamples(newblock, 0, h_blksize);                           \
+    SampleBlock<INSAMPLE> temp_l(newblock);                             \
+    newblock.clear();                                                   \
+    (high).GetSamples(newblock, 0, h_blksize);                          \
+    SampleBlock<INSAMPLE> temp_h(newblock);                             \
+    newblock.clear();                                                   \
+    (p_stage)->PerformBlockOperation((out), temp_l, temp_h);            \
+    AddRemainingBlockToInsignals((low), h_blksize, numstages);          \
+  } else {                                                              \
+    deque<INSAMPLE> newblock;                                           \
+    (low).GetSamples(newblock, 0, l_blksize);                           \
+    SampleBlock<INSAMPLE> temp_l(newblock);                             \
+    newblock.clear();                                                   \
+    (high).GetSamples(newblock, 0, l_blksize);                          \
+    SampleBlock<INSAMPLE> temp_h(newblock);                             \
+    newblock.clear();                                                   \
+    (p_stage)->PerformBlockOperation((out), temp_l, temp_h);            \
+    AddRemainingBlockToInsignals((high), l_blksize, numstages-1);       \
+  }                                                                     \
+
+#define HANDLE_UNEVEN_BLOCK_LENGTH_2_SIGNALS(p_stage, level, out, low, high) \
+  unsigned l_blksize = (low).GetBlockSize();                                 \
+  unsigned h_blksize = (high).GetBlockSize();                                \
+  if (h_blksize < l_blksize) {                                               \
+    deque<INSAMPLE> newblock;                                                \
+    (low).GetSamples(newblock, 0, h_blksize);                                \
+    SampleBlock<INSAMPLE> temp_l(newblock);                                  \
+    newblock.clear();                                                        \
+    (high).GetSamples(newblock, 0, h_blksize);                               \
+    SampleBlock<INSAMPLE> temp_h(newblock);                                  \
+    newblock.clear();                                                        \
+    (p_stage)->PerformBlockOperation((out), temp_l, temp_h);                 \
+    AddRemainingBlockToIntersignals((low), h_blksize, level);                \
+  } else {                                                                   \
+    deque<INSAMPLE> newblock;                                                \
+    (low).GetSamples(newblock, 0, l_blksize);                                \
+    SampleBlock<INSAMPLE> temp_l(newblock);                                  \
+    newblock.clear();                                                        \
+    (high).GetSamples(newblock, 0, l_blksize);                               \
+    SampleBlock<INSAMPLE> temp_h(newblock);                                  \
+    newblock.clear();                                                        \
+    (p_stage)->PerformBlockOperation((out), temp_l, temp_h);                 \
+    AddRemainingBlockToInsignals((high), l_blksize, level);                  \
+  }                                                                          \
+
+
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingBlockOperation(SampleBlock<OUTSAMPLE>           &outblock,
@@ -914,9 +980,9 @@ StreamingBlockOperation(SampleBlock<OUTSAMPLE>           &outblock,
     return 0;
   }
 
+  outblock.ClearBlock();
+
   unsigned i, j;
-  unsigned blocklen=0;
-  ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* prws;
 
   // Append insignal samples to the front of the input block
   for (i=0; i<numlevels; i++) {
@@ -929,105 +995,82 @@ StreamingBlockOperation(SampleBlock<OUTSAMPLE>           &outblock,
     pdi->clear();
   }
 
-  // Perform the top stage
-  prws = stages[numstages-1];
+  SampleBlock<INSAMPLE>* pin_l = inblock[numstages];
+  SampleBlock<INSAMPLE>* pin_h = inblock[numstages-1];
 
-  SampleBlock<INSAMPLE>* in_l = inblock[numstages];
-  SampleBlock<INSAMPLE>* in_h = inblock[numstages-1];
-
-  SampleBlock<OUTSAMPLE> interblock;
-  if ( BlockPairReady(*in_l, *in_h) ) {
-    blocklen += prws->PerformBlockOperation(interblock, *in_l, *in_h);
-  } else {
-    // Here we must run in block mode for the minimum of the two blocks, and 
-    //  then store the end of the buffer into insignals
-    unsigned l_blksize = in_l->GetBlockSize();
-    unsigned h_blksize = in_h->GetBlockSize();
-
-    SampleBlock<INSAMPLE>* pblock = (h_blksize < l_blksize) ? in_l : in_h;
-    unsigned min_blksize = (h_blksize < l_blksize) ? h_blksize :
-      l_blksize;
-
-    deque<INSAMPLE> newblock;
-
-    in_l->GetSamples(newblock, 0, min_blksize);
-    SampleBlock<INSAMPLE> newin_l(newblock);
-    newblock.clear();
-
-    in_h->GetSamples(newblock, 0, min_blksize);
-    SampleBlock<INSAMPLE> newin_h(newblock);
-
-    blocklen += prws->PerformBlockOperation(interblock,
-					    newin_l, 
-					    newin_h);
-
-    AddRemainderToSignals(*pblock, min_blksize);
-  }
-
-  // Perform the rest of the stages
-  for (int k=numstages-2; k>=0; k--) {
-
-    // Append any intersignal samples to the front of the interblock
-    deque<OUTSAMPLE>* pdo = intersignals[k];
-    for (i=0; i<pdo->size(); i++) {
-      interblock.PushSampleFront(pdo->operator[](i));
-    }
-    pdo->clear();
-
-    prws = stages[k];
-    SampleBlock<OUTSAMPLE> newin_l(interblock);
-    in_h = inblock[k];
-    interblock.ClearBlock();
-
-    if (BlockPairReady(newin_l, *in_h)) {
-      blocklen += prws->PerformBlockOperation(interblock, newin_l, *in_h);
+  if (numstages == 1) {
+    // Handle the only stage
+    if (BlockPairReady(*pin_l, *pin_h)) {
+      last_stage->PerformBlockOperation(outblock, *pin_l, *pin_h);
     } else {
       // Here we must run in block mode for the minimum of the two blocks, and 
-      //  then store the end of the buffer into insignals or intersignals
-      unsigned l_blksize = newin_l.GetBlockSize();
-      unsigned h_blksize = in_h->GetBlockSize();
+      //  then store the end of the buffer into insignals
+      HANDLE_UNEVEN_BLOCK_LENGTH_2_INSIGNALS(last_stage, outblock, *pin_l, *pin_h);
+    }
+    outblock.SetBlockIndex(index);
+    index += outblock.GetBlockSize();
 
-      if (h_blksize < l_blksize) {
-	// This means that the low level has more buffer
-	deque<OUTSAMPLE> newblock_l;
-	deque<INSAMPLE>  newblock_h;
+  } else {
+    // Perform the topstage and rest using reverse iteration through the stages
+    vector<ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *>::reverse_iterator
+      r_iter=stages.rbegin();
 
-	newin_l.GetSamples(newblock_l, 0, h_blksize);
-	SampleBlock<OUTSAMPLE> temp_l(newblock_l);
-	newblock_l.clear();
+    // A temp output for intermediate results
+    SampleBlock<INSAMPLE> interblock;
 
-	in_h->GetSamples(newblock_h, 0, h_blksize);
-	SampleBlock<INSAMPLE> temp_h(newblock_h);
-	newblock_h.clear();
+    if (BlockPairReady(*pin_l, *pin_h)) {
+      (*r_iter)->PerformBlockOperation(interblock, *pin_l, *pin_h);
+    } else {
+      // Here we must run in block mode for the minimum of the two blocks, and 
+      //  then store the end of the bigger buffer into the appropriate insignals
+      HANDLE_UNEVEN_BLOCK_LENGTH_2_INSIGNALS((*r_iter), interblock, *pin_l, *pin_h);
+    }
 
-	blocklen += prws->PerformBlockOperation(interblock,
-						temp_l, 
-						temp_h);
 
-	AddRemainderToSignals(newin_l, h_blksize, k);
+    // Perform the rest of the stages
+    r_iter++;
+    for (i=numstages-2; r_iter != stages.rend(); r_iter++, i--) {
 
+      // If there are any samples in intersignals, append them to the front of
+      //  interblock
+      for (j=0; j<intersignals[i]->size(); j++) {
+	interblock.PushSampleFront(intersignals[i]->operator[](j));
+      }
+      intersignals[i]->clear();
+
+      SampleBlock<INSAMPLE> newin_l(interblock);
+      pin_h = inblock[i];
+      interblock.ClearBlock();
+
+      if (BlockPairReady(newin_l, *pin_h)) {
+	(*r_iter)->PerformBlockOperation(interblock, newin_l, *pin_h);
       } else {
-	// High level has more buffer
-	deque<OUTSAMPLE> newblock_l;
-	deque<INSAMPLE>  newblock_h;
-
-	newin_l.GetSamples(newblock_l, 0, l_blksize);
-	SampleBlock<OUTSAMPLE> temp_l(newblock_l);
-	newblock_l.clear();
-
-	in_h->GetSamples(newblock_h, 0, l_blksize);
-	SampleBlock<INSAMPLE> temp_h(newblock_h);
-	newblock_h.clear();
-
-	blocklen += prws->PerformBlockOperation(interblock,
-						temp_l, 
-						temp_h);
-
-	AddRemainderToSignals(*in_h, l_blksize, k);
+	HANDLE_UNEVEN_BLOCK_LENGTH_2_SIGNALS((*r_iter), i, interblock, newin_l, *pin_h);
       }
     }
+
+    // Handle the bottom stage
+      
+    // If there are any samples in intersignals, append them to the front of
+    //  interblock
+    for (i=0; i<intersignals[0]->size(); i++) {
+      interblock.PushSampleFront(intersignals[0]->operator[](i));
+    }
+    intersignals[0]->clear();
+
+    SampleBlock<INSAMPLE> newin_l(interblock);
+    pin_h = inblock[0];
+
+    if (BlockPairReady(newin_l, *pin_h)) {
+      last_stage->PerformBlockOperation(outblock, newin_l, *pin_h);
+    } else {
+      HANDLE_UNEVEN_BLOCK_LENGTH_2_SIGNALS(last_stage, 0, outblock, newin_l, *pin_h);
+    }
+    outblock.SetBlockIndex(index);
+    index += outblock.GetBlockSize();
   }
-  return blocklen;
+
+  return outblock.GetBlockSize();
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
