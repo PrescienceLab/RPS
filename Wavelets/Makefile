@@ -36,6 +36,7 @@ EXECLIST = testcoefs  \
            testSFWTapprox \
 	   testSFWTblock \
 	   testSFWTmixed \
+	   setup_wavelet_delay \
 	   sample_static_sfwt \
 	   block_static_sfwt \
 	   sample_static_srwt \
