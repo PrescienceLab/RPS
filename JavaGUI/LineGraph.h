@@ -8,7 +8,8 @@
 extern "C" {
 #endif
 /* Inaccessible static: LOCK */
-/* Inaccessible static: dbg */
+#undef LineGraph_assert
+#define LineGraph_assert 0L
 /* Inaccessible static: isInc */
 /* Inaccessible static: incRate */
 #undef LineGraph_TOP_ALIGNMENT
@@ -23,21 +24,8 @@ extern "C" {
 #define LineGraph_RIGHT_ALIGNMENT 1.0f
 #undef LineGraph_serialVersionUID
 #define LineGraph_serialVersionUID -7644114512714619750LL
-/* Inaccessible static: metrics */
-/* Inaccessible static: class_00024java_00024awt_00024Component */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024ComponentListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024FocusListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024HierarchyListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024HierarchyBoundsListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024KeyListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024MouseListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024MouseMotionListener */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024InputMethodListener */
 #undef LineGraph_serialVersionUID
 #define LineGraph_serialVersionUID 4613797578919906343LL
-/* Inaccessible static: dbg */
-/* Inaccessible static: class_00024java_00024awt_00024Container */
-/* Inaccessible static: class_00024java_00024awt_00024event_00024ContainerListener */
 /* Inaccessible static: readObjectCallbacks */
 #undef LineGraph_WHEN_FOCUSED
 #define LineGraph_WHEN_FOCUSED 0L
@@ -59,22 +47,11 @@ extern "C" {
 #define LineGraph_HAS_FOCUS 4L
 #undef LineGraph_IS_OPAQUE
 #define LineGraph_IS_OPAQUE 5L
-#undef LineGraph_KEY_EVENTS_ENABLED
-#define LineGraph_KEY_EVENTS_ENABLED 6L
-#undef LineGraph_FOCUS_INPUTMAP_CREATED
-#define LineGraph_FOCUS_INPUTMAP_CREATED 7L
-#undef LineGraph_ANCESTOR_INPUTMAP_CREATED
-#define LineGraph_ANCESTOR_INPUTMAP_CREATED 8L
-#undef LineGraph_WIF_INPUTMAP_CREATED
-#define LineGraph_WIF_INPUTMAP_CREATED 9L
-#undef LineGraph_ACTIONMAP_CREATED
-#define LineGraph_ACTIONMAP_CREATED 10L
-#undef LineGraph_CREATED_DOUBLE_BUFFER
-#define LineGraph_CREATED_DOUBLE_BUFFER 11L
 #undef LineGraph_IS_PRINTING
 #define LineGraph_IS_PRINTING 12L
 #undef LineGraph_IS_PRINTING_ALL
 #define LineGraph_IS_PRINTING_ALL 13L
+/* Inaccessible static: class_00024javax_00024swing_00024JComponent_00024KeyboardState */
 /* Inaccessible static: defaultLayout */
 /*
  * Class:     LineGraph
@@ -86,19 +63,19 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient
 
 /*
  * Class:     LineGraph
- * Method:    callPredBufferClient
- * Signature: ([D[DLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient
-  (JNIEnv *, jobject, jdoubleArray, jdoubleArray, jstring);
-
-/*
- * Class:     LineGraph
  * Method:    callMeasureBufferClient
  * Signature: ([DLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient
   (JNIEnv *, jobject, jdoubleArray, jstring);
+
+/*
+ * Class:     LineGraph
+ * Method:    callPredBufferClient
+ * Signature: ([D[DLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient
+  (JNIEnv *, jobject, jdoubleArray, jdoubleArray, jstring);
 
 #ifdef __cplusplus
 }
