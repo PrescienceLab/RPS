@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
+#include "PredComp.h"
 #include "TimeSeries.h"
 #include "Wavelets.h"
-#include "PredComp.h"
+
 
 /*
  
@@ -155,10 +156,11 @@ public:
     if (levelop[level].ahead<=0) { 
       outval=levelop[level].delay->PopPush(inval);
     } else {
-      double preds[levelop[level].ahead];
+      double *preds = new double[levelop[level].ahead];
       levelop[level].pred->Step(inval);
       levelop[level].pred->Predict(levelop[level].ahead,preds);
       outval=preds[levelop[level].ahead-1];
+	  delete [] preds;
     }
 
     out=in;

@@ -5,6 +5,10 @@
 #include "Trace.h"
 #include "PredComp.h"
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define strcasecmp stricmp
+#endif
+
 void usage(const char *n)
 {
   char *b=GetRPSBanner();

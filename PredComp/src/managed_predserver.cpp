@@ -7,6 +7,10 @@
 
 #include "PredComp.h"
 
+#ifdef WIN32
+#define strcasecmp stricmp
+#endif
+
 
 void usage(const char *n)
 {

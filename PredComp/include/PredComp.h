@@ -5,12 +5,6 @@
 #pragma warning( disable: 4786)  //stop msvc from spewing crap about long template instaniations
 #endif
 
-#include "Sensors.h"
-#include "TimeSeries.h"
-#include "Mirror.h"
-#include "RPSInterface.h"
-#include "banner.h"
-
 #if defined(WIN32) && !defined(__CYGWIN__)
 extern "C" {
 #include <windows.h>
@@ -21,6 +15,13 @@ extern "C" {
 #include <sys/select.h>
 #include <sys/wait.h>
 #endif
+
+#include "Sensors.h"
+#include "TimeSeries.h"
+#include "Mirror.h"
+#include "RPSInterface.h"
+#include "banner.h"
+
 
 
 

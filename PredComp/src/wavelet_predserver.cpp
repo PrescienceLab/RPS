@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
+#include "PredComp.h"
 #include "TimeSeries.h"
 #include "Wavelets.h"
-#include "PredComp.h"
+
 
 /*
  
