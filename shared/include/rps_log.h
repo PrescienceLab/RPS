@@ -23,6 +23,8 @@ inline void RPSLog(char *fn, int line, int level, char *fmt, ...)
       if (!out) {
 	out=stderr;
       }
+    } else {
+      out=stderr;
     }
     if (getenv("RPS_MINLOGLEVEL")) {
       minlevel=atoi(getenv("RPS_MINLOGLEVEL"));

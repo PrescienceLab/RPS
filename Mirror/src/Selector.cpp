@@ -2,7 +2,7 @@
 
 
 #include <errno.h>
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 #include <signal.h>
 #include <assert.h>
@@ -13,6 +13,7 @@
 
 // #include "glarp.h"
 
+using namespace std;
 
 Handler::Handler() 
 { 

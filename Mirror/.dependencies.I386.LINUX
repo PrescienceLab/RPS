@@ -1,8 +1,8 @@
-./obj/I386/LINUX/socks.o: ./src/socks.cpp include/socks.h include/junk.h
-./obj/I386/LINUX/debug.o: ./src/debug.cpp include/debug.h
-./obj/I386/LINUX/Selector.o: ./src/Selector.cpp include/socks.h include/Selector.h \
+./obj/I386/LINUX/socks.o: src/socks.cpp include/socks.h include/junk.h
+./obj/I386/LINUX/debug.o: src/debug.cpp include/debug.h
+./obj/I386/LINUX/Selector.o: src/Selector.cpp include/socks.h include/Selector.h \
   include/Queues.h include/Timers.h include/junk.h
-./obj/I386/LINUX/EndPoint.o: ./src/EndPoint.cpp include/socks.h include/EndPoint.h \
+./obj/I386/LINUX/EndPoint.o: src/EndPoint.cpp include/socks.h include/EndPoint.h \
   include/junk.h
-./obj/I386/LINUX/Serializable.o: ./src/Serializable.cpp include/Serializable.h \
+./obj/I386/LINUX/Serializable.o: src/Serializable.cpp include/Serializable.h \
   include/socks.h include/junk.h include/XDRpack.h include/debug.h

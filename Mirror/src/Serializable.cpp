@@ -1,6 +1,6 @@
 #include <string.h>
 #include <assert.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "Serializable.h"
 
@@ -12,6 +12,7 @@
 
 #include "debug.h"
 
+using namespace std;
 
 #if defined(WIN32) && !defined(__CYGWIN__)
 int SerializeableInfo::BOUNDARY=0xdeadbeef;
