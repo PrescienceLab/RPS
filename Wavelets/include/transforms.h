@@ -2216,13 +2216,13 @@ AddStage()
     return false;
   }
 
-  deque<INSAMPLE>* psbis;
+  SampleBlock<INSAMPLE>* psbis;
 
   // Transfer the highest insignal to the newly created intersignal level
-  psbis = new SampleBlock<INSAMPLE>(*(insignals[numstages]));
+  psbis = new SampleBlock<INSAMPLE>(*insignals[numstages]);
   intersignals.push_back(psbis);
 
-  insignals[numstages].ClearBlock();
+  insignals[numstages]->ClearBlock();
 
   psbis = new SampleBlock<INSAMPLE>();
   insignals.push_back(psbis);
@@ -2319,7 +2319,7 @@ ChangeAllWaveletTypes(const WaveletType wavetype)
   case DAUB18:
   case DAUB20:
     last_stage->ChangeWaveletType(wavetype);
-    ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> *prws;
+    ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *prws;
     for (unsigned i=0; i<stages.size(); i++) {
       prws = stages[i];
       prws->ChangeWaveletType(wavetype);
