@@ -1,9 +1,19 @@
 #include <algorithm>
 #include <string.h>
 
+// This is currently limited in the following ways:
+//
+// The prediction horizon is determined by the wavelet configuration file
+// predictions at ALL HORIZONS are reported as the same
+// all variances are reported as zero for all horizons
+//
+// These limitations will be fixed at a future date
+//
+
+
+
 #include "wavelet.h"
 #include "util.h"
-// Disgusting FIX FIX FIX
 #include "tools.h"
 #include "fileparameterset.h"
 
@@ -350,12 +360,12 @@ double WaveletPredictor::Step(const double obs)
 }
 
 //
-// FIX FIX FIX
-//
+// Note how this returns all values as the prediction horizon
+// of the config file.  This breaks the semantics of Predictor
+// and will eventually be fixed.
 int WaveletPredictor::Predict(const int maxahead, double *preds) const
 {
   for (int i=0;i<maxahead;i++) { 
-    // note: WRONG
     preds[i]=nextval;
   }
   return 0;
@@ -363,7 +373,7 @@ int WaveletPredictor::Predict(const int maxahead, double *preds) const
 
 
 //
-// FIX FIX FIX
+// Note that this incorrectly returns all variances as zero
 //
 int WaveletPredictor::ComputeVariances(const int maxahead, double *vars,
 					  const VarianceType vtype) const

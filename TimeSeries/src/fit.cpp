@@ -324,7 +324,12 @@ char *GetAvailableModels()
 	   "  and determined by the model fitting process\n"
 	   "WAVELET filename\n"
 	   " Wavelet-based prediction as specified in the filename\n"
-	   "  No modifiers may be used\n\n");
+	   "  There are several limitations to be aware of\n"
+           "    - No modifiers may be used\n"
+           "    - Underlying predictors must be MANAGED or AWAIT modified\n"
+	   "    - Predictions at all time horizons are reported as the next\n"
+           "      value produced by the structure specified in the config file\n"
+           "    - Error variance is reported as zero\n");
   return s;
 }
 	   
