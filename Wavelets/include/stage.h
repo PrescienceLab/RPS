@@ -17,7 +17,7 @@ struct EquivalenceException
 {};
 
 template <class outSample, class inSample, class inputType>
-class Stage {
+class WaveletStageHelper {
 protected:
   WaveletType         wavetype;
   WaveletCoefficients wavecoefs;

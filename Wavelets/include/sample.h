@@ -24,4 +24,5 @@ public:
   virtual ostream & Print(ostream &os) const = 0;
 };
 
+
 #endif
