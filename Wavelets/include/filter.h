@@ -146,7 +146,7 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterBufferOutput
     INSAMPLE  newin;
     in.GetSample(&newin,i);
     GetFilterOutput(newout,newin);
-    out.SetSample(newout);
+    out.PushSampleBack(newout);
   }
 }
 

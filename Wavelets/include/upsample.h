@@ -83,16 +83,16 @@ void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
   for (i=0; i<input.GetBlockSize(); i++) {
     newin=0;
     while (ZeroSample()) {
-      output.SetSample(newin);
+      output.PushSampleBack(newin);
     }
     input.GetSample(&newin,i);
-    output.SetSample(newin);
+    output.PushSampleBack(newin);
   }
 
   // Take care of remaining zero samples
   newin=0;
   for (i=0; i<rate-1; i++) {
-    output.SetSample(newin);
+    output.PushSampleBack(newin);
   }
 }
 
@@ -107,16 +107,16 @@ void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
   for (i=0; i<input.GetBlockSize(); i++) {
     newin=0;
     while (ZeroSample()) {
-      output.SetSample(newin);
+      output.PushSampleBack(newin);
     }
     input.GetSample(&newin,i);
-    output.SetSample(newin);
+    output.PushSampleBack(newin);
   }
 
   // Take care of remaining zero samples
   newin=0;
   for (i=0; i<rate-1; i++) {
-    output.SetSample(newin);
+    output.PushSampleBack(newin);
   }
 }
 

@@ -9,13 +9,13 @@ WaveletInputSampleBlock::WaveletInputSampleBlock() :
 }
 
 WaveletInputSampleBlock::WaveletInputSampleBlock
-(const vector<WaveletInputSample> &input) : 
+(const deque<WaveletInputSample> &input) : 
   InputSampleBlock<WaveletInputSample>(input)
 {
 }
 
 WaveletInputSampleBlock::WaveletInputSampleBlock
-(const vector<WaveletInputSample> &input, const unsigned index) : 
+(const deque<WaveletInputSample> &input, const unsigned index) : 
   InputSampleBlock<WaveletInputSample>(input,index)
 {
 }

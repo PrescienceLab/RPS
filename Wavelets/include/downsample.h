@@ -86,7 +86,7 @@ void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
     if (KeepSample()) {
       Sample<SAMPLETYPE>  newin;
       input.GetSample(&newin,i);
-      output.SetSample(newin);
+      output.PushSampleBack(newin);
     }
   }
 }
@@ -101,7 +101,7 @@ void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
     if (KeepSample()) {
       OUTSAMPLE  newin;
       input.GetSample(&newin,i);
-      output.SetSample(newin);
+      output.PushSampleBack(newin);
     }
   }
 }

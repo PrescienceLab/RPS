@@ -1,7 +1,7 @@
 #ifndef _sampleblock
 #define _sampleblock
 
-#include <vector>
+#include <deque>
 #include <iostream>
 
 #include "util.h"
@@ -9,7 +9,7 @@
 template <class SAMPLETYPE>
 class SampleBlock {
 protected:
-  vector<SAMPLETYPE> samples;
+  deque<SAMPLETYPE>  samples;
   unsigned           blockindex;
 
 public:
@@ -20,12 +20,12 @@ public:
     blockindex = rhs.blockindex;
   };
 
-  SampleBlock(const vector<SAMPLETYPE> &input) {
+  SampleBlock(const deque<SAMPLETYPE> &input) {
     samples = input;
     blockindex = 0;
   };
 
-  SampleBlock(const vector<SAMPLETYPE> &input, const unsigned blockindex) {
+  SampleBlock(const deque<SAMPLETYPE> &input, const unsigned blockindex) {
     samples = input;
     this->blockindex = blockindex;
   };
@@ -64,15 +64,17 @@ public:
     return *this;
   };
     
-  inline void SetSamples(const vector<SAMPLETYPE> &input) {
+  inline void SetSamples(const deque<SAMPLETYPE> &input) {
     samples = input;
   };
 
-  inline void GetSamples(vector<SAMPLETYPE> &buf) const {
+  // This routine gets all of the samples
+  inline void GetSamples(deque<SAMPLETYPE> &buf) const {
     buf = samples;
   };
 
-  void GetSamples(vector<SAMPLETYPE> &buf, unsigned first, unsigned last) const {
+  // This routine gets a range of values from the buffer
+  void GetSamples(deque<SAMPLETYPE> &buf, unsigned first, unsigned last) const {
     if ((first >= 0) && (first < samples.size()) && (last >= first)) {
       buf.clear();
       for (unsigned i=first; i<last; i++) {
@@ -81,10 +83,23 @@ public:
     }
   };
 
-  inline void SetSample(SAMPLETYPE &input) {
+  inline void PushSampleFront(const SAMPLETYPE &input) {
+    samples.push_front(input);
+  };
+
+  inline void PushSampleBack(const SAMPLETYPE &input) {
     samples.push_back(input);
   };
 
+  inline void PopSampleFront() {
+    samples.pop_front();
+  };
+
+  inline void PopSampleBack() {
+    samples.pop_back();
+  };
+
+  // This is equivalent to random access []
   inline void GetSample(SAMPLETYPE *samp, unsigned i) const {
     if (i < samples.size())
       *samp = samples[i];
@@ -98,11 +113,19 @@ public:
     return blockindex;
   };
 
-  void AppendBlock(SampleBlock &block) {
+  void AppendBlockBack(SampleBlock &block) {
     SAMPLETYPE newsamp;
     for (unsigned i=0; i<block.GetBlockSize(); i++) {
       block.GetSample(&newsamp,i);
       samples.push_back(newsamp);
+    }
+  };
+
+  void AppendBlockFront(SampleBlock &block) {
+    SAMPLETYPE newsamp;
+    for (int i=block.GetBlockSize()-1; i>=0; i--) {
+      block.GetSample(&newsamp,i);
+      samples.push_front(newsamp);
     }
   };
 
@@ -136,9 +159,9 @@ public:
   InputSampleBlock() {};
   InputSampleBlock(const InputSampleBlock &rhs) : 
     SampleBlock<SAMPLETYPE>(rhs) {};
-  InputSampleBlock(const vector<SAMPLETYPE> &input) : 
+  InputSampleBlock(const deque<SAMPLETYPE> &input) : 
     SampleBlock<SAMPLETYPE>(input) {};
-  InputSampleBlock(const vector<SAMPLETYPE> &input, const unsigned index) :
+  InputSampleBlock(const deque<SAMPLETYPE> &input, const unsigned index) :
     SampleBlock<SAMPLETYPE>(input,index) {};
   virtual ~InputSampleBlock() {};
 };
@@ -149,9 +172,9 @@ public:
   OutputSampleBlock() {};
   OutputSampleBlock(const OutputSampleBlock &rhs) : 
     SampleBlock<SAMPLETYPE>(rhs) {};
-  OutputSampleBlock(const vector<SAMPLETYPE> &input) : 
+  OutputSampleBlock(const deque<SAMPLETYPE> &input) : 
     SampleBlock<SAMPLETYPE>(input) {};
-  OutputSampleBlock(const vector<SAMPLETYPE> &input, const unsigned index) : 
+  OutputSampleBlock(const deque<SAMPLETYPE> &input, const unsigned index) : 
     SampleBlock<SAMPLETYPE>(input,index) {};
   virtual ~OutputSampleBlock() {};
 };

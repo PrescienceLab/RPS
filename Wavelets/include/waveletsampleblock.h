@@ -1,7 +1,7 @@
 #ifndef _waveletsampleblock
 #define _waveletsampleblock
 
-#include <vector>
+#include <deque>
 
 #include "sampleblock.h"
 #include "waveletsample.h"
@@ -11,8 +11,8 @@ class WaveletInputSampleBlock: public InputSampleBlock<WaveletInputSample> {
 public:
   WaveletInputSampleBlock();
   WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs);
-  WaveletInputSampleBlock(const vector<WaveletInputSample> &input);
-  WaveletInputSampleBlock(const vector<WaveletInputSample> &input, 
+  WaveletInputSampleBlock(const deque<WaveletInputSample> &input);
+  WaveletInputSampleBlock(const deque<WaveletInputSample> &input, 
 			  const unsigned index);
   virtual ~WaveletInputSampleBlock();
   virtual WaveletInputSampleBlock* clone();

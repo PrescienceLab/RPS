@@ -449,10 +449,10 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
     psbo = outblock[i];
     blocklen += pfws->PerformBlockOperation(out_l, out_h, newinput);
     newinput = out_l;
-    psbo->AppendBlock(out_h);
+    psbo->AppendBlockBack(out_h);
     if (i == numstages-1) {
       psbo = outblock[i+1];
-      psbo->AppendBlock(out_l);
+      psbo->AppendBlockBack(out_l);
       break;
     }
   }
@@ -831,7 +831,7 @@ StreamingBlockOperation(SampleBlock<OUTSAMPLE>           &outblock,
   SampleBlock<INSAMPLE>* in_h;
   SampleBlock<INSAMPLE>* in_l;
   SampleBlock<OUTSAMPLE> inter_l;
-  vector<INSAMPLE> newblock;
+  deque<INSAMPLE> newblock;
   unsigned blocklen=0;
 
   // Perform the top stage a bit differently

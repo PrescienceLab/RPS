@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 
   // Read the data from file into an input vector
-  vector<WaveletInputSample> wisamples;
+  deque<WaveletInputSample> wisamples;
   double sample;
   while (infile >> sample) {
     WaveletInputSample wavesample;
