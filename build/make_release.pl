@@ -8,7 +8,7 @@
                       "Extra" => "",
                       "ResearchScripts" => "",
                       "ResearchTools" => "HAVE_RESEARCHTOOLS",
-                      "WinClient" => "");
+                      "WinClient => "");
 
 #
 #
