@@ -11,15 +11,18 @@
 #include "glarp.h" 
 
 
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
 #define DEBUG_PRINT_START if (DEBUG_PRINT) {
 #define DEBUG_PRINT_END   }
 
 #define DPS DEBUG_PRINT_START
 #define DPE DEBUG_PRINT_END
 
-JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr, jstring host) {
-    
+#define MIN(x,y) ((x)<(y) ? (x) : (y))
+
+
+
+JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr, jint num, jstring host) {
   
   DPS fprintf(stderr,"Hi, in callLoadBufferClient\n"); DPE
   // Acquire endpoint string
@@ -27,7 +30,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
 
   DPS fprintf(stderr,"EndPoint: %s\n",endpointstr); DPE
 
-  EndPoint ep;  
+  EndPoint ep;						     
 
   if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
     fprintf(stderr,"Invalid Endpoint\n");
@@ -47,7 +50,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
     exit(-1);
   }
 
-  req.num=1;
+  req.num=num;
 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"loadbufferclient: Call failed\n");
@@ -57,7 +60,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
 
   ref.Disconnect();
 
-  int i;
+  long int i;
 
   DPS
   for (i=0;i<repl.num;i++) { 
@@ -66,12 +69,14 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
   DPE
 
   // Trasfer data from the jdouble array to the jdoubleArray
-  env->SetDoubleArrayRegion(jdArr,0,3,repl.data[0].avgs);
-  
+    for (i=0;i<MIN(repl.num,num);i++) {
+      env->SetDoubleArrayRegion(jdArr,i,1,&(repl.data[i].avgs[0]));
+    }
+
   return;
 }
 
-JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr1, jdoubleArray jdArr2, jstring host) {
+JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr1, jdoubleArray jdArr2, jint num, jstring host) {
   
   
   DPS fprintf(stderr,"Hi, in callPredBufferClient\n"); DPE
@@ -117,18 +122,19 @@ JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject 
 
   
   // Trasfer data from the jdouble arrays to the jdoubleArrays
-  env->SetDoubleArrayRegion(jdArr1,0,repl.data[0].numsteps,repl.data[0].preds);
-  env->SetDoubleArrayRegion(jdArr2,0,repl.data[0].numsteps,repl.data[0].errs);
+  env->SetDoubleArrayRegion(jdArr1,0,MIN(num,repl.data[0].numsteps),repl.data[0].preds);
+  env->SetDoubleArrayRegion(jdArr2,0,MIN(num,repl.data[0].numsteps),repl.data[0].errs);
 
   return;
 }
 
-JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr, jstring host) {
+JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr, jint num, jstring host) {
     
   
   DPS fprintf(stderr,"Hi, in callMeasureBufferClient\n"); DPE
   // Acquire endpoint string
   const char* endpointstr = env->GetStringUTFChars(host, 0);
+
   DPS fprintf(stderr,"EndPoint: %s\n",endpointstr); DPE
 
   EndPoint ep;  
@@ -150,7 +156,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobje
     exit(-1);
   }
 
-  req.num=1;
+  req.num=num;
 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"measurebufferclient: Call failed\n");
@@ -167,7 +173,10 @@ JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobje
   DPE
 
   // Trasfer data from the jdouble array to the jdoubleArray
-  env->SetDoubleArrayRegion(jdArr,0,repl.data[0].serlen,repl.data[0].series);
+
+    for (int i=0, total=0;i<MIN(num,repl.num)&&total<MIN(num,repl.num);total+=repl.data[i].serlen,i++) { 
+      env->SetDoubleArrayRegion(jdArr,total,repl.data[i].serlen,repl.data[i].series);
+    }
 
   return;
 }

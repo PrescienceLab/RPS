@@ -61,7 +61,7 @@ LIBOBJS = LineGraph.o
 
 SRCS = $(LIBOBJS:.o=.cpp)
 
-all: $(LIBFILE) LineGraphApp.class LineGraph.class
+all: $(LIBFILE) LineGraph.class #LineGraphApp.class 
 
 $(LIBFILE) : $(LIBOBJS)
 	$(CC) $(LIBOBJS) $(LD1FLAGS) $(LD2FLAGS) $(LD3FLAGS) -o $(LIBFILE)
@@ -73,8 +73,8 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 LineGraph.h : LineGraph.class
 	javah -jni LineGraph
 
-LineGraphApp.class : LineGraphApp.java LineGraph.class
-	javac LineGraphApp.java
+#LineGraphApp.class : LineGraphApp.java LineGraph.class
+#	javac LineGraphApp.java
 
 LineGraph.class : LineGraph.java
 	javac LineGraph.java

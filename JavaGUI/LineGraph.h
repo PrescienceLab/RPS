@@ -76,29 +76,34 @@ extern "C" {
 #undef LineGraph_IS_PRINTING_ALL
 #define LineGraph_IS_PRINTING_ALL 13L
 /* Inaccessible static: defaultLayout */
+/* Inaccessible static: MEASURE */
+/* Inaccessible static: LOAD */
+/* Inaccessible static: PRED */
+/* Inaccessible static: MEASURE_PRED */
+/* Inaccessible static: LOAD_PRED */
 /*
  * Class:     LineGraph
  * Method:    callLoadBufferClient
- * Signature: ([DLjava/lang/String;)V
+ * Signature: ([DILjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient
-  (JNIEnv *, jobject, jdoubleArray, jstring);
+  (JNIEnv *, jobject, jdoubleArray, jint, jstring);
 
 /*
  * Class:     LineGraph
  * Method:    callPredBufferClient
- * Signature: ([D[DLjava/lang/String;)V
+ * Signature: ([D[DILjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient
-  (JNIEnv *, jobject, jdoubleArray, jdoubleArray, jstring);
+  (JNIEnv *, jobject, jdoubleArray, jdoubleArray, jint, jstring);
 
 /*
  * Class:     LineGraph
  * Method:    callMeasureBufferClient
- * Signature: ([DLjava/lang/String;)V
+ * Signature: ([DILjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient
-  (JNIEnv *, jobject, jdoubleArray, jstring);
+  (JNIEnv *, jobject, jdoubleArray, jint, jstring);
 
 #ifdef __cplusplus
 }
