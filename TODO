@@ -4,7 +4,6 @@ Wavelets
   => URL for tsunami bannder (tsunami.cs.northwestern.edu)
   => Web page!
   => TR
-  => ostream bug with newest g++ compiler.
 
 TimeSeries
   => Wavelet Predictor (sanity check)
