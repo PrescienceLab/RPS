@@ -90,13 +90,13 @@ Mirror:  force
 	cp $(MIRROR_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(MIRROR_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-RPSInterface:  force
+RPSInterface:  $(HGLA_DEP) $(HGFB_DEP) $(HTS_DEP) $(HMT_DEP) force
 	cd $(RPSINT_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
 	cp $(RPSINT_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(RPSINT_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(RPSINT_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-RemosInterface:  force
+RemosInterface:  $(HRPSI_DEP) force
 	cd $(REMOSINT_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
 	cp $(REMOSINT_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(REMOSINT_DIR)/include/*.h $(RPS_DIR)/include
@@ -107,7 +107,7 @@ PredComp:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP)
 	cp $(PREDCOMP_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-Spin: $(HMC_DEP) force
+Spin: $(HMT_DEP) force
 	cd $(SPIN_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
 	cp $(SPIN_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(SPIN_DIR)/include/*.h $(RPS_DIR)/include

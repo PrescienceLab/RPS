@@ -42,10 +42,10 @@ SRCS = $(foreach m, $(OBJSLIST:.o=.f), $(SRCDIR)/$(m))
 all: $(LIB) $(EXECS)
 
 $(BINDIR)/example: $(LIB) $(OBJDIR)/example.o
-	f77 $(FFLAGS) $(OBJDIR)/example.o $(LIB) -o $(BINDIR)/example
+	$(F77) $(FFLAGS) $(OBJDIR)/example.o $(LIB) -o $(BINDIR)/example
 
 $(BINDIR)/test: $(LIB) $(OBJDIR)/test.o
-	f77 $(FFLAGS) $(OBJDIR)/test.o $(LIB) -o $(BINDIR)/test
+	$(F77) $(FFLAGS) $(OBJDIR)/test.o $(LIB) -o $(BINDIR)/test
 
 $(LIB): $(LIBOBJS)
 	ar ruv $(LIB) $(LIBOBJS)
@@ -53,10 +53,10 @@ $(LIB): $(LIBOBJS)
 
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.f
-	f77 $(FFLAGS) -c $< -o $(OBJDIR)/$(@F)
+	$(F77) $(FFLAGS) -c $< -o $(OBJDIR)/$(@F)
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.F
-	f77 $(FFLAGS) -c $< -o $(OBJDIR)/$(@F)
+	$(F77) $(FFLAGS) -c $< -o $(OBJDIR)/$(@F)
 
 clean:
 	rm -f $(OBJS) $(EXECS) $(LIB)
