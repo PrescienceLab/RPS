@@ -16,7 +16,7 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " discrete_forward_transform [input-file] [wavelet-type-init]\n";
+  cerr << " samplerate_perf_dft [input-file] [wavelet-type-init]\n";
   cerr << "  [transform-type] [blocksize] [sleep-rate] [numtests]\n";
   cerr << "  [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "discrete_forward_transform: Cannot open input file " << argv[1] << ".\n";
+      cerr << "samplerate_perf_dft: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[3][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "discrete_forward_transform: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "samplerate_perf_dft: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     usage();
     exit(-1);
   }
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[7][0])=='N') {
     flat = false;
   } else if (toupper(argv[7][0])!='F') {
-    cerr << "discrete_forward_transform: Need to choose flat or noflat for human readable.\n";
+    cerr << "samplerate_perf_dft: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[8]);
     if (!outfile) {
-      cerr << "discrete_forward_transform: Cannot open output file " << argv[8] << ".\n";
+      cerr << "samplerate_perf_dft: Cannot open output file " << argv[8] << ".\n";
       exit(-1);
     }
     outstr = &outfile;

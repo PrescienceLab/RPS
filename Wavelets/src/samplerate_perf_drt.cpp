@@ -17,8 +17,9 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " discrete_reverse_transform [input-file] [wavelet-type-init]\n";
-  cerr << "  [transform-type] [flat] [output-file]\n\n";
+  cerr << " samplerate_perf_drt [input-file] [wavelet-type-init]\n";
+  cerr << "  [transform-type] [blocksize] [sleep-rate] [numtests]\n";
+  cerr << "  [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing wavelet\n";
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "discrete_reverse_transform: Cannot open input file " << argv[1] << ".\n";
+      cerr << "samplerate_perf_drt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
   if (toupper(argv[3][0])!='T') {
-    cerr << "discrete_reverse_transform: Invalid transform type.  Must be type TRANSFORM.\n";
+    cerr << "samplerate_perf_drt: Invalid transform type.  Must be type TRANSFORM.\n";
     exit(-1);
   }
 
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[4][0])=='N') {
     flat = false;
   } else if (toupper(argv[4][0])!='F') {
-    cerr << "discrete_reverse_transform: Need to choose flat or noflat for human readable.\n";
+    cerr << "samplerate_perf_drt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -88,7 +89,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "discrete_reverse_transform: Cannot open output file " << argv[5] << ".\n";
+      cerr << "samplerate_perf_drt: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr = &outfile;

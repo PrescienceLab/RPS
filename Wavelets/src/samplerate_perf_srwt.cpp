@@ -17,7 +17,7 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " samplerate_perf_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << " samplerate_perf_srwt [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [sample-or-block]\n";
   cerr << "  [blocksize] [sleep-rate] [numtests] [flat] [output-file]\n\n";
   cerr << "----------------------------------------------------------------\n";
