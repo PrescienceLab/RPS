@@ -99,22 +99,15 @@ if (1) {
 
   $datasize = $initsize;
   $blk = $initblocksize;
-  for ($i=0; $i<4; $i++) {
-#  for (;$hz<=$maxhz;$hz*=10) {
-    if ($hz > 100) {
-      $usec = 0;
-      $datasize = 4194304;
-      $blk = 4096;
-    } else {
-      $usec = int(1000000/$hz);
-#      $usec*=$blk;
-    }
-    print STDERR "$hz\t$usec\n";
-    system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
-    system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
-#    $datasize*=4;
-    $blk*=2;
+
+  if ($hz > 100) {
+    $usec = 0;
+  } else {
+    $usec = int(1000000/$hz);
   }
+  print STDERR "$hz\t$usec\n";
+  system "echo \"perf_dft1 $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
+  system "perf_dft1 $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
 }
 
 if (0) {
