@@ -140,7 +140,6 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterBufferOutput
 (SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
 {
   out.ClearBlock();
-  in.GetBlockSize();
   for (unsigned i=0; i<in.GetBlockSize(); i++) {
     OUTSAMPLE newout;
     INSAMPLE  newin;

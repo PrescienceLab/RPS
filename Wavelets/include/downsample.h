@@ -88,24 +88,6 @@ void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
   }
 }
 
-#if 0
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
-(SampleBlock<OUTSAMPLE> &output, SampleBlock<OUTSAMPLE> &input)
-{
-  output.ClearBlock();
-
-  for (unsigned i=0; i<input.GetBlockSize(); i++) {
-    if (KeepSample()) {
-      INSAMPLE newin;
-      input.GetSample(&newin,i);
-      output.PushSampleBack(newin);
-    }
-  }
-}
-#endif
-
-
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ostream & DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {

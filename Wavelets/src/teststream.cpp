@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-
+#include <cmath>
 
 #include "waveletsample.h"
 #include "waveletsampleblock.h"

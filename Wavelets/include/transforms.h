@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <deque>
+#include <cmath>
 
 #include "waveletinfo.h"
+#include "coefficients.h"
 #include "stage.h"
 #include "sample.h"
 #include "sampleblock.h"
@@ -132,23 +134,94 @@ public:
 };
 
 
-#if 0
-class DynamicForwardWaveletTransform {
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+class DynamicForwardWaveletTransform : public 
+StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> {
+public:
+  DynamicForwardWaveletTransform() :
+    StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>() {};
+  DynamicForwardWaveletTransform(const DynamicForwardWaveletTransform &rhs) :
+    StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(rhs) {};
+  virtual ~DynamicForwardWaveletTransform() {};
 
+  bool AddStage();
+  bool AddStage(WaveletType wavetype,
+		unsigned    rate_l,
+		unsigned    rate_h);
+		
+  bool RemoveStage();
 };
 
-class DynamicReverseWaveletTransform {
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+class DynamicReverseWaveletTransform : public 
+StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> {
+public:
+  DynamicReverseWaveletTransform() {};
+  DynamicReverseWaveletTransform(const DynamicReverseWaveletTransform &rhs) :
+    StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(rhs) {};
+  virtual ~DynamicReverseWaveletTransform() {};
 
+  bool AddStage();
+  bool AddStage(WaveletType wavetype,
+		unsigned    rate_l,
+		unsigned    rate_h);
+
+  bool RemoveStage();
 };
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ForwardDiscreteWaveletTransform {
+private:
+  WaveletType         wavetype;
+  WaveletCoefficients wavecoefs;
 
+  int      lowest_outlvl;
+  unsigned index[MAX_STAGES+1];
+
+public:
+  ForwardDiscreteWaveletTransform(WaveletType wavetype=DAUB2, int lowest_outlvl=0);
+  ForwardDiscreteWaveletTransform(const ForwardDiscreteWaveletTransform &rhs);
+  virtual ~ForwardDiscreteWaveletTransform();
+
+  ForwardDiscreteWaveletTransform & operator=(const ForwardDiscreteWaveletTransform &rhs);
+
+  inline int GetLowestOutputLevel() const;
+  inline void SetLowestOutputLevel(int lowest_outlvl);
+
+  inline unsigned GetIndexNumberOfLevel(int level) const;
+  inline void SetIndexNumberOfLevel(int level, unsigned newindex);
+
+  inline WaveletType GetWaveletType() const;
+  bool ChangeWaveletType(WaveletType wavetype);
+
+  bool DiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
+				SampleBlock<INSAMPLE>  &inblock);
 };
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ReverseDiscreteWaveletTransform {
+private:
+  WaveletType         wavetype;
+  WaveletCoefficients wavecoefs;
 
+  unsigned index;
+
+public:
+  ReverseDiscreteWaveletTransform(WaveletType wavetype=DAUB2);
+  ReverseDiscreteWaveletTransform(const ReverseDiscreteWaveletTransform &rhs);
+  virtual ~ReverseDiscreteWaveletTransform();
+
+  ReverseDiscreteWaveletTransform & operator=(const ReverseDiscreteWaveletTransform &rhs);
+
+  inline unsigned GetIndexNumber() const;
+  inline void SetIndexNumber(unsigned newindex);
+
+  inline WaveletType GetWaveletType() const;
+  bool ChangeWaveletType(WaveletType wavetype);
+
+  bool InverseDiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
+				       SampleBlock<INSAMPLE>  &inblock);
 };
-#endif
 
 /********************************************************************************
  * 
@@ -187,7 +260,6 @@ StaticForwardWaveletTransform(unsigned numstages=1,
     pfws->SetOutputLevelLow(outlvl);
     stages.push_back(pfws);
   }
-
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -390,7 +462,11 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 GetIndexNumberOfLevel(int level) const
 {
-  return index[level];
+  if (level < MAX_STAGES+1) {
+    return index[level];
+  } else {
+    return 0;
+  }
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -1100,5 +1176,563 @@ Print(ostream &os) const
   }
   return os;
 }
+
+/********************************************************************************
+ * 
+ * Member functions for the DynamicForwardWaveletTransform class
+ *
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddStage()
+{
+  if (this->numstages == MAX_STAGES) {
+    return false;
+  }
+
+  this->numstages++;
+  this->numlevels = this->numstages+1;
+
+  // Clear the indices for the two new levels
+  index[numstages] = 0;
+  index[numstages-1] = 0;
+
+  // Actually have to clone one of the stages in the system here
+  ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws = 
+    (stages.back())->clone();
+  pfws->ClearAllState();
+  pfws->SetOutputLevelLow(lowest_outlvl+numstages);
+  pfws->SetOutputLevelHigh(lowest_outlvl+numstages-1);
+  stages.push_back(pfws);
+
+  return true;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddStage(WaveletType wavetype,
+	 unsigned    rate_l,
+	 unsigned    rate_h)
+{
+  if (this->numstages == MAX_STAGES) {
+    return false;
+  }
+
+  this->numstages++;
+  this->numlevels = this->numstages+1;
+
+  // Clear the indices for the two new levels
+  index[numstages] = 0;
+  index[numstages-1] = 0;
+
+  // Use passed parameters to instantiate a new FWS
+  ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws = new
+    ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(wavetype,
+							 rate_l,
+							 rate_h,
+							 lowest_outlvl+numstages,
+							 lowest_outlvl+numstages-1);
+  stages.push_back(pfws);
+
+  return true;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+RemoveStage()
+{
+  if (this->numstages == 1) {
+    return false;
+  }
+
+  CHK_DEL(stages.back());
+  stages.pop_back();
+
+  this->numstages--;
+  this->numlevels = this->numstages+1;
+  return true;
+}
+
+/********************************************************************************
+ * 
+ * Member functions for the DynamicReverseWaveletTransform class
+ *
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddStage()
+{
+  if (this->numstages == MAX_STAGES) {
+    return false;
+  }
+
+  deque<INSAMPLE>* pdis;
+
+  // Transfer the highest insignal to the newly created intersignal level
+  pdis = new deque<INSAMPLE>(*(insignals[numstages]));
+  intersignals.push_back(pdis);
+
+  insignals[numstages].clear();
+
+  pdis = new deque<INSAMPLE>();
+  insignals.push_back(pdis);
+
+  // Actually have to clone one of the stages in the system here
+  ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>* prws = 
+    (stages.back())->clone();
+
+  prws->ClearAllState();
+  stages.push_back(prws);
+
+  this->numstages++;
+  this->numlevels = this->numstages+1;
+
+  return true;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddStage(WaveletType wavetype,
+	 unsigned    rate_l,
+	 unsigned    rate_h)
+{
+  if (this->numstages == MAX_STAGES) {
+    return false;
+  }
+
+  deque<INSAMPLE>* pdis;
+
+  // Transfer the highest insignal to the newly created intersignal level
+  pdis = new deque<INSAMPLE>(*(insignals[numstages]));
+  intersignals.push_back(pdis);
+
+  insignals[numstages].clear();
+
+  pdis = new deque<INSAMPLE>();
+  insignals.push_back(pdis);
+
+  // Actually have to clone one of the stages in the system here
+  ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>* prws = 
+    new ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>(wavetype,
+							    rate_l,
+							    rate_h);
+  stages.push_back(prws);
+
+  this->numstages++;
+  this->numlevels = this->numstages+1;
+
+  return true;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+RemoveStage()
+{
+  if (this->numstages == 1) {
+    return false;
+  }
+
+  CHK_DEL(intersignals[numstages-2]);
+  intersignals.pop_back();
+
+  CHK_DEL(insignals[numstages]);
+  insignals.pop_back();
+
+  CHK_DEL(stages.back());
+  stages.pop_back();
+
+  this->numstages--;
+  this->numlevels = this->numstages+1;
+
+  return true;
+}
+
+/********************************************************************************
+ * 
+ * Member functions for the ForwardDiscreteWaveletTransform class
+ *
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ForwardDiscreteWaveletTransform(WaveletType wavetype=DAUB2, int lowest_outlvl=0) :
+  wavecoefs(wavetype)
+{
+  this->wavetype = wavetype;
+  this->lowest_outlvl = lowest_outlvl;
+  for (unsigned i=0; i<MAX_STAGES+1; i++) {
+    index[i] = 0;
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ForwardDiscreteWaveletTransform(const ForwardDiscreteWaveletTransform &rhs) :
+  wavecoefs(rhs.wavetype)
+{
+  this->wavetype = rhs.wavetype;
+  this->lowest_outlvl = rhs.lowest_outlvl;
+  for (unsigned i=0; i<MAX_STAGES+1; i++) {
+    this->index[i] = rhs.index[i];
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+~ForwardDiscreteWaveletTransform()
+{}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
+ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator=(const ForwardDiscreteWaveletTransform &rhs)
+{
+  this->wavetype = rhs.wavetype;
+  this->wavecoefs = rhs.wavecoefs;
+  this->lowest_outlvl = rhs.lowest_outlvl;
+  for (unsigned i=0; i<MAX_STAGES+1; i++) {
+    this->index[i] = rhs.index[i];
+  }
+  return *this;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+int ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetLowestOutputLevel() const
+{
+  return lowest_outlvl;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetIndexNumberOfLevel(int level) const
+{
+  if (level < MAX_STAGES+1) {
+    return index[level];
+  } else {
+    return 0;
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetIndexNumberOfLevel(int level, unsigned newindex)
+{
+  if (level < MAX_STAGES+1) {
+    index[level] = newindex;
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetLowestOutputLevel(int lowest_outlvl)
+{
+  this->lowest_outlvl = lowest_outlvl;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+WaveletType ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetWaveletType() const
+{
+  return wavetype;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeWaveletType(WaveletType wavetype)
+{
+  bool result=false;
+  switch (wavetype) {
+  case DAUB2:
+  case DAUB4:
+  case DAUB6:
+  case DAUB8:
+  case DAUB10:
+  case DAUB12:
+  case DAUB14:
+  case DAUB16:
+  case DAUB18:
+  case DAUB20:
+    this->wavetype = wavetype;
+    wavecoefs.Initialize(wavetype);
+    result = true;
+    break;
+  default:
+    break;
+  }
+  return result;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+DiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
+			 SampleBlock<INSAMPLE>  &inblock)
+{
+  unsigned M=inblock.GetBlockSize();
+  unsigned i, L, bitsum=0, bittest=M;
+
+  // Check if the inblock is a power of 2 and find the value of L
+  for (i=0; i<sizeof(unsigned)*8; i++) {
+    if ((bittest & 0x1) == 1) {
+      L=i;
+      bitsum++;
+    }
+    bittest = bittest >> 1;
+  }
+  if (bitsum != 1) {
+    return false;
+  }
+
+  // Clear the output storage
+  outblock.ClearBlock();
+
+  vector<double> lpfcoefs, hpfcoefs;
+  unsigned N=wavecoefs.GetNumCoefs();
+  wavecoefs.GetTransformCoefsLPF(lpfcoefs);
+  wavecoefs.GetTransformCoefsHPF(hpfcoefs);
+
+  // Transfer the input block samples to working vector
+  vector<SAMPLETYPE> work;
+  INSAMPLE insamp;
+  for (i=0; i<M; i++) {
+    inblock.GetSample(&insamp,i);
+    work.push_back(insamp.GetSampleValue());
+  }
+
+  vector<SAMPLETYPE> lowout, highout, stageinput;
+  unsigned stagebound, j, k;
+  for (int l=L; l>0; l--) {
+
+    // Stagebound is log base 2 of loop variable l
+    stagebound=1;
+    for (i=0; i<l-1; i++) {
+      stagebound *= 2;
+    }
+
+    lowout.clear(); highout.clear();
+    for (i=0; i<stagebound; i++) {
+      stageinput.clear();
+      for (j=0; j<N; j++) {
+	unsigned index = 2*i+j;
+	while (index > 2*stagebound-1) {
+	  index -= 2*stagebound;
+	}
+	stageinput.push_back(work[index]);
+      }
+	
+      SAMPLETYPE r1=0, r2=0;
+      for (k=0; k<N; k++) {
+	r1 += lpfcoefs[k]*stageinput[k];
+	r2 += hpfcoefs[k]*stageinput[k];
+      }
+      lowout.push_back(r1);
+      highout.push_back(r2);
+    }
+
+    for (i=0; i<2*stagebound; i++) {
+      if (i < stagebound) {
+	work[i] = lowout[i];
+      } else {
+	work[i] = highout[i];
+      }
+    }
+  }
+
+  // Transfer the results to the output sample block, add index, and level number
+  int level, ring;
+  for (i=M-1; i>0; i--) {
+    // Find log base 2, cropped at highest bit
+    bittest = i;
+    for (int l=sizeof(unsigned)*8-1; l>=0; l--) {
+      if ((bittest & 0x8000) == 1) {
+	ring=l;
+	break;
+      }
+      bittest = bittest << 1;
+    }
+
+    level = L - 1 - ring;
+    OUTSAMPLE out(work[i], level+lowest_outlvl, index[level]++);
+    outblock.PushSampleFront(out);
+  }
+
+  // Handle highest level sample
+  OUTSAMPLE out(work[0], L+lowest_outlvl, index[L]++);
+  outblock.PushSampleFront(out);
+
+  return true;
+}
+
+/********************************************************************************
+ * 
+ * Member functions for the ReverseDiscreteWaveletTransform class
+ *
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ReverseDiscreteWaveletTransform(WaveletType wavetype=DAUB2) :
+  wavecoefs(wavetype)
+{
+  this->wavetype = wavetype;
+  this->index = 0;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ReverseDiscreteWaveletTransform(const ReverseDiscreteWaveletTransform &rhs) :
+  wavecoefs(rhs.wavetype)
+{
+  this->wavetype = wavetype;
+  this->index = 0;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+~ReverseDiscreteWaveletTransform()
+{}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
+ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator=(const ReverseDiscreteWaveletTransform &rhs)
+{
+  this->wavetype = rhs.wavetype;
+  this->wavecoefs = rhs.wavecoefs;
+  this->index = rhs.index;
+  return *this;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetIndexNumber() const
+{
+  return index;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetIndexNumber(unsigned newindex)
+{
+  index = newindex;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+WaveletType ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetWaveletType() const
+{
+  return this->wavetype;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeWaveletType(WaveletType wavetype)
+{
+  bool result=false;
+  switch (wavetype) {
+  case DAUB2:
+  case DAUB4:
+  case DAUB6:
+  case DAUB8:
+  case DAUB10:
+  case DAUB12:
+  case DAUB14:
+  case DAUB16:
+  case DAUB18:
+  case DAUB20:
+    this->wavetype = wavetype;
+    wavecoefs.Initialize(wavetype);
+    result = true;
+    break;
+  default:
+    break;
+  }
+  return result;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+InverseDiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
+				SampleBlock<INSAMPLE>  &inblock)
+{
+  // Check if inblock is a power of 2
+  unsigned M = inblock.GetBlockSize();
+  unsigned i, L, bitsum=0, bittest=M;
+  for (i=0; i<sizeof(unsigned)*8; i++) {
+    if ((bittest & 0x1) == 1) {
+      L=i;
+      bitsum++;
+    }
+    bittest = bittest >> 1;
+  }
+  if (bitsum != 1) {
+    return false;
+  }
+
+  // Clear the output storage
+  outblock.ClearBlock();
+
+  vector<double> lowcoefs, highcoefs;
+  unsigned N=wavecoefs.GetNumCoefs();
+  wavecoefs.GetInverseCoefsLPF(lowcoefs);
+  wavecoefs.GetInverseCoefsHPF(highcoefs);
+
+  // For efficiency, create a 2 x N/2 coefficient matrix for high and low
+  double lpfcoefs[2][N/2], hpfcoefs[2][N/2];
+  for (i=0; i<N/2; i++) {
+    lpfcoefs[1][i] = lowcoefs[N-2*i-2];
+    lpfcoefs[2][i] = lowcoefs[N-2*i-1];
+
+    hpfcoefs[1][i] = highcoefs[N-2*i-2];
+    hpfcoefs[2][i] = highcoefs[N-2*i-1];
+  }
+
+  // Transfer the input block samples to work
+  vector<SAMPLETYPE> work, tempout(M);
+  INSAMPLE insamp;
+  for (i=0; i<M; i++) {
+    inblock.GetSample(&insamp,i);
+    work.push_back(insamp.GetSampleValue());
+  }
+
+  tempout[0] = work[0];
+
+  vector<SAMPLETYPE> lowout(M), highout(M), inputh, inputl;
+  unsigned stagebound, j, k;
+  for (unsigned l=0; l<L; l++) {
+
+    // Stagebound is log base 2 of loop variable l
+    stagebound = 1;
+    for (i=0; i<l; i++) {
+      stagebound *= 2;
+    }
+
+    for (i=0; i<stagebound; i++) {
+      inputl.clear(), inputh.clear();
+      for (j=0; j<N/2; j++) {
+	unsigned index = stagebound + i + j + 1 - N/2;
+	while (index < stagebound) {
+	  index += stagebound;
+	}
+	inputh.push_back(work[index]);
+	inputl.push_back(work[index-stagebound]);
+      }
+
+      // Matrix multiply COEFS(2 x N/2) * INPUT(N/2 x 1) = OUT(2 x 1)
+      SAMPLETYPE r1=0, r2=0;
+      for (j=0; j<2; j++) {
+	for (k=0; k<N/2; k++) {
+	  r1 += lpfcoefs[j][k]*inputl[k];
+	  r2 += hpfcoefs[j][k]*inputh[k];
+	}
+	lowout[2*i+j-2](r1);
+	highout[2*i+j-2](r2);
+	r1=0; r2=0;
+      }
+    }
+
+    // Add the two outputs together
+  }
+  return true;
+}
+
 
 #endif

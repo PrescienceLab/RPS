@@ -281,7 +281,8 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
     return 0;
   }
 
-  unsigned i, blocklen=0;
+  unsigned i;
+  unsigned blocklen=0;
   SampleBlock<OUTSAMPLE>* psbo;
   SampleBlock<INSAMPLE>*  psbi;
 

@@ -105,6 +105,8 @@ public:
 
   ForwardWaveletStage & operator=(const ForwardWaveletStage &rhs);
 
+  ForwardWaveletStage* clone();
+
   inline void SetDownSampleRateLow(unsigned rate);
   inline unsigned GetDownSampleRateLow() const;
 
@@ -118,6 +120,7 @@ public:
   inline int GetOutputLevelHigh() const;
 
   inline void ClearFilterDelayLines();
+  inline void ClearAllState();
 
   // Returns true if there is an output sample
   bool PerformSampleOperation(Sample<SAMPLETYPE> &out_l,
@@ -163,6 +166,8 @@ public:
 
   ReverseWaveletStage & operator=(const ReverseWaveletStage &rhs);
 
+  ReverseWaveletStage* clone();
+
   inline void SetUpSampleRateLow(unsigned rate);
   inline unsigned GetUpSampleRateLow() const;
 
@@ -170,6 +175,7 @@ public:
   inline unsigned GetUpSampleRateHigh() const;
 
   inline void ClearFilterDelayLines();
+  inline void ClearAllState();
 
   // Takes two inputs and produces a vector of outputs, depending on upsample
   //  rates
@@ -463,6 +469,14 @@ ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
   return *this;
 }
 
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>*
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::clone()
+{
+  return new ForwardWaveletStage(*this);
+}
+
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetDownSampleRateLow
 (unsigned rate)
@@ -518,6 +532,14 @@ void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearFilterDelayLines
 {
   stagehelp.ClearLPFDelayLine();
   stagehelp.ClearHPFDelayLine();
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearAllState()
+{
+  ClearFilterDelayLines();
+  downsampler_l.ResetState();
+  downsampler_h.ResetState();
 }
 
 
@@ -576,39 +598,6 @@ unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOpera
   }
   return blocksize;
 }
-
-#if 0
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOperation
-(SampleBlock<OUTSAMPLE> &out_l, SampleBlock<OUTSAMPLE> &out_h, 
- SampleBlock<OUTSAMPLE> &in)
-{
-  // Need a temporary output block for filter operations
-  SampleBlock<OUTSAMPLE>* tempblock_l = out_l.clone();
-  SampleBlock<OUTSAMPLE>* tempblock_h = out_h.clone();
-
-  // Block filter and downsample the new input buffer
-  stagehelp.LPFBufferOperation(*tempblock_l, in);
-  stagehelp.HPFBufferOperation(*tempblock_h, in);  
-
-  downsampler_l.DownSampleBuffer(out_l, *tempblock_l);
-  downsampler_h.DownSampleBuffer(out_h, *tempblock_h);
-
-  out_l.SetBlockLevel(outlevel_l);
-  out_h.SetBlockLevel(outlevel_h);
-
-  unsigned blocksize;
-  if ((blocksize = out_l.GetBlockSize()) != out_h.GetBlockSize()) {
-    // If somehow the filter output lengths are different, clear the delay line
-    //  and may lose data (might want to refilter)
-    stagehelp.ClearLPFDelayLine();
-    stagehelp.ClearHPFDelayLine();
-    throw OperationSyncException();    
-  }
-  return blocksize;
-}
-#endif
-
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ostream & ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
@@ -676,6 +665,13 @@ ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>*
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::clone()
+{
+  return new ReverseWaveletStage(*this);
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetUpSampleRateLow(unsigned rate)
 {
   upsampler_l.SetUpSampleRate(rate);
@@ -704,6 +700,14 @@ void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearFilterDelayLines
 {
   stagehelp.ClearLPFDelayLine();
   stagehelp.ClearHPFDelayLine();
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearAllState()
+{
+  ClearFilterDelayLines();
+  upsampler_l.ResetState();
+  upsampler_h.ResetState();
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -775,41 +779,6 @@ unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOpera
   out = *tempout_l + *tempout_h;
   return out.GetBlockSize();
 }
-
-#if 0
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOperation
-(SampleBlock<OUTSAMPLE> &out, SampleBlock<OUTSAMPLE> &in_l, 
- SampleBlock<INSAMPLE> &in_h)
-{
-  // Need a temporary output block for filter operations
-  SampleBlock<OUTSAMPLE>* tempin_l = in_l.clone();
-  SampleBlock<INSAMPLE>*  tempin_h = in_h.clone();
-
-  // Upsample the input blocks
-  upsampler_l.UpSampleBuffer(*tempin_l, in_l);
-  upsampler_h.UpSampleBuffer(*tempin_h, in_h);
-
-  // Filter the tempblocks
-  SampleBlock<OUTSAMPLE>* tempout_l = out.clone();
-  SampleBlock<INSAMPLE>*  tempout_h = out.clone();
-
-  stagehelp.LPFBufferOperation(*tempout_l, *tempin_l);
-  stagehelp.HPFBufferOperation(*tempout_h, *tempin_h);
-
-  if (tempout_l->GetBlockSize() != tempout_h->GetBlockSize()) {
-    // If somehow the input filter blocks are different length, clear the delay
-    // line and may lose data (might want to refilter)
-    stagehelp.ClearLPFDelayLine();
-    stagehelp.ClearHPFDelayLine();
-    throw OperationSyncException();    
-  }
-
-  // Add the two outputs of the filters
-  out = *tempout_l + *tempout_h;
-  return out.GetBlockSize();
-}
-#endif
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ostream & ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
