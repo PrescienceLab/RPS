@@ -4,6 +4,7 @@
 #include <vector>
 #include <deque>
 #include <iostream>
+#include <cassert>
 
 #include "waveletinfo.h"
 #include "filter.h"
@@ -11,7 +12,10 @@
 #include "sampleblock.h"
 #include "util.h"
 
-bool CalculateWaveletDelayBlock(unsigned numcoefs, unsigned numlevels, int* delay_vals) {
+bool CalculateWaveletDelayBlock(const unsigned numcoefs, 
+				const unsigned numlevels, 
+				int* delay_vals)
+{
   if (!delay_vals) {
     return false;
   }
@@ -37,51 +41,60 @@ bool CalculateWaveletDelayBlock(unsigned numcoefs, unsigned numlevels, int* dela
   return true;
 };
 
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+template <class SAMPLE>
 class DelayBlock {
 private:
   unsigned numlevels;
-  int*     delay_vals;
+  int lowest_level;
+  int* delay_vals;
 
-  vector<deque<INSAMPLE> *> dbanks;
+  vector<deque<SAMPLE> *> dbanks;
+
+  unsigned StreamBlock(SampleBlock<SAMPLE> &out, const SampleBlock<SAMPLE> &in);
 
 public:
-  DelayBlock(unsigned numlevels=2, 
-	     int*     delay_vals=0);
+  DelayBlock(const unsigned numlevels=2,
+	     const int lowest_level=0,
+	     int* delay_vals=0);
   DelayBlock(const DelayBlock &rhs);
   virtual ~DelayBlock();
 
   DelayBlock & operator=(const DelayBlock &rhs);
 
   inline unsigned GetNumberLevels() const;
-  inline unsigned GetDelayValueOfLevel(unsigned level) const;
 
-  bool SetDelayValueOfLevel(unsigned level, unsigned delay);
+  inline int GetLowestLevel() const;
+  inline void SetLowestLevel(const int lowest_level);
 
-  bool ChangeDelayConfig(unsigned numlevels,
-			 int*     delay_vals);
+  inline unsigned GetDelayValueOfLevel(const int level) const;
+  bool SetDelayValueOfLevel(const int level, const unsigned delay);
 
-  bool ClearLevelDelayLine(unsigned level);
+  bool ChangeDelayConfig(const unsigned numlevels,
+			 const int lowest_level,
+			 int* delay_vals);
+
+  bool ClearLevelDelayLine(const int level);
   void ClearAllDelayLines();
 
-  bool StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in);
+  bool StreamingSampleOperation(vector<SAMPLE> &out, const vector<SAMPLE> &in);
 
-  unsigned StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
-				   vector<SampleBlock<INSAMPLE> *>  &inblock);
+  unsigned StreamingBlockOperation(vector<SampleBlock<SAMPLE> > &outblock,
+				   const vector<SampleBlock<SAMPLE> > &inblock);
 
   ostream & Print(ostream &os) const;
 };
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-DelayBlock(unsigned numlevels=2, int* delay_vals=0)
+template<class SAMPLE>
+DelayBlock<SAMPLE>::
+DelayBlock(const unsigned numlevels=2, const int lowest_level=0, int* delay_vals=0)
 {
   if ((numlevels == 0) || (numlevels > MAX_STAGES+1)) {
-    // Need at least two level
-    this->numlevels = 2;
+    // Need at least one level
+    this->numlevels = 1;
   } else {
     this->numlevels = numlevels;
   }
+  this->lowest_level = lowest_level;
 
   // Initialize the delay value vector
   unsigned i;
@@ -100,26 +113,25 @@ DelayBlock(unsigned numlevels=2, int* delay_vals=0)
   // Initialize the delay deques
   for (i=0; i<numlevels; i++) {
     int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
-    deque<INSAMPLE>* pdis = new deque<INSAMPLE>(delay_sz);
+    deque<SAMPLE>* pdis = new deque<SAMPLE>(delay_sz);
     dbanks.push_back(pdis);
   }
-
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+template<class SAMPLE>
+DelayBlock<SAMPLE>::
 DelayBlock(const DelayBlock &rhs) : 
-  numlevels(rhs.numlevels), dbanks(rhs.dbanks)
+  numlevels(rhs.numlevels), lowest_level(rhs.lowest_level), dbanks(rhs.dbanks)
 {
   // Initialize the delay value vector
-  this->delay_vals = new int[numlevels];
-  for (int i=0; i<numlevels; i++) {
+  this->delay_vals = new int[rhs.numlevels];
+  for (int i=0; i<rhs.numlevels; i++) {
     this->delay_vals[i] = rhs.delay_vals[i];
   }
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+template<class SAMPLE>
+DelayBlock<SAMPLE>::
 ~DelayBlock()
 {
   if (delay_vals != 0) {
@@ -133,52 +145,82 @@ DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
   dbanks.clear();
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
-DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+template<class SAMPLE>
+DelayBlock<SAMPLE> &
+DelayBlock<SAMPLE>::
 operator=(const DelayBlock &rhs)
 {
-  unsigned cnum = (numlevels <= rhs.numlevels) ? numlevels : rhs.numlevels; 
-  for (int i=0; i<cnum; i++) {
+  numlevels = rhs.numlevels;
+  lowest_level = rhs.lowest_level;
+
+  if (delay_vals != 0) {
+    delete[] delay_vals;
+    delay_vals=0;
+  }
+  this->delay_vals = new int[numlevels];
+
+  for (i=0; i<numlevels; i++) {
     this->delay_vals[i] = rhs.delay_vals[i];
   }
   dbanks = rhs.dbanks;
   return *this;
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+template<class SAMPLE>
+unsigned DelayBlock<SAMPLE>::
 GetNumberLevels() const
 {
   return numlevels;
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-GetDelayValueOfLevel(unsigned level) const
+template<class SAMPLE>
+int DelayBlock<SAMPLE>::
+GetLowestLevel() const
 {
-  return delay_vals[level];
+  return lowest_level;
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetDelayValueOfLevel(unsigned level, unsigned delay)
+template<class SAMPLE>
+void DelayBlock<SAMPLE>::
+SetLowestLevel(const int lowest_level)
 {
-  if (level > numlevels) {
+  this->lowest_level = lowest_level;
+}
+
+
+template<class SAMPLE>
+unsigned DelayBlock<SAMPLE>::
+GetDelayValueOfLevel(const int level) const
+{
+  int level_indx = level - lowest_level;
+  unsigned delay=0;
+
+  if ((level_indx >= 0) && (level_indx <= (int) numlevels)) {
+    delay = delay_vals[level];
+  }
+  return delay;
+}
+
+template<class SAMPLE>
+bool DelayBlock<SAMPLE>::
+SetDelayValueOfLevel(const int level, const unsigned delay)
+{
+  int level_indx = level - lowest_level;
+  if ((level_indx < 0) || (level_indx > (int) numlevels)) {
     return false;
   }
 
-  delay_vals[level] = delay;
-  CHK_DEL(dbanks[level]);
+  delay_vals[level_indx] = delay;
+  CHK_DEL(dbanks[level_indx]);
 
   int delay_sz = (delay == 0) ? 0 : delay-1;
-  dbanks[level] = new deque<INSAMPLE>(delay_sz);
+  dbanks[level_indx] = new deque<SAMPLE>(delay_sz);
   return true;
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ChangeDelayConfig(unsigned numlevels, int* delay_vals)
+template<class SAMPLE>
+bool DelayBlock<SAMPLE>::
+ChangeDelayConfig(const unsigned numlevels, const int lowest_level, int* delay_vals)
 {
   if ((numlevels == 0) || (numlevels > MAXSTAGES + 1) || (delay_vals == 0)) {
     return false;
@@ -212,30 +254,32 @@ ChangeDelayConfig(unsigned numlevels, int* delay_vals)
     // Initialize the delay deques
     for (i=0; i<numlevels; i++) {
       int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
-      deque<INSAMPLE>* pdis = new deque<INSAMPLE>(delay_sz);
+      deque<SAMPLE>* pdis = new deque<SAMPLE>(delay_sz);
       dbanks.push_back(pdis);
     }
   }
+  this->lowest_level = lowest_level;
   return true;
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ClearLevelDelayLine(unsigned level)
+template<class SAMPLE>
+bool DelayBlock<SAMPLE>::
+ClearLevelDelayLine(const int level)
 {
-  if (level > numlevels) {
+  int level_indx = level - lowest_level;
+  if ((level_indx < 0) || (level_indx > (int) numlevels)) {
     return false;
   } else {
-    INSAMPLE zero;
-    for (unsigned i=0; i<dbanks[level]->size(); i++) {
-      dbanks[level]->operator[](i) = zero;
+    SAMPLE zero;
+    for (unsigned i=0; i<dbanks[level_indx]->size(); i++) {
+      dbanks[level_indx]->operator[](i) = zero;
     }
   }
   return true;
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+template<class SAMPLE>
+void DelayBlock<SAMPLE>::
 ClearAllDelayLines()
 {
   for (unsigned i=0; i<numlevels; i++) {
@@ -243,14 +287,14 @@ ClearAllDelayLines()
   }
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
+template<class SAMPLE>
+bool DelayBlock<SAMPLE>::
+StreamingSampleOperation(vector<SAMPLE> &out, const vector<SAMPLE> &in)
 {
   unsigned i, sampleindex;
   int samplelevel;
 
-  OUTSAMPLE outsamp;
+  SAMPLE outsamp;
 
   // Clear the output vector to signal new output to the calling routine
   out.clear();
@@ -258,11 +302,14 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
   // Check input buffer for new inputs
   for (i=0; i<in.size(); i++) {
     samplelevel = in[i].GetSampleLevel();
+    int level_indx = samplelevel - lowest_level;
+    assert((level_indx >= 0) || (level_indx <= (int) numlevels));
+
     sampleindex = in[i].GetSampleIndex();
 
-    dbanks[samplelevel]->push_front(in[i]);
-    outsamp = dbanks[samplelevel]->back();
-    dbanks[samplelevel]->pop_back();
+    dbanks[level_indx]->push_front(in[i]);
+    outsamp = dbanks[level_indx]->back();
+    dbanks[level_indx]->pop_back();
     outsamp.SetSampleLevel(samplelevel);
     outsamp.SetSampleIndex(sampleindex);
     out.push_back(outsamp);
@@ -271,40 +318,27 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
   return out.size();
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
-			vector<SampleBlock<INSAMPLE> *>  &inblock)
+template<class SAMPLE>
+unsigned DelayBlock<SAMPLE>::
+StreamingBlockOperation(vector<SampleBlock<SAMPLE> > &outblock,
+			const vector<SampleBlock<SAMPLE> > &inblock)
 {
-#if 0
-  if ((inblock.size() != numlevels) || (outblock.size() != numlevels)) {
-    return 0;
-  }
-
   unsigned i;
-  unsigned blocklen=0;
-  SampleBlock<OUTSAMPLE>* psbo;
-  SampleBlock<INSAMPLE>*  psbi;
 
   // Clear the output block to signal new samples to the calling routine
-  for (i=0; i<outblock.size(); i++) {
-    psbo = outblock[i];
-    psbo->ClearBlock();
-  }
+  outblock.clear();
 
-  for (i=0; i<outblock.size(); i++) {
-    psbo = outblock[i];
-    psbi = inblock[i];
-
-    dbanks[i]->GetFilterBufferOutput(*psbo, *psbi);
-    blocklen += psbo->GetBlockSize();
+  SampleBlock<SAMPLE> block;
+  for (i=0; i<inblock.size(); i++) {
+    if (StreamBlock(block, inblock[i])) {
+      outblock.push_back(block);
+    }
   }
-#endif
-  return 5;
+  return outblock.size();
 }
 
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-ostream & DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+template<class SAMPLE>
+ostream & DelayBlock<SAMPLE>::
 Print(ostream &os) const
 {
   unsigned i;
@@ -315,6 +349,36 @@ Print(ostream &os) const
   }
 
   return os;
+}
+
+// Private functions
+template<class SAMPLE>
+unsigned DelayBlock<SAMPLE>::
+StreamBlock(SampleBlock<SAMPLE> &out, const SampleBlock<SAMPLE> &in)
+{
+  unsigned sampleindex;
+  deque<SAMPLE> inbuf, outbuf;
+  SAMPLE outsamp;
+
+  unsigned block_indx = in.GetBlockIndex();
+  int level_indx = in.GetBlockLevel() - lowest_level;
+
+  assert((level_indx >= 0) || (level_indx <= (int) numlevels));
+
+  in.GetSamples(inbuf);
+  for (unsigned i=0; i<inbuf.size(); i++) {
+    sampleindex = inbuf[i].GetSampleIndex();
+
+    dbanks[level_indx]->push_front(inbuf[i]);
+    outsamp = dbanks[level_indx]->back();
+    dbanks[level_indx]->pop_back();
+    outsamp.SetSampleIndex(sampleindex);
+    outbuf.push_back(outsamp);
+  }
+
+  out.SetSamples(outbuf);
+  out.SetBlockIndex(block_indx);
+  return out.GetBlockSize();
 }
 
 #endif

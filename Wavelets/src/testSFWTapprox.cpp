@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     WaveletOutputSample tempsamp(samples[i].GetSampleValue(),0,i);
     levels[0]->push_front(tempsamp);
 
-    sfwt.StreamingSampleOperation(outsamples, samples[i], APPROX);
+    sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
 
     // Print the new samples
     cerr << "Output for input sample " << i << ":" << endl;

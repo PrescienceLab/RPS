@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 #endif
 
   for (i=0; i<samples.size(); i++) {
-    sfwt.StreamingSampleOperation(outsamples, samples[i]);
+    sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
 
     // Print the new samples
     cerr << "Output for input sample " << i << ":" << endl;

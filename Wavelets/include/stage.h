@@ -90,8 +90,8 @@ protected:
   int      outlevel_l;
   int      outlevel_h;
 
-  DownSample<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> downsampler_l;
-  DownSample<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> downsampler_h;
+  DownSample<OUTSAMPLE> downsampler_l;
+  DownSample<OUTSAMPLE> downsampler_h;
 
 public:
   ForwardWaveletStage(WaveletType wavetype=DAUB2);
@@ -153,8 +153,8 @@ protected:
   unsigned rate_l;
   unsigned rate_h;
 
-  UpSample<SAMPLETYPE, INSAMPLE, INSAMPLE> upsampler_l;
-  UpSample<SAMPLETYPE, INSAMPLE, INSAMPLE> upsampler_h;
+  UpSample<INSAMPLE> upsampler_l;
+  UpSample<INSAMPLE> upsampler_h;
 
 public:
   ReverseWaveletStage(WaveletType wavetype=DAUB2);

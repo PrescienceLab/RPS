@@ -93,14 +93,14 @@ int main(int argc, char *argv[])
     cout << "\tLevel " << j << ":\t" << delay[j] << endl;
   }
 
-  DelayBlock<double, WaveletOutputSample, WaveletOutputSample>
-    dlyblk(numstages+1, delay);
+  DelayBlock<WaveletOutputSample>
+    dlyblk(numstages+1, 0, delay);
 
   // Create a buffer for the delay samples
   vector<WaveletOutputSample> delaysamples;
 
   for (i=0; i<samples.size(); i++) {
-    sfwt.StreamingSampleOperation(outsamples, samples[i]);
+    sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
 
     unsigned j;
 #if 0    

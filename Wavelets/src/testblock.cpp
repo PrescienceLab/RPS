@@ -97,25 +97,19 @@ int main(int argc, char *argv[])
   }
 
   // Instantiate a delay block
-  DelayBlock<double, WaveletOutputSample, WaveletOutputSample>
-    dlyblk(numstages+1, delay);
+  DelayBlock<WaveletOutputSample>
+    dlyblk(numstages+1, 0, delay);
 
   // Instantiate a static reverse wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
   StaticReverseWaveletTransform<double, WaveletInputSample, WaveletOutputSample>
     srwt(numstages,wt,2,2,0);
 
-  vector<SampleBlock<WaveletOutputSample> *> forwardoutput;
-  vector<SampleBlock<WaveletOutputSample> *> delayoutput;
-  WaveletInputSampleBlock            reverseoutput;
-  for (int j=0; j<numstages+1; j++) {
-    WaveletOutputSampleBlock *wosb1 = new WaveletOutputSampleBlock();
-    WaveletOutputSampleBlock *wosb2 = new WaveletOutputSampleBlock();
-    forwardoutput.push_back(wosb1);
-    delayoutput.push_back(wosb2);
-  }
+  vector<SampleBlock<WaveletOutputSample> > forwardoutput;
+  vector<SampleBlock<WaveletOutputSample> > delayoutput;
+  WaveletInputSampleBlock  reverseoutput;
 
-  sfwt.StreamingBlockOperation(forwardoutput, inputblock);
+  sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
   dlyblk.StreamingBlockOperation(delayoutput, forwardoutput);
   srwt.StreamingBlockOperation(reverseoutput, delayoutput);
 

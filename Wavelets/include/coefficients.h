@@ -15,18 +15,18 @@ private:
   unsigned    numcoefs;
   double      *g_coefs, *h_coefs;
 
-  void        init(WaveletType wt);
+  void        init(const WaveletType wt);
 
 public:
   WaveletCoefficients();
   WaveletCoefficients(const WaveletCoefficients &rhs);
-  WaveletCoefficients(WaveletType wt);
+  WaveletCoefficients(const WaveletType wt);
   virtual ~WaveletCoefficients();
 
   WaveletCoefficients & operator=(const WaveletCoefficients &rhs);
 
-  void Initialize(WaveletType wt);
-  void ChangeType(WaveletType wt);
+  void Initialize(const WaveletType wt);
+  void ChangeType(const WaveletType wt);
   string GetWaveletName() const;
   unsigned GetNumCoefs() const;
 

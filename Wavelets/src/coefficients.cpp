@@ -152,15 +152,15 @@ const double *coefTable[NUM_WAVELET_TYPES] = {daub_g2,
 					      daub_g20};
 
 const unsigned numCoefTable[NUM_WAVELET_TYPES] = {2,
-						      4,
-						      6,
-						      8,
-						      10,
-						      12,
-						      14,
-						      16,
-						      18,
-						      20};
+						  4,
+						  6,
+						  8,
+						  10,
+						  12,
+						  14,
+						  16,
+						  18,
+						  20};
 
 char *waveletNames[NUM_WAVELET_TYPES] = {"Daubechies 2 (Haar)",
 					 "Daubechies 4",
@@ -189,7 +189,7 @@ WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
   h_coefs = rhs.h_coefs;
 }
 
-WaveletCoefficients::WaveletCoefficients(WaveletType wt)
+WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
@@ -212,7 +212,7 @@ WaveletCoefficients & WaveletCoefficients::operator=(const WaveletCoefficients &
   return *this;
 }
 
-void WaveletCoefficients::Initialize(WaveletType wt)
+void WaveletCoefficients::Initialize(const WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
@@ -221,7 +221,7 @@ void WaveletCoefficients::Initialize(WaveletType wt)
   init(wt);
 }
 
-void WaveletCoefficients::ChangeType(WaveletType wt)
+void WaveletCoefficients::ChangeType(const WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
@@ -284,7 +284,7 @@ ostream & WaveletCoefficients::Print(ostream &os) const
 }
 
 // Private functions
-void WaveletCoefficients::init(WaveletType wt)
+void WaveletCoefficients::init(const WaveletType wt)
 {
   numcoefs = numCoefTable[wt];
   waveletname = waveletNames[wt];

@@ -109,7 +109,7 @@ public:
     this->blockindex = index;
   };
 
-  inline unsigned GetBlockIndex() {
+  inline unsigned GetBlockIndex() const {
     return blockindex;
   };
 
