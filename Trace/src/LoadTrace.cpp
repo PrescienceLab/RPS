@@ -297,6 +297,50 @@ int StoreAsciiTraceFile(char *name,
 
   
   
+int LoadGenericAsciiTraceFile(char *name,
+			      double **vals)
+{
+  char line[1024];
+  double junk;
+  int numrecs,i;
+  FILE *inp;
+
+  inp = fopen(name,"r");
+  numrecs=0;
+  while (fgets(line,1024,inp)) {
+    numrecs++;
+  }
+  fclose(inp);
+
+  *vals = new double [numrecs];
+
+  inp = fopen(name,"r");
+  for (i=0;i<numrecs;i++) { 
+    fgets(line,1024,inp);
+    if (sscanf(line,"%lf %lf",&junk,&((*vals)[i]))==1) {
+      (*vals)[i]=junk;
+    }
+  }
+  fclose(inp);
+
+  return numrecs;
+}
+
+int StoreGenericAsciiTraceFile(char *name,
+			       double *vals,
+			       int    numsamples)
+{
+  int i;
+  FILE *out;
+  
+  out=fopen(name,"w");
+
+  for (i=0;i<numsamples;i++) { 
+    fprintf(out,"%f\n",vals[i]);
+  }
+  return numsamples;
+}
+
 
 
 int StoreNetworkBinaryTraceFile(char *name, 

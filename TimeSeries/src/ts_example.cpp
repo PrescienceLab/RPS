@@ -7,7 +7,9 @@
 #include "random.h"
 #include "util.h"
 #include "fit.h"
+#include "banner.h"
 
+#include "Trace.h"
 
 //
 // SKIP TO "INTERESTING" to avoid all the extra glarp and see how this works
@@ -17,21 +19,28 @@
 
 
 
-void usage() 
+void usage(const char *n) 
 {
-   fprintf(stderr,
-	   "ts_example [inputfile] [fitfirst] [fitnum] [testnum] [numahead] [Model]\n");
-   char *s=GetAvailableModels();
-   fprintf(stderr,s);
-   delete [] s;
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Fit, predict, and evaluate example showing many features of TimeSeries\n\n"
+	  "usage: %s inputfile fitfirst fitnum testnum numahead model\n\n"
+	  "inputfile = 2 column (timestamp value) ascii file\n"
+	  "fitfirst  = offset in rows in inputfile to first value to fit\n"
+	  "fitnum    = number of rows in inputfile to which to fit\n"
+	  "testnum   = number of rows beyond that to test\n"
+	  "numahead  = number of steps ahead for each prediction\n"
+          "model     = time series model to use (details below)\n\n"
+	  "%s\n%s", n, s, b) ;
+  delete [] b;
+  delete [] s; 
 }
 
 
   
 
-//
-// This is non-functional code
-// 
 
 int main(int argc, char *argv[])
 {
@@ -39,9 +48,7 @@ int main(int argc, char *argv[])
    char *infile;
    int numahead;
    int fitfirst, fitnum, testnum;
-   FILE *inp;
    int numsamples;
-   double junk;
    double *seq;
    double *predictions;
    double *variances;
@@ -59,7 +66,7 @@ int main(int argc, char *argv[])
    Evaluator eval;
 
    if (argc<first_model+1) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
@@ -79,34 +86,7 @@ int main(int argc, char *argv[])
      exit(-1);
    }
 
-   // Load the data
-   // file format is rows of timestamp\s+double
-
-   inp = fopen(infile,"r");
-   if (inp==0) {
-     fprintf(stderr,"%s not found.\n",infile);
-     exit(-1);
-   }
-   
-   numsamples=0;
-   while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-     ++numsamples;
-   }
-   rewind(inp);
-   
-   seq = new double [numsamples];
-   if (seq==0) {
-     fprintf(stderr,"insufficient memory to read %s\n",infile);
-     exit(-1);
-   }
-
-
-   for (i=0;i<numsamples;i++) { 
-     fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-   }
-
-   fclose(inp);
-
+   numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
    // INTERESTING 
    // THIS IS THE CORE
@@ -134,7 +114,7 @@ int main(int argc, char *argv[])
    ModelTemplate *mt = ParseModel(argc-first_model,&(argv[first_model]));
 
    if (mt==0) { 
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
 

@@ -14,7 +14,7 @@ LIB_TS = $(LIBFILE)
 
 
 CFLAGS = -I$(INCDIR) $(RECIPES_CFLAGS) $(FRACDIFF_CFLAGS) \
-         $(PVM_CFLAGS)
+         $(TRACE_CFLAGS) $(PVM_CFLAGS)
 
 ifeq ($(OPTIMIZE),YES)
    CFLAGS += -O
@@ -27,6 +27,7 @@ LDFLAGS = -L$(TS_LIB_DIR) \
           -l$(LIBNAME) \
           $(RECIPES_LDFLAGS) \
           $(FRACDIFF_LDFLAGS) \
+          $(TRACE_LDFLAGS) \
           $(PVM_LDFLAGS) \
           -lm
 
@@ -41,15 +42,17 @@ endif
 #
 # ts_example 	   do fit and prediction from command line
 # test_generic     different version of example
+# test_await       simple example for await and managed models.
 # evaluate         standalone evaluation program
-# crossval_generic older, non-parallel crossvalidation
+# crossval_generic older, non-parallel crossvalidation engine
 
+# crossval_master  pvm crossvalidation master - can also be used in non-parallel manner
 # crossval_slave   pvm crossvalidation slave
 # impulseresp      fit, and then output impulse response of filter
 # perftest         performance testing of models
 #
 # gfnn             global false nearest neighbor from abarbanel method
-# mi               average mutual information profile
+# mi               average mutual information profile from abarbanel method
 #
 
 EXECLIST = ts_example 	    \
@@ -60,9 +63,7 @@ EXECLIST = ts_example 	    \
            perftest         \
            gfnn             \
            mi               \
-           crossval_wavelet \
-           wavelet_pred     \
-	   test_await
+	   test_await       \
 
 ifeq ($(HAVE_PVM),YES)
    EXECLIST +=  crossval_master crossval_slave
@@ -98,7 +99,7 @@ $(LIB_TS) : $(LIB_TS_OBJECTS)
 
 
 define MakeExeAction
-	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $(BINDIR)/$(@F)
+	$(CC) $< $(LDFLAGS) -o $(BINDIR)/$(@F)
 endef
 
 

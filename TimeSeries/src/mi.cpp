@@ -5,10 +5,23 @@
 #include "it.h"
 #include "util.h"
 
-void usage() 
+#include "Trace.h"
+
+#include "banner.h"
+
+
+void usage(const char *n) 
 {
-   fprintf(stderr,
-      "mi [inputfile] [minlag:steplag:maxlag]\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Mutual information profile of a sequence\n\n"
+	  "usage: %s inputfile minlag:steplag:maxlag\n\n"
+	  "inputfile = 1 or 2 column ascii trace file\n"
+	  "minlag    = smallest lag in range to test\n"
+	  "steplag   = lag step of range\n"
+	  "maxlag    = largest lag in range to test\n\n%s\n",n,b);
+  delete [] b;
 }
 
 
@@ -16,9 +29,7 @@ int main(int argc, char *argv[])
 {
    char *infile;
 
-   FILE *inp;
    int numsamples;
-   double junk;
    double *seq;
    int minlag, steplag, maxlag;
 
@@ -26,39 +37,18 @@ int main(int argc, char *argv[])
 
 
    if (argc<3) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
    infile=argv[1];
    if (sscanf(argv[2],"%d:%d:%d",&minlag,&steplag,&maxlag)!=3) {
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
 
-   inp = fopen(infile,"r");
-   if (inp==0) {
-      fprintf(stderr,"%s not found.\n",infile);
-      exit(-1);
-   }
 
-   numsamples=0;
-   while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-     ++numsamples;
-   }
-   rewind(inp);
-
-   seq = new double [numsamples];
-   if (seq==0) {
-     fprintf(stderr,"insufficient memory to read %s\n",infile);
-     exit(-1);
-   }
-
-   for (i=0;i<numsamples;i++) { 
-       fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-   }
-
-   fclose(inp);
+   numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
    double *mutinfo = new double [maxlag+1];
 

@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
    int numsamples;
    double junk;
    double *seq;
-   int i,j;
+   int i;
 
 
    // Models are fitted by Modellers - see "FitThis" above

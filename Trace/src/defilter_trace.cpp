@@ -10,15 +10,23 @@
 
 
 #include "LoadTrace.h"
+#include "banner.h"
 
 
 /* Used internally */
 #define EPSILON  0.05
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: defilter_trace tau innetworkbinarytracefile outnetworkbinarytracefile\n");
+  char *b=GetRPSBanner();
+  fprintf(stdout,
+	  "Remove exponential smoothing from a network byte order trace file\n\n"
+	  "usage: %s tau innetworkbinarytracefile outnetworkbinarytracefile\n"
+	  "tau                       = time constant of smoothing filter\n"
+	  "innetworkbinarytracefile  = input trace in network byte order\n"
+	  "outnetworkbinarytracefile = output trace in network byte order\n\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -54,7 +62,7 @@ int main(int argc, char *argv[])
   double tau;
   
   if (argc!=4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
   

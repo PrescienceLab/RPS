@@ -4,11 +4,24 @@
 #include <string.h>
 #include "it.h"
 
+#include "Trace.h"
 
-void usage() 
+#include "banner.h"
+
+void usage(const char *n) 
 {
-   fprintf(stderr,
-      "gfnn [inputfile] [T] [mindim:stepdim:maxdim]\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Determination of Global False Nearest Neighbors\n"
+	  "Dimensionality unfolding as per Abarbanel's method\n\n"
+	  "usage: %s inputfile T mindim:stepdim:maxdim\n\n"
+	  "inputfile  = 1 or 2 column format ascii trace\n"
+	  "T          = spacing of samples from file\n"
+	  "mindim     = minimum dimension to check\n"
+	  "stepdim    = stepsize as dimensions are increased\n"
+	  "maxdim     = maximum dimension to check\n\n%s\n",n,b);
+  delete [] b;
 }
 
 
@@ -16,9 +29,7 @@ int main(int argc, char *argv[])
 {
    char *infile;
 
-   FILE *inp;
    int numsamples;
-   double junk;
    double *seq;
    int mindim, stepdim, maxdim;
    int spacing;
@@ -27,40 +38,18 @@ int main(int argc, char *argv[])
 
 
    if (argc<4) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
    infile=argv[1];
    spacing=atoi(argv[2]);
    if (sscanf(argv[3],"%d:%d:%d",&mindim,&stepdim,&maxdim)!=3) {
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
 
-   inp = fopen(infile,"r");
-   if (inp==0) {
-      fprintf(stderr,"%s not found.\n",infile);
-      exit(-1);
-   }
-
-   numsamples=0;
-   while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-     ++numsamples;
-   }
-   rewind(inp);
-
-   seq = new double [numsamples];
-   if (seq==0) {
-     fprintf(stderr,"insufficient memory to read %s\n",infile);
-     exit(-1);
-   }
-
-   for (i=0;i<numsamples;i++) { 
-       fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-   }
-
-   fclose(inp);
+   numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
    double *fractfalse = new double [maxdim+1];
 

@@ -120,11 +120,11 @@ static inline double Erf(double x)
 #endif
 }
 
+
 static inline double inverse_error_func(double p);
 
 static inline double ErfInv(double x)
 {
-  double inverse_error_func(double);
   return inverse_error_func(x);
 }  
 

@@ -1,10 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "LoadTrace.h"
+#include "banner.h"
 
-void usage()
+
+void usage(const char *name)
 {
-  fprintf(stderr,"usage: alpha_to_network inalphabinarytracefile outnetworkbinarytracefile\n");
+  char *b=GetRPSBanner();
+  fprintf(stdout,
+	  "Convert from DEC alpha binary format trace file to\n"
+	  "nework byte-order binary format trace file \n\n"
+	  "usage: %s inalphabinarytracefile outnetworkbinarytracefile\n\n%s",name,b);
+  delete [] b;
 }
 
 
@@ -17,7 +24,7 @@ int main(int argc, char *argv[])
   int numin, numout;
 
   if (argc!=3) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

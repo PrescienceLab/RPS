@@ -97,11 +97,10 @@ class ManagedPredictor : public Predictor {
       return obs;
     } else {
       // refit if we have hit the refit interval
-      //      if (!(cur%num_refit) && cur!=num_refit) { 
-      //	fprintf(stderr,"Hit refit interval - refitting\n");
-      //	FitNow();
-      //} else 
-      {
+      if (!(cur%num_refit) && cur!=num_refit) { 
+	//fprintf(stderr,"Hit refit interval - refitting\n");
+	FitNow();
+      } else {
 	// Now update our error metrics
 	err_n++;
 	err_s+=(obs-lastpred);
@@ -114,7 +113,7 @@ class ManagedPredictor : public Predictor {
 	// are too bad, we'll force a refit.
 	if (err_nres>=min_num_test) { 
 	  if (err_res/err_nres > errlimit) {
-	    fprintf(stderr,"Exceeded error variance limit - refitting\n  (mean relative error is %f but limit is %f)\n",err_res/err_nres,errlimit);
+	    //fprintf(stderr,"Exceeded error variance limit - refitting\n  (mean relative error is %f but limit is %f)\n",err_res/err_nres,errlimit);
 	    FitNow();
 	  }
 	} 
@@ -125,12 +124,12 @@ class ManagedPredictor : public Predictor {
 	  curpred->ComputeVariances(1,&predvar,POINT_VARIANCES);
 	  if (predvar==0) { 
 	    if (errvar>0) {
-	      fprintf(stderr,"Exceeded error variance prediction error limit - refitting\n     (predvar=%f, errvar=%f)\n",predvar,errvar);
+	      //fprintf(stderr,"Exceeded error variance prediction error limit - refitting\n     (predvar=%f, errvar=%f)\n",predvar,errvar);
 	      FitNow();
 	    }
 	  } else {
 	    if ( (errvar-predvar)/predvar > varlimit) { 
-	      fprintf(stderr,"Exceeded error variance prediction error limit - refitting\n     (predvar=%f, errvar=%f, fabs(predvar-errvar)/predvar=%f varlimit=%f)\n",predvar,errvar,fabs(predvar-errvar)/predvar,varlimit);
+	      //fprintf(stderr,"Exceeded error variance prediction error limit - refitting\n     (predvar=%f, errvar=%f, fabs(predvar-errvar)/predvar=%f varlimit=%f)\n",predvar,errvar,fabs(predvar-errvar)/predvar,varlimit);
 	      FitNow();
 	    }
 	  }

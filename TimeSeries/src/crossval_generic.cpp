@@ -8,20 +8,31 @@
 #include "evaluate_core.h"
 #include "random.h"
 #include "util.h"
+#include "banner.h"
 
+#include "Trace.h"
 
-void usage() 
+void usage(const char *n) 
 {
-   fprintf(stderr,
-      "crossval_generic [inputfile] [tag] [numahead] [minfitint] [maxfitint] [mintestint] [maxtestint] [numpasses] [bmlimit] [REFIT interval] \n"
-      "                                                 MEAN\n"
-      "                                               | LAST\n" 
-      "                                               | BESTMEAN [p]\n"
-      "                                               | AR [p]\n"
-      "                                               | MA [q]\n"
-      "                                               | ARMA [p] [q]\n"
-      "                                               | ARIMA [p] [d] [q]\n"
-      "                                               | ARFIMA [p] [d] [q]\n");
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Randomized evaluation of models (not parallel)\n\n"
+	  "usage: %s inputfile tag numahead minfitint maxfitint mintestint maxtestint numpasses bmlimit model\n\n"
+	  "inputfile  = 1 or 2 column ascii file\n"
+	  "tag        = tag to prepend to output\n"
+	  "numahead   = steps ahead to predict\n"
+	  "minfitint  = smallest randomly chosen interval for model fitting\n"
+	  "maxfitint  = largest randomly chosen interval for model fitting\n"
+	  "mintestint = smallest subsequent interval for model testing\n"
+	  "maxtestint = largest subsequent interval for model testing\n"
+	  "numpasses  = number of random testcases to run\n"
+	  "bmlimit    = maximum size of best mean model\n"
+	  "model      = as below\n\n%s\n%s", n,s,b);
+  delete [] b;
+  delete [] s; 
+
 }
 
 
@@ -33,9 +44,7 @@ int main(int argc, char *argv[])
    int bmlimit;
    int minfitint, maxfitint, mintestint, maxtestint, numint;
 
-   FILE *inp;
    int numsamples;
-   double junk;
    double *seq;
    double *predictions;
    double *variances;
@@ -54,7 +63,7 @@ int main(int argc, char *argv[])
    Evaluator bmeval;
 
    if (argc<first_model+1) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
@@ -83,34 +92,11 @@ int main(int argc, char *argv[])
    ((PDQParameterSet*)(mt->ps))->Get(p,d,q);
 
    if (mt==0) { 
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
 
-   inp = fopen(infile,"r");
-   if (inp==0) {
-      fprintf(stderr,"%s not found.\n",infile);
-      exit(-1);
-   }
-
-  numsamples=0;
-  while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-    ++numsamples;
-  }
-  rewind(inp);
-
-  seq = new double [numsamples];
-  if (seq==0) {
-     fprintf(stderr,"insufficient memory to read %s\n",infile);
-     exit(-1);
-  }
-
-
-   for (i=0;i<numsamples;i++) { 
-       fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-   }
-
-   fclose(inp);
+   numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
    int step, fitfirst,fitnum,testfirst,testnum;
 

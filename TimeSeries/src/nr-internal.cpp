@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -285,8 +286,7 @@ namespace nrc {
 	free_vector(pt,1,n);
 	return;
       }
-      if (*iter == ITMAX) nrerror("powell exceeding maximum iterations
-.");
+      if (*iter == ITMAX) nrerror("powell exceeding maximum iterations.");
       for (j=1;j<=n;j++) {
 	ptt[j]=2.0*p[j]-pt[j];
 	xit[j]=p[j]-pt[j];

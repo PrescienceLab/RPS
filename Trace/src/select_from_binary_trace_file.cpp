@@ -1,10 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "LoadTrace.h"
+#include "banner.h"
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: select_from_binary_trace_file start:end binarytracefile outbinarytracefile\n");
+  char *b=GetRPSBanner();
+  fprintf(stdout,
+	  "Select a region from a binary trace file\n\n"
+	  "usage: %s start:end binarytracefile outbinarytracefile\n\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -18,7 +23,7 @@ int main(int argc, char *argv[])
   int numin, numout;
 
   if (argc!=4) {
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
   

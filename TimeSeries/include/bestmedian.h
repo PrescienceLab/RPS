@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include "abstract.h"
 
+using namespace std;
+
 // Median-of-last-n Model for the best n
 
 class BestMedianModel : public Model {

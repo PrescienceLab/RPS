@@ -8,6 +8,11 @@
 #include "evaluate_core.h"
 #include "random.h"
 #include "util.h"
+
+#include "Trace.h"
+
+#include "banner.h"
+
 //
 // SKIP TO "INTERESTING" to avoid all the extra glarp and see how this works
 //
@@ -16,19 +21,22 @@
 
 
 
-void usage() 
+void usage(const char *n) 
 {
-   fprintf(stderr,
-      "impulseresp [inputfile] [[s]resplen] [REFIT refitint]\n"
-      "                                  MEAN\n"
-      "                                | LAST\n"
-      "                                | BM [p]\n"
-      "                                | AR [p]\n"
-      "                                | MA [q]\n"
-      "                                | ARMA [p] [q]\n"
-      "                                | ARIMA [p] [d] [q]\n"
-      "                                | ARFIMA [p] [d] [q]\n");
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Output the impulse or step response of a model fitted to given data\n\n"
+	  "usage: %s inputfile fitfirst fitnum testnum numahead model\n\n"
+	  "inputfile = 1 or 2 column ascii trace file\n"
+	  "resplen   = length of response to compute - prepend with 's' for step response\n"
+	  "model     = model, as below\n\n%s\n%s\n",n,s,b);
+  delete [] b;
+  delete [] s; 
 }
+
+
 
 
 
@@ -38,9 +46,7 @@ int main(int argc, char *argv[])
 {
    const int first_model=3;
    char *infile;
-   FILE *inp;
    int numsamples;
-   double junk;
    double *seq;
    int i;
    int resplen;
@@ -50,7 +56,7 @@ int main(int argc, char *argv[])
    Predictor *pred=0;
 
    if (argc<first_model+1) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
@@ -65,34 +71,11 @@ int main(int argc, char *argv[])
 
    ModelTemplate *mt = ParseModel(argc-first_model,&(argv[first_model]));
    if (mt==0) { 
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
  
-   inp = fopen(infile,"r");
-   if (inp==0) {
-     fprintf(stderr,"%s not found.\n",infile);
-     exit(-1);
-   }
-   
-   numsamples=0;
-   while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-     ++numsamples;
-   }
-   rewind(inp);
-   
-   seq = new double [numsamples];
-   if (seq==0) {
-     fprintf(stderr,"insufficient memory to read %s\n",infile);
-     exit(-1);
-   }
-
-
-   for (i=0;i<numsamples;i++) { 
-     fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-   }
-
-   fclose(inp);
+   numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
    model=FitThis(seq,numsamples,*mt);
 

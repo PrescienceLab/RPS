@@ -11,6 +11,8 @@ extern "C" {
 #include <time.h>
 #include "random.h"
 
+#include "banner.h"
+
 
 // input file format is
 //
@@ -20,9 +22,22 @@ extern "C" {
 //
 // numslaves = 0 => run locally
 
-void usage() 
+void usage(const char *n) 
 {
-   fprintf(stderr,"crossval_master [numslaves] [cmdfile] [binarytracefile|+asciitracefile] [tag] [old|new]\n");
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Randomized evaluation using parallelism\n\n"
+	  "usage: %s numslaves cmdfile binarytracefile|+asciitracefile tag old|new\n\n"
+	  "numslaves = number of workers (degree of parallelism)\n"
+	  "cmdfile   = commands to be run.  A line in the command file has the following format\n"
+	  " numtests numahead bmlimit pmin pmax dmin dmax qmin qmax minfit maxfit mintest maxtest\n"
+	  "binarytracefile|+asciitracefile = self explanatory\n"
+	  "tag       = tag to give these testcases\n"
+	  "old|new   = old or new style summarization of testcase stats\n\n%s\n",n,b);
+  delete [] b;
+  delete [] s; 
 }
 
 
@@ -31,8 +46,8 @@ void SetupForTrace();
 
 int main(int argc, char *argv[])
 {
-  if (argc<5){
-    usage();
+  if (argc<5) {
+    usage(argv[0]);
     exit(-1);
   }
   

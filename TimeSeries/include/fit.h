@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "ioutil.h"
+
+using namespace std;
 
 #include "abstract.h"
 #include "pdqparamsets.h"

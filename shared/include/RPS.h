@@ -11,5 +11,10 @@
 #include "RTA.h"
 #include "RTSA.h"
 #include "Finder.h"
+#include "Trace.h"
+#include "Wavlets.h"
+
+
+  
 
 #endif

@@ -6,21 +6,23 @@
 #include "fit.h"
 #include "tools.h"
 
-void usage() 
+#include "banner.h"
+
+#include "Trace.h"
+
+void usage(const char *n) 
 {
-   fprintf(stderr,
-      "test_generic inputfile numahead conf/noconf\n"
-      "             [REFIT refitinterval | AWAIT awaitinterval |\n"
-      "              MANAGED awaitinterval refitinterval mintestinterval \n"
-      "                      errorlimit variancelimit\n"
-      "                                                 MEAN\n"
-      "                                               | LAST\n"
-      "                                               | BESTMEAN p\n"
-      "                                               | AR p\n"
-      "                                               | MA q\n"
-      "                                               | ARMA p q\n"
-      "                                               | ARIMA p d q\n"
-      "                                               | ARFIMA p d q\n");
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+  fprintf(stdout,
+	  "Fit and predict using a model\n\n"
+	  "usage: %s inputfile numahead conf|noconf model\n\n"
+	  "inputfile   = 1 or 2 column ascii input file\n"
+	  "numahead    = steps into the future to predict\n"
+	  "conf|noconf = show 95%% confidence intervals or not\n"
+	  "model       = predictive model (see below)\n\n%s\n%s\n",n,s,b);
+  delete [] s;
+  delete [] b;
 }
 
 
@@ -29,9 +31,7 @@ int main(int argc, char *argv[])
    char *infile;
    int numahead, conf;
 
-   FILE *inp;
    int numsamples;
-   double junk;
    double *seq;
    double *predictions;
    double *variances;
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 
    if (argc<5) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
@@ -61,35 +61,12 @@ int main(int argc, char *argv[])
    }
 
    if ((mt=ParseModel(argc-first_model,&(argv[first_model])))==0) { 
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
 
 
-   inp = fopen(infile,"r");
-   if (inp==0) {
-      fprintf(stderr,"%s not found.\n",infile);
-      exit(-1);
-   }
-
-  numsamples=0;
-  while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-    ++numsamples;
-  }
-  rewind(inp);
-
-  seq = new double [numsamples];
-  if (seq==0) {
-     fprintf(stderr,"insufficient memory to read %s\n",infile);
-     exit(-1);
-  }
-
-
-   for (i=0;i<numsamples;i++) { 
-       fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-   }
-
-   fclose(inp);
+   numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
    double inputvar=Variance(seq,numsamples);
    double inputmean=Mean(seq,numsamples);

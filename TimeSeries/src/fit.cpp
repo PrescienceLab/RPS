@@ -12,6 +12,7 @@
 #endif
 #include <assert.h>
 
+#include <string>
 
 #include "ar.h"
 #include "ma.h"
@@ -741,7 +742,7 @@ ostream &ModelTemplate::Print(ostream &os) const
 {
   char *temp = GetName();
 
-  os<<"ModelTemplate("<<((const char*)temp)<<")";
+  os<<"ModelTemplate("<<temp<<")";
   
   delete [] temp;
   

@@ -13,8 +13,11 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
+#include "banner.h"
+
+#include "Trace.h"
+
 #define DO_EVAL 0
-#define DO_FINEGRAIN_STEPPRED
 
 void GetRusage(double &systime, double &usrtime)
 {
@@ -31,19 +34,26 @@ void GetRusage(double &systime, double &usrtime)
 
 
 
-void usage() 
+void usage(const char *n) 
 {
-   fprintf(stderr,
-      "perftest [inputfile] [tag] [numahead] [numpasses] [fitint] [testint] [flat|nofloat] [REFIT interval] \n"
-      "                                                 MEAN\n"
-      "                                               | LAST\n" 
-      "                                               | BESTMEAN [p]\n"
-      "                                               | AR [p]\n"
-      "                                               | MA [q]\n"
-      "                                               | ARMA [p] [q]\n"
-      "                                               | ARIMA [p] [d] [q]\n"
-      "                                               | ARFIMA [p] [d] [q]\n");
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Evaluate the overhead of a model on given data\n\n"
+	  "usage: %s inputfile tag numahead numpasses fitint testint flat|noflat model\n\n"
+	  "inputfile = 1 or 2 column  ascii trace file\n"
+	  "tag       = tag for these testcases\n"
+	  "numahead  = steps ahead to predict\n"
+	  "numpasses = number of testcases to run\n"
+	  "fitint    = size of interval to fit to\n"
+	  "testint   = size of interval to test on\n"
+	  "flat|noflat = flat output format or human readable\n"
+	  "model     = model to evaluate, more below\n\n%s\n%s\n",n,s,b);
+  delete [] b;
+  delete [] s; 
 }
+
 
 
 int main(int argc, char *argv[])
@@ -57,9 +67,7 @@ int main(int argc, char *argv[])
   int fitint, testint;
   int numint;
 
-  FILE *inp;
   int     numsamples;
-  double junk;
   double *seq;
   bool flat;
 
@@ -72,7 +80,7 @@ int main(int argc, char *argv[])
 #endif
 
   if (argc<first_model+1) {
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
 
@@ -128,7 +136,7 @@ int main(int argc, char *argv[])
  
 
   if (mt==0) { 
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
 
@@ -142,30 +150,7 @@ int main(int argc, char *argv[])
   }
     
 
-  inp = fopen(infile,"r");
-  if (inp==0) {
-    fprintf(stderr,"%s not found.\n",infile);
-    exit(-1);
-  }
-
-  numsamples=0;
-  while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-    ++numsamples;
-  }
-  rewind(inp);
-
-  seq = new double [numsamples];
-  if (seq==0) {
-    fprintf(stderr,"insufficient memory to read %s\n",infile);
-    exit(-1);
-  }
-
-
-  for (i=0;i<numsamples;i++) { 
-    fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
-  }
-
-  fclose(inp);
+  numsamples=LoadGenericAsciiTraceFile(infile,&seq);
 
 
   int step,fitfirst,testfirst,testnum,fitnum;

@@ -8,23 +8,38 @@ extern "C" {
 #include "crossval_core.h"
 #include "crossval_pvm.h"
 
+#include "banner.h"
 
-void usage() 
+void usage(const char *n) 
 {
-   fprintf(stderr,"crossval_slave should be used only via pvm by crossval_master\n");
+  char *s=GetAvailableModels();
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Randomized evaluation using parallelism\n\n"
+	  "usage: [should not be used directly - crossval_master calls this]\n"
+	  "\n\n%s\n",b);
+  delete [] b;
+  delete [] s; 
 }
+
 
 
 int main(int argc, char *argv[])
 {
 
   if (argc>1) {
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
 
-  int mytid= pvm_mytid();
+  int mytid=pvm_mytid();
   int mastertid=pvm_parent();
+
+  if (mastertid==PvmNoParent || mytid<0) { 
+    usage(argv[0]);
+    exit(-1);
+  }
 
   //pvm_advise(PvmRouteDirect);
   pvm_setopt(PvmRoute,PvmRouteDirect);

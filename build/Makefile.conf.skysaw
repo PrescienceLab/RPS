@@ -12,7 +12,8 @@ CC      = g++
 F77     = g77
 AR      = ar 
 RANLIB  = ranlib
-LD      = c++
+LD      = g++
+STRIP   = strip
 JAVA    = java
 JAVAH   = javah
 
@@ -133,7 +134,7 @@ REMOS_DIR = /home/Remos/Remos
 # This is slightly different from where the recipes build process leaves 
 # things
 #
-HAVE_NUMERICAL_RECIPES = YES
+HAVE_NUMERICAL_RECIPES = NO
 RECIPES_DIR = /home/RPS/recipes_c-ansi
 
 #

@@ -1,11 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "LoadTrace.h"
+#include "banner.h"
 
-void usage()
+
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: ascii_to_network inasciitracefile outnetworkbinarytracefile\n");
+  char *b=GetRPSBanner();
+  fprintf(stdout,
+	  "Convert from 2 column (timestamp, value) ascii trace file to\n"
+	  "nework byte-order binary format trace file \n\n"
+	  "usage: %s inasciitracefile outnetworkbinarytracefile\n\n%s",n,b);
+  delete [] b;
 }
+
+
 
 
 int main(int argc, char *argv[])
@@ -17,7 +26,7 @@ int main(int argc, char *argv[])
   int numin, numout;
 
   if (argc!=3) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

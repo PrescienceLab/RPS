@@ -98,10 +98,18 @@ PVM_LIB_DIR=$(PVM_DIR)/lib/$(PVM_ARCH)
 
 ifeq ($(HAVE_PVM),YES) 
    PVM_LDFLAGS = -L$(PVM_LIB_DIR) -lgpvm3 -lpvm3
-   PVM_CFLAGS  = -I$(PVM_INC_DIR)
+   PVM_CFLAGS  = -DHAVE_PVM -I$(PVM_INC_DIR)
 else
    PVM_LDFLAGS =
    PVM_CFLAGS  =
+endif
+
+ifeq ($(HAVE_TRACE),YES) 
+   TRACE_LDFLAGS = -L$(TRACE_LIB_DIR) -ltrace -lm
+   TRACE_CFLAGS  = -DHAVE_TRACE -I$(TRACE_INC_DIR)
+else
+   TRACE_LDFLAGS =
+   TRACE_CFLAGS  =
 endif
 
 ifeq ($(HAVE_GETLOADAVG),YES) 

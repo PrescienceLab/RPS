@@ -3,15 +3,23 @@
 #include "evaluate_core.h"
 #include "util.h"
 
-// evaluate [numpred] < sequence 
-//
-// Where sequence is of the form
-//
-//    value_t   pred_t+1 pred_t+2 pred_t+3 ... pred_t+numpred
-//    value_t+1 
-//
-// For each prediction column, statistics are computed
-//
+#include "banner.h"
+
+
+void usage(const char *n) 
+{
+  char *b=GetRPSBanner();
+
+  fprintf(stdout,
+	  "Evaluation of predictions\n\n"
+	  "usage: %s numpred < predictionoutput\n\n"
+	  "numpred    = steps ahead of incoming predictions\n"
+	  " prediction output is of the following form:\n"
+	  " value_t pred_t+1 pred_t+2 ... pred_t+numpred\n"
+	  " value_t+1 ... \n\n%s",n,b);
+  delete [] b;
+
+}
 
 
 int main(int argc, char *argv[]) 
@@ -20,8 +28,8 @@ int main(int argc, char *argv[])
   unsigned i,j;
 
   if (argc!=2) { 
-    fprintf(stderr,"usage: evaluate [numpred]\n");
-    exit(0);
+    usage(argv[0]);
+    exit(-1);
   }
 
   unsigned numpred=atoi(argv[1]);

@@ -29,6 +29,7 @@ int StoreRawBinaryTraceFile(char *name,
 			    double *vals,
 			    int numsamples);
 
+
 int LoadAsciiTraceFile(char *name,
 		       double **timestamps, 
 		       double **vals);
@@ -37,6 +38,14 @@ int StoreAsciiTraceFile(char *name,
 			double *timestamps, 
 			double *vals,
 			int    numsamples);
+
+int LoadGenericAsciiTraceFile(char *name,
+			      double **vals);
+
+int StoreGenericAsciiTraceFile(char *name,
+			       double *vals,
+			       int numsamples);
+
 
 
 int PervertBinaryTrace(double *timestamps, double *vals, int num);

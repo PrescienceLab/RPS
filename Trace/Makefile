@@ -21,13 +21,9 @@ else
   LD1FLAGS = -g  -gstabs+ -ggdb 
 endif
 
-CFLAGS += -I$(INCDIR) \
-	  $(SPIN_CFLAGS) \
-          $(GETLOADAVG_CFLAGS) \
+CFLAGS += -I$(INCDIR) 
 
 LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
-           $(SPIN_LDFLAGS) \
-           $(GETLOADAVG_LDFLAGS) \
           -lm 
 
 ifeq ($(OS),SOLARIS)
@@ -36,14 +32,15 @@ else
   LD3FLAGS = 
 endif
 
-EXECLIST = genload \
-           defilter_trace \
+EXECLIST = defilter_trace \
            select_from_binary_trace_file \
            alpha_to_network \
            network_to_alpha \
            network_to_ascii \
            ascii_to_network \
-           alpha_to_ascii
+           alpha_to_ascii   \
+           ascii_to_generic_ascii \
+           generic_ascii_to_ascii
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
