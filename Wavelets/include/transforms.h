@@ -91,6 +91,8 @@ private:
   unsigned numlevels;
 
   vector<deque<INSAMPLE> *> insignals;
+  vector<deque<OUTSAMPLE> *> intersignals;
+
   vector<ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> *> stages;
   vector<IndexManager *> indexmgrs;
 
@@ -119,10 +121,10 @@ public:
 			  unsigned    rate_h);
 
   inline void ClearAllDelayLines();
-  inline bool SamplePairReady(unsigned level1, unsigned level2);
+  inline bool SamplePairReady(unsigned level1, unsigned level2, bool topstage);
 
 
-  bool StreamingSampleOperation(Sample<SAMPLETYPE> &out, vector<INSAMPLE> &in);
+  bool StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in);
 
   unsigned StreamingBlockOperation(SampleBlock<OUTSAMPLE>          &outblock,
 				   vector<SampleBlock<INSAMPLE> *> &inblock);
@@ -605,6 +607,9 @@ StaticReverseWaveletTransform(unsigned numstages=1, unsigned backlog=5) :
     ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* prws = 
       new ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>();
     stages.push_back(prws);
+
+    deque<OUTSAMPLE>* pdis = new deque<OUTSAMPLE>();
+    intersignals.push_back(pdis);    
   }
 }
 
@@ -612,7 +617,8 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs) :
   numstages(rhs.numstages), numlevels(rhs.numlevels), 
-  insignals(rhs.insignals), stages(rhs.stages), indexmgrs(rhs.indexmgrs),
+  insignals(rhs.insignals), intersignals(rhs.intersignals),
+  stages(rhs.stages), indexmgrs(rhs.indexmgrs),
   jitterhelp(rhs.jitterhelp), jitter_buffer(rhs.jitter_buffer)
 {}
 
@@ -647,6 +653,9 @@ StaticReverseWaveletTransform(unsigned    numstages,
 							       rate_l, 
 							       rate_h);
     stages.push_back(prws);
+
+    deque<OUTSAMPLE>* pdis = new deque<OUTSAMPLE>();
+    intersignals.push_back(pdis);
   }
 }
 
@@ -662,8 +671,10 @@ StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 
   for (unsigned i=0; i<numstages; i++) {
     CHK_DEL(stages[i]);
+    CHK_DEL(intersignals[i]);
   }
   insignals.clear();
+  intersignals.clear();
   stages.clear();
   indexmgrs.clear();
 }
@@ -676,6 +687,7 @@ operator=(const StaticReverseWaveletTransform &rhs)
   numstages = rhs.numstages;
   numlevels = rhs.numlevels;
   insignals = rhs.insignals;
+  intersignals = rhs.intersignals;
   stages = rhs.stages;
   indexmgrs = rhs.indexmgrs;
   jitterhelp = rhs.jitterhelp;
@@ -706,9 +718,11 @@ ChangeNumberStages(unsigned numstages)
   
   for (i=0; i<this->numstages; i++) {
     CHK_DEL(stages[i]);
+    CHK_DEL(interstages[i]);
   }
 
   insignals.clear();
+  intersignals.clear();
   indexmgrs.clear();
   stages.clear();
 
@@ -726,6 +740,9 @@ ChangeNumberStages(unsigned numstages)
   for (i=0; i<numstages; i++) {
     prws = new ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>();
     stages.push_back(prws);
+
+    deque<OUTSAMPLE>* pdis = new deque<OUTSAMPLE>();
+    intersignals.push_back(pdis);
   }
 
   jitterhelp.ClearCurrentBacklog();
@@ -752,8 +769,10 @@ ChangeNumberStages(unsigned    numstages,
 
   for (i=0; i<this->numstages; i++) {
     CHK_DEL(stages[i]);
+    CHK_DEL(intersignals[i]);
   }
   insignals.clear();
+  intersignals.clear();
   indexmgrs.clear();
   stages.clear();
 
@@ -773,6 +792,9 @@ ChangeNumberStages(unsigned    numstages,
 								    rate_l,
 								    rate_h);
     stages.push_back(prws);
+
+    deque<OUTSAMPLE>* pdis = new deque<OUTSAMPLE>();
+    intersignals.push_back(pdis);
   }
 
   jitterhelp.ClearCurrentBacklog();
@@ -791,18 +813,28 @@ ClearAllDelayLines()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SamplePairReady(unsigned level1, unsigned level2)
+SamplePairReady(unsigned level1, unsigned level2, bool topstage)
 {
-  if ((level1 < 0) || (level2 < 0) || (level1 > numlevels) || (level2 > numlevels))
+  bool result;
+  if ((level1 < 0) || (level2 < 0) || (level1 > numlevels) || (level2 > numlevels)) {
     return false;
-  return !(insignals[level1]->empty() || insignals[level2]->empty());
+  }
+
+  if (topstage) {
+    result = !(insignals[level1]->empty() || insignals[level2]->empty());
+  } else {
+    if ((level1 > numlevels-1) || (level2 > numlevels-1)) {
+      return false;
+    }
+    result = !(insignals[level1]->empty() || intersignals[level2]->empty());
+  }
+  return result;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingSampleOperation(Sample<SAMPLETYPE> &out, vector<INSAMPLE> &in)
+StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
 {
-  bool result=false;
   bool jitter=true;
   int samplelevel, sampleindex;
 
@@ -846,6 +878,7 @@ StreamingSampleOperation(Sample<SAMPLETYPE> &out, vector<INSAMPLE> &in)
     if (jitter) {
       jitterhelp.IncCurrentBacklog();
       if (jitterhelp.ThresholdExceeded()) {
+	// May want to execute an interpolater here
 	ClearAllDelayLines();
 	jitterhelp.ClearCurrentBacklog();
 	for (unsigned j=0; j<indexmgrs.size(); j++) {
@@ -854,38 +887,47 @@ StreamingSampleOperation(Sample<SAMPLETYPE> &out, vector<INSAMPLE> &in)
 	return false;
       }
     }
+  }
 
-    // Perform the operation on matched levels of input signal
-    ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* prws;
-    INSAMPLE  in_h, in_l;
+  // Perform the operation on matched levels of input signal
+  ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* prws;
+  INSAMPLE  in_h, in_l;
 
-    for (int j=numstages-1; j>=0; j--) {
-      prws = stages[j];
+  bool topstage=true;
+  for (int j=numstages-1; j>=0; j--) {
+    prws = stages[j];
 
-      if (SamplePairReady(j+1,j)) {
-	if ((unsigned) j+1 == numstages) {
-	  in_l = insignals[numstages]->back();
-	  insignals[numstages]->pop_back();
-	}
-	  
-	deque<INSAMPLE>* pd = insignals[j];
-	in_h = pd->back();
-	pd->pop_back();
+    if ( SamplePairReady(j+1, j, topstage) ) {
 
-	if (!prws->PerformSampleOperation(out, in_l, in_h)) {
-	  continue;
-	} else {
-	  if (j == 0) {
-	    result=true;
-	    break;
-	  } else {
-	    in_l.SetSampleValue(out.GetSampleValue());
-	  }
-	}
+      if (topstage) {
+	in_l = insignals[numstages]->back();
+	insignals[numstages]->pop_back();
+
+	in_h = insignals[numstages-1]->back();
+	insignals[numstages-1]->pop_back();
+
+	topstage=false;
+      } else {
+	in_l = intersignals[j+1]->back();
+	intersignals[j+1]->pop_back();
+
+	in_h = insignals[j]->back();
+	insignals[j]->pop_back();
+      }
+	
+      prws->PerformSampleOperation(out, in_l, in_h);
+
+      // Store the outputs into the appropriate intermediate outputs
+      for (unsigned k=0; k<out.size(); k++) {
+	intersignals[j]->push_front(out[k]);
+      }
+
+      if (j != 0) {
+	out.clear();
       }
     }
   }
-  return result;
+  return out.size();
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

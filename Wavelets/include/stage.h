@@ -175,8 +175,9 @@ public:
 
   inline void ClearFilterDelayLines();
 
-  // Takes two inputs and produces an output, returns true if input accepted
-  bool PerformSampleOperation(Sample<SAMPLETYPE> &out,
+  // Takes two inputs and produces a vector of outputs, depending on upsample
+  //  rates
+  bool PerformSampleOperation(vector<OUTSAMPLE> &out,
 			      Sample<SAMPLETYPE> &in_l,
 			      Sample<SAMPLETYPE> &in_h);
 
@@ -708,33 +709,39 @@ void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearFilterDelayLines
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformSampleOperation
-(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in_l, Sample<SAMPLETYPE> &in_h)
+(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in_l, Sample<SAMPLETYPE> &in_h)
 {
   Sample<SAMPLETYPE> zero(0);
   Sample<SAMPLETYPE> tempout(0);
+  out.clear();
 
-  out.SetSampleValue(0);
-
-  // Upsample the inputs
   bool zerosample;
-  if ((zerosample = upsampler_l.ZeroSample()) != upsampler_h.ZeroSample()) {
-    upsampler_l.ResetState();
-    upsampler_h.ResetState();
-    throw OperationSyncException();    
-  } else {
-    if (zerosample) {
-      stagehelp.LPFSampleOperation(tempout,zero);
-      out = tempout;
-      stagehelp.HPFSampleOperation(tempout,zero);
-      out += tempout;
+  OUTSAMPLE outsamp;
+  
+  // loop condition could be dependent on rate_h as well (they should be equal)
+  for (unsigned i=0; i<rate_l; i++) {
+
+    // Upsample the inputs
+    if ((zerosample = upsampler_l.ZeroSample()) != upsampler_h.ZeroSample()) {
+      upsampler_l.ResetState();
+      upsampler_h.ResetState();
+      throw OperationSyncException();    
     } else {
-      stagehelp.LPFSampleOperation(tempout,in_l);
-      out = tempout;
-      stagehelp.HPFSampleOperation(tempout,in_h);
-      out += tempout;
+      if (zerosample) {
+	stagehelp.LPFSampleOperation(tempout,zero);
+	outsamp = tempout;
+	stagehelp.HPFSampleOperation(tempout,zero);
+	outsamp += tempout;
+      } else {
+	stagehelp.LPFSampleOperation(tempout,in_l);
+	outsamp = tempout;
+	stagehelp.HPFSampleOperation(tempout,in_h);
+	outsamp += tempout;
+      }
     }
+    out.push_back(outsamp);
   }
-  return !zerosample;
+  return out.size();
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

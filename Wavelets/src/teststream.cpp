@@ -108,26 +108,25 @@ int main(int argc, char *argv[])
   vector<WaveletOutputSample> outsamples;
   vector<WaveletOutputSample> delaysamples;
   vector<WaveletInputSample>  finaloutput;
+  vector<WaveletInputSample>  outsamp;
 
-  WaveletInputSample outsamp;
   cout << "The final output samples: " << endl;
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingSampleOperation(outsamples, samples[i]);
 
-    for (unsigned j=0; j<outsamples.size(); j++) {
-      cout << "OUT: " << outsamples[j] << endl;
-    }
-
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
 
     if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
-      cout << outsamp << endl;
-      finaloutput.push_back(outsamp);
+      for (unsigned j=0; j<outsamp.size(); j++) {
+	finaloutput.push_back(outsamp[i]);
+      }
     }
 
     outsamples.clear();
     delaysamples.clear();
   }
+
+
 
   if (delay != 0) {
     delete[] delay;
