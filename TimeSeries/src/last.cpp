@@ -1,6 +1,8 @@
 #include <new>
 #include "last.h"
 
+#define LAST_AS_AR
+
 LastModel::LastModel() : BestMeanModel()
 {}
 
@@ -36,12 +38,29 @@ ostream & LastModel::operator<<(ostream &os) const
 
 Predictor *LastModel::MakePredictor() const
 {
+#ifdef LAST_AS_AR
+   Polynomial et, th;
+
+   et.SetPower(0);
+   et.SetCoeff(0,1);
+   et.SetCoeff(1,1);
+
+   th.SetPower(0);
+   th.SetCoeff(0,1);
+
+   EtaThetaPredictor *pred = new EtaThetaPredictor;
+   
+   pred->Initialize(&et,&th,GetVariance(),GetMean());
+
+   return pred;
+#else
   LastPredictor *p= new LastPredictor();
   p->Initialize(1,GetVariance());
   return p;
+#endif
 }
 
-LastPredictor::LastPredictor() : BestMeanPredictor()
+LastPredictor::LastPredictor() :   BestMeanPredictor()
 {}
 
 LastPredictor::LastPredictor(const LastPredictor &rhs) : BestMeanPredictor(rhs)

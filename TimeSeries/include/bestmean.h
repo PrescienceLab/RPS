@@ -9,6 +9,7 @@
 
 // Mean-of-last-n Model for the best n
 
+
 class BestMeanModel : public Model {
  private:
   int      order;
@@ -38,7 +39,8 @@ inline ostream & operator<< (ostream &os, const BestMeanModel &p) {
 }
 
 
-class BestMeanPredictor : public Predictor {
+class BestMeanPredictor : public Predictor 
+{
 private:
   double mult;
   double *samples;

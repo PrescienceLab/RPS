@@ -5,9 +5,7 @@ Wavelets
   => Jason
 
 TimeSeries
-  => Fix costly variance recompute bug in managed predictors
-  => Wavelet Predictor
-  => Fix serialization bug with Wavelet (and perhaps other) predictors
+  => Wavelet Predictor (sanity check)
 
 Add RPS Banner to all codes
 
@@ -54,11 +52,6 @@ Windows build env
 Test
   => build on windows, cygwin, linux, 
 
-
-JAVAGUI
-  => Fix timeout issue and get continuous operation
-  => Configuration
-  => Clean up gnuplot scripts as well.
 
 Include Windows GUI?
 

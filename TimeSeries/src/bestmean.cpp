@@ -6,7 +6,7 @@
 #include "pdqparamsets.h"
 #include "ar.h"
 
-//#define BESTMEAN_AS_AR
+#define BESTMEAN_AS_AR
 
 BestMeanModel::BestMeanModel()
 {

@@ -81,7 +81,7 @@ int ModelTemplate::_GetPackedSize() const
   case File: {
     string s;
     ((FileParameterSet *)ps)->Get(s);
-    return 4+4+4+4*s.size();
+    return 4+4+4+s.size();
   }
     break;
   // Add other types here
@@ -95,7 +95,7 @@ int ModelTemplate::_GetPackedSize() const
 int ModelTemplate::_GetMaxPackedSize() const 
 {
   //  return 4+4+6*4+2*8;
-  return 1024;
+  return 256;
 }
 
 #if !defined(IEEE_DOUBLE_LSB) && !defined(IEEE_DOUBLE_MSB)
@@ -130,7 +130,7 @@ inline static void htond(const double x, char out[8])
 }
 
 
-inline static void ntohd(const char in[8], double *x)
+inline static void ntohd(const char in[8], double *x) 
 {
   char *out=(char*)x;
 #ifdef IEEE_DOUBLE_LSB
@@ -200,7 +200,7 @@ int ModelTemplate::_Pack(ByteStream &bs) const
     ((FileParameterSet *)ps)->Get(s);
     len=s.size();
     bi[2]=htonl(len);
-    int rc1 = 3*4==bs.Put((const char*)bi,3*4);
+    int rc1 = (3*4)==bs.Put((const char*)bi,3*4);
     int rc2 = len==bs.Put((const char*)(s.c_str()),len);
     return rc1||rc2;
   }

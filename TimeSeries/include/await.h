@@ -94,7 +94,7 @@ class AwaitingPredictor : public Predictor {
     if (pred) { 
       return pred->ComputeVariances(maxahead,vars,vtype);
     } else {
-      int top= CO_VARIANCES ? maxahead*maxahead : maxahead;
+      int top= (vtype==CO_VARIANCES ? maxahead*maxahead : maxahead);
       for (int i=0;i<top;i++) { 
 	vars[i]=0;
       }

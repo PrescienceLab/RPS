@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
   int managed;
 
-  if (argc<7) {
+  if (argc<6) {
     usage(argv[0]);
     exit(0);
   }
