@@ -111,5 +111,3 @@ int RTSAAdviseTask(RTSARequest &req, RTSAResponse &resp)
   return 0;
 
 }
-  
-  

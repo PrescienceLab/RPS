@@ -9,7 +9,7 @@ cd ALPHA
 cvs add DUX
 cd ..
 cd I386
-cvs add LINUX FREEBSD WIN32 CYGIN
+cvs add LINUX FREEBSD WIN32 CYGWIN
 cd ..
 cd SUN
 cvs add SOLARIS
@@ -21,7 +21,7 @@ cd ALPHA
 cvs add DUX
 cd ..
 cd I386
-cvs add LINUX FREEBSD WIN32 CYGIN
+cvs add LINUX FREEBSD WIN32 CYGWIN
 cd ..
 cd SUN
 cvs add SOLARIS
@@ -33,7 +33,7 @@ cd ALPHA
 cvs add DUX
 cd ..
 cd I386
-cvs add LINUX FREEBSD WIN32 CYGIN
+cvs add LINUX FREEBSD WIN32 CYGWIN
 cd ..
 cd SUN
 cvs add SOLARIS

@@ -594,7 +594,7 @@ int Receive(const int fd, char *buf, const int len, bool recvall)
 
 int SetSignalHandler(int signum, void (*handler)(int), bool oneshot)
 {
-#if defined(WIN32) // cygwin does not appear to have sigaction, so...
+#if defined(WIN32) || defined(CYGWIN) // cygwin does not appear to have sigaction, so...
   signal(signum,handler);  //notice that this is oneshot
   return 0;
 #else
@@ -607,7 +607,7 @@ int SetSignalHandler(int signum, void (*handler)(int), bool oneshot)
 #endif  
 
   sigemptyset(&(sa.sa_mask));
-#if defined(linux)
+#if defined(linux) 
 #define SIGHAND_ONESHOT SA_ONESHOT
 #endif
 #if defined(__osf__) || defined(__FreeBSD__) || defined(__sparc__)

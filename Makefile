@@ -194,10 +194,10 @@ Finder: $(HRPSI_DEP) $(HMT_DEP) force
 #	cp `find $(FINDER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 ResearchTools: $(HRTSA_DEP) force
-	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(RTSA_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
-	cp `find $(RTSA_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(RTSA_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cd $(RESEARCHTOOLS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+#	cp `find $(RESEARCHTOOLS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+#	cp `find $(RESEARCHTOOLS_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RESEARCHTOOLS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 clean:
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean ;
