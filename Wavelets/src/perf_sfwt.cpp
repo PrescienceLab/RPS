@@ -20,7 +20,7 @@ void usage()
 
   cerr << " perf_sfwt [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [sample-or-block]\n";
-  cerr << "  [blocksize] [sleep-rate] [numtests] [flat] [output-file]\n\n";
+  cerr << "  [blocksize] [sleeprate] [flat] [output-file]\n\n";
   cerr << "----------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing time-\n";
@@ -48,8 +48,6 @@ void usage()
   cerr << "[sleep-rate]        = This rate is the sleep rate.  The value\n";
   cerr << "                      is in microseconds and is long integer.\n";
   cerr << "\n";
-  cerr << "[numtests]          = This is the number of tests to run.\n";
-  cerr << "\n";
   cerr << "[flat]              = Whether the output is flat or human\n";
   cerr << "                      readable.  flat | noflat to choose.\n";
   cerr << "\n";
@@ -64,7 +62,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=11) {
+  if (argc!=10) {
     usage();
     exit(-1);
   }
@@ -75,7 +73,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "samplerate_perf_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "perf_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -85,7 +83,7 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "samplerate_perf_sfwt: Number of stages must be positive.\n";
+    cerr << "perf_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
 
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[4][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "samplerate_perf_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "perf_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     exit(-1);
   }
 
@@ -107,13 +105,13 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[5][0])=='B') {
     sample=false;
   } else {
-    cerr << "samplerate_perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
+    cerr << "perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
     exit(-1);
   }
 
   unsigned blocksize = atoi(argv[6]);
   if (blocksize == 0) {
-    cerr << "samplerate_perf_sfwt: Must be greater than 0.\n";
+    cerr << "perf_sfwt: Must be greater than 0.\n";
     exit(-1);
   }
 
@@ -123,25 +121,23 @@ int main(int argc, char *argv[])
     sleep=false;
   }
 
-  unsigned numtests = atoi(argv[8]);
-
   bool flat=true;
-  if (toupper(argv[9][0])=='N') {
+  if (toupper(argv[8][0])=='N') {
     flat = false;
-  } else if (toupper(argv[9][0])!='F') {
-    cerr << "samplerate_perf_sfwt: Need to choose flat or noflat for human readable.\n";
+  } else if (toupper(argv[8][0])!='F') {
+    cerr << "perf_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
   ostream *outstr = &cout;
   ofstream outfile;
-  if (!strcasecmp(argv[10],"stdout")) {
-  } else if (!strcasecmp(argv[10],"stderr")) {
+  if (!strcasecmp(argv[9],"stdout")) {
+  } else if (!strcasecmp(argv[9],"stderr")) {
     outstr = &cerr;
   } else {
-    outfile.open(argv[10]);
+    outfile.open(argv[9]);
     if (!outfile) {
-      cerr << "samplerate_perf_sfwt: Cannot open output file " << argv[10] << ".\n";
+      cerr << "perf_sfwt: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
@@ -171,100 +167,92 @@ int main(int argc, char *argv[])
 
   // Create result buffers
   vector<wosd> outsamples;
-  vector<vector<wosd> > levels;
   vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
 
-  // Finish the tests by incrementing sleep time
-  for (unsigned test=0; test<numtests; test++) {
-    if (sample) {
-      switch(tt) {
-      case APPROX: {
-	for (i=0; i<samples.size(); i++) {
-	  if (sleep) {
-	    usleep(sleeptime_us);
-	  }
-	  sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
-	  levels.push_back(outsamples);
-	  outsamples.clear();
+  if (sample) {
+    switch(tt) {
+    case APPROX: {
+      for (i=0; i<samples.size(); i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
 	}
-	break;
+	sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
+	outsamples.clear();
       }
-      case DETAIL: {
-	for (i=0; i<samples.size(); i++) {
-	  if (sleep) {
-	    usleep(sleeptime_us);
-	  }
-	  sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
-	  levels.push_back(outsamples);
-	  outsamples.clear();
-	}
-	break;
-      }
-      case TRANSFORM: {
-	for (i=0; i<samples.size(); i++) {
-	  if (sleep) {
-	    usleep(sleeptime_us);
-	  }
-	  sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-	  levels.push_back(outsamples);
-	  outsamples.clear();
-	}
-	break;
-      }
-      default:
-	break;
-      }
-    } else { // block modes
-      switch(tt) {
-      case APPROX: {
-	for (i=0; i<blocks.size(); i++) {
-	  if (sleep) {
-	    usleep(sleeptime_us);
-	  }
-	  sfwt.StreamingApproxBlockOperation(forwardoutput, blocks[i]);
-	  // Something would be done here with output
-	  forwardoutput.clear();
-	}
-	break;
-      }
-      case DETAIL: {
-	for (i=0; i<blocks.size(); i++) {
-	  if (sleep) {
-	    usleep(sleeptime_us);
-	  }
-	  sfwt.StreamingDetailBlockOperation(forwardoutput, blocks[i]);
-	  // Something would be done here with output
-	  forwardoutput.clear();
-	}
-	break;
-      }
-      case TRANSFORM: {
-	for (i=0; i<blocks.size(); i++) {
-	  if (sleep) {
-	    usleep(sleeptime_us);
-	  }
-	  sfwt.StreamingTransformBlockOperation(forwardoutput, blocks[i]);
-	  forwardoutput.clear();
-	}
-	break;
-      }
-      default:
-	break;
-      }
+      break;
     }
-    // Print the output with appropriate tag
-    if (flat) {
-      *outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
-	      << ((sample) ? 1 : blocksize);
-    } else {
-      *outstr << "Sleeptime (us) = " << sleeptime_us << endl;
-      *outstr << "Wavelet type = " << wt << endl;
-      *outstr << "Number stages = " << numstages << endl;
-      *outstr << "Transform type = " << tt << endl;
-      *outstr << "Block size (1 = sample op) = " << ((sample) ? 1 : blocksize) << endl;
+    case DETAIL: {
+      for (i=0; i<samples.size(); i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
+	}
+	sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
+	outsamples.clear();
+      }
+      break;
     }
-    *outstr << endl;
+    case TRANSFORM: {
+      for (i=0; i<samples.size(); i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
+	}
+	sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+	outsamples.clear();
+      }
+      break;
+    }
+    default:
+      break;
+    }
+  } else { // block modes
+    switch(tt) {
+    case APPROX: {
+      for (i=0; i<blocks.size(); i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
+	}
+	sfwt.StreamingApproxBlockOperation(forwardoutput, blocks[i]);
+	forwardoutput.clear();
+      }
+      break;
+    }
+    case DETAIL: {
+      for (i=0; i<blocks.size(); i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
+	}
+	sfwt.StreamingDetailBlockOperation(forwardoutput, blocks[i]);
+	forwardoutput.clear();
+      }
+      break;
+    }
+    case TRANSFORM: {
+      for (i=0; i<blocks.size(); i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
+	}
+	sfwt.StreamingTransformBlockOperation(forwardoutput, blocks[i]);
+	forwardoutput.clear();
+      }
+      break;
+    }
+    default:
+      break;
+    }
   }
+
+  // Print the output with appropriate tag
+  if (flat) {
+    *outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
+	    << ((sample) ? 1 : blocksize);
+  } else {
+    *outstr << "Sleeptime (us) = " << sleeptime_us << endl;
+    *outstr << "Wavelet type = " << wt << endl;
+    *outstr << "Number stages = " << numstages << endl;
+    *outstr << "Transform type = " << tt << endl;
+    *outstr << "Block size (1 = sample op) = " << ((sample) ? 1 : blocksize) << endl;
+  }
+  *outstr << endl;
 
   return 0;
 }

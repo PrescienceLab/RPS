@@ -17,9 +17,9 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " perf_srwt [input-file] [wavelet-type-init]\n";
+  cerr << " scal_perf_srwt [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [sample-or-block]\n";
-  cerr << "  [blocksize] [sleep-rate] [numtests] [flat] [output-file]\n\n";
+  cerr << "  [blocksize] [numblocks] [numtests] [flat] [output-file]\n\n";
   cerr << "----------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing wavelet\n";
@@ -44,8 +44,7 @@ void usage()
   cerr << "[blocksize]         = The size of the blocks to be used in the\n";
   cerr << "                      analysis.\n";
   cerr << "\n";
-  cerr << "[sleep-rate]        = This rate is the sleep rate.  The value\n";
-  cerr << "                      is in microseconds and is long integer.\n";
+  cerr << "[numblocks]         = The number of blocks to be processed.\n";
   cerr << "\n";
   cerr << "[numtests]          = This is the number of tests to run.\n";
   cerr << "\n";
@@ -72,7 +71,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "samplerate_perf_srwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "scal_perf_srwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -82,13 +81,13 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "samplerate_perf_srwt: Number of stages must be positive.\n";
+    cerr << "scal_perf_srwt: Number of stages must be positive.\n";
     exit(-1);
   }
 
   TransformType tt=TRANSFORM;
   if (toupper(argv[4][0])!='T') {
-    cerr << "samplerate_perf_srwt: Invalid transform type.  Must be type TRANSFORM.\n";
+    cerr << "scal_perf_srwt: Invalid transform type.  Must be type TRANSFORM.\n";
     exit(-1);
   }
 
@@ -98,30 +97,29 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[5][0])=='B') {
     sample=false;
   } else {
-    cerr << "samplerate_perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
+    cerr << "scal_perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
     exit(-1);
   }
 
   unsigned blocksize = atoi(argv[6]);
   if (blocksize == 0) {
-    cerr << "samplerate_perf_sfwt: Must be greater than 0.\n";
+    cerr << "scal_perf_sfwt: Must be greater than 0.\n";
     exit(-1);
   }
 
-  bool sleep=true;
-  unsigned long sleeptime_us = atoi(argv[7]);
-  if (sleeptime_us == 0) {
-    sleep=false;
+  unsigned numblocks = atoi(argv[7]);
+  if (numblocks == 0) {
+    cerr << "scal_perf_sfwt: Number of blocks must be greater than 0.\n";
+    exit(-1);
   }
 
   unsigned numtests = atoi(argv[8]);
-
 
   bool flat=true;
   if (toupper(argv[9][0])=='N') {
     flat = false;
   } else if (toupper(argv[9][0])!='F') {
-    cerr << "samplerate_perf_srwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "scal_perf_srwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -133,16 +131,11 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[10]);
     if (!outfile) {
-      cerr << "samplerate_perf_srwt: Cannot open output file " << argv[10] << ".\n";
+      cerr << "scal_perf_srwt: Cannot open output file " << argv[10] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
   }
-
-  unsigned i;
-
-  // Instantiate a static forward wavelet transform
-  StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
@@ -153,104 +146,95 @@ int main(int argc, char *argv[])
   // Instantiate a static reverse wavelet transform
   StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
 
+  double usrbegin, sysbegin, usrend, sysend;
   if (sample) {
 
-    // Read the data from file into an input vector
-    vector<wisd> samples;
-    FlatParser fp;
-    fp.ParseTimeDomain(samples, *is);
-    infile.close();
-
-    // Produce the wavelet coefficients
-    vector<wosd> outsamples;
+    vector<wosd> samplecoefs;
     vector<vector<wosd> > waveletcoefs;
-    for (i=0; i<samples.size(); i++) {
-      sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-      waveletcoefs.push_back(outsamples);
-      outsamples.clear();
+
+    FlatParser fp;
+    while ( fp.ParseWaveletCoefsSample(samplecoefs, *is) ) {
+      waveletcoefs.push_back(samplecoefs);
+      samplecoefs.clear();
     }
+    infile.close();
 
     vector<wosd> delaysamples;
     vector<wisd> currentoutput;
-    vector<wisd> reconst;
 
     for (unsigned test=0; test<numtests; test++) {
-
-      for (i=0; i<waveletcoefs.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
-	}
+      GetRusage(sysbegin, usrbegin);
+      for (unsigned i=0; i<waveletcoefs.size(); i++) {
 	dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs[i]);
-	if (srwt.StreamingTransformSampleOperation(currentoutput, delaysamples)) {
-	  for (unsigned j=0; j<currentoutput.size(); j++) {
-	    reconst.push_back(currentoutput[j]);
-	  }
-	  currentoutput.clear();
-	}
+	srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
       }
+      GetRusage(sysend, usrend);
 
       // Print the output with appropriate tag
       if (flat) {
-	*outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
-		<< 1;
+	*outstr << wt << " " << numstages << " " << tt << " "
+		<< 1 << " " << usrend - usrbegin << " "
+		<< sysend - sysbegin;
       } else {
-	*outstr << "Sleeptime (us) = " << sleeptime_us << endl;
 	*outstr << "Wavelet type = " << wt << endl;
 	*outstr << "Number stages = " << numstages << endl;
 	*outstr << "Transform type = " << tt << endl;
 	*outstr << "Block size (1 = sample op) = 1" << endl;
+	*outstr << "User time = " << usrend - usrbegin << endl;
+	*outstr << "System time = " << sysend - sysbegin << endl;
       }
       *outstr << endl;
     }
 
   } else { //Block mode
-    vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
+
+    vector<WaveletOutputSampleBlock<wosd> > waveletcoefs;
+    for (unsigned i=0; i<(unsigned)numstages+1; i++) {
+      waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
+    }
+
+    // Read in the wavelet coefficients
+    FlatParser fp;
+    fp.ParseWaveletCoefsBlock(waveletcoefs, *is);
+
     vector<WaveletOutputSampleBlock<wosd> > block;
+    vector<vector<WaveletOutputSampleBlock<wosd> > > blocks;
     vector<WaveletOutputSampleBlock<wosd> > delayoutput;
     WaveletInputSampleBlock<wisd> reconst;
-    WaveletInputSampleBlock<wisd> finaloutput;
 
+    for (unsigned i=0; i<numblocks; i++) {
+      GetNextBlock(block, i, waveletcoefs, numstages, blocksize);
+      blocks.push_back(block);
+      block.clear();
+    }
+    waveletcoefs.clear();
 
-    // Read the data from file into an input vector
-    deque<wisd> samples;
-    FlatParser fp;
-    fp.ParseTimeDomain(samples, *is);
-    WaveletInputSampleBlock<wisd> inputblock(samples);
-    infile.close();
-
-    sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
-
-    // Calculate the number of blocks
-    unsigned blocks = samples.size() / blocksize;
-
+    // Perform tests
     for (unsigned test=0; test<numtests; test++) {
+      GetRusage(sysbegin, usrbegin);
+      for (unsigned i=0; i<numblocks; i++) {
 
-      for (unsigned i=0; i<blocks; i++) {
-	GetNextBlock(block, i, forwardoutput, numstages, blocksize);
-	if (sleep) {
-	  usleep(sleeptime_us);
-	}
 	// The operations
-	dlyblk.StreamingBlockOperation(delayoutput, block);
+	dlyblk.StreamingBlockOperation(delayoutput, blocks[i]);
 	srwt.StreamingTransformBlockOperation(reconst, delayoutput);
-	finaloutput.AppendBlockBack(reconst);
 
 	delayoutput.clear();
 	reconst.ClearBlock();
       }
-
-      finaloutput.ClearBlock();
+      GetRusage(sysend, usrend);
 
       // Print the output with appropriate tag
       if (flat) {
-	*outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
-		<< blocksize;
+	*outstr << wt << " " << numstages << " " << tt << " "
+		<< blocksize << " " << usrend - usrbegin << " "
+		<< sysend - sysbegin;
       } else {
-	*outstr << "Sleeptime (us) = " << sleeptime_us << endl;
 	*outstr << "Wavelet type = " << wt << endl;
 	*outstr << "Number stages = " << numstages << endl;
 	*outstr << "Transform type = " << tt << endl;
 	*outstr << "Block size (1 = sample op) = " << blocksize << endl;
+	*outstr << "User time = " << usrend - usrbegin << endl;
+	*outstr << "System time = " << sysend - sysbegin << endl;
       }
       *outstr << endl;
     }

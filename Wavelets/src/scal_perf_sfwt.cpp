@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "samplerate_perf_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "scal_perf_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "samplerate_perf_sfwt: Number of stages must be positive.\n";
+    cerr << "scal_perf_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[4][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "samplerate_perf_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "scal_perf_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     exit(-1);
   }
 
@@ -104,13 +104,13 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[5][0])=='B') {
     sample=false;
   } else {
-    cerr << "samplerate_perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
+    cerr << "scal_perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
     exit(-1);
   }
 
   unsigned blocksize = atoi(argv[6]);
   if (blocksize == 0) {
-    cerr << "samplerate_perf_sfwt: Must be greater than 0.\n";
+    cerr << "scal_perf_sfwt: Must be greater than 0.\n";
     exit(-1);
   }
 
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[8][0])=='N') {
     flat = false;
   } else if (toupper(argv[8][0])!='F') {
-    cerr << "samplerate_perf_sfwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "scal_perf_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[9]);
     if (!outfile) {
-      cerr << "samplerate_perf_sfwt: Cannot open output file " << argv[9] << ".\n";
+      cerr << "scal_perf_sfwt: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
