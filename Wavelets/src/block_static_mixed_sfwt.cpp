@@ -15,8 +15,8 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " block_static_streaming_test [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [transform-type] [output-file]\n\n";
+  cerr << " block_static_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << "  [numstages-init] [transform-type] [output-file] [flat]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing time-\n";
@@ -33,11 +33,15 @@ void usage()
   cerr << "                      decomposition.  The number of levels is\n";
   cerr << "                      equal to the number of stages + 1.\n";
   cerr << "\n";
-  cerr << "[transform-type]    = The transform type may only be of type\n";
-  cerr << "                      TRANSFORM for this test.\n";
+  cerr << "[transform-type]    = The transform type may be of type\n";
+  cerr << "                      APPROX | DETAIL | TRANSFORM.\n";
   cerr << "\n";
   cerr << "[output-file]       = Which file to write the output.  This may\n";
   cerr << "                      also be stdout or stderr.\n\n";
+  cerr << "\n";
+  cerr << "[flat]              = Whether the output is flat or human\n";
+  cerr << "                      readable.  flat | noflat to choose.\n";
+  cerr << "\n";
   cerr << tb << endl;
   cerr << b << endl;
   delete [] tb;
@@ -74,7 +78,7 @@ WaveletType GetWaveletType(const char *x, const char *filename)
 
 int main(int argc, char *argv[])
 {
-  if (argc!=6) {
+  if (argc!=7) {
     usage();
     exit(-1);
   }
@@ -84,7 +88,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_streaming_test: Cannot open input file " << argv[1] << ".\n";
+      cerr << "block_static_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -94,12 +98,21 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "block_static_streaming_test: Number of stages must be positive.\n";
+    cerr << "block_static_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
+  unsigned numlevels = numstages + 1;
 
-  if (toupper(argv[4][0])!='T') {
-    cerr << "block_static_streaming_test: For streaming tests, only TRANSFORM type allowed.\n";
+  TransformType tt;
+  if (toupper(argv[4][0])=='A') {
+    tt = APPROX;
+  } else if (toupper(argv[4][0])=='D') {
+    tt = DETAIL;
+  } else if (toupper(argv[4][0])=='T') {
+    tt = TRANSFORM;
+  } else {
+    cerr << "block_static_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    usage();
     exit(-1);
   }
 
@@ -112,15 +125,25 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "block_static_streaming_test: Cannot open output file " << argv[5] << ".\n";
+      cerr << "block_static_sfwt: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
   }
 
+  bool flat=true;
+  if (toupper(argv[6][0])=='N') {
+    flat = false;
+  } else if (toupper(argv[6][0])!='F') {
+    cerr << "block_static_sfwt: Need to choose flat or noflat for human readable.\n";
+    exit(-1);
+  }
+
+  unsigned i;
   typedef WaveletInputSample<double> wisd;
   typedef WaveletOutputSample<double> wosd;
 
+  // Read the data from file into an input vector
   deque<wisd> samples;
   double sample;
   unsigned index=0;
@@ -137,46 +160,81 @@ int main(int argc, char *argv[])
   // Instantiate a static forward wavelet transform
   StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
 
-  // Parameterize and instantiate the delay block
-  unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[numstages+1];
-  CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
-  DelayBlock<wosd> dlyblk(numstages+1, 0, delay);
-
-  // Instantiate a static forward wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
-
   // Create result buffers
   vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
-  vector<WaveletOutputSampleBlock<wosd> > delayoutput;
-  WaveletInputSampleBlock<wisd> reconst;
 
-  // The operations
-  sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
-  dlyblk.StreamingBlockOperation(delayoutput, forwardoutput);
-  srwt.StreamingTransformBlockOperation(reconst, delayoutput);
-
-
-  for (unsigned i=0; i<MIN(inputblock.GetBlockSize(), reconst.GetBlockSize()); i++) {
-    *outstr.tie() << i << "\t" << inputblock[i].GetSampleValue() << "\t"
-	    << reconst[i].GetSampleValue() << endl;
+  switch(tt) {
+  case APPROX: {
+    sfwt.StreamingApproxBlockOperation(forwardoutput, inputblock);
+    numlevels -= 1;
+    break;
   }
-  *outstr.tie() << endl;
+  case DETAIL: {
+    sfwt.StreamingDetailBlockOperation(forwardoutput, inputblock);
+    numlevels -= 1;
+    break;
+  }
+  case TRANSFORM: {
+    sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
+    break;
+  }
+  default:
+    break;
+  }
 
-  // Calculate the error between input and output
-  double error=0;
-  unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-  unsigned i=0;
-  for (unsigned j=sampledelay; j<MIN(reconst.GetBlockSize(), inputblock.GetBlockSize()); i++, j++) {
-    error += inputblock[i].GetSampleValue() - reconst[j].GetSampleValue();
+  // Human readable output
+  if (!flat) {
+    *outstr.tie() << "The size of each level:" << endl;
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << "\tLevel " << i << " size = " 
+		    << forwardoutput[i].GetBlockSize() << endl;
+    }
+    *outstr.tie() << endl;
+
+    *outstr.tie() << "Index     ";
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << "Level " << i << "        " ;
+    }
+    *outstr.tie() << endl << "-----     ";
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << "-------        ";
+    }
+    *outstr.tie() << endl;
+  }
+
+
+  unsigned loopsize = forwardoutput[0].GetBlockSize();
+  for (i=0; i<loopsize; i++) {
+    *outstr.tie() << i << "\t";
+
+
+    // Find number of samples for this line
+    unsigned numsamples=0;
+    for (unsigned j=0; j<numlevels; j++) {
+      if (!forwardoutput[j].Empty()) {
+	numsamples++;
+      }
+    }
+
+    if (flat) {
+      *outstr.tie() << numsamples << "\t";
+    }
+
+    for (unsigned j=0; j<numsamples; j++) {
+      if (!forwardoutput[j].Empty()) {
+	wosd wos;
+	wos = forwardoutput[j].Front();
+
+	if (flat) {
+	  *outstr.tie() << wos.GetSampleLevel() << " ";
+	}
+
+	*outstr.tie() << wos.GetSampleValue() << "\t";
+	forwardoutput[j].PopSampleFront();
+      }
+    }
+    *outstr.tie() << endl;
   }
   
-  *outstr.tie() << "Mean error: " << error/(double)i << endl;
-
-  if (delay != 0) {
-    delete[] delay;
-    delay=0;
-  }
-
   return 0;
 }
