@@ -2835,6 +2835,7 @@ DiscreteWaveletTransformOperation
       MultiplyAccumulateMatrixVectorAndScale(outl, lpf, N/2, zz_vector, 2.0);
     }
     AddVectors(f_vector, outh, outl);
+    outh.clear(); outl.clear();
   }
 
   // Transfer result to outblock

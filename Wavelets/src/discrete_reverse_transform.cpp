@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_srwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "discrete_reverse_transform: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
   if (toupper(argv[3][0])!='T') {
-    cerr << "block_static_srwt: Invalid transform type.  Must be type TRANSFORM.\n";
+    cerr << "discrete_reverse_transform: Invalid transform type.  Must be type TRANSFORM.\n";
     exit(-1);
   }
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[4][0])=='N') {
     flat = false;
   } else if (toupper(argv[4][0])!='F') {
-    cerr << "sample_static_srwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "discrete_reverse_transform: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "block_static_srwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "discrete_reverse_transform: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
