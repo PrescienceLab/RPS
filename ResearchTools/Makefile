@@ -44,7 +44,9 @@ EXECLIST = test_pred     \
            test_pred_vartau \
            test_sched \
            test_sched_aggressive\
-           wavelet_pred
+           wavelet_pred \
+           test_wavelet_delay \
+           setup_wavelet_delay
 
 
 APPOBJSLIST = $(EXECLIST:=.o)

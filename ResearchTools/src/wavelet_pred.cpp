@@ -20,14 +20,46 @@ const int MAXLEVELS=512;
 const int MAXBUF=1024;
 int numlevels;
 
+int sampletime;
+
 
 WaveletType wavelettype;
+
+
+class Delay {
+private:
+  int len;
+  deque<double> delayline;
+public:
+  Delay(int l) {
+    len=l;
+    for (int i=0;i<len;i++) {
+      delayline.push_back(0.0);
+    }
+  }
+  virtual ~Delay() { 
+    delayline.clear();
+  }
+  double PopPush(double val) {
+    if (len==0) { 
+      return val;
+    } else {
+      double temp=delayline.front();
+      delayline.pop_front();
+      delayline.push_back(val);
+      return temp;
+    }
+  }
+};
+
 
 struct LevelOp {
   ModelTemplate *mt;
   Model         *model;
   Predictor     *pred;
-  int ahead;
+  Delay         *delay;
+  int           samples;       
+  int           ahead;
 };
 
 
@@ -82,11 +114,27 @@ int ReadSpecFile(const char *file)
 	if (sscanf(buf,"%d %d %n\n",&level,&predh, &rest)<2) {
 	  break;
 	}
-	levelop[level].mt=ParseModel(&buf[rest]);
-	levelop[level].model=FitThis((double*)0,0,*(levelop[level].mt));
-	levelop[level].pred=levelop[level].model->MakePredictor();
+	if (level<0 || level >=numlevels) {
+	  break;
+	}
 	levelop[level].ahead=predh;
-	cerr << "level "<< level << ": " << *(levelop[level].mt) << " at "<<levelop[level].ahead<< endl;
+	levelop[level].samples=0;
+	if (predh>0) { 
+	  if ((levelop[level].mt=ParseModel(&buf[rest]))==0) { 
+	    cerr << "Unknown model " << (const char *) &buf[rest]<<endl;
+	    return -1;
+	  }
+	  levelop[level].model=FitThis((double*)0,0,*(levelop[level].mt));
+	  levelop[level].pred=levelop[level].model->MakePredictor();
+	  levelop[level].delay=0;
+	  cerr << "level "<< level << ": " << *(levelop[level].mt) << " at "<<levelop[level].ahead<< endl;
+	} else {
+	  levelop[level].mt=0;
+	  levelop[level].model=0;
+	  levelop[level].pred=0;
+	  levelop[level].delay = new Delay(-predh);
+	  cerr << "level "<< level << ": " << "Delay of "<<-predh<<endl;
+	}
 	break;
       }
     }
@@ -132,33 +180,25 @@ int main(int argc, char *argv[])
   vector<WaveletInputSample>  finalout;
   vector<WaveletInputSample>  reverseout;
 
+  sampletime=0;
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingSampleOperation(forwardout, samples[i]);
 
-    /*
-    if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
-      for (unsigned j=0; j<outsamp.size(); j++) {
-	finaloutput.push_back(outsamp[j]);
-      }
-    }
-    */
-
-    cerr << "Input Sample: "<<samples[i]<<endl;
-    for (int j=0;j<forwardout.size();j++) { 
-      cerr << "Output Sample: " << forwardout[j] << endl;
-    }
     for (int j=0;j<forwardout.size();j++) { 
       int level=forwardout[j].GetSampleLevel();
-      levelop[level].pred->Step(forwardout[j].GetSampleValue());
-      double preds[levelop[level].ahead];
-      levelop[level].pred->Predict(levelop[level].ahead,preds);
-      cerr << "Level " << level << " Predictions: " ;
-      for (int k=0;k<levelop[level].ahead;k++) {
-	cerr << preds[k] << "\t";
+      double outval;
+      if (levelop[level].ahead<=0) { 
+	outval=levelop[level].delay->PopPush(forwardout[j].GetSampleValue());
+	cerr << sampletime<< "("<<levelop[level].samples<<"@"<< level << "): Sample:" <<forwardout[j].GetSampleValue()<< " Delayed Value: " << outval <<endl;
+      } else {
+	double preds[levelop[level].ahead];
+	levelop[level].pred->Step(forwardout[j].GetSampleValue());
+	levelop[level].pred->Predict(levelop[level].ahead,preds);
+	outval=preds[levelop[level].ahead-1];
+	cerr << sampletime<< "("<<levelop[level].samples<<"@"<< level << "): Sample:" <<forwardout[j].GetSampleValue()<< " Prediction: " << outval <<endl;
       }
-      cerr <<endl;
-      predout.push_back(WaveletOutputSample(preds[levelop[level].ahead-1],level,forwardout[j].GetSampleIndex()));
-     
+      predout.push_back(WaveletOutputSample(outval,level,forwardout[j].GetSampleIndex()));
+      levelop[level].samples++;
     }
 
     srwt.StreamingSampleOperation(reverseout, predout);
@@ -168,15 +208,15 @@ int main(int argc, char *argv[])
     }
     forwardout.clear();
     predout.clear();
+    delayout.clear();
     reverseout.clear();
+    sampletime++;
   }
 
-  for (i=0; i<finalout.size(); i++) {
-    cerr << samples[i] << "\t" << finalout[i] << endl;
-  }
 
+  int basepred = levelop[0].ahead;
   for (i=0; i<finalout.size(); i++) {
-    cout << samples[i].GetSampleValue() << "\t" << finalout[i].GetSampleValue() << endl;
+    cout << samples[i].GetSampleValue() << "\t" << finalout[i].GetSampleValue() << "\t" << finalout[i].GetSampleValue() - samples[i].GetSampleValue() << endl;
   }
   
  
