@@ -1285,7 +1285,7 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
     			       *insignals[numstages-1]);
   } else {
     // Perform the topstage using reverse iteration
-    vector<ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *>::
+    typename vector<ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *>::
       reverse_iterator r_iter=stages.rbegin();
 
     RUN_STAGE_SAMPLE_OPERATION(*r_iter,
@@ -1459,7 +1459,7 @@ StreamingTransformBlockOperation
       index += outblock.GetBlockSize();
   } else {
     // Perform the topstage and rest using reverse iteration through the stages
-    vector<ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *>::
+    typename vector<ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *>::
       reverse_iterator r_iter=stages.rbegin();
 
     // A temp output for intermediate results
