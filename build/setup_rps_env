@@ -5,7 +5,7 @@ export PATH=${RPSDIR}/Scripts:${RPSDIR}/bin/${RPS_ARCH}/${RPS_OS}:${RPSDIR}/Rese
 
 export LD_LIBRARY_PATH=${RPS_DIR}/lib/${RPS_ARCH}/${RPS_OS}:${LD_LIBRARY_PATH}
 
-export PERLLIB=${RPS_DIR}/${PERLLIB}
+export PERLLIB=${RPS_DIR}/Scripts:${PERLLIB}
 
 export RPS_NEWSTYLEOUTPUT=yes
 
