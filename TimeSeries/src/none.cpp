@@ -1,3 +1,4 @@
+#include <new>
 #include "none.h"
 
 NonePredictor::NonePredictor()

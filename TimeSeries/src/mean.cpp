@@ -1,3 +1,4 @@
+#include <new>
 #include <string.h>
 #include "mean.h"
 #include "util.h"

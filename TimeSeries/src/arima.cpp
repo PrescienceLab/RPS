@@ -1,3 +1,4 @@
+#include <new>
 #include <string.h>
 #include "arima.h"
 #include "ar.h"
