@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 
+use RPS;
 
 $CMD = "ps x";
 

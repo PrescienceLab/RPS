@@ -1,9 +1,10 @@
 #!/usr/bin/env perl
+use RPS;
 
-if ($#ARGV!=0) { 
-    print STDERR "kill_hostloadmeasure_list.pl list\n";
-    exit;
-}
+$usage="Kill host load measurement on a list of hosts using kill_hostloadmeasure_on.pl\n\n".
+"usage: kill_hostloadmeasure_list.pl list\n".RPSBanner();
+
+$#ARGV==0 or die $usage;
 
 open(LIST,$ARGV[0]);
 while (<LIST>) {

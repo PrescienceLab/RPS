@@ -1,6 +1,11 @@
 #!/usr/bin/env perl
 
-$#ARGV==0  or die "usage: run_gui_list.pl list\n";
+use RPS;
+
+$usage="Run the Java GUI on a list of hosts and sources using run_gui_on.pl\n\n".
+"usage: run_gui_list.pl list\n".RPSBanner();
+
+$#ARGV==0  or die $usage;
 
 open(LIST,$ARGV[0]);
 $numhosts=0;

@@ -5,6 +5,7 @@
 #
 #
 
+use RPS;
 use Getopt::Long;
 
 $period=1000000;
@@ -19,6 +20,12 @@ $maxabserr=0.01;
 $maxerrmissest=5.0;
 $model="AR 16";
 
+$usage="Start host load prediction on this host\n\n".
+"usage: start_hostloadpred.pl [--period=period] [--rateport=rateport]\n".
+"[--bufferport=bufferport] [--numfit=numfit] [--numpred=numpred]\n".
+"[--mintest=mintest] [--maxtest=maxtest] [--maxabserr=maxabserr]\n".
+"[--maxerrmissest=maxerrmissest] [model=\"model\"]\n".RPSBanner();
+  
 
 &GetOptions(
 ( "period=i" => \$period, 
@@ -32,12 +39,16 @@ $model="AR 16";
   "maxerrmissest=f" => \$maxerrmissest,
   "model=s" => \$model ,
   "bufferdepth=i" => \$bufferdepth,
+  "help" => \$help
 )) 
 
-or die "usage: start_hostloadpred.pl [--period=period] [--rateport=rateport] [--bufferport=bufferport] [--numfit=numfit] [--numpred=numpred] [--mintest=mintest] [--maxtest=maxtest] [--maxabserr=maxabserr] [--maxerrmissest=maxerrmissest] [model=\"model\"]\n";
-  
+or die $usage;
 
-$COMMAND = "(hostloadpred server:tcp:$rateport target:stdio:stdout $period $numfit $numpred $mintest $maxtest $maxabserr $maxerrmissest $model | predbuffer $bufferdepth source:stdio:stdin server:tcp:$bufferport connect:tcp:9754) &";
+if ($help) { 
+  die $usage;
+}
+
+$COMMAND = "(hostloadpred server:tcp:$rateport target:stdio:stdout $period $numfit $numpred $mintest $maxtest $maxabserr $maxerrmissest $model | predbuffer $bufferdepth source:stdio:stdin server:tcp:$bufferport connect:tcp:9754) >/dev/null 2>/dev/null &";
 
 #print STDERR "$COMMAND\n";
 

@@ -1,11 +1,16 @@
 #!/usr/bin/env perl
-
+use RPS;
 use Getopt::Long;
+
+
+$usage="Get predictions fom a list of places using get_predictions_on.pl\n\n".
+"usage: get_predictions_list.pl [--num=num] list\n".RPSBanner();
+
 
 $numtoprint=-1;
 
 &GetOptions("num=i"=>\$numtoprint) and $#ARGV==0 
-or die "usage: get_preds_list.pl --num=num list\n";
+or die $usage;
 
 open(LIST,$ARGV[0]);
 $numhosts=0;
@@ -34,7 +39,7 @@ for ($i=0;$i<$numhosts;$i++) {
     if ($numtoprint>0) {
 	$num = $num > $numtoprint ? $numtoprint : $num;
     }
-    print "$host[$i]:";
+    print "$host[$i]($otheropts[$i]):";
     for ($j=0;$j<$num;$j++) {
 	print "\t$pv[$j]";
     }

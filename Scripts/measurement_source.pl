@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use RPS;
+
 $#ARGV>=4 or die 
 "Make text measurements available via TCP streaming and \n".
 "request/response interface\n\n".
@@ -10,12 +12,7 @@ $#ARGV>=4 or die
 "period         = period of input in us\n".
 "text-generator = code to run to generate measurements\n".
 "               one (value) or two (timestamp value) columns\n\n".
-"RPS: Resource Prediction System Toolkit\n".
-"---------------------------------------\n\n".
-"Copyright (c) 1999-2002 by Peter A. Dinda\n".
-"Use subject to license (\$RPS_DIR/LICENSE)\n\n".
-"http://www.cs.northwestern.edu/~RPS\n".
-"rps-help\@cs.northwestern.edu\n";
+RPSBanner();
 
 $stream_port = shift;
 $buffer_port = shift;

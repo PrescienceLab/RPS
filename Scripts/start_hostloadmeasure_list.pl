@@ -1,9 +1,12 @@
 #!/usr/bin/env perl
 
-if ($#ARGV!=0) { 
-    print STDERR "start_hostloadmeasure_list.pl list\n";
-    exit;
-}
+use RPS;
+
+$usage="Start host load measurement on a list of hosts using start_hostloadmeasure_on.pl\n\n".
+"usage: start_hostloadmeasure_list.pl list [other args]\n".RPSBanner();
+
+$#ARGV==0 or die $usage;
+
 
 open(LIST,$ARGV[0]);
 while (<LIST>) {

@@ -1,10 +1,11 @@
 #!/usr/bin/env perl
 
+use RPS;
 use Getopt::Long;
 
 $#ARGV>=9 or die 
 "Run text measurements through a prediction server and make the\n".
-"measuremetns and predictions available via TCP streaming \n".
+"measurements and predictions available via TCP streaming \n".
 "and request/response interface\n\n".
 "usage: measurement_and_prediction_source.pl [--model='MANAGED ...'] measurement_period measurement_stream_port|none measurement_buffer_port|none measurement_numitems prediction_numahead prediction_ctrl_port prediction_stream_port|none prediction_buffer_port|none prediction_numitems text-generator\n\n".
 "MANAGED ...    = a managed model. Default is \n".
@@ -20,12 +21,7 @@ $#ARGV>=9 or die
 "prediction_numitems     = number of predictions to buffer\n".
 "text-generator          = code to run to generate measurements\n".
 "                           one (value) or two (timestamp value) columns\n\n".
-"RPS: Resource Prediction System Toolkit\n".
-"---------------------------------------\n\n".
-"Copyright (c) 1999-2002 by Peter A. Dinda\n".
-"Use subject to license (\$RPS_DIR/LICENSE)\n\n".
-"http://www.cs.northwestern.edu/~RPS\n".
-"rps-help\@cs.northwestern.edu\n";
+RPSBanner();
 
 $model = "MANAGED 300 300 100 0.25 0.25 AR 16";
 

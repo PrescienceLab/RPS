@@ -1,10 +1,17 @@
 #!/usr/bin/env perl
 
-$#ARGV==0 or die "usage: gen_numbers.pl interval\n";
+use RPS;
+
+$usage=
+"Generate random numbers for playing with RPS\n\n".
+"usage: gen_numbers.pl sample_rate\n".RPSBanner();
+
+$#ARGV==0 or die $usage;
 
 $|=1;
 
 $time=shift;
+$time=1.0/$time;
 
 for ($i=0;;$i++){
   $num=rand();

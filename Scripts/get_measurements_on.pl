@@ -1,13 +1,17 @@
 #!/usr/bin/env perl
+use RPS;
 
 use Getopt::Long;
 
-$usage = "get_measurements_on.pl [--bufferport=bufferport] [--num=number] host";
+
+$usage = "Get measurements from a measure buffer\n\n".
+"usage: get_measurements_on.pl [--measurebufferport=port] [--num=number] host\n".RPSBanner();
 
 $bufferport = $ENV{"HOSTLOADMEASUREBUFFERPORT"};
+
 $num = 1;
 
-&GetOptions(("bufferport=i"=>\$bufferport, "num=i"=>\$num) ) ;
+&GetOptions(("measurebufferport=i"=>\$bufferport, "num=i"=>\$num) ) ;
 
 $#ARGV==0 and $host=$ARGV[0] or die "usage: $usage\n";
 

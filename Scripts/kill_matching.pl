@@ -1,4 +1,11 @@
 #!/usr/bin/env perl
+use RPS;
+
+$usage="Kill processes with matching regexp\n\n".
+"usage: kill_matching.pl regexp\n".RPSBanner();
+
+$#ARGV==0 or die $usage;
+
 
 $match=$ARGV[0];
 

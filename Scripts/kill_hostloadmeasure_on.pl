@@ -2,13 +2,16 @@
 #
 #
 
+use RPS;
+
+$usage="Kill host load measurement on a host by sshing kill_hostloadmeasure.pl\n\n".
+"usage: kill_hostloadmeasure_on.pl host\n".RPSBanner();
+
+$#ARGV==0 or die $usage;
+
 $RSH = "ssh";
 $SSCMD = "kill_hostloadmeasure.pl";
 
-if ($#ARGV!=0) {
-    print STDERR "kill_hostloadmeasure_on.pl host\n";
-    exit;
-}
 
 $HOST = $ARGV[0];
 

@@ -1,14 +1,16 @@
 #!/usr/bin/env perl
 #
 #
+use RPS;
+
+$usage="Kill host load prediction on a host by sshing kill_hostloadpred.pl\n\n".
+"usage: kill_hostloadpred_on.pl host\n".RPSBanner();
+
+$#ARGV==0 or die $usage;
 
 $RSH = "ssh";
 $SSCMD = "kill_hostloadpred.pl";
 
-if ($#ARGV!=0) {
-    print STDERR "kill_hostloadpred_on.pl host\n";
-    exit;
-}
 
 $HOST = $ARGV[0];
 
