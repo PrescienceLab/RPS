@@ -1,0 +1,4 @@
+./obj/ALPHA/DUX/getflowbw.o: ./getflowbw.cpp \
+ /afs/cs/project/cmcl-pdinda-3/REMOS/modeler/include/remos.h \
+ /afs/cs/project/cmcl-pdinda-3/REMOS/listpack/include/memoryPack.h
+./obj/ALPHA/DUX/test.o: ./test.cpp getflowbw.h

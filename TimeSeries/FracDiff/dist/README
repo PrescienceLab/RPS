@@ -1,0 +1,33 @@
+fracdf  Maximum likelihood estimation of the parameters of a fractionally
+        differenced ARIMA (p,d,q) model. For long-memory dependence in
+        time series. (Haslett and Raftery, Applied Statistics 38, 1989, 1-50.)
+
+The submission consists of the following files :
+
+fracdiff.DOC    documentation from top-level subroutines fracdf and fdgen
+fdcore.f        subroutines implementing the Haslett and Raftery algorithm
+fdsim.f         simulates data for use with fracdiff
+fdout.f         output-handling subroutines 
+fdhess.f        subroutines for computing Hessian and variance information
+fdmach.f        auxiliary subroutines for machine constants
+fdmin.f         auxiliary subroutines from MINPACK
+fdgam.f         auxiliary subroutines for the gamma function
+fdlin.f         auxiliary subroutines from LINPACK
+fdran.f         auxiliary subroutines from RANLIB
+example.f       sample main program using test problem generator
+Makefile        UNIX Makefile for running the example
+
+The relevant documentation is contained in the file fracdiff.DOC, which is a 
+copy of the comments for the top-level subroutines fracdf (in fdcore.f),
+fdsim and fdvar (in fdhess.f). Subroutine fdvar is included to allow users to
+recompute the variance estimate with a different finite-difference interval
+for derivatives with respect to the fractional-differencing parameter.
+
+Standard output unit number is assumed to be 6.
+
+copyright 1991 Department of Statistics, Univeristy of Washington
+funded by ONR contracts N-00014-88-K-0265 and N-00014-91-J-1074
+
+Permission granted for unlimited redistribution for non-commercial use.
+
+Please report all anomalies to fraley@stat.washington.edu.

@@ -1,0 +1,2 @@
+./obj/I386/LINUX/getflowbw.o: ./src/getflowbw.cpp
+./obj/I386/LINUX/test.o: ./src/test.cpp include/getflowbw.h

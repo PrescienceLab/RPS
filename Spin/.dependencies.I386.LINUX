@@ -1,0 +1,208 @@
+./obj/I386/LINUX/timing.o: ./src/timing.cpp include/timing.h
+./obj/I386/LINUX/apply.o: ./src/apply.cpp include/timing.h include/apply.h
+./obj/I386/LINUX/LoadTrace.o: ./src/LoadTrace.cpp include/LoadTrace.h
+./obj/I386/LINUX/Spin.o: ./src/Spin.cpp include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h
+./obj/I386/LINUX/SpinServer.o: ./src/SpinServer.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h
+./obj/I386/LINUX/EstimateExecTime.o: ./src/EstimateExecTime.cpp include/EstimateExecTime.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h
+./obj/I386/LINUX/TRACE.o: ./src/TRACE.cpp include/TRACE.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h
+./obj/I386/LINUX/find_tau.o: ./src/find_tau.cpp include/timing.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
+  include/apply.h
+./obj/I386/LINUX/test_apply.o: ./src/test_apply.cpp include/timing.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
+  include/apply.h
+./obj/I386/LINUX/genload.o: ./src/genload.cpp include/LoadTrace.h include/timing.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
+  include/apply.h
+./obj/I386/LINUX/defilter_trace.o: ./src/defilter_trace.cpp include/LoadTrace.h
+./obj/I386/LINUX/select_from_binary_trace_file.o: ./src/select_from_binary_trace_file.cpp \
+  include/LoadTrace.h
+./obj/I386/LINUX/alpha_to_network.o: ./src/alpha_to_network.cpp include/LoadTrace.h
+./obj/I386/LINUX/network_to_alpha.o: ./src/network_to_alpha.cpp include/LoadTrace.h
+./obj/I386/LINUX/network_to_ascii.o: ./src/network_to_ascii.cpp include/LoadTrace.h
+./obj/I386/LINUX/ascii_to_network.o: ./src/ascii_to_network.cpp include/LoadTrace.h
+./obj/I386/LINUX/alpha_to_ascii.o: ./src/alpha_to_ascii.cpp include/LoadTrace.h
+./obj/I386/LINUX/calibrate.o: ./src/calibrate.cpp include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h
+./obj/I386/LINUX/testspin.o: ./src/testspin.cpp include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h
+./obj/I386/LINUX/loadmodeltest.o: ./src/loadmodeltest.cpp include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h
+./obj/I386/LINUX/spinserver.o: ./src/spinserver.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h
+./obj/I386/LINUX/spinclient.o: ./src/spinclient.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h
+./obj/I386/LINUX/spinservertest.o: ./src/spinservertest.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h
+./obj/I386/LINUX/test_pred.o: ./src/test_pred.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  include/EstimateExecTime.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h
+./obj/I386/LINUX/test_pred_vartau.o: ./src/test_pred_vartau.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  include/EstimateExecTime.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h
+./obj/I386/LINUX/play.o: ./src/play.cpp include/EstimateExecTime.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  include/SpinServer.h include/Spin.h
+./obj/I386/LINUX/test_sched.o: ./src/test_sched.cpp include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  include/EstimateExecTime.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h
+./obj/I386/LINUX/test_sched_aggressive.o: ./src/test_sched_aggressive.cpp \
+  include/SpinServer.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h include/Spin.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  include/EstimateExecTime.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/Mirror/include/glarp.h

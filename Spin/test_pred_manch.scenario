@@ -1,0 +1,22 @@
+PRED /afs/cs/project/cmcl-pdinda-3/PPS/LoadMon/manchesters.list
+SPIN /afs/cs/project/cmcl-pdinda-3/PPS/Spin/manchesters.list
+
+TESTPRED /afs/cs/project/cmcl-pdinda-3/PPS/Spin/bin/ALPHA/DUX/test_pred
+
+NUMTASKS 100000
+TASKLEN  0.05:5
+INTLEN   1:20
+
+HOST manchester-1
+HOST manchester-2
+HOST manchester-3
+HOST manchester-4
+HOST manchester-5
+HOST manchester-6
+HOST manchester-7
+HOST manchester-8
+
+
+
+
+
