@@ -78,20 +78,21 @@ int NewtonPredictor::StepsToPrime() const
 {
   return 0;
 }
-
+ 
 void NewtonPredictor::ComputeCoeffs() 
 {
   int n=window.size();
   int i,j;
 
-  // window from 0..n corresponds to values 0,-1,-2,-3,...
+  // window from 0..n-1 corresponds to values -n-1, -n+2, ... 0
+  //                                           0, 1, 2, 3, 3, 4, .. n-1
 
   for (i=0;i<n;i++) { 
     coeffs[i]=window[i];
   }
 
-  for (j=0;i<(n-1);j++) { 
-    for (i=n-1;i>j+1;i--) { 
+  for (j=0;j<(n-1);j++) { 
+    for (i=n-1;i>=(j+1);i--) { 
       coeffs[i]=(coeffs[i]-coeffs[i-1])/(i-(i-j));
     }
   }
@@ -103,8 +104,11 @@ double NewtonPredictor::ComputePrediction(const int step) const
 
   double x=coeffs[n-1];
 
+  // go to location n+step-1
+  int loc=n+step;
+
   for (int i=n-2;i>=0;i--) { 
-    x =  x*((-step) - i )  + coeffs[i];
+    x =  x*((loc - i ))  + coeffs[i];
   }
   
   return x;
@@ -114,9 +118,9 @@ double NewtonPredictor::ComputePrediction(const int step) const
 double NewtonPredictor::Step(const double obs)
 {
   if (window.size()==(unsigned)order) {
-    window.pop_back();
+    window.pop_front();
   }
-  window.push_front(obs);
+  window.push_back(obs);
 
   ComputeCoeffs();
 

@@ -858,6 +858,9 @@ char *ModelTemplate::GetName() const
   case BESTMEDIAN:
     sprintf(&(name[strlen(name)]), "BESTMEDIAN(%d)",p);
     break;
+  case NEWTON:
+    sprintf(&(name[strlen(name)]), "NEWTON(%d)",p);
+    break;
   case AR:
     sprintf(&(name[strlen(name)]), "AR(%d)",p);
     break;
