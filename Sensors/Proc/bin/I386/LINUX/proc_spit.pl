@@ -19,7 +19,7 @@ $showtimestamp=0;
 $width=0;
 
 %optcl = ('rate=f'   , \$rate,
-	  'max=i'    , \$max,
+	  'max=i'    , \$loopcnt,
           'period=i' , \$period,
           'h', \$help,
           'help', \$help,
@@ -44,8 +44,8 @@ if (!($rate )){
     }
 }
 
-if (!($max )){
-    $max = 9^999999999999;
+if (!($loopcnt )){
+    $loopcnt = 9^999999999999;
 }
 
 if (!($period )){
@@ -57,12 +57,13 @@ if (!($period )){
     }
 }
 
-for ($i = 0; $i < $max; $i++){
-    $t = gettimeofday(); print "$t\t";
+for ($i = 0; $i < $loopcnt; $i++){
+    $t = gettimeofday(); 
+    print "$t\t" if $showtimestamp;
     $col=0;
     take_snapshot(); 
     if ($width>0) {
-	for ($i=$col;$i<$width;$i++) {
+	for ($j=$col;$j<$width;$j++) {
 	    print "\t0";
 	}
     }
