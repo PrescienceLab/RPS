@@ -56,6 +56,23 @@ void OutputBlocksToSpec(vector<WaveletOutputSampleBlock<SAMPLE> > &out,
   }
 };
 
+template <class SAMPLE>
+void OutputDWTBlocksToSpec(vector<WaveletOutputSampleBlock<SAMPLE> > &out,
+			   const DiscreteWaveletOutputSampleBlock<SAMPLE> &in,
+			   const vector<int> &spec,
+			   const unsigned numlevels,
+			   const unsigned lowest_outlvl)
+{
+  unsigned i;
+  for (i=0; i<spec.size(); i++) {
+    unsigned level=spec[i]-lowest_outlvl;
+    unsigned first=(0x1 << (numlevels-1-level)) - 1;
+    unsigned last=first+(0x1 << (numlevels-1-level)) - 1;
+    deque<SAMPLE> buf;
+    out[i].SetSamples(in.GetSamples(buf,first,last));
+  }
+};
+
 /********************************************************************************
  *
  * This class performs a streaming wavelet transform, either block by block or 
@@ -406,24 +423,24 @@ public:
 
   // This routine implements the circular wavelet transform based on the work
   //  by Mallat and Strang (See tech report for citations)
-  bool DiscreteWaveletOperation
+  unsigned DiscreteWaveletOperation
     (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &approxblock,
      DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &detailblock,
      const SampleBlock<INSAMPLE> &inblock);
 
-  bool DiscreteWaveletTransformOperation
+  unsigned DiscreteWaveletTransformOperation
     (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &outblock,
      const SampleBlock<INSAMPLE> &inblock);
 
-  bool DiscreteWaveletApproxOperation
+  unsigned DiscreteWaveletApproxOperation
     (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &approxblock,
      const SampleBlock<INSAMPLE> &inblock);
 
-  bool DiscreteWaveletDetailOperation
+  unsigned DiscreteWaveletDetailOperation
     (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &detailblock,
      const SampleBlock<INSAMPLE> &inblock);
 
-  bool DiscreteWaveletMixedOperation
+  unsigned DiscreteWaveletMixedOperation
     (vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approxblock,
      vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detailblock,
      const SampleBlock<INSAMPLE> &inblock,
@@ -2186,7 +2203,7 @@ ChangeWaveletType(const WaveletType wavetype)
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletOperation
 (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &approxblock,
  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &detailblock,
@@ -2228,147 +2245,92 @@ DiscreteWaveletOperation
       MultiplyAccumulateVectorsAndScale(detail,hpfcoefs,z_vector,0.5);
     }
     // Place outputs in appropriate output blocks with index and level
-
-
-    // Initialize a_vector for next iteration
-
-  }
-}
-
-#if MOREWORK
-  unsigned M=inblock.GetBlockSize();
-  unsigned i, L, bitsum=0, bittest=M;
-
-  // Check if the inblock is a power of 2 and find the value of L
-  for (i=0; i<sizeof(unsigned)*8; i++) {
-    if ((bittest & 0x1) == 1) {
-      L=i;
-      bitsum++;
+    for (j=approx.size(); j>0; j--) {
+      OUTSAMPLE a_samp(approx[j-1],J-i+lowest_outlvl,index_a[J-i]+j-1);
+      approxblock.PushSampleFront(a_samp);
     }
-    bittest = bittest >> 1;
-  }
-  if (bitsum != 1) {
-    return false;
-  }
+    index_a[J-i] += approx.size();
 
-  // Clear the output storage
-  outblock.ClearBlock();
-
-  vector<double> lpfcoefs, hpfcoefs;
-  unsigned N=wavecoefs.GetNumCoefs();
-  wavecoefs.GetTransformCoefsLPF(lpfcoefs);
-  wavecoefs.GetTransformCoefsHPF(hpfcoefs);
-
-  // Transfer the input block samples to working vector
-  vector<SAMPLETYPE> work;
-  INSAMPLE insamp;
-  for (i=0; i<M; i++) {
-    insamp = inblock[i];
-    work.push_back(insamp.GetSampleValue());
-  }
-
-  vector<SAMPLETYPE> lowout, highout, stageinput;
-  unsigned stagebound, j, k;
-  for (int l=L; l>0; l--) {
-
-    // Stagebound is log base 2 of loop variable l
-    stagebound=1;
-    for (i=0; i<l-1; i++) {
-      stagebound *= 2;
+    for (j=detail.size(); j>0; j--) {
+      OUTSAMPLE d_samp(detail[j-1],J-i+lowest_outlvl,index_d[J-i]+j-1);
+      detailblock.PushSampleFront(d_samp);
     }
+    index_d[J-i] += detail.size();
 
-    lowout.clear(); highout.clear();
-    for (i=0; i<stagebound; i++) {
-      stageinput.clear();
-      for (j=0; j<N; j++) {
-	unsigned index = 2*i+j;
-	while (index > 2*stagebound-1) {
-	  index -= 2*stagebound;
-	}
-	stageinput.push_back(work[index]);
-      }
-	
-      SAMPLETYPE r1=0, r2=0;
-      for (k=0; k<N; k++) {
-	r1 += lpfcoefs[k]*stageinput[k];
-	r2 += hpfcoefs[k]*stageinput[k];
-      }
-      lowout.push_back(r1);
-      highout.push_back(r2);
-    }
-
-    for (i=0; i<2*stagebound; i++) {
-      if (i < stagebound) {
-	work[i] = lowout[i];
-      } else {
-	work[i] = highout[i];
-      }
+    for (j=0; j<2*m; j++) {
+      a_vector[j] = (j<m) ? approx[j] : detail[j];
     }
   }
-
-  // Transfer the results to the output sample block, add index, and level number
-  int level, ring;
-  for (i=M-1; i>0; i--) {
-    // Find log base 2, cropped at highest bit
-    bittest = i;
-    for (int l=sizeof(unsigned)*8-1; l>=0; l--) {
-      if ((bittest & 0x8000) == 1) {
-	ring=l;
-	break;
-      }
-      bittest = bittest << 1;
-    }
-
-    level = L - 1 - ring;
-    OUTSAMPLE out(work[i], level+lowest_outlvl, index[level]++);
-    outblock.PushSampleFront(out);
-  }
-
-  // Handle highest level sample
-  OUTSAMPLE out(work[0], L+lowest_outlvl, index[L]++);
-  outblock.PushSampleFront(out);
-
-  return true;
-#endif
-  return true;
+  return lenofblock;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletTransformOperation
 (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &outblock,
  const SampleBlock<INSAMPLE> &inblock)
 {
-  return true;
+  unsigned J=NumberOfLevels(inblock.GetBlockSize());
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> approxblock(J, lowest_outlvl);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> detailblock(J, lowest_outlvl);
+  unsigned lenofblock=DiscreteWaveletOperation(approxblock,detailblock,inblock);
+
+  outblock = detailblock;
+  outblock.PopSampleFront();
+
+  // Overwrite the approximation sample and change the level
+  OUTSAMPLE approxsample=approxblock[0];
+  approxsample.SetSampleLevel(J+lowest_outlvl);
+  outblock.PushSampleFront(approxsample);
+  return lenofblock;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletApproxOperation
 (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &approxblock,
  const SampleBlock<INSAMPLE> &inblock)
 {
-  return true;
+  unsigned J=NumberOfLevels(inblock.GetBlockSize());
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> detailblock(J, lowest_outlvl);
+  unsigned lenofblock=DiscreteWaveletOperation(approxblock,detailblock,inblock);
+  return lenofblock;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletDetailOperation
 (DiscreteWaveletOutputSampleBlock<OUTSAMPLE> &detailblock,
  const SampleBlock<INSAMPLE> &inblock)
 {
-  return true;
+  unsigned J=NumberOfLevels(inblock.GetBlockSize());
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> approxblock(J, lowest_outlvl);
+  unsigned lenofblock=DiscreteWaveletOperation(approxblock,detailblock,inblock);
+  return lenofblock;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletMixedOperation
 (vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approxblock,
  vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detailblock,
  const SampleBlock<INSAMPLE> &inblock,
  const SignalSpec &spec)
 {
-  return true;
+  unsigned J=NumberOfLevels(inblock.GetBlockSize());
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> ablock(J, lowest_outlvl);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> dblock(J, lowest_outlvl);
+  unsigned lenofblock=DiscreteWaveletOperation(ablock,dblock,inblock);
+
+  OutputDWTBlocksToSpec<OUTSAMPLE>(approxblock,
+				   ablock,
+				   spec.approximations,
+				   lowest_outlvl);
+  OutputDWTBlocksToSpec<OUTSAMPLE>(detailblock,
+				   dblock,
+				   spec.details,
+				   lowest_outlvl);
+  return lenofblock;
 }
 
 /********************************************************************************

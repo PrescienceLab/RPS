@@ -197,7 +197,8 @@ DiscreteWaveletOutputSampleBlock(const unsigned numlevels,
 				 const int lowest_level) :
   OutputSampleBlock<SAMPLETYPE>()
 {
-  // Need to reserve 2 power n space in samples, and set lowest level
+  this->numlevels = numlevels;
+  this->lowest_level = lowest_level;
 }
 
 template <class SAMPLETYPE>
@@ -205,7 +206,8 @@ DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
 DiscreteWaveletOutputSampleBlock(const DiscreteWaveletOutputSampleBlock &rhs) :
   OutputSampleBlock<SAMPLETYPE>(rhs)
 {
-  // Same as above
+  this->numlevels = rhs.numlevels;
+  this->lowest_level = rhs.lowest_level;
 }
 
 template <class SAMPLETYPE>
