@@ -39,11 +39,33 @@ chdir "RPS-development";
 print "Removing CVS directories\n";
 `rm -rf \`find . -name "CVS" -type d -print\``;
 
-print "Removing non-distributed packages\n";
+print "Removing and turning off undistributed packages\n";
 foreach $package (keys %PackagesToRemove) {
   print "Removing $package\n";
   `rm -rf $package`;
+  if (!($PackagesToRemove{$package} eq "")) {
+    print "Modifying configuration makefiles for $package\n";
+    foreach $mc (split(/\s+/,`ls build/Makefile.conf.*`)) {
+      fixfile($mc,
+	      "$PackagesToRemove{$package}\\s*=\\s*YES",
+	      "$PackagesToRemove{$package} = NO");
+    }
+  }
 }
+
+print "Turning off other packages.\n";
+foreach $package (keys %PackagesDeactivate) {
+  print "Turning off $package\n";
+  if (!($PackagesToDeactivate{$package} eq "")) {
+    print "Modifying configuration makefiles for $package\n";
+    foreach $mc (split(/\s+/,`ls build/Makefile.conf.*`)) {
+      fixfile($mc,
+	      "$PackagesToDeactivate{$package}\\s*=\\s*YES",
+	      "$PackagesToDeactivate{$package} = NO");
+    }
+  }
+}
+
 
 chdir "..";
 
@@ -62,3 +84,17 @@ print "Cleaning up.\n";
 print "Done.\n";
 
 
+sub fixfile {
+  my ($infile, $searchre, $replre) = @_;
+  my $outfile=$infile."re";
+#  print "$infile, $searchre, $replre\n";
+  open (IN, $infile);
+  open (OUT, ">$outfile");
+  while (<IN>) {
+    s/$searchre/$replre/g;
+    print OUT;
+  }
+  close(IN);
+  close(OUT);
+  `mv $outfile $infile`;
+}
