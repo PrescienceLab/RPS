@@ -1,7 +1,7 @@
 #include "transforms.h"
 
 bool StructureOptimizer(SignalSpec &optim,
-			unsigned numstages,
+			unsigned &stages,
 			const SignalSpec &spec)
 {
   bool transform=false;
@@ -35,7 +35,7 @@ bool StructureOptimizer(SignalSpec &optim,
     if (optim.approximations[0]==(int)optim.details.size()+1) {
       transform=true;
     }
-    numstages=optim.approximations[0]+1;
+    stages=optim.approximations[0]+1;
   } else if (optim.details.size()) {
     // Zero fill operation, find maximum detail
     int maxlevel=optim.details[0];
@@ -44,9 +44,8 @@ bool StructureOptimizer(SignalSpec &optim,
 	maxlevel=optim.details[i];
       }
     }
-    numstages=maxlevel+1;
+    stages=maxlevel+1;
   }
-  cerr << "The number of stages: " << numstages << endl;
   return transform;
 }
 

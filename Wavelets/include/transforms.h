@@ -26,7 +26,7 @@ struct SignalSpec {
 
 // Returns true if TRANSFORM, false if ZEROFILL
 bool StructureOptimizer(SignalSpec &optim, 
-			unsigned numstages,
+			unsigned &stages,
 			const SignalSpec &spec);
 
 void InvertSignalSpec(vector<int> &inversion,

@@ -124,8 +124,6 @@ int main(int argc, char *argv[])
   CalculateWaveletDelayBlock(wtcoefnum, optim_stages, delay);
   DelayBlock<wosd> dlyblk(optim_stages, 0, delay);
 
-  cerr << "The number of stages: " << optim_stages << endl;
-
   // Instantiate a static reverse wavelet transform
   StaticReverseWaveletTransform<double, wisd, wosd> srwt(optim_stages,wt,2,2,0);
 
