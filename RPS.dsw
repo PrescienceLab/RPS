@@ -3,6 +3,18 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
+Project: "Finder"=".\Finder\Finder.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "GetFlowBW"=".\Sensors\GetFlowBW\GetFlowBW.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -40,6 +52,30 @@ Package=<4>
 ###############################################################################
 
 Project: "RPSInterface"=".\RPSInterface\RPSInterface.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "RTA"=".\RTA\RTA.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "RTSA"=".\RTSA\RTSA.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -1000,6 +1036,63 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name GetLoadAvg
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_rta"=".\RTA\test_rta.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Finder
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RTA
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_rtsa"=".\RTSA\test_rtsa.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "text2measure"=".\PredComp\text2measure.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
     End Project Dependency
 }}}
 

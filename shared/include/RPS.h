@@ -8,5 +8,8 @@
 #include "RemosInterface.h"
 #include "PredComp.h"
 #include "Spin.h"
+#include "RTA.h"
+#include "RTSA.h"
+#include "Finder.h"
 
 #endif

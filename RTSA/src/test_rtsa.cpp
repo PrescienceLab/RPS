@@ -1,4 +1,4 @@
-#include <iostream>
+#include <iostream.h>
 #include "RTSA.h"
 
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
   req.sf=atof(argv[3]);
   req.numhosts=argc-4;
   
-  req.hosts = new (Host *) [req.numhosts];
+  req.hosts = new Host * [req.numhosts];
   for (int i=0;i<req.numhosts;i++) {
     req.hosts[i] = new Host(argv[4+i]);
   }
@@ -27,5 +27,6 @@ int main(int argc, char *argv[])
   } else {
     cout <<resp.tnom<<" second task with sf="<<resp.sf<<" (deadline "<<resp.tnom*(1+resp.sf)<<") and confidence "<<resp.conf<<" advised to go to host "<<resp.host.name<<" with running time ["<<resp.runningtime.tlb<<","<<resp.runningtime.tub<<"] ("<<resp.runningtime.texp<<")"<<endl;
   }
+  return 0;
 }
      

@@ -25,7 +25,7 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = I386
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, CYGWIN
 OS       = CYGWIN
 
 

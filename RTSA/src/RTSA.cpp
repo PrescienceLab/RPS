@@ -18,11 +18,14 @@ int RTSAAdviseTask(RTSARequest &req, RTSAResponse &resp)
 {
   static bool inited=false;
   int i;
-  bool valid[req.numhosts];
-  PredBufferRef           pref[req.numhosts];
+  int rc;
+  bool *valid = new bool [req.numhosts];
+  PredBufferRef           *pref = new PredBufferRef[req.numhosts];
   BufferDataRequest                   breq;
-  BufferDataReply<PredictionResponse> brepl[req.numhosts];
-
+  BufferDataReply<PredictionResponse> *brepl = new BufferDataReply<PredictionResponse>[req.numhosts];
+  ExecTimeEstimationRequest rtareq;
+  ExecTimeEstimationReply   *rtaresp = new ExecTimeEstimationReply[req.numhosts];
+  int *possiblehosts = new int[req.numhosts];
 
   if (!inited) {
     InitRandom();
@@ -55,8 +58,6 @@ int RTSAAdviseTask(RTSARequest &req, RTSAResponse &resp)
     }
   }
 
-  ExecTimeEstimationRequest rtareq;
-  ExecTimeEstimationReply   rtaresp[req.numhosts];
   rtareq.confidence=req.conf;
   rtareq.cputime=req.tnom;
   int numvalid=0;
@@ -71,11 +72,12 @@ int RTSAAdviseTask(RTSARequest &req, RTSAResponse &resp)
   }
    
   if (numvalid==0) {
-    return -1;
+    rc=-1;
+    goto LEAVE;
   }
 
   /* Schedule - first try to find possible hosts */
-  int possiblehosts[req.numhosts];
+
   int numpossiblehosts;
   int minexpecthost;
   int selectedhost;
@@ -114,6 +116,15 @@ int RTSAAdviseTask(RTSARequest &req, RTSAResponse &resp)
   resp.runningtime.tlb=rtaresp[selectedhost].cilower;
   resp.runningtime.tub=rtaresp[selectedhost].ciupper;
 
-  return 0;
+  rc=0;
+
+LEAVE:
+  delete [] valid;
+  delete [] pref;
+  delete [] brepl;
+  delete [] rtaresp;
+  delete [] possiblehosts;
+
+  return rc;
 
 }
