@@ -70,7 +70,7 @@ endif
 
 MAINLIST = $(EXECLIST:=.o)
 
-LIB_TS_OBJECTS_LIST = linear.o poly.o ar.o arima.o arfima.o etathetapred.o \
+LIB_TS_OBJECTS_LIST = poly.o ar.o arima.o arfima.o etathetapred.o \
                       tools.o ma.o arma.o bestmean.o it.o evaluate_core.o \
                       crossval_core.o mean.o last.o none.o fit.o
 

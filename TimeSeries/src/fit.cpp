@@ -389,6 +389,39 @@ ModelTemplate *ParseModel(int argc, char *argv[])
 }   
 
 
+#define MAX_COMPS 100
+ModelTemplate *ParseModel(char *buf)
+{
+  char **argv = new char * [MAX_COMPS] ;
+  char *temp=new char [strlen(buf)+1];
+  int i;
+  ModelTemplate *mt;
+  
+  memcpy(temp,buf,strlen(buf)+1);
+  
+  i=0;
+  if ((argv[i]=strtok(temp," \t"))==NULL) { 
+    mt=0;
+    goto out;
+  }
+  i++;
+  while ((argv[i]=strtok(NULL," \t"))!=NULL) {
+    i++;
+  }
+  
+  mt = ParseModel(i,argv);
+  
+ out:
+  delete [] temp;
+  delete [] argv;
+  return mt;
+}
+
+  
+
+
+
+
 
 
 void ModelTemplate::Print(FILE *out) const

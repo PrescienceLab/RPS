@@ -12,6 +12,7 @@
 struct ModelTemplate;
 
 ModelTemplate *ParseModel(int argc, char *argv[]);
+ModelTemplate *ParseModel(char *buf);
 
 Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt);
 

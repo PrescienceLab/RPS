@@ -43,7 +43,9 @@ endif
 EXECLIST = test_pred     \
            test_pred_vartau \
            test_sched \
-           test_sched_aggressive
+           test_sched_aggressive\
+           wavelet_pred
+
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include "abstract.h"
 #include "util.h"
-#include "linear.h"
 // Autoregressive Integrated Moving Average Model
 
 

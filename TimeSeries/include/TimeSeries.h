@@ -23,7 +23,6 @@
 
 
 #include "it.h"
-#include "linear.h"
 #include "maths.h"
 #include "poly.h"
 #include "random.h"

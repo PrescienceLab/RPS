@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include "abstract.h"
-#include "linear.h"
 #include "etathetapred.h"
 
 // Mixed Autoregressive and Moving Average Model

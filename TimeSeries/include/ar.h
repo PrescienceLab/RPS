@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "abstract.h"
-#include "linear.h"
 #include "etathetapred.h"
 #include "pdqparamsets.h"
 

@@ -1,18 +1,6 @@
-
-#include "coefficients.h"
-#include "delay.h"
-#include "downsample.h"
-#include "filter.h"
-#include "indexmanager.h"
-#include "jitterhelper.h"
-#include "sampleblock.h"
-#include "sample.h"
-#include "stage.h"
-#include "transforms.h"
-#include "upsample.h"
-#include "util.h"
-#include "waveletinfo.h"
-#include "waveletsampleblock.h"
+#ifndef _wavelets
+#define _wavelets
 #include "waveletsample.h"
-
-
+#include "waveletsampleblock.h"
+#include "transforms.h"
+#endif

@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include "abstract.h"
-#include "linear.h"
 #include "etathetapred.h"
 
 // Mean-of-last-n Model for the best n
