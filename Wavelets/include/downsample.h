@@ -22,7 +22,7 @@ public:
   DownSample & operator=(const DownSample &rhs);
 
   inline void     SetDownSampleRate(unsigned rate) { this->rate = rate;};
-  inline unsigned GetDownSampleRate() { return rate;};
+  inline unsigned GetDownSampleRate() const { return rate;};
   inline void     ResetState() { samplecount=0;};
 
   bool KeepSample();

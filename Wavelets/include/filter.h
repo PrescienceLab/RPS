@@ -25,7 +25,7 @@ public:
   FIRFilter & operator=(const FIRFilter &rhs);
 
   void   SetFilterCoefs(vector<double> &coefs);
-  void   GetFilterCoefs(vector<double> &coefs);
+  void   GetFilterCoefs(vector<double> &coefs) const;
   void   ClearDelayLine();
 
   void GetFilterOutput(Sample<SAMPLETYPE> &out,
@@ -108,7 +108,7 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefs
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterCoefs
-(vector<double> &coefs)
+(vector<double> &coefs) const
 {
   coefs = this->coefs;
 }

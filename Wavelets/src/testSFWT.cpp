@@ -84,15 +84,16 @@ int main(int argc, char *argv[])
     levels.push_back(pwos);
   }
 
+#if 0
   cout << "The Samples of the input file: " << endl;
   for (i=0; i<samples.size(); i++) {
     cout << "\t" << samples[i];
   }
-
+#endif
 
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingSampleOperation(outsamples, samples[i]);
-    
+
     // Print the new samples
     cout << "Output for input sample " << i << ":" << endl;
     for (unsigned j=0; j<outsamples.size(); j++) {

@@ -230,17 +230,17 @@ void WaveletCoefficients::ChangeType(WaveletType wt)
   init(wt);
 }
 
-string WaveletCoefficients::GetWaveletName()
+string WaveletCoefficients::GetWaveletName() const
 {
   return waveletname;
 }
 
-unsigned WaveletCoefficients::GetNumCoefs()
+unsigned WaveletCoefficients::GetNumCoefs() const
 {
   return numcoefs;
 }
 
-void WaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs)
+void WaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   for (unsigned i=0; i<numcoefs; i++) {
@@ -248,7 +248,7 @@ void WaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs)
   }
 }
 
-void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs)
+void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   for (unsigned i=0; i<numcoefs; i++) {
@@ -257,7 +257,7 @@ void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs)
 }
 
 
-void WaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs)
+void WaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   for (unsigned i=0; i<numcoefs; i++) {
@@ -265,7 +265,7 @@ void WaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs)
   }
 }
 
-void WaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs)
+void WaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   for (unsigned i=0; i<numcoefs; i++) {

@@ -51,7 +51,7 @@ void WaveletOutputSample::SetSampleLevel(int level)
   this->level = level;
 }
 
-int WaveletOutputSample::GetSampleLevel()
+int WaveletOutputSample::GetSampleLevel() const
 {
   return level;
 }
@@ -61,7 +61,7 @@ void WaveletOutputSample::SetSampleIndex(int index)
   this->index = index;
 }
 
-int WaveletOutputSample::GetSampleIndex()
+int WaveletOutputSample::GetSampleIndex() const
 {
   return index;
 }

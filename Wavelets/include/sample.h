@@ -52,12 +52,12 @@ public:
     value = sample;
   };
 
-  inline SAMPLETYPE GetSampleValue() {
+  inline SAMPLETYPE GetSampleValue() const {
     return value;
   };
 
   virtual void SetSampleLevel(int level) {};
-  virtual int GetSampleLevel() { return -1; };
+  virtual int GetSampleLevel() const { return -1; };
 
 
   virtual ostream & Print(ostream &os) const {

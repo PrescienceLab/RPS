@@ -27,13 +27,13 @@ public:
 
   void Initialize(WaveletType wt);
   void ChangeType(WaveletType wt);
-  string GetWaveletName();
-  unsigned GetNumCoefs();
+  string GetWaveletName() const;
+  unsigned GetNumCoefs() const;
 
-  void GetTransformCoefsLPF(vector<double> & coefs); // g(-n) -> G(z^(-1))
-  void GetTransformCoefsHPF(vector<double> & coefs); // h(-n) -> H(z^(-1))
-  void GetInverseCoefsLPF(vector<double> & coefs);   // g(n)  -> G(z)
-  void GetInverseCoefsHPF(vector<double> & coefs);   // h(n)  -> H(z)
+  void GetTransformCoefsLPF(vector<double> & coefs) const; // g(-n) -> G(z^(-1))
+  void GetTransformCoefsHPF(vector<double> & coefs) const; // h(-n) -> H(z^(-1))
+  void GetInverseCoefsLPF(vector<double> & coefs) const;   // g(n)  -> G(z)
+  void GetInverseCoefsHPF(vector<double> & coefs) const;   // h(n)  -> H(z)
 
   ostream & Print(ostream &os) const;
 };

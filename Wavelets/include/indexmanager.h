@@ -32,7 +32,7 @@ public:
     }
   };
 
-  inline bool Initialized() { return index_set; };
+  inline bool Initialized() const { return index_set; };
   inline void ClearIndexSetFlag() { index_set=false; };
   inline void SetIndexSetFlag() { index_set=true; };
 

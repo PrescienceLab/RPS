@@ -58,7 +58,7 @@ public:
   inline int GetLowestOutputLevel() const;
   inline void SetLowestOutputLevel(int lowest_outlvl);
 
-  inline unsigned GetIndexNumberOfLevel(int level);
+  inline unsigned GetIndexNumberOfLevel(int level) const;
   inline void SetIndexNumberOfLevel(int level, unsigned newindex);
 
   bool StreamInSample(Sample<SAMPLETYPE> &in);
@@ -423,7 +423,7 @@ SetLowestOutputLevel(int lowest_outlvl)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-GetIndexNumberOfLevel(int level)
+GetIndexNumberOfLevel(int level) const
 {
   return index[level];
 }

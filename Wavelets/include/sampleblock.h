@@ -101,7 +101,7 @@ public:
   };
 
   virtual void SetBlockLevel(int level) {};
-  virtual int GetBlockLevel() { return -1;};
+  virtual int GetBlockLevel() const { return -1;};
 };
 
 template <class SAMPLETYPE>

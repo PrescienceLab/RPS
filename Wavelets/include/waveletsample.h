@@ -21,9 +21,9 @@ public:
   WaveletOutputSample & operator=(const WaveletOutputSample &rhs);
 
   virtual inline void SetSampleLevel(int level);
-  virtual inline int GetSampleLevel();
+  virtual inline int GetSampleLevel() const;
   virtual inline void SetSampleIndex(int index);
-  virtual inline int GetSampleIndex();
+  virtual inline int GetSampleIndex() const;
 
   virtual ostream & Print(ostream &os) const {
     os << "level: " << level << "\tvalue: " << value << "\tindex: " << index << endl;

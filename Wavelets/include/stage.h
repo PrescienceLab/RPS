@@ -49,14 +49,14 @@ public:
   WaveletStageHelper & operator=(const WaveletStageHelper &rhs);
 
   void ChangeWaveletType(const WaveletType wavetype);
-  string GetWaveletName();
+  string GetWaveletName() const;
 
   void SetFilterCoefsLPF(const vector<double> &coefs);
-  unsigned GetNumCoefsLPF();
+  unsigned GetNumCoefsLPF() const;
   void PrintCoefsLPF();
 
   void SetFilterCoefsHPF(const vector<double> &coefs);
-  unsigned GetNumCoefsHPF();
+  unsigned GetNumCoefsHPF() const;
   void PrintCoefsHPF();
 
   void ClearLPFDelayLine();
@@ -106,16 +106,16 @@ public:
   ForwardWaveletStage & operator=(const ForwardWaveletStage &rhs);
 
   inline void SetDownSampleRateLow(unsigned rate);
-  inline unsigned GetDownSampleRateLow();
+  inline unsigned GetDownSampleRateLow() const;
 
   inline void SetDownSampleRateHigh(unsigned rate);
-  inline unsigned GetDownSampleRateHigh();
+  inline unsigned GetDownSampleRateHigh() const;
 
   inline void SetOutputLevelLow(int outlevel);
-  inline int GetOutputLevelLow();
+  inline int GetOutputLevelLow() const;
 
   inline void SetOutputLevelHigh(int outlevel);
-  inline int GetOutputLevelHigh();
+  inline int GetOutputLevelHigh() const;
 
   inline void ClearFilterDelayLines();
 
@@ -168,10 +168,10 @@ public:
   ReverseWaveletStage & operator=(const ReverseWaveletStage &rhs);
 
   inline void SetUpSampleRateLow(unsigned rate);
-  inline unsigned GetUpSampleRateLow();
+  inline unsigned GetUpSampleRateLow() const;
 
   inline void SetUpSampleRateHigh(unsigned rate);
-  inline unsigned GetUpSampleRateHigh();
+  inline unsigned GetUpSampleRateHigh() const;
 
   inline void ClearFilterDelayLines();
 
@@ -302,7 +302,7 @@ WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ChangeWaveletType
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-string WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetWaveletName()
+string WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetWaveletName() const
 {
   return wavecoefs.GetWaveletName();
 }
@@ -316,7 +316,7 @@ WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefsLPF
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetNumCoefsLPF()
+unsigned WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetNumCoefsLPF() const
 {
   return lowpass.GetNumCoefs();
 }
@@ -341,7 +341,7 @@ WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefsHPF
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetNumCoefsHPF()
+unsigned WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetNumCoefsHPF() const
 {
   return highpass.GetNumCoefs();
 }
@@ -474,7 +474,7 @@ void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetDownSampleRateLow
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetDownSampleRateLow()
+unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetDownSampleRateLow() const
 {
   return downsampler_l.GetDownSampleRate();
 }
@@ -487,7 +487,7 @@ void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetDownSampleRateHigh
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetDownSampleRateHigh()
+unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetDownSampleRateHigh() const
 {
   return downsampler_h.GetDownSampleRate();
 }
@@ -499,7 +499,7 @@ void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetOutputLevelLow(int
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelLow()
+int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelLow() const
 {
   return outlevel_l;
 }
@@ -511,7 +511,7 @@ void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetOutputLevelHigh(in
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelHigh()
+int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelHigh() const
 {
   return out_level_h;
 }
@@ -682,7 +682,7 @@ void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetUpSampleRateLow(un
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateLow()
+unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateLow() const
 {
   return upsampler_l.GetUpSampleRate();
 }
@@ -694,7 +694,7 @@ void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetUpSampleRateHigh(u
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateHigh()
+unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateHigh() const
 {
   return upsampler_h.GetUpSampleRate();
 }
