@@ -41,7 +41,7 @@ inline ostream & operator<<(ostream &os, const UpSample<SAMPLE> &rhs)
 
 template <class SAMPLE>
 UpSample<SAMPLE>::
-UpSample(const unsigned rate=1) : 
+UpSample(const unsigned rate) : 
   rate(rate), samplecount(0)
 {
 }

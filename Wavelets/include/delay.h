@@ -96,9 +96,7 @@ inline ostream & operator<<(ostream &os, const DelayBlock<SAMPLE> &rhs)
 
 template<class SAMPLE>
 DelayBlock<SAMPLE>::
-DelayBlock(const unsigned numlevels=2,
-	   const int lowest_level=0,
-	   int* delay_vals=0)
+DelayBlock(const unsigned numlevels, const int lowest_level, int* delay_vals)
 {
   if ((numlevels == 0) || (numlevels > MAX_STAGES+1)) {
     // Need at least one level

@@ -1926,8 +1926,9 @@ RemoveStage()
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ForwardDiscreteWaveletTransform(const WaveletType wavetype=DAUB2, 
-				const int lowest_outlvl=0) : wavecoefs(wavetype)
+ForwardDiscreteWaveletTransform(const WaveletType wavetype,
+				const int lowest_outlvl) : 
+  wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
   this->lowest_outlvl = lowest_outlvl;
@@ -2145,7 +2146,7 @@ DiscreteWaveletTransform
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ReverseDiscreteWaveletTransform(const WaveletType wavetype=DAUB2) :
+ReverseDiscreteWaveletTransform(const WaveletType wavetype) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
