@@ -76,8 +76,12 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-inline ostream & operator<<(ostream &os, const WaveletStageHelper<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
-
+inline ostream & operator<<
+(ostream &os, 
+ const WaveletStageHelper<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 /********************************************************************************
  *
@@ -144,7 +148,12 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-inline ostream & operator<<(ostream &os, const ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+inline ostream & operator<<
+(ostream &os, 
+ const ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 
 /********************************************************************************
@@ -203,9 +212,12 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-inline ostream & operator<<(ostream &os, const ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
-
-
+inline ostream & operator<<
+(ostream &os, 
+ const ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 /********************************************************************************
  *

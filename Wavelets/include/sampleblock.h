@@ -183,12 +183,14 @@ public:
     }
     return os;
   };
-  virtual ostream & operator<<(ostream &os) const { return Print(os);}
+  virtual ostream & operator<<(ostream &os) const { return Print(os);};
 };
 
 template <class SAMPLETYPE>
-inline ostream & operator<<(ostream &os, const SampleBlock<SAMPLETYPE> &rhs) { return rhs.operator<<(os);};
-
+inline ostream & operator<<(ostream &os, const SampleBlock<SAMPLETYPE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 template <class SAMPLETYPE>
 class InputSampleBlock : public SampleBlock<SAMPLETYPE> {

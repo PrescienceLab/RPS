@@ -34,7 +34,10 @@ public:
 };
 
 template <class SAMPLE>
-inline ostream & operator<<(ostream &os, const UpSample<SAMPLE> &rhs) { return rhs.operator<<(os);};
+inline ostream & operator<<(ostream &os, const UpSample<SAMPLE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 template <class SAMPLE>
 UpSample<SAMPLE>::

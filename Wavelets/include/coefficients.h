@@ -39,6 +39,9 @@ public:
   ostream & operator<<(ostream &os) const;
 };
 
-inline ostream & operator<<(ostream &os, const WaveletCoefficients &rhs) { return rhs.operator<<(os);}
+inline ostream & operator<<(ostream &os, const WaveletCoefficients &rhs)
+{ 
+  return rhs.operator<<(os);
+};
 
 #endif

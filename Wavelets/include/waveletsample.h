@@ -43,8 +43,10 @@ public:
 };
 
 template <class SAMPLETYPE>
-inline ostream & operator<<(ostream &os, const WaveletOutputSample<SAMPLETYPE> &rhs) { return rhs.operator<<(os);};
-
+inline ostream & operator<<(ostream &os, const WaveletOutputSample<SAMPLETYPE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 /********************************************************************************
  * Wavelet input samples

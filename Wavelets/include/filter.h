@@ -39,8 +39,10 @@ public:
 };
 
 template <class SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-inline ostream & operator<<(ostream &os, const FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
-
+inline ostream & operator<<(ostream &os, 
+			    const FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) {
+  return rhs.operator<<(os);
+};
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::

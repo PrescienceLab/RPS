@@ -59,6 +59,8 @@ public:
   }
 };
 
-inline ostream & operator<<(ostream &os, const IndexManager &rhs) { return rhs.operator<<(os);}
+inline ostream & operator<<(ostream &os, const IndexManager &rhs) { 
+  return rhs.operator<<(os);
+};
 
 #endif

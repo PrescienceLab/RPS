@@ -78,8 +78,9 @@ public:
 
 };
 
-inline ostream & operator<<(ostream &os, const JitterHelper &rhs) { return rhs.operator<<(os);}
-
+inline ostream & operator<<(ostream &os, const JitterHelper &rhs) { 
+  return rhs.operator<<(os);
+};
 
 const unsigned MAX_INDEX=4294967295U;  // This is 2^32-1
 

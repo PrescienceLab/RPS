@@ -89,7 +89,10 @@ public:
 };
 
 template <class SAMPLE>
-inline ostream & operator<<(ostream &os, const DelayBlock<SAMPLE> &rhs) { return rhs.operator<<(os);};
+inline ostream & operator<<(ostream &os, const DelayBlock<SAMPLE> &rhs) 
+{ 
+  return rhs.operator<<(os);
+};
 
 template<class SAMPLE>
 DelayBlock<SAMPLE>::
