@@ -34,7 +34,7 @@ LD2FLAGS = $(FINDER_LDFLAGS) \
            $(TIMESERIES_LDFLAGS) -lm
 
 ifeq ($(OS),SOLARIS)
-  LD3FLAGS = -lsocket -lkvm -lelf
+  LD3FLAGS = -lnsl -lsocket -lkvm -lelf
 else
   LD3FLAGS = 
 endif
