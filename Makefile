@@ -24,6 +24,14 @@ else
   HWT_DEP =
 endif
 
+ifeq ($(HAVE_PROC),YES)
+  HPC_DEP = 
+  HPC_CLEAN = 	cd $(PROC_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean
+  HPC_DEPEND = cd $(PROC_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend
+else
+  HWT_DEP =
+endif
+
 ifeq ($(HAVE_TIMESERIES),YES)
   HTS_DEP = TimeSeries
   HTS_CLEAN = cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean
@@ -171,17 +179,21 @@ WatchTower: force
 	cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(WATCHTOWER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
+Proc: force
+	cd $(PROC_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(PROC_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
 Sensors : $(HGLA_DEP) $(HGFB_DEP) $(HWT_DEP) force
 	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
-TimeSeries: $(HFD_DEP) $(HT_DEP) force
+TimeSeries: $(HFD_DEP) $(HT_DEP) $(HWA_DEP) force
 	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp `find $(TS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(TS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp `find $(TS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 	cp `find $(TS_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
-Wavelets: $(HTS_DEP) force
+Wavelets: force
 	cd $(WAVELETS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp `find $(WAVELETS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(WAVELETS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -280,6 +292,7 @@ clean:
 	$(HGLA_CLEAN)
 	$(HGFB_CLEAN)
 	$(HWT_CLEAN)
+	$(HPC_CLEAN)
 	$(HTS_CLEAN)
 	$(HWA_CLEAN)
 	$(HFD_CLEAN)
@@ -302,6 +315,7 @@ depend:
 	$(HGLA_DEPEND)
 	$(HGFB_DEPEND)
 	$(HWT_DEPEND)
+	$(HPC_DEPEND)
 	$(HTS_DEPEND)
 	$(HWA_DEPEND)
 	$(HFD_DEPEND)

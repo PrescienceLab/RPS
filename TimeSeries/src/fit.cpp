@@ -22,6 +22,7 @@
 #include "bestmean.h"
 #include "bestmedian.h"
 #include "newton.h"
+#include "wavelet.h"
 #include "none.h"
 #include "mean.h"
 #include "last.h"
@@ -31,7 +32,7 @@
 #include "fit.h"
 
 #include "pdqparamsets.h"
-
+#include "fileparameterset.h"
 
 ModelTemplate::ModelTemplate() : mt(NONE), ps(0) {}
 
@@ -186,6 +187,17 @@ int ModelTemplate::_Pack(ByteStream &bs) const
     htond(varlimit,(char *) &(bi[10]));
     return 12*4==bs.Put((char*)bi,12*4);
     break;
+  case File: {
+    string s;
+    int len;
+    ((FileParameterSet *)ps)->Get(s);
+    len=s.size();
+    bi[2]=htonl(len);
+    int rc1 = 3*4==bs.Put((const char*)bi,3*4);
+    int rc2 = len==bs.Put((const char*)(s.c_str()),len);
+    return rc1||rc2;
+  }
+    break;
   // Add other types here
   default:
     assert(0);
@@ -244,6 +256,17 @@ int ModelTemplate::_Unpack(ByteStream &bs)
     ntohd((const char*)&(bi[10]),&varlimit);
     ps = new ManagedPDQParameterSet(p,d,q,a,r,m,errlimit,varlimit);
     break;
+  case File: {
+    bs.Get((char*)&(bi[2]),2*4);
+    int len = ntohl(bi[2]);
+    char *buf = new char[len+1];
+    int rc1=bs.Get(buf,len)==len;
+    buf[len]=0;
+    ps = new FileParameterSet(buf);
+    delete [] buf;
+    return rc1;
+  }
+    break;
   // Add other types here
   default:
     assert(0);
@@ -298,7 +321,10 @@ char *GetAvailableModels()
 	   "  d-order difference\n"
 	   "ARFIMA p d q\n"
 	   " Fractionally integrated ARIMA model of order p+q.  d is ignored and\n"
-	   "  and determined by the model fitting process\n\n" );
+	   "  and determined by the model fitting process\n"
+	   "WAVELET filename\n"
+	   " Wavelet-based prediction as specified in the filename\n"
+	   "  No modifiers may be used\n\n");
   return s;
 }
 	   
@@ -333,6 +359,10 @@ Model *FitThis(const ModelType mclass,
    case NEWTON:
      return NewtonModeler::Fit(seq,numsamples,params);
      break;
+   case WAVELET:
+     // not possible
+     return 0;
+     break;
    case MEAN:
      return MeanModeler::Fit(seq,numsamples,params);
      break;
@@ -341,6 +371,23 @@ Model *FitThis(const ModelType mclass,
      break;
    case NONE:
      return NoneModeler::Fit(seq,numsamples,params);
+     break;
+   default:
+     return 0;
+     break;
+   }
+}
+
+
+Model *FitThis(const ModelType mclass,
+	       const double *seq,
+	       const int numsamples,
+	       const FileParameterSet &params)
+{
+   switch (mclass) {
+     // only possible case now
+   case WAVELET:   
+     return WaveletModeler::Fit(seq,numsamples,params);
      break;
    default:
      return 0;
@@ -391,6 +438,10 @@ Model *FitThis(const ModelType mclass,
    case NEWTON:
      // note - nothing to refit
      return RefittingModeler<NewtonModeler>::Fit(seq,numsamples,params,refitinterval);
+     break;
+   case WAVELET:
+     // not possible currently
+     return 0;
      break;
    case MEAN:
      return RefittingModeler<MeanModeler>::Fit(seq,numsamples,params,refitinterval);
@@ -446,6 +497,10 @@ Model *FitThis(const ModelType mclass,
    case NEWTON:
      // Nothing to await
      return AwaitingModeler<NewtonModeler>::Fit(params,await);
+     break;
+   case WAVELET:
+     // not possible currently
+     return 0;
      break;
    case MEAN:
      return AwaitingModeler<MeanModeler>::Fit(params,await);
@@ -511,6 +566,10 @@ Model *FitThis(const ModelType mclass,
      // nothing to manage
      return ManagedModeler<NewtonModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
      break;
+   case WAVELET:
+     // not possible currently
+     return 0;
+     break;
    case MEAN:
      return ManagedModeler<MeanModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
      break;
@@ -546,6 +605,8 @@ Model *FitThis(const double *seq, const int numsamples, const ModelTemplate &mt)
     return FitThis(mt.mt,*((AwaitingPDQParameterSet*)(mt.ps)));
   } else if (mt.ps->GetType()==ManagedPDQ) {
     return FitThis(mt.mt,*((ManagedPDQParameterSet*)(mt.ps)));
+  } else if (mt.ps->GetType()==File) {
+    return FitThis(mt.mt,seq,numsamples,*((FileParameterSet*)(mt.ps)));
   } else {
     return 0;
   }
@@ -559,6 +620,7 @@ ModelTemplate *ParseModel(const int argc, char *argv[])
   bool refitting=false;
   bool awaiting=false;
   bool managed=false;
+  bool file=false;
   int refitinterval=0;
   int await=0;
   int mintest=0;
@@ -566,6 +628,7 @@ ModelTemplate *ParseModel(const int argc, char *argv[])
   double varlimit;
   int first_model;
   ModelType mclass;
+  string thefile;
 
   first_model=0;
 
@@ -701,6 +764,16 @@ ModelTemplate *ParseModel(const int argc, char *argv[])
       goto done;
    }
 
+   if (!strcasecmp(argv[first_model],"WAVELET")) {
+      if (argc!=first_model+2) {
+	return 0;
+      }
+      thefile = argv[first_model+1];
+      file=true;
+      mclass=WAVELET;
+      goto done;
+   }
+
    // matches none of the known models!  die
    return 0;
 
@@ -715,6 +788,8 @@ ModelTemplate *ParseModel(const int argc, char *argv[])
    } else if (managed) {
      mt->ps = new ManagedPDQParameterSet(p,(int)d,q,await,refitinterval,
 					 mintest,errlimit,varlimit);
+   } else if (file) { 
+     mt->ps = new FileParameterSet(thefile);
    } else {
      mt->ps = new PDQParameterSet(p,(int)d,q);
    }
@@ -808,6 +883,7 @@ char *ModelTemplate::GetName() const
   bool refit=false;
   bool await=false;
   bool managed=false;
+  string filename;
 
   char *name = new char [1024];
 
@@ -830,7 +906,10 @@ char *ModelTemplate::GetName() const
     ((ManagedPDQParameterSet*)ps)->GetMinTest(m);
     ((ManagedPDQParameterSet*)ps)->GetErrorLimit(errlimit);
     ((ManagedPDQParameterSet*)ps)->GetVarLimit(varlimit);
-  } 
+  } else if (ps->GetType()==File) { 
+    ((FileParameterSet*)ps)->Get(filename);
+  }
+    
 
   if (refit) {
     sprintf(name,"REFIT %d ",r);
@@ -860,6 +939,9 @@ char *ModelTemplate::GetName() const
     break;
   case NEWTON:
     sprintf(&(name[strlen(name)]), "NEWTON(%d)",p);
+    break;
+  case WAVELET:
+    snprintf(&(name[strlen(name)]), 1024-strlen(name)-1,"WAVELET(%s)",filename.c_str());
     break;
   case AR:
     sprintf(&(name[strlen(name)]), "AR(%d)",p);

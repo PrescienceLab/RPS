@@ -14,7 +14,7 @@ LIB_TS = $(LIBFILE)
 
 
 CFLAGS = -I$(INCDIR) $(RECIPES_CFLAGS) $(FRACDIFF_CFLAGS) \
-         $(TRACE_CFLAGS) $(PVM_CFLAGS)
+         $(TRACE_CFLAGS) $(WAVELETS_CFLAGS) $(PVM_CFLAGS)
 
 ifeq ($(OPTIMIZE),YES)
    CFLAGS += -O
@@ -28,6 +28,7 @@ LDFLAGS = -L$(TS_LIB_DIR) \
           $(RECIPES_LDFLAGS) \
           $(FRACDIFF_LDFLAGS) \
           $(TRACE_LDFLAGS) \
+          $(WAVELETS_LDFLAGS) \
           $(PVM_LDFLAGS) \
           -lm
 
@@ -76,7 +77,8 @@ endif
 MAINLIST = $(EXECLIST:=.o)
 
 LIB_TS_OBJECTS_LIST =    \
-        pdqparamsets.o   \
+        pdqparamsets.o	 \
+        fileparameterset.o   \
         fit.o            \
         await.o          \
         refit.o          \
@@ -87,6 +89,7 @@ LIB_TS_OBJECTS_LIST =    \
         bestmean.o       \
         bestmedian.o     \
         newton.o         \
+        wavelet.o        \
 	ar.o             \
         ma.o             \
         arma.o           \

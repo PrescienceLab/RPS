@@ -56,8 +56,8 @@ private:
   Buffer &buf;
 public:
   BufferByteStreamWrapper(Buffer &b) : buf(b) {}
-  int Put(char *b, int len) { buf.Pack(b,len); return len;}
-  int Get(char *b, int len) { buf.Unpack(b,len); return len;}
+  int Put(const char *b, const int len) { buf.Pack(b,len); return len;}
+  int Get(char *b, const int len) { buf.Unpack(b,len); return len;}
 };
 
 

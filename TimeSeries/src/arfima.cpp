@@ -347,8 +347,8 @@ Model *ARFIMAModeler::Fit(const double *sequence, const int lenlen, const int pp
   int    lcor = p+q+1;
   double *hess = new double[matsize];
   int    lhess= p+q+1;
-  int    lenw = (int)ceil(MAX(p+q+2*(len+M),
-		    MAX(3*len+(len+6.5)*(p+q)+1,(3+2*(p+q+1))*(p+q+1)+1)));
+  int    lenw = (int)ceil(MAX((double)(p+q+2*(len+M)),
+		    MAX(3*len+(len+6.5)*(p+q)+1,(double)((3+2*(p+q+1))*(p+q+1)+1))));
   double *w = new double [lenw];
   int    iprint=0;
 

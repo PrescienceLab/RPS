@@ -28,7 +28,8 @@ CFLAGS += -I$(INCDIR) \
           $(SPIN_CFLAGS) \
           $(RTA_CFLAGS) \
           $(MIRROR_CFLAGS) \
-          $(TIMESERIES_CFLAGS) 
+          $(TIMESERIES_CFLAGS) \
+          $(WAVELETS_CFLAGS) 
 
 LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
 	   $(FINDER_LDFLAGS) \
@@ -36,7 +37,8 @@ LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
            $(RPSINT_LDFLAGS) \
            $(MIRROR_LDFLAGS) \
            $(SPIN_LDFLAGS) \
-           $(TIMESERIES_LDFLAGS) 
+           $(TIMESERIES_LDFLAGS) \
+           $(WAVELETS_LDFLAGS) 
 
 ifeq ($(OS),SOLARIS)
   LD3FLAGS = -lnsl -lsocket -lkvm -lelf

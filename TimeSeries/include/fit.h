@@ -58,8 +58,8 @@ Model *FitThis(const ModelType mclass,
 
 class ByteStream {
  public:
-  virtual int Put(char *buf,int len)=0;
-  virtual int Get(char *buf, int len)=0;
+  virtual int Put(const char *buf,const int len)=0;
+  virtual int Get(char *buf, const int len)=0;
 };
 
 struct ModelTemplate {

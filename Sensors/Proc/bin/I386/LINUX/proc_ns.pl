@@ -19,16 +19,12 @@ $Getopt::Long::ignorecase = 0;
 	  'h', \$help);
 GetOptions(%optcl);
 
-if ($help) { 
+if ($help || !(@names)) { 
     print STDERR "usage: proc_ns.pl [--rate=Hz] [--period=usec] [--max=number_of_samples] [--timestamp] --name=name_list\n";
     exit;
 }
 
 
-if (!(@names ))
-{
-    die "ERROR!!No namespace supplied!!";
-}
 
 if (!($rate ))
 {

@@ -18,9 +18,10 @@ enum ModelType {NONE=0,
 		ARIMA=7, 
 		ARFIMA=8,
 		BESTMEDIAN=9,
-                NEWTON=10};
+                NEWTON=10,
+                WAVELET=11};
 
-enum ParameterSetType {PDQ, RefittingPDQ, AwaitingPDQ, ManagedPDQ};
+enum ParameterSetType {PDQ, RefittingPDQ, AwaitingPDQ, ManagedPDQ, File};
 
 class ParameterSet {
  public:

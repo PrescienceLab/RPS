@@ -7,12 +7,14 @@
 #include "mean.h"
 #include "bestmean.h"
 #include "bestmedian.h"
+#include "newton.h"
 #include "last.h"
 #include "ar.h"
 #include "ma.h"
 #include "arma.h"
 #include "arima.h"
 #include "arfima.h"
+#include "wavelet.h"
 #include "refit.h"
 #include "await.h"
 #include "managed.h"
@@ -23,6 +25,7 @@
 
 #include "fit.h"
 #include "pdqparamsets.h"
+#include "fileparameterset.h"
 
 
 #include "it.h"

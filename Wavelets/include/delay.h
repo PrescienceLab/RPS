@@ -13,9 +13,9 @@
 #include "sampleblock.h"
 #include "util.h"
 
-bool CalculateWaveletDelayBlock(const unsigned numcoefs, 
-				const unsigned numlevels, 
-				int* delay_vals)
+inline bool CalculateWaveletDelayBlock(const unsigned numcoefs, 
+				       const unsigned numlevels, 
+				       int* delay_vals)
 {
   if (!delay_vals) {
     return false;
@@ -42,10 +42,10 @@ bool CalculateWaveletDelayBlock(const unsigned numcoefs,
   return true;
 };
 
-bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
-				   const unsigned numlevels,
-				   const unsigned twoband_delay,
-				   int* delay_vals)
+inline bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
+					  const unsigned numlevels,
+					  const unsigned twoband_delay,
+					  int* delay_vals)
 {
   if (!delay_vals) {
     return false;
