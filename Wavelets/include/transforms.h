@@ -39,7 +39,6 @@ void OutputSamplesToSpec(vector<SAMPLE> &out,
   }
 };
 
-
 template <class SAMPLE>
 void OutputBlocksToSpec(vector<WaveletOutputSampleBlock<SAMPLE> > &out,
 			const vector<WaveletOutputSampleBlock<SAMPLE> > &in,
@@ -376,6 +375,11 @@ private:
 
   // functions
   unsigned NumberOfLevels(const unsigned length);
+
+  void MultiplyAccumulateVectorsAndScale(vector<SAMPLETYPE> &output,
+					 const vector<double> &coefs,
+					 const vector<SAMPLETYPE> &input,
+					 const double scalar);
 
 public:
   ForwardDiscreteWaveletTransform(const WaveletType wavetype=DAUB2,
@@ -2189,8 +2193,49 @@ DiscreteWaveletOperation
  const SampleBlock<INSAMPLE> &inblock)
 {
   unsigned J=NumberOfLevels(inblock.GetBlockSize());
-  unsigned lenofblock = 0x1 << J
+  unsigned lenofblock = 0x1 << J;
+  unsigned i, j, k;
 
+  // Create the output matrix used for work
+  vector<SAMPLETYPE> a_vector, z_vector;
+  INSAMPLE insamp;
+  for (i=0; i<lenofblock; i++) {
+    insamp = inblock[i];
+    a_vector.push_back(insamp.GetSampleValue());
+  }
+
+  // Get the coefficients for LPF, HPF
+  vector<double> lpfcoefs, hpfcoefs;
+  unsigned N=wavecoefs.GetNumCoefs();
+  wavecoefs.GetTransformCoefsLPF(lpfcoefs);
+  wavecoefs.GetTransformCoefsHPF(hpfcoefs);
+
+  // Main DWT processing
+  for (i=J; i>0; i--) {
+    unsigned m=0x1 << (i-1);
+    vector<SAMPLETYPE> approx, detail;
+    approx.clear(); detail.clear();
+    for (j=0; j<m; j++) {
+      for (k=0, z_vector.clear(); k<N; k++) {
+	unsigned index=2*j+k;
+	if (index >= 2*m) {
+	  index -= 2*m;
+	}
+	z_vector.push_back(a_vector[index]);
+      }
+      // Vector multiply lpf*z_vector and hpf*z_vector with 1/2 scalar
+      MultiplyAccumulateVectorsAndScale(approx,lpfcoefs,z_vector,0.5);
+      MultiplyAccumulateVectorsAndScale(detail,hpfcoefs,z_vector,0.5);
+    }
+    // Place outputs in appropriate output blocks with index and level
+
+
+    // Initialize a_vector for next iteration
+
+  }
+}
+
+#if MOREWORK
   unsigned M=inblock.GetBlockSize();
   unsigned i, L, bitsum=0, bittest=M;
 
@@ -2351,6 +2396,21 @@ NumberOfLevels(const unsigned length)
   //}
 
   return J;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+MultiplyAccumulateVectorsAndScale(vector<SAMPLETYPE> &output,
+				  const vector<double> &coefs,
+				  const vector<SAMPLETYPE> &input,
+				  const double scalar)
+{
+  SAMPLETYPE acc=0;
+  for (unsigned i=0; i<coefs.size(); i++) {
+    acc += coefs[i]*input[i];
+  }
+  acc *= scalar;
+  output.push_back(acc);
 }
 
 /********************************************************************************
