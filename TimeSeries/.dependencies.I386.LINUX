@@ -31,6 +31,14 @@
   include/evaluate_core.h include/random.h include/util.h include/fit.h \
   /home/pdinda/RPS-development/shared/include/ioutil.h include/abstract.h \
   include/pdqparamsets.h
+./obj/I386/LINUX/test_await.o: ./src/test_await.cpp include/TimeSeries.h \
+  include/abstract.h include/none.h include/mean.h include/etathetapred.h \
+  include/poly.h include/bestmean.h include/last.h include/ar.h \
+  include/pdqparamsets.h include/ma.h include/arma.h include/arima.h \
+  include/util.h include/arfima.h include/refit.h include/await.h \
+  include/evaluate_core.h include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h include/it.h \
+  include/maths.h include/random.h include/tools.h
 ./obj/I386/LINUX/crossval_master.o: ./src/crossval_master.cpp \
   /usr/share/pvm3/include/pvm3.h /usr/share/pvm3/include/pvmtev.h \
   include/crossval_core.h include/ar.h include/abstract.h \
@@ -92,5 +100,7 @@
   include/etathetapred.h include/poly.h include/pdqparamsets.h \
   include/ma.h include/arma.h include/arima.h include/util.h \
   include/arfima.h include/bestmean.h include/none.h include/mean.h \
-  include/last.h include/refit.h include/fit.h \
+  include/last.h include/refit.h include/await.h include/fit.h \
   /home/pdinda/RPS-development/shared/include/ioutil.h
+./obj/I386/LINUX/await.o: ./src/await.cpp include/await.h include/abstract.h
+./obj/I386/LINUX/refit.o: ./src/refit.cpp include/refit.h include/abstract.h
