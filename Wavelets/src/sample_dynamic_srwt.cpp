@@ -138,13 +138,13 @@ int main(int argc, char *argv[])
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages+1];
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
-  DelayBlock<wosd> dlyblk1(numstages+1, 0, delay);
 
-  // Parameterize and instantiate the delay block two
   unsigned wtcoefnum_new = numberOfCoefs[wtnew];
   int *delay_new = new int[numstages_new+1];
   CalculateWaveletDelayBlock(wtcoefnum_new, numstages_new+1, delay_new);
-  DelayBlock<wosd> dlyblk2(numstages_new+1, 0, delay_new);
+
+  // Instantiate original delay structure..to be changed dynamically later
+  DelayBlock<wosd> dlyblk(numstages+1, 0, delay);
 
   // Instantiate a dynamic reverse wavelet transform
   DynamicReverseWaveletTransform<double, wisd, wosd> drwt(numstages,wt,2,2,0);
@@ -164,18 +164,22 @@ int main(int argc, char *argv[])
 
     // Toggle the structure if change interval expired
     if (++current_interval == change_interval) {
-      bool success = (orig_struct) ? drwt.ChangeStructure(numstages_new, wtnew) :
+      bool success1 = (orig_struct) ?
+	drwt.ChangeStructure(numstages_new, wtnew) :
 	drwt.ChangeStructure(numstages, wt);
-      if (!success) {
-	cerr << "sample_dynamic_srwt: Structure failure.\n";
+
+      bool success2 = (orig_struct) ?
+	dlyblk.ChangeDelayConfig(numstages_new+1, 0, delay_new) :
+	dlyblk.ChangeDelayConfig(numstages+1, 0, delay);
+
+      if (!success1 && !success2) {
+	cerr << "sample_dynamic_srwt: Structure change failure.\n";
       }
       current_interval=0;
       (orig_struct) ? (orig_struct=false) : (orig_struct=true);
     }
 
-    (orig_struct) ?
-      dlyblk1.StreamingSampleOperation(delaysamples, waveletcoefs):
-      dlyblk2.StreamingSampleOperation(delaysamples, waveletcoefs);
+    dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs);
 
     if (drwt.StreamingTransformSampleOperation(currentoutput, delaysamples)) {
       for (unsigned j=0; j<currentoutput.size(); j++) {

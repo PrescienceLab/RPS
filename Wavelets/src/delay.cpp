@@ -29,8 +29,8 @@ bool CalculateWaveletDelayBlock(const unsigned numcoefs,
   return true;
 };
 
-bool CalculateMRADelayBlock(const unsigned numcoefs, 
-			    const unsigned numlevels, 
+bool CalculateMRADelayBlock(const unsigned numcoefs,
+			    const unsigned numlevels,
 			    int* delay_vals)
 {
   if (!delay_vals) {

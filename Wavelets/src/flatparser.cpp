@@ -75,6 +75,35 @@ ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
   }
 }
 
+unsigned FlatParser::
+ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
+		       istream &in,
+		       const unsigned parsenum)
+{
+  unsigned indextime, numsamples;
+  int levelnum;
+  double sampvalue;
+  unsigned parsecount=0;
+  while(in >> indextime) {
+    parsecount++;
+    in >> numsamples;
+    for (unsigned i=0; i<numsamples; i++) {
+      in >> levelnum >> sampvalue;
+      if (indices.find(levelnum) == indices.end()) {
+	indices[levelnum] = 0;
+      } else {
+	indices[levelnum] += 1;
+      }
+      wosd sample(sampvalue, levelnum, indices[levelnum]);
+      wavecoefs[levelnum].PushSampleBack(sample);
+    }
+    if ((indextime+1) % parsenum == 0) {
+      break;
+    }
+  }
+  return parsecount;
+}
+
 bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
 				     vector<wosd> &acoefs,
 				     vector<wosd> &dcoefs,

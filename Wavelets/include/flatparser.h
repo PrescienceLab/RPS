@@ -35,6 +35,9 @@ public:
   bool ParseWaveletCoefsSample(vector<wosd> &wavecoefs, istream &in);
   void ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
 			      istream &in);
+  unsigned ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
+				  istream &in,
+				  const unsigned parsenum);
 
   bool ParseMRACoefsSample(const SignalSpec &spec,
 			   vector<wosd> &acoefs,

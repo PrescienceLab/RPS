@@ -35,7 +35,7 @@ class DelayBlock {
 private:
   unsigned numlevels;
   int lowest_level;
-  int* delay_vals;
+  int *delay_vals;
 
   vector<deque<SAMPLE>* > dbanks;
 
@@ -57,7 +57,7 @@ public:
   inline void SetLowestLevel(const int lowest_level);
 
   inline unsigned GetDelayValueOfLevel(const int level) const;
-  bool SetDelayValueOfLevel(const int level, const unsigned delay);
+  bool SetDelayValueOfLevel(const int level, const int delay);
 
   bool ChangeDelayConfig(const unsigned numlevels,
 			 const int lowest_level,
@@ -99,13 +99,12 @@ DelayBlock(const unsigned numlevels, const int lowest_level, int* delay_vals)
 
   // Initialize the delay value vector
   unsigned i;
-  this->delay_vals = new int[numlevels];
+  this->delay_vals = new int[MAX_STAGES+1];
+  for (i=0; i<MAX_STAGES+1; i++) {
+    this->delay_vals[i] = 0;
+  }
 
-  if (delay_vals == 0) {
-    for (i=0; i<numlevels; i++) {
-      this->delay_vals[i] = 0;
-    }
-  } else {
+  if (delay_vals != 0) {
     for (i=0; i<numlevels; i++) {
       this->delay_vals[i] = delay_vals[i];
     }
@@ -126,6 +125,11 @@ DelayBlock(const DelayBlock &rhs) :
 {
   DEBUG_PRINT("DelayBlock<SAMPLE>::DelayBlock(const DelayBlock &rhs)");
 
+  this->delay_vals = new int[MAX_STAGES+1];
+  for (unsigned i=0; i<MAX_STAGES+1; i++) {
+    this->delay_vals[i] = 0;
+  }
+
   if ((rhs.numlevels == 0) || (rhs.numlevels > MAX_STAGES+1)) {
     // Need at least one level
     this->numlevels = 1;
@@ -133,12 +137,8 @@ DelayBlock(const DelayBlock &rhs) :
 
     deque<SAMPLE>* pdis = new deque<SAMPLE>(0);
     dbanks.push_back(pdis);
-
-    this->delay_vals = new int[1];
-    this->delay_vals[0] = 0;
   } else {
     // Initialize the delay value vector and the delay deques
-    this->delay_vals = new int[rhs.numlevels];
     for (unsigned i=0; i<rhs.numlevels; i++) {
       this->delay_vals[i] = rhs.delay_vals[i];
       int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
@@ -213,18 +213,30 @@ GetDelayValueOfLevel(const int level) const
 
 template<class SAMPLE>
 bool DelayBlock<SAMPLE>::
-SetDelayValueOfLevel(const int level, const unsigned delay)
+SetDelayValueOfLevel(const int level, const int delay)
 {
   int level_indx = level - lowest_level;
   if ((level_indx < 0) || (level_indx > (int) numlevels)) {
     return false;
   }
 
-  delay_vals[level_indx] = delay;
-  CHK_DEL(dbanks[level_indx]);
+  if (this->delay_vals[level_indx] <= delay) {
+    // Add capacity to the queue
+    for (unsigned i=0; i<(unsigned)(delay - this->delay_vals[level_indx]); i++) {
+      dbanks[level_indx]->push_back(SAMPLE());
+    }
+  } else {
+    // Reduce capicity to the queue
+    deque<SAMPLE> copy(*dbanks[level_indx]);
+    this->delay_vals[level_indx] = delay;
+    CHK_DEL(dbanks[level_indx]);
+    int delay_sz = (delay == 0) ? 0 : delay-1;
+    dbanks[level_indx] = new deque<SAMPLE>(delay_sz);
 
-  int delay_sz = (delay == 0) ? 0 : delay-1;
-  dbanks[level_indx] = new deque<SAMPLE>(delay_sz);
+    for (unsigned i=0; i<dbanks[level_indx]->size(); i++) {
+      dbanks[level_indx]->operator[](i) = copy[i];
+    }
+  }
   return true;
 }
 
@@ -234,43 +246,46 @@ ChangeDelayConfig(const unsigned numlevels,
 		  const int lowest_level,
 		  int* delay_vals)
 {
-  if ((numlevels == 0) || (numlevels > MAXSTAGES + 1) || (delay_vals == 0)) {
+  if (delay_vals == 0) {
+    return false;
+  }
+
+  if ((numlevels == 0) || (numlevels > MAX_STAGES + 1)) {
     return false;
   }
 
   unsigned i;
-  if (this->numlevels == numlevels) {
-    for (i=0; i<numlevels; i++) {
-      this->delay_vals[i] = delay_vals[i];      
-      SetDelayValueOfLevel(i, this->delay_vals[i]);
-    }
-  } else {
-    if (this->delay_vals != 0) {
-      delete[] this->delay_vals;
-      this->delay_vals=0;
-    }
+  if (this->numlevels < numlevels) {
+    // Add delay levels
+    unsigned addnum=numlevels-this->numlevels;
+    for (i=0; i<addnum; i++) {
+      int delay_sz =
+	(delay_vals[numlevels-1-i] == 0) ? 0 : delay_vals[numlevels-1-i]-1;
 
-    for (i=0; i<this->numlevels; i++) {
-      CHK_DEL(dbanks[i]);
-    }
-    dbanks.clear();
- 
-    this->numlevels = numlevels;
-
-    // Initialize the delay value vector
-    this->delay_vals = new int[numlevels];
-    for (i=0; i<numlevels; i++) {
-      this->delay_vals[i] = delay_vals[i];
-    }
-
-    // Initialize the delay deques
-    for (i=0; i<numlevels; i++) {
-      int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
       deque<SAMPLE>* pdis = new deque<SAMPLE>(delay_sz);
       dbanks.push_back(pdis);
+
+      this->delay_vals[numlevels-1-i]=delay_vals[numlevels-1-i];
+    }
+  } else {
+    // Remove delay levels
+    unsigned remnum=this->numlevels-numlevels;
+    for (i=0; i<remnum; i++) {
+      CHK_DEL(dbanks[this->numlevels-1-i]);
+      this->delay_vals[this->numlevels-1-i]=0;
+      dbanks.pop_back();
     }
   }
-  this->lowest_level = lowest_level;
+  this->numlevels=numlevels;
+  this->lowest_level=lowest_level;
+
+  for (i=0; i<this->numlevels; i++) {
+    if (this->delay_vals[i] != delay_vals[i]) {
+      if (!SetDelayValueOfLevel(i+lowest_level, delay_vals[i])) {
+	return false;
+      }
+    }
+  }
   return true;
 }
 
