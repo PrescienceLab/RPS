@@ -1,37 +1,25 @@
 #ifndef _sampleblockout
 #define _sampleblockout
 
-#include <iterator>
 #include <vector>
 #include <iostream>
 
-#include "sampleout.h"
 #include "util.h"
 
-template <class structType>
+template <class reprType>
 class OutputSampleBlock {
-private:
-  structType coefs;
-
 public:
-  OutputSampleBlock() : coefs() {};
-  OutputSampleBlock(const OutputSampleBlock &rhs) {
-    coefs = rhs.coefs;
-  };
-  OutputSampleBlock(structType &coefs) {
-    this->coefs = coefs;
-  };
+  OutputSampleBlock() {};
   virtual ~OutputSampleBlock() {};
 
-  OutputSampleBlock & operator=(const OutputSampleBlock &rhs) {
-    coefs = rhs.coefs;
-  };
+  virtual OutputSampleBlock & operator=(const OutputSampleBlock &rhs) {};
 
-  virtual void SetCoefs(structType &coefs)=0;
-  virtual void GetCoefs(structType &buf)=0;
-  const unsigned GetBlockSize();
+  virtual void SetWaveletCoef(reprType &coef)=0;
+  virtual void GetWaveletCoef(reprType *coef, unsigned i)=0;
+  virtual void ClearBlock()=0;
+  virtual unsigned GetBlockSize() const=0;
 
-  ostream & Print(ostream &os) const;
+  virtual ostream & Print(ostream &os) const=0;
 };
 
 #endif

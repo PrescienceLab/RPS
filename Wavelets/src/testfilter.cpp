@@ -1,10 +1,12 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <vector>
 
 #include "coefficients.h"
 #include "filter.h"
+#include "waveletsample.h"
+#include "waveletsampleout.h"
 
 void usage()
 {
@@ -41,6 +43,8 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  cout << "WaveletType: " << type;
+
   ifstream infile(argv[2]);
   if (!infile) {
     cerr << "Cannot open input file.\n";
@@ -64,26 +68,30 @@ int main(int argc, char *argv[])
 
 
   // Read the data from file into an input vector
-  vector<double> input;
+  vector<WaveletInputSample> wisamples;
   double sample;
   while (infile >> sample) {
-    input.push_back(sample);
+    WaveletInputSample wavesample;
+    wavesample.SetSampleValue(sample);
+    wisamples.push_back(wavesample);
   }
   infile.close();
 
+  WaveletInputSampleBlock input(wisamples);
+  WaveletOutputSampleVector output;
 
   // Create a filter
-  FIRFilter lpfilter(wc.GetNumCoefs());
+  FIRFilter<WaveletOutputSample, WaveletInputSample, double> 
+    lpfilter(wc.GetNumCoefs());
   lpfilter.SetFilterCoefs(translpf);
   
-  vector<double> output;
-  lpfilter.GetFilterBufferOutput(output,input);
+  lpfilter.GetFilterBufferOutput(output, input);
+
   cout << " The contents of the filter:\n";
   cout << lpfilter;
 
-
   cout << "The output of the filtering operation:" << endl;
-  print(output);
+  cout << output;
 
   return 0;
 }

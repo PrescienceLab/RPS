@@ -9,7 +9,7 @@ protected:
   sampleType value;
 
 public:
-  InputSample() : value(0) {};
+  InputSample() {};
   inline InputSample(const InputSample &rhs) { value = rhs.value;};
   virtual ~InputSample() {};
 
