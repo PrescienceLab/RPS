@@ -288,6 +288,64 @@ void OutputWaveletCoefs(ostream &os,
   }
 }
 
+unsigned OutputWaveletCoefs(ostream &os,
+			    vector<WaveletOutputSampleBlock<wosd> > &levels,
+			    const TransformType tt,
+			    const unsigned start_index)
+{
+  unsigned i, j, k;
+  unsigned numlevels=levels.size();
+
+  // Find maximum blocksize and level
+  unsigned maxblock=0;
+  unsigned level;
+  for (i=0; i<numlevels; i++) {
+    if (levels[i].GetBlockSize() > maxblock) {
+      maxblock = levels[i].GetBlockSize();
+      level = i;
+    }
+  }
+  
+  vector<unsigned> indices;
+  for (i=0; i<maxblock*(2<<level); i++) {
+    *os.tie() << i + start_index << "\t";
+
+    unsigned numsamples=0;
+    if (tt==TRANSFORM) {
+      for (j=0; j<numlevels-1; j++) {
+	if (!levels[j].Empty() && (i % (2 << j)) == 0) {
+	  numsamples++;
+	  indices.push_back(j);
+
+	  if (j==numlevels-2) {
+	    numsamples++;
+	    indices.push_back(numlevels-1);
+	  }
+	}
+      }
+    } else {
+      for (j=0; j<numlevels; j++) {
+	if (!levels[j].Empty() && (i % (2 << j)) == 0) {
+	  numsamples++;
+	  indices.push_back(j);
+	}
+      }
+    }
+
+    *os.tie() << numsamples << "\t";
+    for (k=0; k<indices.size(); k++) {
+      wosd wos;
+      wos = levels[indices[k]].Front();
+	*os.tie() << wos.GetSampleLevel() << " ";
+	*os.tie() << wos.GetSampleValue() << "\t";
+	levels[indices[k]].PopSampleFront();
+    }
+    *os.tie() << endl;
+    indices.clear();
+  }
+  return i + start_index;
+}
+
 void OutputMRACoefs(ostream &os,
 		    vector<vector<wosd> > &approxlevels,
 		    vector<vector<wosd> > &detaillevels)
@@ -382,7 +440,6 @@ void OutputMRACoefs(ostream &os,
   }
 }
 
-
 void OutputLevelMetaData(ostream &os,
 			 vector<vector<wosd> > &levels,
 			 const unsigned numlevels)
@@ -427,6 +484,20 @@ void OutputLevelMetaData(ostream &os,
   for (i=0; i<numlevels; i++) {
     *os.tie() << "\tLevel " << i << " size = " 
 	      << size[i] << endl;
+  }
+  *os.tie() << endl;
+}
+
+void OutputLevelMetaData(ostream &os,
+			 const unsigned *levelsize,
+			 const unsigned levelcnt)
+{
+  unsigned i;
+
+  *os.tie() << "The size of each level:" << endl;
+  for (i=0; i<levelcnt; i++) {
+    *os.tie() << "\tLevel " << i << " size = " 
+	      << levelsize[i] << endl;
   }
   *os.tie() << endl;
 }

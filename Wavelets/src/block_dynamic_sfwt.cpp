@@ -157,11 +157,14 @@ int main(int argc, char *argv[])
 
   // Create result buffers
   vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
+  vector<vector<WaveletOutputSampleBlock<wosd> > > finaloutput;
 
+  // Dynamic bookkeeping...sigh
   bool orig_struct=true;
   int samplecnt=0;
   deque<wisd> buf;
 
+  // Structure for printing out level metadata
   unsigned *levelsize=0;
   unsigned levelcnt;
   if (tt==APPROX || tt==DETAIL) {
@@ -175,19 +178,6 @@ int main(int argc, char *argv[])
     levelsize[i]=0;
   }
 
-  if (!flat) {
-    *outstr.tie() << "Index     ";
-    for (i=0; i<levelcnt; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<levelcnt; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-  }
-
-  unsigned globalcount=0;
   while (inputblock.GetBlockSize() - samplecnt > 0) {
     if ( (unsigned)(samplecnt + change_interval) <= inputblock.GetBlockSize()) {
       inputblock.GetSamples(buf, samplecnt, samplecnt+change_interval);
@@ -213,39 +203,13 @@ int main(int argc, char *argv[])
       break;
     }
 
-    // Print the results and clear the buffer
-    unsigned loopsize = forwardoutput[0].GetBlockSize();
-    for (i=0; i<loopsize; i++) {
-      *outstr.tie() << globalcount++ << "\t";
+    finaloutput.push_back(forwardoutput);
 
-      // Find number of samples for this line and update counts
-      unsigned numsamples=0;
-      for (unsigned j=0; j<forwardoutput.size(); j++) {
-	levelsize[j] += forwardoutput[j].GetBlockSize();
-	if (!forwardoutput[j].Empty()) {
-	  numsamples++;
-	}
-      }
-
-      if (flat) {
-	*outstr.tie() << numsamples << "\t";
-      }
-
-      for (unsigned j=0; j<numsamples; j++) {
-	if (!forwardoutput[j].Empty()) {
-	  wosd wos;
-	  wos = forwardoutput[j].Front();
-
-	  if (flat) {
-	    *outstr.tie() << wos.GetSampleLevel() << " ";
-	  }
-
-	  *outstr.tie() << wos.GetSampleValue() << "\t";
-	  forwardoutput[j].PopSampleFront();
-	}
-      }
-      *outstr.tie() << endl;
+    // Update counts
+    for (unsigned j=0; j<forwardoutput.size(); j++) {
+      levelsize[j] += forwardoutput[j].GetBlockSize();
     }
+
     forwardoutput.clear();
 
     // Toggle the structure
@@ -259,12 +223,17 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "The size of each level:" << endl;
-    for (i=0; i<levelcnt; i++) {
-      *outstr.tie() << "\tLevel " << i << " size = " 
-		    << levelsize[i] << endl;
-    }
-    *outstr.tie() << endl;
+    OutputLevelMetaData(outstr, levelsize, levelcnt);
+  }
+
+  unsigned count=0;
+  for (i=0; i<finaloutput.size(); i++) {
+    count=OutputWaveletCoefs(outstr, finaloutput[i], tt, count);
+  }
+
+  if (levelsize != 0) {
+    delete[] levelsize;
+    levelsize=0;
   }
 
   return 0;

@@ -41,6 +41,11 @@ void OutputWaveletCoefs(ostream &os,
 			vector<WaveletOutputSampleBlock<wosd> > &levels,
 			const TransformType tt);
 
+unsigned OutputWaveletCoefs(ostream &os,
+			    vector<WaveletOutputSampleBlock<wosd> > &levels,
+			    const TransformType tt,
+			    const unsigned start_index);
+
 void OutputMRACoefs(ostream &os,
 		    vector<vector<wosd> > &approxlevels,
 		    vector<vector<wosd> > &detaillevels);
@@ -56,4 +61,8 @@ void OutputLevelMetaData(ostream &os,
 void OutputLevelMetaData(ostream &os,
 			 vector<WaveletOutputSampleBlock<wosd> > &levels,
 			 const unsigned numlevels);
+
+void OutputLevelMetaData(ostream &os,
+			 const unsigned *levelsize,
+			 const unsigned levelcnt);
 #endif

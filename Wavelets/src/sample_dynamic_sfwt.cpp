@@ -158,12 +158,8 @@ int main(int argc, char *argv[])
   // Create result buffers
   vector<wosd> outsamples;
 
-  // Create vectors for the level outputs
-  vector<deque<wosd> *> levels;
-  for (i=0; i<MAX(numlevels,numlevels_new); i++) {
-    deque<wosd>* pwos = new deque<wosd>();
-    levels.push_back(pwos);
-  }
+  // Create vectors for output
+  vector<vector<wosd> > levels;
 
   bool orig_struct=true;
   int current_interval=0;
@@ -197,20 +193,7 @@ int main(int argc, char *argv[])
       break;
     }
 
-    if (flat) {
-      *outstr.tie() << i << "\t" << outsamples.size() << "\t";
-    }
-
-    for (unsigned j=0; j<outsamples.size(); j++) {
-      int samplelevel = outsamples[j].GetSampleLevel();
-      levels[samplelevel]->push_front(outsamples[j]);
-      if (flat) {
-	*outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-      }
-    }
-    if (flat) {
-      *outstr.tie() << endl;
-    }
+    levels.push_back(outsamples);
     outsamples.clear();
   }
 
@@ -222,13 +205,10 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    OutputWaveletCoefsNonFlat(outstr, levels, numlevels);
+    OutputLevelMetaData(outstr, levels, numlevels);
   }
-  
-  for (i=0; i<numlevels; i++) {
-    CHK_DEL(levels[i]);
-  }
-  levels.clear();
+
+  OutputWaveletCoefs(outstr, levels);
 
   return 0;
 }
