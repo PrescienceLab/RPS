@@ -24,6 +24,10 @@ struct SignalSpec {
   vector<int> details;
 };
 
+void StructureOptimizer(SignalSpec &optim, 
+			unsigned numlevels,
+			const SignalSpec &spec);
+
 template <class SAMPLE>
 void OutputSamplesToSpec(vector<SAMPLE> &out,
 			 const vector<SAMPLE> &in,

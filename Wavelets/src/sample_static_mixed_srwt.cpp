@@ -113,6 +113,12 @@ int main(int argc, char *argv[])
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
 
+  // Optimize the operations
+  SignalSpec optim_spec;
+  unsigned optim_numlevels;
+  StructureOptimizer(optim_spec, optim_numlevels, sigspec);
+
+
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages];
