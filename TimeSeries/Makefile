@@ -86,6 +86,7 @@ LIB_TS_OBJECTS_LIST =    \
         last.o           \
         bestmean.o       \
         bestmedian.o     \
+        newton.o         \
 	ar.o             \
         ma.o             \
         arma.o           \

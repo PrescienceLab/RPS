@@ -21,6 +21,7 @@
 #include "arfima.h"
 #include "bestmean.h"
 #include "bestmedian.h"
+#include "newton.h"
 #include "none.h"
 #include "mean.h"
 #include "last.h"
@@ -284,6 +285,8 @@ char *GetAvailableModels()
 	   " Windowed average, window length chosen to minimize msqerr\n"
 	   "BMED p | BESTMEDIAN p\n"
 	   " Windowed median, window length chosen to minimize msqerr\n"
+	   "NEWTON p\n"
+	   " Newton's interpolating polynomial\n"
 	   "AR p\n"
 	   " Autoregressive model of order p\n"
 	   "MA q\n"
@@ -326,6 +329,9 @@ Model *FitThis(const ModelType mclass,
      break;
    case BESTMEDIAN:
      return BestMedianModeler::Fit(seq,numsamples,params);
+     break;
+   case NEWTON:
+     return NewtonModeler::Fit(seq,numsamples,params);
      break;
    case MEAN:
      return MeanModeler::Fit(seq,numsamples,params);
@@ -382,6 +388,10 @@ Model *FitThis(const ModelType mclass,
    case BESTMEDIAN:
      return RefittingModeler<BestMedianModeler>::Fit(seq,numsamples,params,refitinterval);
      break;
+   case NEWTON:
+     // note - nothing to refit
+     return RefittingModeler<NewtonModeler>::Fit(seq,numsamples,params,refitinterval);
+     break;
    case MEAN:
      return RefittingModeler<MeanModeler>::Fit(seq,numsamples,params,refitinterval);
      break;
@@ -432,6 +442,10 @@ Model *FitThis(const ModelType mclass,
      break;
    case BESTMEDIAN:
      return AwaitingModeler<BestMedianModeler>::Fit(params,await);
+     break;
+   case NEWTON:
+     // Nothing to await
+     return AwaitingModeler<NewtonModeler>::Fit(params,await);
      break;
    case MEAN:
      return AwaitingModeler<MeanModeler>::Fit(params,await);
@@ -492,6 +506,10 @@ Model *FitThis(const ModelType mclass,
      break;
    case BESTMEDIAN:
      return ManagedModeler<BestMedianModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case NEWTON:
+     // nothing to manage
+     return ManagedModeler<NewtonModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
      break;
    case MEAN:
      return ManagedModeler<MeanModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
@@ -606,6 +624,14 @@ ModelTemplate *ParseModel(const int argc, char *argv[])
       }
       p=atoi(argv[first_model+1]);
       mclass=BESTMEDIAN;
+      goto done;
+   }
+  if (!strcasecmp(argv[first_model],"NEWTON")) {
+      if (argc!=first_model+2) {
+	return 0;
+      }
+      p=atoi(argv[first_model+1]);
+      mclass=NEWTON;
       goto done;
    }
   if (!strcasecmp(argv[first_model],"NONE")) {
