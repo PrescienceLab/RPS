@@ -1,0 +1,22 @@
+To build:
+
+1. edit setup_env as appropriate
+2. source setup_env
+3. edit Makefile.conf as appropriate
+4. make clean depend all
+
+To run:
+
+1. edit setup_env as appropriate
+2. source setup_env
+3. start_hostloadmeasure.pl
+4. start_hostloadpred.pl
+5. use loadbufferclient and predbufferclient 
+
+More information to come.  
+
+More information in this technical report: 
+  http://reports-archive.adm.cs.cmu.edu/anon/1999/abstracts/99-138.html
+
+Peter A. Dinda
+pdinda@cs.nwu.edu
