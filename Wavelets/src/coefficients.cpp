@@ -216,6 +216,8 @@ void WaveletCoefficients::Initialize(WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
+  CHK_DEL(g_coefs);
+  CHK_DEL(h_coefs);
   init(wt);
 }
 
@@ -223,6 +225,8 @@ void WaveletCoefficients::ChangeType(WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
+  CHK_DEL(g_coefs);
+  CHK_DEL(h_coefs);
   init(wt);
 }
 
@@ -284,9 +288,6 @@ void WaveletCoefficients::init(WaveletType wt)
 {
   numcoefs = numCoefTable[wt];
   waveletname = waveletNames[wt];
-
-  CHK_DEL(g_coefs);
-  CHK_DEL(h_coefs);
 
   g_coefs = new double[numcoefs];
   h_coefs = new double[numcoefs];

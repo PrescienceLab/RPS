@@ -31,6 +31,12 @@ WaveletInputSample & WaveletInputSample::operator=(const WaveletInputSample &rhs
   return *this;
 }
 
+WaveletInputSample & WaveletInputSample::operator+=(const WaveletInputSample &rhs)
+{
+  this->InputSample<double>::operator+=(rhs);
+  return *this;
+}
+
 WaveletInputSample & WaveletInputSample::operator+=(const double rhs)
 {
   this->InputSample<double>::operator+=(rhs);
@@ -69,6 +75,12 @@ WaveletOutputSample & WaveletOutputSample::operator=(const WaveletOutputSample &
   if (&rhs != this) {
     this->OutputSample<double>::operator=(rhs);
   }
+  return *this;
+}
+
+WaveletOutputSample & WaveletOutputSample::operator+=(const WaveletOutputSample &rhs)
+{
+  this->OutputSample<double>::operator+=(rhs);
   return *this;
 }
 

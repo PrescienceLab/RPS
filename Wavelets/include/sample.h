@@ -9,39 +9,49 @@ protected:
   SAMPLETYPE value;
 
 public:
+
   Sample() : value(0) {};
   inline Sample(const Sample &rhs) { value = rhs.value;};
   virtual ~Sample() {};
 
-  Sample & operator=(const Sample &rhs) {
+  virtual Sample & operator=(const Sample &rhs) {
     value = rhs.value;
     return *this;
   };
 
-  Sample & operator+=(const SAMPLETYPE rhs) {
+  virtual Sample & operator+(const Sample &rhs) {
+    value = value + rhs.value;
+    return *this;
+  };
+
+  virtual Sample & operator+=(const SAMPLETYPE rhs) {
     value = value + rhs;
     return *this;
   };
 
-  SAMPLETYPE operator*(const double rhs) {
+  virtual Sample & operator+=(const Sample &rhs) {
+    value = value + rhs.value;
+    return *this;
+  };
+
+  virtual SAMPLETYPE operator*(const double rhs) {
     return rhs*value;
   };
 
   virtual void SetSampleValue(SAMPLETYPE sample)=0;
   virtual SAMPLETYPE GetSampleValue()=0;
-
   virtual ostream & Print(ostream &os) const=0;
 };
 
 template <typename SAMPLETYPE>
-class InputSample : Sample<SAMPLETYPE> {
+class InputSample : public Sample<SAMPLETYPE> {
 public:
   InputSample() {};
   InputSample(const InputSample &rhs) { 
     value = rhs.value;
   };
   
-  InputSample(double value) {
+  InputSample(SAMPLETYPE value) {
     this->value = value; 
   };
   
@@ -52,10 +62,20 @@ public:
     return *this;
   };
 
-  InputSample & operator+=(const SAMPLETYPE rhs) {
-    this->Sample<SAMPLETYPE>::operator+=(rhs);
+  virtual InputSample & operator+(const InputSample &rhs) {
+    value = value + rhs.value;
     return *this;
   };
+
+  InputSample & operator+=(const SAMPLETYPE rhs) {
+    value = value + rhs;
+    return *this;
+  };
+
+  InputSample & operator+=(const InputSample &rhs) {
+    value = value + rhs.value;
+    return *this;
+  } 
 
   SAMPLETYPE operator*(const double rhs) {
     return rhs*value;
@@ -76,7 +96,7 @@ public:
 };
 
 template <typename SAMPLETYPE>
-class OutputSample : Sample<SAMPLETYPE> {
+class OutputSample : public Sample<SAMPLETYPE> {
 protected:
   int level;
 
@@ -85,6 +105,9 @@ public:
   OutputSample(const OutputSample &rhs) {
     value = rhs.value;
     level = rhs.level;
+  };
+  OutputSample(SAMPLETYPE value) : level(-1) {
+    this->value = value;
   };
   OutputSample(SAMPLETYPE value, int level) {
     this->value = value;
@@ -98,8 +121,18 @@ public:
     return *this;
   };
 
+  OutputSample & operator+(const OutputSample &rhs) {
+    value = value + rhs.value;
+    return *this;
+  };
+
   OutputSample & operator+=(const SAMPLETYPE rhs) {
-    this->Sample<SAMPLETYPE>::operator+=(rhs);
+    value = value + rhs;
+    return *this;
+  };
+
+  OutputSample & operator+=(const OutputSample &rhs) {
+    value = value + rhs.value;
     return *this;
   };
 

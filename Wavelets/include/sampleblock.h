@@ -24,10 +24,12 @@ public:
 
   virtual ~SampleBlock() {};
   
-  SampleBlock & operator=(const SampleBlock &rhs) {
+  virtual SampleBlock & operator=(const SampleBlock &rhs) {
     samples = rhs.samples;
     return *this;
   };
+
+  virtual SampleBlock* clone()=0;
 
   virtual void SetSamples(const vector<SAMPLETYPE> &input)=0;
   virtual void GetSamples(vector<SAMPLETYPE> &buf)=0;
@@ -38,6 +40,9 @@ public:
   virtual void ClearBlock()=0;
   virtual unsigned GetBlockSize()=0;
   
+  virtual void SetBlockLevel(int level)=0;
+  virtual int GetBlockLevel()=0;
+
   virtual ostream & Print(ostream &os) const=0;
 };
 
@@ -55,11 +60,25 @@ public:
   virtual ~InputSampleBlock() {};
   
   InputSampleBlock & operator=(const InputSampleBlock &rhs) {
-    if (&rhs != this) {
-      // invoke SampleBlock copy assignment operator
-      this->SampleBlock<SAMPLETYPE>::operator=(rhs);
+    samples = rhs.samples;
+    return *this;
+  };
+
+  InputSampleBlock & operator+=(const InputSampleBlock&rhs) {
+    unsigned min = (this->GetBlockSize() <= rhs.GetBlockSize()) ? 
+      this->GetBlockSize() : rhs.GetBlockSize();
+
+    for (unsigned i=0; i<min; i++) {
+      SAMPLETYPE left, right;
+      left = samples[i];
+      rhs.GetSample(&right, i);
+      samples[i] = left+right;
     }
     return *this;
+  };
+
+  virtual InputSampleBlock* clone() {
+    return new InputSampleBlock(*this);
   };
 
   inline virtual void SetSamples(const vector<SAMPLETYPE> &input) {
@@ -87,6 +106,9 @@ public:
     return samples.size();
   };
   
+  virtual void SetBlockLevel(int level) {};
+  virtual int GetBlockLevel() { return -1;};
+
   virtual ostream & Print(ostream &os) const {
     os << "InputSampleBlock::" << endl;
     for (unsigned i=0; i<samples.size(); i++) {
@@ -110,11 +132,25 @@ public:
   virtual ~OutputSampleBlock() {};
   
   OutputSampleBlock & operator=(const OutputSampleBlock &rhs) {
-    if (&rhs != this) {
-      // invoke SampleBlock copy assignment operator
-      this->SampleBlock<SAMPLETYPE>::operator=(rhs);
+    samples = rhs.samples;
+    return *this;
+  };
+
+  OutputSampleBlock & operator+=(const OutputSampleBlock &rhs) {
+    unsigned min = (this->GetBlockSize() <= rhs.GetBlockSize()) ? 
+      this->GetBlockSize() : rhs.GetBlockSize();
+
+    for (unsigned i=0; i<min; i++) {
+      SAMPLETYPE left, right;
+      left = samples[i];
+      rhs.GetSample(&right, i);
+      samples[i] = left+right;
     }
     return *this;
+  };
+
+  virtual OutputSampleBlock* clone() {
+    return new OutputSampleBlock(*this);
   };
 
   inline virtual void SetSamples(const vector<SAMPLETYPE> &input) {

@@ -27,7 +27,8 @@ LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME) \
 LD2FLAGS =  
 
 EXECLIST = testcoefs \
-	   testfilter
+	   testfilter \
+           teststage
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

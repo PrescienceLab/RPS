@@ -26,7 +26,10 @@ public:
 
   bool KeepSample();
   void DownSampleBuffer(SampleBlock<OUTSAMPLE> &output,
-			SampleBlock<INSAMPLE> &input);
+			SampleBlock<INSAMPLE>  &input);
+  void DownSampleBuffer(SampleBlock<OUTSAMPLE> &output,
+			SampleBlock<OUTSAMPLE> &input);
+
 
   ostream & Print(ostream &os) const;
 };
@@ -80,6 +83,21 @@ void DownSample<OUTSAMPLE, INSAMPLE>::DownSampleBuffer
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     if (KeepSample()) {
       INSAMPLE newin;
+      input.GetSample(&newin,i);
+      output.SetSample(newin);
+    }
+  }
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
+void DownSample<OUTSAMPLE, INSAMPLE>::DownSampleBuffer
+(SampleBlock<OUTSAMPLE> &output, SampleBlock<OUTSAMPLE> &input)
+{
+  output.ClearBlock();
+
+  for (unsigned i=0; i<input.GetBlockSize(); i++) {
+    if (KeepSample()) {
+      OUTSAMPLE newin;
       input.GetSample(&newin,i);
       output.SetSample(newin);
     }

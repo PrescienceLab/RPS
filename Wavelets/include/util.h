@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#define DEBUG 1
+
 using namespace std;
 
 #ifndef CHK_DEL

@@ -16,6 +16,9 @@
 struct EquivalenceException
 {};
 
+struct OperationSyncException
+{};
+
 /********************************************************************************
  *
  * The following class is simply a helper class that contains common components
@@ -157,8 +160,8 @@ public:
   inline void SetUpSampleRateHigh(unsigned rate);
   inline unsigned GetUpSampleRateHigh();
 
-  // Takes two inputs and produces an output
-  void PerformSampleOperation(OUTSAMPLE &out, INSAMPLE &in_l, INSAMPLE &in_h);
+  // Takes two inputs and produces an output, returns true if input accepted
+  bool PerformSampleOperation(OUTSAMPLE &out, INSAMPLE &in_l, INSAMPLE &in_h);
 
   unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out,
 				 SampleBlock<INSAMPLE>  &in_l,
@@ -464,25 +467,22 @@ template <class OUTSAMPLE, class INSAMPLE>
 bool ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
 (OUTSAMPLE &out_l, OUTSAMPLE &out_h, INSAMPLE &in)
 {
-  bool result;
-
   // Filter the new input sample through the LPF and HPF filters
   stagehelp.LPFSampleOperation(out_l,in);
   stagehelp.HPFSampleOperation(out_h,in);
 
   // Downsample the results
-  result = downsampler_l.KeepSample();
-  if (result != downsampler_h.KeepSample()) {
-    // REALLY WANT TO THROW AN EXCEPTION
-    // If the downsamplers are unsynchronized, reset them and return false
-    //  if this occurs, we will lose the output from the last filter 
+  bool state;
+  if ((state = downsampler_l.KeepSample()) != downsampler_h.KeepSample()) {
+    // If the downsamplers are unsynchronized, reset the state and throw an
+    //  exception.  If this occurs, we may lose the output from the last filter
     //  operation
     downsampler_l.ResetState();
     downsampler_h.ResetState();
-    result = false;
+    throw OperationSyncException();
   }
 
-  return result;
+  return state;
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
@@ -490,28 +490,30 @@ unsigned ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
 (SampleBlock<OUTSAMPLE> &out_l, SampleBlock<OUTSAMPLE> &out_h, 
  SampleBlock<INSAMPLE>  &in)
 {
-  unsigned result;
+  // Need a temporary output block for filter operations
+  SampleBlock<OUTSAMPLE>* tempblock_l = out_l.clone();
+  SampleBlock<OUTSAMPLE>* tempblock_h = out_h.clone();
 
   // Block filter and downsample the new input buffer
-  stagehelp.LPFBufferOperation(out_h, in);
-  stagehelp.HPFBufferOperation(out_h, in);  
+  stagehelp.LPFBufferOperation(*tempblock_l, in);
+  stagehelp.HPFBufferOperation(*tempblock_h, in);  
 
-  downsampler_l.DownSampleBuffer(out_l, out_l);
-  downsampler_h.DownSampleBuffer(out_h, out_h);
+  downsampler_l.DownSampleBuffer(out_l, *tempblock_l);
+  downsampler_h.DownSampleBuffer(out_h, *tempblock_h);
 
-  result = out_l.GetBlockSize();
-  if (result != out_h.GetBlockSize()) {
-    // REALLY WANT TO THROW AN EXCEPTION
-    // If somehow the filter lengths are different, clear the delay line and
-    //  lose data (might want to refilter)
+  out_l.SetBlockLevel(outlevel_l);
+  out_h.SetBlockLevel(outlevel_h);
+
+  unsigned blocksize;
+  if ((blocksize = out_l.GetBlockSize()) != out_h.GetBlockSize()) {
+    // If somehow the filter output lengths are different, clear the delay line
+    //  and may lose data (might want to refilter)
     stagehelp.ClearLPFDelayLine();
     stagehelp.ClearHPFDelayLine();
-    result = 0;
+    throw OperationSyncException();    
   }
-
-  return result;
+  return blocksize;
 }
-
 
 template <class OUTSAMPLE, class INSAMPLE>
 ostream & ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
@@ -602,10 +604,34 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::GetUpSampleRateHigh()
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
-void ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
+bool ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
 (OUTSAMPLE &out, INSAMPLE &in_l, INSAMPLE &in_h)
 {
-  return;
+  INSAMPLE  zero(0);
+  OUTSAMPLE tempout(0);
+
+  out.SetSampleValue(0);
+
+  // Upsample the inputs
+  bool zerosample;
+  if ((zerosample = upsampler_l.ZeroSample()) != upsampler_h.ZeroSample()) {
+    upsampler_l.ResetState();
+    upsampler_h.ResetState();
+    throw OperationSyncException();    
+  } else {
+    if (zerosample) {
+      stagehelp.LPFSampleOperation(tempout,zero);
+      out = tempout;
+      stagehelp.HPFSampleOperation(tempout,zero);
+      out += tempout;
+    } else {
+      stagehelp.LPFSampleOperation(tempout,in_l);
+      out = tempout;
+      stagehelp.HPFSampleOperation(tempout,in_h);
+      out += tempout;
+    }
+  }
+  return !zerosample;
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
@@ -613,8 +639,29 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
 (SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in_l, 
  SampleBlock<INSAMPLE> &in_h)
 {
-  unsigned result=0;
-  return result;
+  // Need a temporary output block for filter operations
+  SampleBlock<INSAMPLE>* tempblock_l = in_l.clone();
+  SampleBlock<INSAMPLE>* tempblock_h = in_h.clone();
+
+  // Upsample the input blocks
+  upsampler_l.UpSampleBuffer(*tempblock_l, in_l);
+  upsampler_h.UpSampleBuffer(*tempblock_h, in_h);
+
+  // Filter the tempblocks
+  stagehelp.LPFBufferOperation(out, *tempblock_l);
+  stagehelp.HPFBufferOperation(*tempblock_h, *tempblock_h);
+
+  if (out.GetBlockSize() != tempblock_h->GetBlockSize()) {
+    // If somehow the input filter blocks are different length, clear the delay
+    // line and may lose data (might want to refilter)
+    stagehelp.ClearLPFDelayLine();
+    stagehelp.ClearHPFDelayLine();
+    throw OperationSyncException();    
+  }
+
+  // Add the two outputs of the filters
+  out += *tempblock_h;
+  return out.GetBlockSize();
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
