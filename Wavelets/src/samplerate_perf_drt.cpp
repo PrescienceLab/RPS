@@ -153,7 +153,6 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> reconst, finaloutput;
 
   // The operations
-
   double usrbegin, sysbegin, usrend, sysend;
   for (unsigned test=0; test<numtests; test++) {
 
