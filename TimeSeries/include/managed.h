@@ -7,6 +7,7 @@
 #include "rps_log.h"
 #include "pdqparamsets.h"
 
+
 template <class MODELER> 
 class ManagedPredictor : public Predictor {
  private:
@@ -26,10 +27,15 @@ class ManagedPredictor : public Predictor {
   double lastpred;
   Model  *curmodel;
   Predictor *curpred;
+  
+
  protected:
   void FitNow() {
    // cur points to the *oldest* data item - the one that
     // will be replaced bext
+    cerr << "FitNow!";
+    this->operator<<(cerr);
+    cerr << endl;
     int numoldest = num_refit - (cur%num_refit);
     int i;
     CHK_DEL(curmodel);
@@ -123,6 +129,7 @@ class ManagedPredictor : public Predictor {
     cur++;
     // First, see if we can now fit for the first time
     if (cur==num_await && curpred==0) {
+      RPSLog(CONTEXT,10,"Have enough intial data - fitting\n");
       FitNow();
     }
     // Now, we may or may now have a predictor
@@ -190,7 +197,7 @@ class ManagedPredictor : public Predictor {
   int ComputeVariances(const int maxahead, double *vars, 
 		       const enum VarianceType vtype=POINT_VARIANCES) const {
     if (curpred) { 
-      return curpred->ComputeVariances(maxahead,vars,vtype);
+      return curpred->ComputeVariances(maxahead,vars,POINT_VARIANCES);
     } else {
       int top= (vtype==CO_VARIANCES) ? maxahead*maxahead : maxahead;
       for (int i=0;i<top;i++) { 

@@ -12,6 +12,10 @@
 // The expectation is that there is a leading 1 in the eta and theta
 // polynomials passed to Initialize, and that the polynomial power be 0
 
+#define CACHE_VARIANCES   1
+#define MINCACHE   100
+#define NUMVAR_FACTOR 2
+
 class EtaThetaPredictor : public Predictor {
 private:
    int    numeta, numtheta;
@@ -23,6 +27,10 @@ private:
    int    numsamples;
    double next_val;
    double mean;
+   int     cachenumvar;
+   double *pointvariancecache;
+   double *sumvariancecache;
+   int RecomputePointAndSumVarianceCaches(const int maxahead);
 public:
    EtaThetaPredictor();
    EtaThetaPredictor(const EtaThetaPredictor &rhs);

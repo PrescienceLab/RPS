@@ -8,6 +8,7 @@ EtaThetaPredictor::EtaThetaPredictor()
    numeta=numtheta=0;
    etas=thetas=values=errors=0;
    variance=0;
+   pointvariancecache=0; sumvariancecache=0;
 }
 
 EtaThetaPredictor::EtaThetaPredictor(const EtaThetaPredictor &rhs)
@@ -26,6 +27,11 @@ EtaThetaPredictor::EtaThetaPredictor(const EtaThetaPredictor &rhs)
   numsamples=rhs.numsamples;
   next_val=rhs.next_val;
   mean=rhs.mean;
+  cachenumvar=MAX(MINCACHE,NUMVAR_FACTOR*(numeta+numtheta));
+  pointvariancecache=new double[cachenumvar]; 
+  memset(pointvariancecache,0,sizeof(double)*cachenumvar);
+  sumvariancecache=new double[cachenumvar];
+  memset(sumvariancecache,0,sizeof(double)*cachenumvar);
 }
 
 EtaThetaPredictor::~EtaThetaPredictor()
@@ -34,6 +40,8 @@ EtaThetaPredictor::~EtaThetaPredictor()
    CHK_DEL_MAT(thetas);
    CHK_DEL_MAT(values);
    CHK_DEL_MAT(errors);
+   CHK_DEL_MAT(pointvariancecache);
+   CHK_DEL_MAT(sumvariancecache);
    numeta=numtheta=0;
    variance=0;
 }
@@ -183,8 +191,54 @@ int EtaThetaPredictor::ComputeCoVariances(const int maxahead, double *ests) cons
   return 0;
 }
 
+
+
+int EtaThetaPredictor::RecomputePointAndSumVarianceCaches(const int maxahead) 
+{
+  if (pointvariancecache && sumvariancecache && maxahead<=cachenumvar) {
+    return 0;
+  }
+  
+  CHK_DEL_MAT(pointvariancecache);
+  CHK_DEL_MAT(sumvariancecache);
+  cachenumvar=MAX(MINCACHE,NUMVAR_FACTOR*maxahead);
+  pointvariancecache=new double [cachenumvar];
+  sumvariancecache=new double [cachenumvar];
+
+  int i,j,k;
+  
+  double *covars = new double[cachenumvar*cachenumvar];
+  
+  if (ComputeCoVariances(cachenumvar,covars)) { 
+    delete [] covars;
+    return -1;
+  }
+  for (i=0;i<cachenumvar;i++) {
+    double cur=0.0;
+    for (j=0;j<=i;j++) {
+      for (k=0;k<=i;k++) {
+	cur+=covars[j*cachenumvar+k];
+      }
+    }
+    sumvariancecache[i]=cur;
+    pointvariancecache[i]=covars[i*cachenumvar+i];
+  }
+  delete [] covars;
+  return 0;
+}
+
+
 int EtaThetaPredictor::ComputePointVariances(const int maxahead, double *ests) const
 {
+#if CACHE_VARIANCES
+  int rc= ((EtaThetaPredictor *)this)->RecomputePointAndSumVarianceCaches(maxahead);
+  if (rc) {
+    return rc;
+  } else {
+    memcpy(ests,pointvariancecache,sizeof(double)*maxahead);
+    return 0;
+  }
+#else 
    int i;
 
    // Convert to truncated psi form
@@ -216,11 +270,21 @@ int EtaThetaPredictor::ComputePointVariances(const int maxahead, double *ests) c
       ests[i] = cur*variance;
    }
    return 0;
+#endif
 }
 
 
 int EtaThetaPredictor::ComputeSumVariances(const int maxahead, double *ests) const
 {
+#if CACHE_VARIANCES
+  int rc= ((EtaThetaPredictor *)this)->RecomputePointAndSumVarianceCaches(maxahead);
+  if (rc) {
+    return rc;
+  } else {
+    memcpy(ests,sumvariancecache,sizeof(double)*maxahead);
+    return 0;
+  }
+#else 
    int i,j,k;
 
    double *covars = new double[maxahead*maxahead];
@@ -240,6 +304,7 @@ int EtaThetaPredictor::ComputeSumVariances(const int maxahead, double *ests) con
    }
    delete [] covars;
    return 0;
+#endif
 }
 
 
