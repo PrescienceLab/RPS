@@ -38,7 +38,8 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter(unsigned numcoefs)
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+FIRFilter(unsigned numcoefs)
 {
   this->numcoefs = numcoefs;
   
@@ -52,7 +53,8 @@ FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter(unsigned numcoefs)
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter(const FIRFilter &rhs)
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+FIRFilter(const FIRFilter &rhs)
 {
   coefs = rhs.coefs;
   delayline = rhs.delayline;
@@ -60,8 +62,8 @@ FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter(const FIRFilter &rhs)
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter
-(unsigned numcoefs, vector<double> &coefs)
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+FIRFilter(unsigned numcoefs, vector<double> &coefs)
 {
   this->numcoefs = numcoefs;
   this->coefs = coefs;
@@ -75,14 +77,15 @@ FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~FIRFilter()
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+~FIRFilter()
 {
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
-FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
-(const FIRFilter &rhs)
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator=(const FIRFilter &rhs)
 {
   coefs = rhs.coefs;
   delayline = rhs.delayline;
@@ -92,8 +95,8 @@ FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefs
-(vector<double> &coefs)
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetFilterCoefs(vector<double> &coefs)
 {
   this->numcoefs = coefs.size();
   this->coefs = coefs;
@@ -107,14 +110,15 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefs
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterCoefs
-(vector<double> &coefs) const
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetFilterCoefs(vector<double> &coefs) const
 {
   coefs = this->coefs;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearDelayLine()
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ClearDelayLine()
 {
   for (unsigned i=0; i<numcoefs; i++) {
     delayline[i] = 0;
@@ -122,8 +126,8 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearDelayLine()
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterOutput
-(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetFilterOutput(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
 {
   delayline.push_front(in); // insert newest element
   delayline.pop_back();     // remove oldest element
@@ -136,8 +140,8 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterOutput
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterBufferOutput
-(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
 {
   out.ClearBlock();
   for (unsigned i=0; i<in.GetBlockSize(); i++) {
@@ -150,8 +154,8 @@ void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterBufferOutput
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-ostream & FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print
-(ostream &os) const
+ostream & FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+Print(ostream &os) const
 {
   os << "FIRFilter information:\n";
   os << "Coefficients,\tDelay Line" << endl;

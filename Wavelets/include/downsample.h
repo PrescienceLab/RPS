@@ -33,28 +33,31 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSample(unsigned rate=1)
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+DownSample(unsigned rate=1)
 {
   this->rate = rate;
   samplecount = 0;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSample(const DownSample &rhs)
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+DownSample(const DownSample &rhs)
 {
   rate = rhs.rate;
   samplecount = rhs.samplecount;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~DownSample()
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+~DownSample()
 {
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
-DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
-(const DownSample &rhs)
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator=(const DownSample &rhs)
 {
   rate = rhs.rate;
   samplecount = rhs.samplecount;
@@ -62,7 +65,8 @@ DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::KeepSample()
+bool DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+KeepSample()
 {
   bool keep=false;
   if (samplecount%rate == 0) {
@@ -74,8 +78,9 @@ bool DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::KeepSample()
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
-(SampleBlock<OUTSAMPLE> &output, SampleBlock<INSAMPLE> &input)
+void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+DownSampleBuffer(SampleBlock<OUTSAMPLE> &output,
+		 SampleBlock<INSAMPLE>  &input)
 {
   output.ClearBlock();
 
@@ -89,7 +94,8 @@ void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-ostream & DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+ostream & DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+Print(ostream &os) const
 {
   os << "DownSample information:\n";
   os << "  Current downsample rate: " << rate << endl;

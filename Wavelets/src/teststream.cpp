@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
   // Instantiate a static forward wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
   StaticReverseWaveletTransform<double, WaveletInputSample, WaveletOutputSample>
-    srwt(numstages,wt,2,2);
+    srwt(numstages,wt,2,2,0);
 
 
   // Create result buffers

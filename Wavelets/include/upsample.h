@@ -33,25 +33,29 @@ public:
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(unsigned rate=1) :
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+UpSample(unsigned rate=1) : 
   rate(rate), samplecount(0)
 {
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(const UpSample &rhs) :
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+UpSample(const UpSample &rhs) :
   rate(rhs.rate), samplecount(rhs.samplecount)
 {
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~UpSample()
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+~UpSample()
 {
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
-UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=(const UpSample &rhs)
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator=(const UpSample &rhs)
 {
   rate = rhs.rate;
   samplecount = rhs.samplecount;
@@ -59,7 +63,8 @@ UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=(const UpSample &rhs)
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ZeroSample()
+bool UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ZeroSample()
 {
   bool zero=true;
   if (samplecount%rate == 0) {
@@ -71,8 +76,8 @@ bool UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ZeroSample()
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
-(SampleBlock<OUTSAMPLE> &output, SampleBlock<INSAMPLE> &input)
+void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+UpSampleBuffer(SampleBlock<OUTSAMPLE> &output, SampleBlock<INSAMPLE> &input)
 {
   output.ClearBlock();
   INSAMPLE newin;
@@ -96,8 +101,8 @@ void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 
 #if 0
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
-(SampleBlock<INSAMPLE> &output, SampleBlock<INSAMPLE> &input)
+void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+UpSampleBuffer(SampleBlock<INSAMPLE> &output, SampleBlock<INSAMPLE> &input)
 {
   output.ClearBlock();
   INSAMPLE newin;
@@ -121,7 +126,8 @@ void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 #endif
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-ostream & UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+ostream & UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+Print(ostream &os) const
 {
   os << "UpSample information:\n";
   os << "  Current upsample rate: " << rate << endl;

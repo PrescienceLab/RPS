@@ -12,6 +12,8 @@
 #include "sampleblock.h"
 #include "util.h"
 
+enum SignalType {APPROX, DETAIL, TRANSFORM};
+
 /********************************************************************************
  *
  * This class performs a streaming wavelet transform, either block by block or 
@@ -27,7 +29,8 @@ protected:
   unsigned numstages;
   unsigned numlevels;
   int      lowest_outlvl;
-  unsigned index[MAX_STAGES+1];
+  unsigned index_a[MAX_STAGES+1];
+  unsigned index_d[MAX_STAGES+1];
 
   vector<ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> *> stages;
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* first_stage;
@@ -57,13 +60,16 @@ public:
   inline int GetLowestOutputLevel() const;
   inline void SetLowestOutputLevel(int lowest_outlvl);
 
-  inline unsigned GetIndexNumberOfLevel(int level) const;
-  inline void SetIndexNumberOfLevel(int level, unsigned newindex);
+  inline unsigned GetIndexNumberOfLevel(int level, SignalType signal) const;
+  inline void SetIndexNumberOfLevel(int level, SignalType signal, unsigned newindex);
 
-  bool StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in);
+  bool StreamingSampleOperation(vector<OUTSAMPLE>  &out, 
+				Sample<SAMPLETYPE> &in,
+				SignalType         signal=TRANSFORM);
 
   unsigned StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
-				   SampleBlock<INSAMPLE>            &inblock);
+				   SampleBlock<INSAMPLE>            &inblock,
+				   SignalType                       signal=TRANSFORM);
 
   ostream & Print(ostream &os) const;
 };
@@ -83,6 +89,7 @@ class StaticReverseWaveletTransform {
 protected:
   unsigned numstages;
   unsigned numlevels;
+  int      lowest_inlvl;
   unsigned index;
 
   vector<deque<INSAMPLE> *> insignals;
@@ -107,12 +114,14 @@ protected:
 				       unsigned              level);
 
 public:
-  StaticReverseWaveletTransform(unsigned numstages=1);
+  StaticReverseWaveletTransform(unsigned numstages=1,
+				int      lowest_inlvl=0);
   StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs);
   StaticReverseWaveletTransform(unsigned    numstages,
 				WaveletType wavetype,
 				unsigned    rate_l,
-				unsigned    rate_h);
+				unsigned    rate_h,
+				int         lowest_inlvl);
 
   virtual ~StaticReverseWaveletTransform();
 
@@ -123,7 +132,14 @@ public:
   bool ChangeNumberStages(unsigned    numstages,
 			  WaveletType wavetype,
 			  unsigned    rate_l,
-			  unsigned    rate_h);
+			  unsigned    rate_h,
+			  int         lowest_inlvl);
+
+  inline int GetLowestInputLevel() const;
+  inline void SetLowestInputLevel(int lowest_inlvl);
+
+  inline unsigned GetIndexNumber() const;
+  inline void SetIndexNumber(unsigned index);
 
   bool StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in);
 
@@ -242,31 +258,33 @@ StaticForwardWaveletTransform(unsigned numstages=1,
   this->lowest_outlvl = lowest_outlvl;
 
   for (i=0; i<numlevels; i++) {
-    index[i] = 0;
+    index_a[i] = 0;
+    index_d[i] = 0;
   }
 
-  int outlvl = lowest_outlvl;
+  int outlvl = lowest_outlvl+1;
   unsigned i;
 
   // The lowest stage converts from INSAMPLES to OUTSAMPLES
   first_stage = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>();
-  first_stage->SetOutputLevelHigh(outlvl++);
-  first_stage->SetOutputLevelLow(outlvl);
+  first_stage->SetOutputLevelHigh(lowest_outlvl);
+  first_stage->SetOutputLevelLow(lowest_outlvl+1);
 
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws;
   for (i=0; i<this->numstages-1; i++) {
     pfws = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>();
-    pfws->SetOutputLevelHigh(outlvl++);
-    pfws->SetOutputLevelLow(outlvl);
+    pfws->SetOutputLevelHigh(outlvl);
+    pfws->SetOutputLevelLow(outlvl+1);
     stages.push_back(pfws);
+    outlvl++;
   }
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticForwardWaveletTransform(const StaticForwardWaveletTransform &rhs) : 
-  numstages(rhs.numstages), numlevels(rhs.numlevels), 
-  lowest_outlvl(rhs.lowest_outlvl), index(rhs.index), 
+  numstages(rhs.numstages), numlevels(rhs.numlevels),
+  lowest_outlvl(rhs.lowest_outlvl), index_a(rhs.index_a), index_d(rhs.index_d), 
   first_stage(rhs.first_stage), stages(rhs.stages)
 {
 }
@@ -290,28 +308,28 @@ StaticForwardWaveletTransform(unsigned    numstages,
   this->lowest_outlvl = lowest_outlvl;
   
   for (i=0; i<numlevels; i++) {
-    index[i] = 0;
+    index_a[i] = 0;
+    index_d[i] = 0;
   }
 
-  int outlvl = lowest_outlvl;
+  int outlvl = lowest_outlvl+1;
 
   // The lowest stage converts from INSAMPLES to OUTSAMPLES
   first_stage = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(wavetype,
 									 rate_l,
 									 rate_h,
 									 lowest_outlvl+1,
-									 outlvl++);
-
+									 lowest_outlvl);
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws;
   for (i=0; i<this->numstages-1; i++) {
     pfws = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>(wavetype, 
 								     rate_l, 
 								     rate_h,
-								     outlvl,
-								     outlvl++);
+								     outlvl+1,
+								     outlvl);
     stages.push_back(pfws);
+    outlvl++;
   }
-
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -339,7 +357,8 @@ operator=(const StaticForwardWaveletTransform &rhs)
   lowest_outlvl = rhs.lowest_outlvl;
 
   for (unsigned i=0; i<numlevels; i++) {
-    index[i] = rhs.index[i];
+    index_a[i] = rhs.index_a[i];
+    index_d[i] = rhs.index_d[i];
   }
 
   first_stage = rhs.first_stage;
@@ -375,21 +394,23 @@ ChangeNumberStages(unsigned numstages)
   this->numlevels = numstages + 1;
 
   for (i=0; i<numlevels; i++) {
-    index[i] = 0;
+    index_a[i] = 0;
+    index_d[i] = 0;
   }
 
-  int outlvl = lowest_outlvl;
+  int outlvl = lowest_outlvl+1;
 
   // The lowest stage converts from INSAMPLES to OUTSAMPLES
   first_stage = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>();
-  first_stage->SetOutputLevelHigh(outlvl++);
-  first_stage->SetOutputLevelLow(outlvl);
+  first_stage->SetOutputLevelHigh(lowest_outlvl);
+  first_stage->SetOutputLevelLow(lowest_outlvl+1);
 
   for (i=0; i<numstages-1; i++) {
     pfws = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>();
-    pfws->SetOutputLevelHigh(outlvl++);
-    pfws->SetOutputLevelLow(outlvl);
+    pfws->SetOutputLevelHigh(outlvl);
+    pfws->SetOutputLevelLow(outlvl+1);
     stages.push_back(pfws);
+    outlvl++;
   }
 
   return true;
@@ -420,25 +441,27 @@ ChangeNumberStages(unsigned    numstages,
   this->numlevels = numstages + 1;
 
   for (i=0; i<numlevels; i++) {
-    index[i] = 0;
+    index_a[i] = 0;
+    index_d[i] = 0;
   }
 
-  int outlvl = lowest_outlvl;
+  int outlvl = lowest_outlvl+1;
 
   // The lowest stage converts from INSAMPLES to OUTSAMPLES
   first_stage = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(wavetype,
 									 rate_l,
 									 rate_h,
 									 lowest_outlvl+1,
-									 outlvl++);
+									 lowest_outlvl);
 
   for (i=0; i<numstages-1; i++) {
     pfws = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>(wavetype,
 								     rate_l,
 								     rate_h,
-								     outlvl,
-								     outlvl++);
+								     outlvl+1,
+								     outlvl);
     stages.push_back(pfws);
+    outlvl++;
   }
 
   return true;
@@ -460,25 +483,104 @@ SetLowestOutputLevel(int lowest_outlvl)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-GetIndexNumberOfLevel(int level) const
+GetIndexNumberOfLevel(int level, SignalType signal) const
 {
-  if (level < MAX_STAGES+1) {
-    return index[level];
-  } else {
-    return 0;
+  unsigned indx=0;
+  if ((level - lowest_outlvl) < MAX_STAGES+1) {
+    switch (signal) {
+    case APPROX:
+      indx = index_a[level-lowest_outlvl];
+      break;
+    case DETAIL:
+      indx = index_d[level-lowest_outlvl];
+      break;
+    case TRANSFORM:
+      if ((level - lowest_outlvl) == numstages) {
+	indx = index_a[numstages-1];
+      } else {
+	indx = index_d[level-lowest_outlvl];
+      }
+      break;
+    default:
+      break;
+    }
   }
+  return indx;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetIndexNumberOfLevel(int level, unsigned newindex)
+SetIndexNumberOfLevel(int level, SignalType signal, unsigned newindex)
 {
-  index[level] = newindex;
+  if ((level - lowest_outlvl) < MAX_STAGES+1) {
+    switch (signal) {
+    case APPROX:
+      index_a[level-lowest_outlvl] = newindex;
+      break;
+    case DETAIL:
+      index_d[level-lowest_outlvl] = newindex;
+      break;
+    case TRANSFORM:
+      if ((level - lowest_outlvl) == numstages) {
+	index_a[numstages-1] = newindex;
+      } else {
+	index_d[level-lowest_outlvl] = newindex;
+      }
+      break;
+    default:
+      break;
+    }
+  }
 }
+
+#define SIGNALTYPE_OUTPUT_ONE_STAGE(sigtype, out, low, high) \
+  switch((sigtype)) {                                        \
+  case APPROX:                                               \
+    (low).SetSampleIndex(index_a[0]++);                      \
+    (out).push_back((low));                                  \
+    break;                                                   \
+  case DETAIL:                                               \
+    (high).SetSampleIndex(index_d[0]++);                     \
+    (out).push_back((high));                                 \
+    break;                                                   \
+  case TRANSFORM:                                            \
+    (high).SetSampleIndex(index_d[0]++);                     \
+    (low).SetSampleIndex(index_a[0]++);                      \
+    (out).push_back((high));                                 \
+    (out).push_back((low));                                  \
+    break;                                                   \
+  default:                                                   \
+    break;                                                   \
+  }                                                          \
+
+#define SIGNALTYPE_OUTPUT(sigtype, out, low, high, level) \
+  switch((sigtype)) {                                     \
+  case APPROX:                                            \
+    (low).SetSampleIndex(index_a[(level)]++);             \
+    (out).push_back((low));                               \
+    break;                                                \
+  case DETAIL:                                            \
+    (high).SetSampleIndex(index_d[(level)]++);            \
+    (out).push_back((high));                              \
+    break;                                                \
+  case TRANSFORM:                                         \
+    (high).SetSampleIndex(index_d[(level)]++);            \
+    (out).push_back((high));                              \
+    if ((level) == numstages-1) {                         \
+      (low).SetSampleIndex(index_a[(level)]++);           \
+      (out).push_back((low));                             \
+    }                                                     \
+    break;                                                \
+  default:                                                \
+    break;                                                \
+  }                                                       \
+
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
+StreamingSampleOperation(vector<OUTSAMPLE>  &out,
+			 Sample<SAMPLETYPE> &in,
+			 SignalType         signal=TRANSFORM)
 {
   bool result = false;
   unsigned i;
@@ -489,19 +591,15 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
 
   newin = in;
 
-  // Start with the lowest stage
+  // Handle the case of just one stage
   if (numstages==1) {
     if (first_stage->PerformSampleOperation(out_l, out_h, newin)) {
-      out_h.SetSampleIndex(index[0]++);
-      out_l.SetSampleIndex(index[1]++);
-      out.push_back(out_h);
-      out.push_back(out_l);
+      //      SIGNALTYPE_OUTPUT_ONE_STAGE(signal, out, out_l, out_h);
       result = true;
     }
   } else {
     if (first_stage->PerformSampleOperation(out_l, out_h, newin)) {
-      out_h.SetSampleIndex(index[0]++);
-      out.push_back(out_h);
+      //      SIGNALTYPE_OUTPUT(signal, out, out_l, out_h, 0);
       newin.SetSampleValue(out_l.GetSampleValue());
       result = true;
 
@@ -511,13 +609,8 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
 	if (!pfws->PerformSampleOperation(out_l, out_h, newin)) {
 	  break;
 	} else {
-	  out_h.SetSampleIndex(index[i+1]++);
-	  out.push_back(out_h);
+	  SIGNALTYPE_OUTPUT(signal, out, out_l, out_h, i+1);
 	  newin.SetSampleValue(out_l.GetSampleValue());
-	  if (i == numstages-2) {
-	    out_l.SetSampleIndex(index[i+2]++);
-	    out.push_back(out_l);
-	  }
 	}
       }
     }
@@ -526,10 +619,64 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
   return result;
 }
 
+#define SIGNALTYPE_BLOCK_OUTPUT_ONE_STAGE(sigtype, vecout, low, high, outlen) \
+  switch((sigtype)) {                                                         \
+  case APPROX:                                                                \
+    (low).SetBlockIndex(index_a[0]);                                          \
+    index_a[0] += (outlen);                                                   \
+    (vecout)[0]->AppendBlockBack((low));                                      \
+    break;                                                                    \
+  case DETAIL:                                                                \
+    (high).SetBlockIndex(index_d[0]);                                         \
+    index_d[0] += (outlen);                                                   \
+    (vecout)[0]->AppendBlockBack((high));                                     \
+    break;                                                                    \
+  case TRANSFORM:                                                             \
+    (high).SetBlockIndex(index_d[0]);                                         \
+    (low).SetBlockIndex(index_a[0]);                                          \
+    index_d[0] += (outlen); index_a[0] += (outlen);                           \
+    (vecout)[0]->AppendBlockBack((high));                                     \
+    (vecout)[1]->AppendBlockBack((low));                                      \
+    break;                                                                    \
+  default:                                                                    \
+    break;                                                                    \
+  }                                                                           \
+
+
+
+#define SIGNALTYPE_BLOCK_OUTPUT(sigtype, vecout, low, high, outlen, level) \
+  switch((sigtype)) {                                                      \
+  case APPROX:                                                             \
+    (low).SetBlockIndex(index_a[(level)]);                                 \
+    index_a[(level)] += (outlen);                                          \
+    (vecout)[(level)]->AppendBlockBack((low));                             \
+    break;                                                                 \
+  case DETAIL:                                                             \
+    (high).SetBlockIndex(index_d[(level)]);                                \
+    index_d[(level)] += (outlen);                                          \
+    (vecout)[(level)]->AppendBlockBack((high));                            \
+    break;                                                                 \
+  case TRANSFORM:                                                          \
+    (high).SetBlockIndex(index_d[(level)]);                                \
+    index_d[(level)] += (outlen);                                          \
+    (vecout)[(level)]->AppendBlockBack((high));                            \
+    if ((level) == numstages-1) {                                          \
+      (low).SetBlockIndex(index_a[(level)]);                               \
+      index_a[(level)] += (outlen);                                        \
+      (vecout)[(level)+1]->AppendBlockBack((low));                         \
+      blocklen += (outlen);                                                \
+    }                                                                      \
+    break;                                                                 \
+  default:                                                                 \
+    break;                                                                 \
+  }                                                                        \
+
+
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
-			SampleBlock<INSAMPLE>            &inblock)
+			SampleBlock<INSAMPLE>            &inblock,
+			SignalType                       signal=TRANSFORM)
 {
   if (outblock.size() != numlevels) {
     return 0;
@@ -544,19 +691,12 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
   // Start with the lowest stage
   if (numstages == 1) {
     blocklen = first_stage->PerformBlockOperation(out_l, out_h, newinput);
-    out_h.SetBlockIndex(index[0]);
-    out_l.SetBlockIndex(index[1]);
-    index[0] += blocklen; index[1] += blocklen;
-    
-    outblock[0]->AppendBlockBack(out_h);
-    outblock[1]->AppendBlockBack(out_l);
+    SIGNALTYPE_BLOCK_OUTPUT_ONE_STAGE(signal, outblock, out_l, out_h, blocklen);
+
   } else {
     blocklen = first_stage->PerformBlockOperation(out_l, out_h, newinput);
     if (blocklen) {
-      out_h.SetBlockIndex(index[0]);
-      index[0] += blocklen;
-
-      outblock[0]->AppendBlockBack(out_h);
+      SIGNALTYPE_BLOCK_OUTPUT(signal, outblock, out_l, out_h, blocklen, 0);
 
       SampleBlock<OUTSAMPLE> nextinput(out_l);
 
@@ -565,21 +705,8 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
 	out_l.ClearBlock(); out_h.ClearBlock();
 	unsigned blocksize = pfws->PerformBlockOperation(out_l, out_h, nextinput);
 	if (blocksize) {
-	  out_h.SetBlockIndex(index[i+1]);
-	  index[i+1] += blocksize;
+	  SIGNALTYPE_BLOCK_OUTPUT(signal, outblock, out_l, out_h, blocksize, i+1);
 	  blocklen += blocksize;
-
-	  outblock[i+1]->AppendBlockBack(out_h);
-
-	  if (i == numstages-2) {
-	    out_l.SetBlockIndex(index[i+2]);
-	    index[i+2] += blocksize;
-	    blocklen += blocksize;
-
-	    outblock[i+2]->AppendBlockBack(out_l);
-	  }
-	} else {
-	  break;
 	}
       }
     }
@@ -613,7 +740,7 @@ Print(ostream &os) const
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StaticReverseWaveletTransform(unsigned numstages=1)
+StaticReverseWaveletTransform(unsigned numstages=1, int lowest_inlvl=0)
 {
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     this->numstages = 1;
@@ -621,6 +748,7 @@ StaticReverseWaveletTransform(unsigned numstages=1)
     this->numstages = numstages;
   }
   this->numlevels = this->numstages+1;
+  this->lowest_inlvl = lowest_inlvl;
   this->index = 0;
 
   unsigned i;
@@ -646,8 +774,8 @@ StaticReverseWaveletTransform(unsigned numstages=1)
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs) :
-  numstages(rhs.numstages), numlevels(rhs.numlevels), index(rhs.index),
-  insignals(rhs.insignals), intersignals(rhs.intersignals),
+  numstages(rhs.numstages), numlevels(rhs.numlevels), lowest_inlvl(rhs.lowest_inlvl),
+  index(rhs.index), insignals(rhs.insignals), intersignals(rhs.intersignals),
   last_stage(rhs.last_stage), stages(rhs.stages)
 {}
 
@@ -656,7 +784,8 @@ StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticReverseWaveletTransform(unsigned    numstages,
 			      WaveletType wavetype,
 			      unsigned    rate_l,
-			      unsigned    rate_h)
+			      unsigned    rate_h,
+			      int         lowest_inlvl)
 {
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     this->numstages = 1;
@@ -664,6 +793,7 @@ StaticReverseWaveletTransform(unsigned    numstages,
     this->numstages = numstages;
   }
   this->numlevels = this->numstages+1;
+  this->lowest_inlvl = lowest_inlvl;
   this->index = 0;
 
   unsigned i;
@@ -716,6 +846,7 @@ operator=(const StaticReverseWaveletTransform &rhs)
 {
   numstages = rhs.numstages;
   numlevels = rhs.numlevels;
+  lowest_inlvl = rhs.lowest_inlvl;
   index = rhs.index;
   insignals = rhs.insignals;
   intersignals = rhs.intersignals;
@@ -756,6 +887,7 @@ ChangeNumberStages(unsigned numstages)
 
   this->numstages = numstages;
   this->numlevels = numstages+1;
+  this->index = 0;
 
   for (i=0; i<numlevels; i++) {
     deque<INSAMPLE>* pdis = new deque<INSAMPLE>();
@@ -781,7 +913,8 @@ bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ChangeNumberStages(unsigned    numstages,
 		   WaveletType wavetype,
 		   unsigned    rate_l,
-		   unsigned    rate_h)
+		   unsigned    rate_h,
+		   int         lowest_inlvl)
 {
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     return false;
@@ -803,6 +936,8 @@ ChangeNumberStages(unsigned    numstages,
 
   this->numstages = numstages;
   this->numlevels = numstages+1;
+  this->lowest_inlvl = lowest_inlvl;
+  this->index = 0;
 
   for (i=0; i<numlevels; i++) {
     deque<INSAMPLE>* pdis = new deque<INSAMPLE>();
@@ -828,83 +963,39 @@ ChangeNumberStages(unsigned    numstages,
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ClearAllDelayLines()
+int StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetLowestInputLevel() const
 {
-  last_stage->ClearFilterDelayLines();
-  for (unsigned i=0; i<numstages-1; i++) {
-    stages[i]->ClearFilterDelayLines();
-  }
-}
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SamplePairReady(unsigned level1, unsigned level2, bool topstage) const
-{
-  bool result;
-  if ((level1 < 0) || (level2 < 0) || (level1 > numlevels) || (level2 > numlevels)) {
-    return false;
-  }
-
-  if (topstage) {
-    result = (insignals[level1]->empty() || insignals[level2]->empty());
-  } else {
-    if ((level1 > numlevels-2) || (level2 > numlevels-2)) {
-      return false;
-    }
-    result = (intersignals[level1]->empty() || insignals[level2]->empty());
-  }
-  return !result;
-}
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-BlockPairReady(SampleBlock<INSAMPLE> &block_l, SampleBlock<INSAMPLE> &block_h) const
-{
-  bool result=false;
-  if (block_l.GetBlockSize() == block_h.GetBlockSize()) {
-    result = true;
-  }
-  return result;
+  return lowest_inlvl;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-AddRemainingBlockToInsignals(SampleBlock<INSAMPLE> &block, 
-			     unsigned              minsize,
-			     unsigned              level)
+SetLowestInputLevel(int lowest_inlvl)
 {
-  if ( (level >= 0) && (level <= numlevels-1) ) {
-    // Transfer samples [minsize, blocksize] into insignals
-    INSAMPLE samp;
-    for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
-      block.GetSample(&samp, i);
-      insignals[level]->push_front(samp);
-    }
-  }
+  this->lowest_inlvl = lowest_inlvl;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetIndexNumber() const
+{
+  return index;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-AddRemainingBlockToIntersignals(SampleBlock<INSAMPLE> &block, 
-				unsigned              minsize,
-				unsigned              level)
+SetIndexNumber(unsigned index)
 {
-  if ( (level >= 0) && (level <= numlevels-1) ) {
-    // Transfer samples [minsize, blocksize] into intersignals
-    INSAMPLE samp;
-    for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
-      block.GetSample(&samp, i);
-      intersignals[level]->push_front(samp);
-    }
-  }
+  this->index = index;
 }
+
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
 {
-  int samplelevel;
+  unsigned samplelevel;
 
   // Clear the output vector to signal new output to the calling routine
   out.clear();
@@ -913,11 +1004,13 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
   Sample<SAMPLETYPE> in_h, in_l;
   vector<INSAMPLE> tempout;
 
-  // Sort the in vector into insignals
+  // Sort the input vector into insignals
   unsigned i;
   for (i=0; i<in.size(); i++) {
-    samplelevel = in[i].GetSampleLevel();
-    insignals[samplelevel]->push_front(in[i]);
+    samplelevel = in[i].GetSampleLevel() - lowest_inlvl;
+    if (samplelevel < numlevels) {
+      insignals[samplelevel]->push_front(in[i]);
+    }
   }
 
   if (numstages == 1) {
@@ -1177,6 +1270,82 @@ Print(ostream &os) const
   return os;
 }
 
+/*******************************************************************************
+ * Private member functions
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ClearAllDelayLines()
+{
+  last_stage->ClearFilterDelayLines();
+  for (unsigned i=0; i<numstages-1; i++) {
+    stages[i]->ClearFilterDelayLines();
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SamplePairReady(unsigned level1, unsigned level2, bool topstage) const
+{
+  bool result;
+  if ((level1 < 0) || (level2 < 0) || (level1 > numlevels) || (level2 > numlevels)) {
+    return false;
+  }
+
+  if (topstage) {
+    result = (insignals[level1]->empty() || insignals[level2]->empty());
+  } else {
+    if ((level1 > numlevels-2) || (level2 > numlevels-2)) {
+      return false;
+    }
+    result = (intersignals[level1]->empty() || insignals[level2]->empty());
+  }
+  return !result;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+BlockPairReady(SampleBlock<INSAMPLE> &block_l, SampleBlock<INSAMPLE> &block_h) const
+{
+  bool result=false;
+  if (block_l.GetBlockSize() == block_h.GetBlockSize()) {
+    result = true;
+  }
+  return result;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddRemainingBlockToInsignals(SampleBlock<INSAMPLE> &block, 
+			     unsigned              minsize,
+			     unsigned              level)
+{
+  if ( (level >= 0) && (level <= numlevels-1) ) {
+    // Transfer samples [minsize, blocksize] into insignals
+    INSAMPLE samp;
+    for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
+      block.GetSample(&samp, i);
+      insignals[level]->push_front(samp);
+    }
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddRemainingBlockToIntersignals(SampleBlock<INSAMPLE> &block, 
+				unsigned              minsize,
+				unsigned              level)
+{
+  if ( (level >= 0) && (level <= numlevels-1) ) {
+    // Transfer samples [minsize, blocksize] into intersignals
+    INSAMPLE samp;
+    for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
+      block.GetSample(&samp, i);
+      intersignals[level]->push_front(samp);
+    }
+  }
+}
+
 /********************************************************************************
  * 
  * Member functions for the DynamicForwardWaveletTransform class
@@ -1194,8 +1363,8 @@ AddStage()
   this->numlevels = this->numstages+1;
 
   // Clear the indices for the two new levels
-  index[numstages] = 0;
-  index[numstages-1] = 0;
+  index_a[numstages-1] = 0;
+  index_d[numstages-1] = 0;
 
   // Actually have to clone one of the stages in the system here
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws = 
@@ -1222,8 +1391,8 @@ AddStage(WaveletType wavetype,
   this->numlevels = this->numstages+1;
 
   // Clear the indices for the two new levels
-  index[numstages] = 0;
-  index[numstages-1] = 0;
+  index_a[numstages-1] = 0;
+  index_d[numstages-1] = 0;
 
   // Use passed parameters to instantiate a new FWS
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws = new
@@ -1233,7 +1402,6 @@ AddStage(WaveletType wavetype,
 							 lowest_outlvl+numstages,
 							 lowest_outlvl+numstages-1);
   stages.push_back(pfws);
-
   return true;
 }
 
@@ -1307,11 +1475,9 @@ AddStage(WaveletType wavetype,
   intersignals.push_back(pdis);
 
   insignals[numstages].clear();
-
   pdis = new deque<INSAMPLE>();
   insignals.push_back(pdis);
 
-  // Actually have to clone one of the stages in the system here
   ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>* prws = 
     new ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>(wavetype,
 							    rate_l,
@@ -1320,7 +1486,6 @@ AddStage(WaveletType wavetype,
 
   this->numstages++;
   this->numlevels = this->numstages+1;
-
   return true;
 }
 
@@ -1332,18 +1497,24 @@ RemoveStage()
     return false;
   }
 
+  // Remove highest two insignals (one will be added later with different contents)
+  CHK_DEL(insignals[numstages]);
+  CHK_DEL(insignals[numstages-1]);
+  insignals.pop_back(); 
+  insignals.pop_back();
+
+  // Transfer the current contents of highest intersignal to highest insignal
+  deque<INSAMPLE>* pdis = new deque<INSAMPLE>(*(intersignals[numstages-2]));
+  insignals.push_back(pdis);
+
   CHK_DEL(intersignals[numstages-2]);
   intersignals.pop_back();
-
-  CHK_DEL(insignals[numstages]);
-  insignals.pop_back();
 
   CHK_DEL(stages.back());
   stages.pop_back();
 
   this->numstages--;
   this->numlevels = this->numstages+1;
-
   return true;
 }
 
@@ -1403,10 +1574,17 @@ GetLowestOutputLevel() const
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetLowestOutputLevel(int lowest_outlvl)
+{
+  this->lowest_outlvl = lowest_outlvl;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 GetIndexNumberOfLevel(int level) const
 {
-  if (level < MAX_STAGES+1) {
+  if ((level >= 0) && (level < MAX_STAGES+1)) {
     return index[level];
   } else {
     return 0;
@@ -1417,16 +1595,9 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 SetIndexNumberOfLevel(int level, unsigned newindex)
 {
-  if (level < MAX_STAGES+1) {
+  if ((level >= 0) && (level < MAX_STAGES+1)) {
     index[level] = newindex;
   }
-}
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetLowestOutputLevel(int lowest_outlvl)
-{
-  this->lowest_outlvl = lowest_outlvl;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

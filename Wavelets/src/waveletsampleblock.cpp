@@ -20,7 +20,8 @@ WaveletInputSampleBlock::WaveletInputSampleBlock
 {
 }
 
-WaveletInputSampleBlock::WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs) :
+WaveletInputSampleBlock::
+WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs) :
   InputSampleBlock<WaveletInputSample>(rhs)
 {
 }
