@@ -49,7 +49,7 @@ private:
   int lowest_level;
   int* delay_vals;
 
-  vector<deque<SAMPLE> *> dbanks;
+  vector<deque<SAMPLE>* > dbanks;
 
   unsigned StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out,
 		       const WaveletOutputSampleBlock<SAMPLE> &in);
@@ -98,6 +98,9 @@ template<class SAMPLE>
 DelayBlock<SAMPLE>::
 DelayBlock(const unsigned numlevels, const int lowest_level, int* delay_vals)
 {
+  DEBUG_PRINT("DelayBlock<SAMPLE>::DelayBlock(const unsigned numlevels,"
+	      <<"const int lowest_level, int* delay_vals)");
+
   if ((numlevels == 0) || (numlevels > MAX_STAGES+1)) {
     // Need at least one level
     this->numlevels = 1;
@@ -131,8 +134,10 @@ DelayBlock(const unsigned numlevels, const int lowest_level, int* delay_vals)
 template<class SAMPLE>
 DelayBlock<SAMPLE>::
 DelayBlock(const DelayBlock &rhs) : 
-  numlevels(rhs.numlevels), lowest_level(rhs.lowest_level), dbanks(rhs.dbanks)
+  numlevels(rhs.numlevels), lowest_level(rhs.lowest_level)
 {
+  DEBUG_PRINT("DelayBlock<SAMPLE>::DelayBlock(const DelayBlock &rhs)");
+
   if ((rhs.numlevels == 0) || (rhs.numlevels > MAX_STAGES+1)) {
     // Need at least one level
     this->numlevels = 1;
@@ -144,10 +149,13 @@ DelayBlock(const DelayBlock &rhs) :
     this->delay_vals = new int[1];
     this->delay_vals[0] = 0;
   } else {
-    // Initialize the delay value vector
+    // Initialize the delay value vector and the delay deques
     this->delay_vals = new int[rhs.numlevels];
     for (unsigned i=0; i<rhs.numlevels; i++) {
       this->delay_vals[i] = rhs.delay_vals[i];
+      int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
+      deque<SAMPLE>* pdis = new deque<SAMPLE>(delay_sz);
+      dbanks.push_back(pdis);
     }
   }
 }
@@ -156,6 +164,8 @@ template<class SAMPLE>
 DelayBlock<SAMPLE>::
 ~DelayBlock()
 {
+  DEBUG_PRINT("DelayBlock<SAMPLE>::~DelayBlock()");
+
   if (delay_vals != 0) {
     delete[] delay_vals;
     delay_vals=0;
@@ -172,6 +182,8 @@ DelayBlock<SAMPLE> &
 DelayBlock<SAMPLE>::
 operator=(const DelayBlock &rhs)
 {
+  DEBUG_PRINT("DelayBlock<SAMPLE>::operator=(const DelayBlock &rhs)");
+
   this->~DelayBlock();
   return *(new (this) DelayBlock(rhs));
 }
@@ -358,6 +370,11 @@ Print(ostream &os) const
   os << "The delay values:" << endl;
   for (i=0; i<numlevels; i++) {
     os << "\t" << delay_vals[i] << endl;
+  }
+
+  os << "The size of the dbanks:" << endl;
+  for (i=0; i<numlevels; i++) {
+    os << "\t" << dbanks[i]->size() << endl;
   }
 
   return os;

@@ -173,15 +173,36 @@ char *waveletNames[NUM_WAVELET_TYPES] = {"Daubechies 2 (Haar)",
 					 "Daubechies 18",
 					 "Daubechies 20"};
 
-WaveletCoefficients::WaveletCoefficients()
+WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
 {
-  numcoefs = 0;
-  g_coefs = 0;
-  h_coefs = 0;
+  DEBUG_PRINT("WaveletCoefficients::WaveletCoefficients(const WaveletType wt)");
+
+  assert(wt<=NUM_WAVELET_TYPES);
+  this->wt = wt;
+  numcoefs = numCoefTable[wt];
+  waveletname = waveletNames[wt];
+
+  g_coefs = new double[numcoefs];
+  h_coefs = new double[numcoefs];
+
+  for (unsigned i=0; i<numcoefs; ++i) {
+    const double *coefptr = coefTable[wt];
+    g_coefs[i] = coefptr[i];
+    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+  }
+
+  DEBUG_PRINT("  wt= " << wt << endl
+	      << "  waveletname= " << waveletname << endl
+	      << "  numcoefs= " << numcoefs << endl
+	      << "  &g_coefs= " << g_coefs << endl
+	      << "  &h_coefs= " << h_coefs << endl);
 }
 
 WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
 {
+  DEBUG_PRINT("WaveletCoefficients::WaveletCoefficients"
+	      <<"(const WaveletCoefficients &rhs)");
+
   wt = rhs.wt;
   waveletname = rhs.waveletname;
   numcoefs = rhs.numcoefs;
@@ -196,25 +217,13 @@ WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
   }
 }
 
-WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
-{
-  assert(wt<=NUM_WAVELET_TYPES);
-  this->wt = wt;
-  numcoefs = numCoefTable[wt];
-  waveletname = waveletNames[wt];
-
-  g_coefs = new double[numcoefs];
-  h_coefs = new double[numcoefs];
-
-  for (unsigned i=0; i<numcoefs; ++i) {
-    const double *coefptr = coefTable[wt];
-    g_coefs[i] = coefptr[i];
-    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
-  }
-}
 
 WaveletCoefficients::~WaveletCoefficients()
 {
+  DEBUG_PRINT("WaveletCoefficients::~WaveletCoefficients()"<<endl
+	      << "  &g_coefs= " << g_coefs << endl
+	      << "  &h_coefs= " << h_coefs << endl);
+
   CHK_DEL(g_coefs);
   CHK_DEL(h_coefs);
 }
@@ -222,6 +231,8 @@ WaveletCoefficients::~WaveletCoefficients()
 WaveletCoefficients & WaveletCoefficients::operator=
 (const WaveletCoefficients &rhs)
 {
+  DEBUG_PRINT("WaveletCoefficients::operator=(const WaveletCoefficients &rhs)");
+
   wt = rhs.wt;
   CHK_DEL(g_coefs);
   CHK_DEL(h_coefs);

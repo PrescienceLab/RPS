@@ -18,9 +18,8 @@ private:
   void init(const WaveletType wt);
 
 public:
-  WaveletCoefficients();
+  WaveletCoefficients(const WaveletType wt=DAUB2);
   WaveletCoefficients(const WaveletCoefficients &rhs);
-  WaveletCoefficients(const WaveletType wt);
   virtual ~WaveletCoefficients();
 
   WaveletCoefficients & operator=(const WaveletCoefficients &rhs);

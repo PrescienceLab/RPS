@@ -122,4 +122,5 @@ operator <<(ostream &os) const
 {
   return Print(os);
 }
+
 #endif

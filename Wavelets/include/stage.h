@@ -43,7 +43,7 @@ protected:
   FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> highpass;
 
 public:
-  WaveletStageHelper(const WaveletType wavetype=DAUB2, 
+  WaveletStageHelper(const WaveletType wavetype=DAUB2,
 		     const StageType stagetype=FORWARD);
   WaveletStageHelper(const WaveletStageHelper &rhs);
   virtual ~WaveletStageHelper();
@@ -228,10 +228,10 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 WaveletStageHelper(const WaveletType wavetype, 
 		   const StageType stagetype) :
-  wavecoefs(wavetype)
+  stagetype(stagetype), wavetype(wavetype), wavecoefs(wavetype)
 {
-  this->wavetype = wavetype;
-  this->stagetype = stagetype;
+  DEBUG_PRINT("WaveletStageHelper::WaveletStageHelper"
+	      <<"(const WaveletType wavetype,const StageType stagetype)");
 
   vector<double> coefs;
 
@@ -269,12 +269,15 @@ WaveletStageHelper(const WaveletStageHelper &rhs) :
   stagetype(rhs.stagetype), wavetype(rhs.wavetype), wavecoefs(rhs.wavecoefs),
   lowpass(rhs.lowpass), highpass(rhs.highpass)
 {
+  DEBUG_PRINT("WaveletStageHelper::WaveletStageHelper"
+	      <<"(const WaveletStageHelper &rhs)");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ~WaveletStageHelper()
 {
+  DEBUG_PRINT("WaveletStageHelper::~WaveletStageHelper()");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -282,19 +285,10 @@ WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
 WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 operator=(const WaveletStageHelper &rhs)
 {
-  // Make sure that the RTT of rhs is WaveletStageHelper, otherwise throw an
-  //  exception
-  if ((typeid(rhs) == typeid(WaveletStageHelper)) && (this != rhs)) {
-    // Copy
-    wavetype = rhs.wavetype;
-    stagetype = rhs.stagetype;
-    wavecoefs = rhs.wavecoefs;
-    lowpass = rhs.lowpass;
-    highpass = rhs.highpass;
-  } else {
-    throw EquivalenceException();
-  }
-  return *this;
+  DEBUG_PRINT("WaveletStageHelper::operator=(const WaveletStageHelper &rhs)");
+
+  this->~WaveletStageHelper();
+  return *(new (this) WaveletStageHelper(rhs));
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -441,9 +435,11 @@ ostream & WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 Print(ostream &os) const
 {
   os << "WaveletStageHelper::" << endl;
-  os << wavecoefs << endl;
-  os << lowpass << endl;
-  os << highpass << endl;
+  os << "  Stagetype: " << stagetype << endl;
+  os << "  Waveletype: " << wavetype << endl;
+  os << "  Coefficient information: " << wavecoefs << endl;
+  os << "  LPF " << lowpass << endl;
+  os << "  HPF " << highpass << endl;
   return os;
 }
 
@@ -463,6 +459,8 @@ ForwardWaveletStage(const WaveletType wavetype) :
   stagehelp(wavetype, FORWARD), rate_l(2), rate_h(2),
   outlevel_l(-1), outlevel_h(-1), downsampler_l(rate_l), downsampler_h(rate_h)
 {
+  DEBUG_PRINT("ForwardWaveletStage::ForwardWaveletStage"
+	      <<"(const WaveletType wavetype)");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -472,6 +470,8 @@ ForwardWaveletStage(const ForwardWaveletStage &rhs) :
   outlevel_l(rhs.outlevel_l), outlevel_h(rhs.outlevel_h),
   downsampler_l(rhs.rate_l), downsampler_h(rhs.rate_h)
 {
+  DEBUG_PRINT("ForwardWaveletStage::ForwardWaveletStage"
+	      <<"(const ForwardWaveletStage &rhs)");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -485,12 +485,19 @@ ForwardWaveletStage(const WaveletType wavetype,
   outlevel_l(outlevel_l), outlevel_h(outlevel_h),
   downsampler_l(rate_l), downsampler_h(rate_h)
 {
+  DEBUG_PRINT("ForwardWaveletStage::ForwardWaveletStage(): "<<endl
+	      <<"  wavetype= " << wavetype << endl
+	      << "  rate_l= " << rate_l << endl
+	      << "  rate_h= " << rate_h << endl
+	      << "  outlevel_l= " << outlevel_l << endl
+	      << "  outlevel_h= " << outlevel_h << endl);
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ~ForwardWaveletStage()
 {
+  DEBUG_PRINT("ForwardWaveletStage::~ForwardWaveletStage()");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -498,22 +505,10 @@ ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
 ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 operator=(const ForwardWaveletStage &rhs)
 {
-  // Check that the RTT is actually a ForwardWaveletStage, else
-  //  throw exception
-  if ((typeid(rhs) == typeid(ForwardWaveletStage)) && 
-      (this !=rhs)) {
-    // copy
-    stagehelp = rhs.stagehelp;
-    rate_l = rhs.rate_l;
-    rate_h = rhs.rate_h;
-    outlevel_l = rhs.outlevel_l;
-    outlevel_h = rhs.outlevel_h;
-    downsampler_l = rhs.downsampler_l;
-    downsampler_h = rhs.downsampler_h;
-  } else {
-    throw EquivalenceException();
-  }
-  return *this;
+  DEBUG_PRINT("ForwardWaveletStage::operator=(const ForwardWaveletStage &rhs)");
+
+  this->~ForwardWaveletStage();
+  return *(new (this) ForwardWaveletStage(rhs));
 }
 
 
@@ -688,6 +683,8 @@ ReverseWaveletStage(const WaveletType wavetype) :
   stagehelp(wavetype, REVERSE), rate_l(2), rate_h(2), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
+  DEBUG_PRINT("ReverseWaveletStage::ReverseWaveletStage"
+	      <<"(const WaveletType wavetype)");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -696,6 +693,8 @@ ReverseWaveletStage(const ReverseWaveletStage &rhs) :
   stagehelp(rhs.stagehelp), rate_l(rhs.rate_l), rate_h(rhs.rate_h), 
   upsampler_l(rhs.rate_l), upsampler_h(rhs.rate_h)
 {
+  DEBUG_PRINT("ReverseWaveletStage::ReverseWaveletStage"
+	      <<"(const ReverseWaveletStage &rhs)");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -706,12 +705,17 @@ ReverseWaveletStage(const WaveletType wavetype,
   stagehelp(wavetype, REVERSE), rate_l(rate_l), rate_h(rate_h), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
+  DEBUG_PRINT("ReverseWaveletStage::ReverseWaveletStage(): "<<endl
+	      <<"  wavetype= " << wavetype << endl
+	      << "  rate_l= " << rate_l << endl
+	      << "  rate_h= " << rate_h << endl);
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ~ReverseWaveletStage()
 {
+  DEBUG_PRINT("ReverseWaveletStage::~ReverseWaveletStage()");
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -719,19 +723,10 @@ ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
 ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 operator=(const ReverseWaveletStage &rhs)
 {
-  // Check that the RTT is actually a ReverseWaveletStage, else
-  //  throw exception
-  if ((typeid(rhs) == typeid(ReverseWaveletStage)) && (this !=rhs)) {
-    // copy
-    stagehelp = rhs.stagehelp;
-    rate_l = rhs.rate_l;
-    rate_h = rhs.rate_h;
-    upsampler_l = rhs.upsampler_l;
-    upsampler_h = rhs.upsampler_h;
-  } else {
-    throw EquivalenceException();
-  }
-  return *this;
+  DEBUG_PRINT("ReverseWaveletStage::operator=(const ReverseWaveletStage &rhs)");
+
+  this->~ReverseWaveletStage();
+  return *(new (this) ReverseWaveletStage(rhs));
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

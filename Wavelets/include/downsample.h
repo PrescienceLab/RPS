@@ -102,6 +102,13 @@ DownSampleBuffer(SampleBlock<SAMPLE> &output,
 
 template <class SAMPLE>
 ostream & DownSample<SAMPLE>::
+operator <<(ostream &os) const
+{
+  return Print(os);
+}
+
+template <class SAMPLE>
+ostream & DownSample<SAMPLE>::
 Print(ostream &os) const
 {
   os << "DownSample information:\n";

@@ -489,9 +489,26 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticForwardWaveletTransform(const StaticForwardWaveletTransform &rhs) : 
   numstages(rhs.numstages), numlevels(rhs.numlevels),
-  lowest_outlvl(rhs.lowest_outlvl), index_a(rhs.index_a), index_d(rhs.index_d), 
-  first_stage(rhs.first_stage), stages(rhs.stages)
+  lowest_outlvl(rhs.lowest_outlvl)
 {
+  DEBUG_PRINT("StaticForwardWaveletTransform::StaticForwardWaveletTransform"
+	      <<"(const StaticForwardWaveletTransform &rhs)");
+
+  unsigned i;
+  first_stage = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>
+    (*rhs.first_stage);
+
+  ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws;
+  for (i=0; i<numstages-1; i++) {
+    pfws = new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>
+      (*rhs.stages[i]);
+    stages.push_back(pfws);
+  }
+
+  for (i=0; i<numlevels; i++) {
+    index_a[i] = rhs.index_a[i];
+    index_d[i] = rhs.index_d[i];
+  }
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -559,18 +576,11 @@ StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
 StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 operator=(const StaticForwardWaveletTransform &rhs)
 {
-  numstages = rhs.numstages;
-  numlevels = rhs.numlevels;
-  lowest_outlvl = rhs.lowest_outlvl;
+  DEBUG_PRINT("StaticForwardWaveletTransform::operator="
+	      <<"(const StaticForwardWaveletTransform &rhs");
 
-  for (unsigned i=0; i<numlevels; i++) {
-    index_a[i] = rhs.index_a[i];
-    index_d[i] = rhs.index_d[i];
-  }
-
-  first_stage = rhs.first_stage;
-  stages = rhs.stages;
-  return *this;
+  this->~StaticForwardWaveletTransform();
+  return *(new (this) StaticForwardWaveletTransform(rhs));
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -956,8 +966,11 @@ Print(ostream &os) const
      << "," << lowest_outlvl+numstages << "]" << endl;
   os << endl;
 
-  ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfws;
-  for (unsigned i=0; i<numstages; i++) {
+  os << "First Stage:" << endl;
+  first_stage->Print(os);
+
+  ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws;
+  for (unsigned i=0; i<numstages-1; i++) {
     os << "STAGE " << i << ":" << endl;
     pfws = stages[i];
     pfws->Print(os);
@@ -982,6 +995,9 @@ StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticReverseWaveletTransform(const unsigned numstages,
 			      const int lowest_inlvl)
 {
+  DEBUG_PRINT("StaticReverseWaveletTransform::StaticReverseWaveletTransform"
+	      <<"(const unsigned numstages, const int lowest_inlvl)");
+
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     this->numstages = 1;
   } else {
@@ -1015,10 +1031,31 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs) :
   numstages(rhs.numstages), numlevels(rhs.numlevels),
-  lowest_inlvl(rhs.lowest_inlvl), index(rhs.index), sampletime(rhs.sampletime),
-  insignals(rhs.insignals), intersignals(rhs.intersignals),
-  stages(rhs.stages), last_stage(rhs.last_stage)
-{}
+  lowest_inlvl(rhs.lowest_inlvl), index(rhs.index), sampletime(rhs.sampletime)
+{
+  DEBUG_PRINT("StaticReverseWaveletTransform::StaticReverseWaveletTransform"
+	      <<"(const StaticReverseWaveletTransform &rhs)");
+
+  unsigned i;
+  for (i=0; i<rhs.numlevels; i++) {
+    SampleBlock<INSAMPLE>* psbis = new SampleBlock<INSAMPLE>(*rhs.insignals[i]);
+    insignals.push_back(psbis);
+  }
+
+  for (i=0; i<rhs.numstages-1; i++) {
+    SampleBlock<INSAMPLE>* psbis = new SampleBlock<INSAMPLE>
+      (*rhs.intersignals[i]);
+    intersignals.push_back(psbis);    
+  }
+
+  for (i=0; i<rhs.numstages-1; i++) {
+    ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>* prws = 
+      new ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>(*rhs.stages[i]);
+    stages.push_back(prws);
+  }
+  last_stage = new ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>
+    (*rhs.last_stage);
+}
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
@@ -1028,6 +1065,12 @@ StaticReverseWaveletTransform(const unsigned numstages,
 			      const unsigned rate_h,
 			      const int lowest_inlvl)
 {
+  DEBUG_PRINT("StaticReverseWaveletTransform::StaticReverseWaveletTransform"
+	      <<endl<<"  (const unsigned numstages,"
+	      <<endl<<"   const WaveletType wavetype,"
+	      <<endl<<"   const unsigned rate_l,"
+	      <<endl<<"   const unsigned rate_h,"
+	      <<endl<<"   const int lowest_inlvl)");
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     this->numstages = 1;
   } else {
@@ -1065,6 +1108,8 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ~StaticReverseWaveletTransform()
 {
+  DEBUG_PRINT("StaticReverseWaveletTransform::~StaticReverseWaveletTransform()");
+
   unsigned i;
   for (i=0; i<numlevels; i++) {
     CHK_DEL(insignals[i]);
@@ -1086,6 +1131,9 @@ StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 operator=(const StaticReverseWaveletTransform &rhs)
 {
+  DEBUG_PRINT("StaticReverseWaveletTransform::operator="
+	      <<"(const StaticReverseWaveletTransform &rhs)");
+
   this->~StaticReverseWaveletTransform();
   return *(new (this) StaticReverseWaveletTransform(rhs));
 }
@@ -1599,26 +1647,19 @@ ostream & StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 Print(ostream &os) const
 {
   os << "Number of stages: " << numstages << endl;
-  os << "Number of levels: " << numlevels << endl;
-
-  os << "The samples in the level oriented input buffer: " << endl;
-  unsigned i;
-  SampleBlock<INSAMPLE>* psbis;
-  for (i=0; i<numlevels; i++) {
-    os << "Level " << i << ":" << endl;
-
-    psbis = insignals[i];
-    for (unsigned j=0; j<psbis->GetBlockSize(); j++) {
-      os << psbis[j] << endl;
-    }
-  }
+  os << "Level range:      " << "[" << lowest_inlvl
+     << "," << lowest_inlvl+numstages << "]" << endl;
+  os << endl;
 
   ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>* prws;
-  for (i=0; i<numstages; i++) {
+  for (unsigned i=0; i<numstages-1; i++) {
     os << "STAGE " << i << ":" << endl;
     prws = stages[i];
-    os << *prws << endl;
+    prws->Print(os);
   }
+
+  os << "Last Stage:" << endl;
+  last_stage->Print(os);
   return os;
 }
 

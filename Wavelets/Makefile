@@ -67,6 +67,8 @@ OBJS  = $(LIBOBJS) $(APPOBJS)
 
 all: $(LIBFILE) $(EXECS)
 
+lib: $(LIBFILE)
+
 $(LIBFILE) : $(LIBOBJS)
 	ar ruv $(LIBFILE) $(LIBOBJS)
 	ranlib $(LIBFILE)

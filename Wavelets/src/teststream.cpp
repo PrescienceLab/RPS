@@ -27,10 +27,10 @@ void usage()
 
 const unsigned numcoefs[10] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
 
-#define DEBUG_PRINT(bprint, in, sampletime) \
-  if ((bprint)) {                           \
-    PrintLevelIndex((in), (sampletime));    \
-  }                                         \
+#define DBG_PRINT(bprint, in, sampletime) \
+  if ((bprint)) {                         \
+    PrintLevelIndex((in), (sampletime));  \
+  }                                       \
 
 template <class SAMPLE>
 void PrintLevelIndex(const vector<SAMPLE> &input, const unsigned sampletime) {
@@ -44,9 +44,6 @@ void PrintLevelIndex(const vector<SAMPLE> &input, const unsigned sampletime) {
     cout << input[i].GetSampleIndex() << " ";
   }
   cout << endl;
-}
-
-void print() {
 }
 
 int main(int argc, char *argv[])
@@ -102,8 +99,14 @@ int main(int argc, char *argv[])
 
   // Instantiate a static forward wavelet transform
   cerr << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform<double, wosd, wisd>
-    sfwt(numstages,wt,2,2,0);
+  StaticForwardWaveletTransform<double, wosd, wisd> sfwt;
+  //  sfwt(numstages,wt,2,2,0);
+  cerr << "-----------------------------------------------"<< endl;
+  cerr << "DEFAULT SFWT CONSTRUCTION COMPLETE" << endl;
+  cerr << "-----------------------------------------------"<< endl;
+  sfwt=StaticForwardWaveletTransform<double, wosd, wisd>(numstages,wt,2,2,0);
+  cerr << sfwt << endl;
+
 
   // Parameterize the delay block
   unsigned wtcoefnum = numcoefs[type];
@@ -118,18 +121,23 @@ int main(int argc, char *argv[])
   }
 
   // Instantiate a delay block
-  DelayBlock<wosd> 
-    //  dlyblk = DelayBlock<wosd>(numstages+1,0,delay);
-    dlyblk(numstages+1, 0, delay);
-
-  //  cout << dlyblk << endl;
+  DelayBlock<wosd> dlyblk;
+  //  dlyblk(numstages+1, 0, delay);
+  cerr << "-----------------------------------------------"<< endl;
+  cerr << "DEFAULT DLYBLK CONSTRUCTION COMPLETE" << endl;
+  cerr << "-----------------------------------------------"<< endl;
+  dlyblk = DelayBlock<wosd>(numstages+1,0,delay);
+  cerr << dlyblk << endl;
 
   // Instantiate a static forward wavelet transform
   cerr << "StaticReverseWaveletTransform instantiation" << endl;
-  StaticReverseWaveletTransform<double, wisd, wosd>
-    //  srwt = StaticReverseWaveletTransform<double, wisd, wosd>(numstages,wt,2,2,0);
-    srwt(numstages,wt,2,2,0);
-  //  cout << srwt << endl;
+  StaticReverseWaveletTransform<double, wisd, wosd> srwt;
+  //  srwt(numstages,wt,2,2,0);
+  cerr << "-----------------------------------------------"<< endl;
+  cerr << "DEFAULT SRWT CONSTRUCTION COMPLETE" << endl;
+  cerr << "-----------------------------------------------"<< endl;
+  srwt = StaticReverseWaveletTransform<double, wisd, wosd>(numstages,wt,2,2,0);
+  cerr << srwt << endl;
 
 
   // Create result buffers
@@ -138,18 +146,20 @@ int main(int argc, char *argv[])
   vector<wisd> finaloutput;
   vector<wisd> outsamp;
 
-
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-    DEBUG_PRINT(0, outsamples, i);
-    
-    dlyblk.StreamingSampleOperation(delaysamples, outsamples);
-    DEBUG_PRINT(1, outsamples, i);
+    DBG_PRINT(0, outsamples, i);
 
+    dlyblk.StreamingSampleOperation(delaysamples, outsamples);
+    DBG_PRINT(0, outsamples, i);
+
+    cerr << "Sample time: " << i << endl;
     if (srwt.StreamingTransformSampleOperation(outsamp, delaysamples)) {
-      DEBUG_PRINT(0, outsamples, i);
+      DBG_PRINT(0, outsamples, i);
+
       for (unsigned j=0; j<outsamp.size(); j++) {
 	finaloutput.push_back(outsamp[j]);
+	cerr << "\t" << outsamp[j];
       }
     }
 
@@ -158,10 +168,10 @@ int main(int argc, char *argv[])
     delaysamples.clear();
   }
 
-  cerr << "The size of the output: " << finaloutput.size() << endl;
-  cerr << "The final output samples: " << endl;
+  cout << "The size of the output: " << finaloutput.size() << endl;
+  cout << "The final output samples: " << endl;
   for (i=0; i<finaloutput.size(); i++) {
-    cerr << finaloutput[i].GetSampleValue() << endl;
+    cout << finaloutput[i].GetSampleValue() << endl;
   }
 
   if (delay != 0) {
