@@ -9,7 +9,7 @@
 #  initsize      -> Data size that should be transformed into sfwt and dft
 #  initblocksize -> The initial blocksize used for discrete tests
 
-$usage = "measure_tsunami_system_perf.pl inputfile initsize initblocksize numtests\n";
+$usage = "measure_tsunami_system_perf.pl inputfile initsize initblocksize\n";
 
 $#ARGV==2 or die $usage;
 
