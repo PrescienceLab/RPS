@@ -15,11 +15,11 @@ my $bufferstream = $cgi->param("bufferstream");
 
 if($bufferstream eq "stream")
  {
-  $db = rps_env->initENV("shoykhet","statqos","ORACLE","streamclients");
+  $db = rps_env->InitENV("streamclients");
  }
 else
  {
-  $db = rps_env->initENV("shoykhet","statqos","ORACLE","bufferclients");
+  $db = rps_env->InitENV("bufferclients");
  }
 $db->RPSDBinit($ENV{"RPSDB_USER"},$ENV{"RPSDB_PASSWD"},$ENV{"RPSDB_PATH"});
 

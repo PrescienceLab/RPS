@@ -1,6 +1,6 @@
 export PATH=${PATH}:${RPS_DIR}/bin
 
-export PERLLIB=${RPS_DIR}/Scripts:${PERLLIB}
+export PERLLIB=${RPS_DIR}/bin:${PERLLIB}
 
 export LD_LIBRARY_PATH=${RPS_DIR}/lib:${LD_LIBRARY_PATH}
 

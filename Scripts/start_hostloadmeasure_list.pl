@@ -15,7 +15,7 @@ while (<LIST>) {
 	chomp;
 	@fields=split;
 	if ($#fields>=0) { 
-	    system "perl", "start_hostloadmeasure_on.pl", @fields;
+	    system "start_hostloadmeasure_on.pl", @fields;
 	}
     }
 }

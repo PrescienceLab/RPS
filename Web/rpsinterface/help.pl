@@ -3,12 +3,10 @@
 use strict;
 use CGI;
 use URI::Escape;
+use RPS::rps_env;
 
+rps_env->InitENV("foo");
 
-$ENV{ORACLE_HOME} = "/usr/home/oracle/oraInventory";
-$ENV{ORACLE_BASE} = "/usr/home/oracle/oraInventory";
-$ENV{ORACLE_SID}="GIS";
-$ENV{"PATH"} .= ":/home/shoykhet/RPS-development/bin/I386/LINUX";
 
 my $cgi = new CGI;
 

@@ -12,24 +12,17 @@ my $bufferstream = $cgi->param("bufferstream");
 
 my $db;
 
-#in general the initEnv call looks like: 
-#initEnv([dbuser],[dbpasswd],[TEXT | ORACLE], [textpath | oracle table name])
-#in this case, if a text database is used, the initENV call looks like:
-#rps_env->initENV("shoykhet","statqos","TEXT","db/streamclients.txt") or bufferclients.txt
-#if an oracle database is used:
-#rps_env->initENV("shoykhet","statqos","ORACLE","streamclients") or bufferclients
 
 if ($bufferstream eq "stream")
  {
-  $db = rps_env->initENV("shoykhet","statqos","ORACLE","streamclients");
+  $db = rps_env->InitENV("streamclients");
  }
 else
  {
-  $db = rps_env->initENV("shoykhet","statqos","ORACLE","bufferclients");
+  $db = rps_env->InitENV("bufferclients");
  }
 
 $db->RPSDBinit($ENV{"RPSDB_USER"},$ENV{"RPSDB_PASSWD"},$ENV{"RPSDB_PATH"});
-
 
 my $resourcetype = $cgi->param("resourcetype");
 

@@ -5,7 +5,7 @@ use CGI;
 use URI::Escape;
 use RPS::rps_env;
 
-my $db = rps_env->initENV("shoykhet","statqos","ORACLE","bufferclients");
+my $db = rps_env->InitENV("bufferclients");
 
 $db->RPSDBinit($ENV{"RPSDB_USER"},$ENV{"RPSDB_PASSWD"},$ENV{"RPSDB_PATH"});
 
@@ -298,7 +298,12 @@ sub genGnuPlot
    }
 
   open(MYOUTFILE, ">gnuplot/$gnuplotfile");
-  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
+#
+#
+# Changed to use PNGs for portability -PAD
+#
+  print MYOUTFILE "set terminal png small transparent color " .
+#  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
   "xffffff x000000 xadd8e6 " .
   "x9500d3 \n" .
   "set output \"gnuplot/$jpegfile.jpeg\" \n" .

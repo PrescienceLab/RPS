@@ -4,13 +4,12 @@
 use strict;
 use CGI;
 use URI::Escape;
+use RPS::rps_env;
 
 my @colors = ("x404040", "x0000ff", "xff0000", "xffa500", "x66cdaa", "xcdb5cd", "xdda0dd", "x000000", "xadd8e6","x9500d3");
 
-$ENV{"PATH"} .= ":/home/shoykhet/RPS-development/bin/I386/LINUX";
+rps_env->InitENV("streamclients");
 
-my $user = "shoykhet";
-my $passwd = "statqos";
 my $cgi = new CGI();
 my $name = "";
 
@@ -76,7 +75,7 @@ sub graphStaticWavelet
  {
   my($measurements, $name) = @_;
   my $outname = "temp/$name"."out";
-  my @sfwtoutput = `sample_static_sfwt temp/$name $daub $levels $transform stdout flat 2>&1`;
+  my @sfwtoutput = `sample_static_sfwt temp/$name $daub $levels $transform flat stdout 2>&1`;
   `sample_static_sfwt temp/$name $daub $levels $transform $outname flat`;
 
   print "Signal to Wavelet Transform:<br>";
@@ -166,7 +165,12 @@ sub genGnuPlot2
    }
   
   open(MYOUTFILE, ">$gnuplotfile");
-  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
+#
+#
+# Changed to use PNGs for portability -PAD
+#
+  print MYOUTFILE "set terminal png small transparent color " .
+#  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
   "xffffff x000000 xadd8e6 " .
   "$colors[$i] \n" .
   "set noborder \n" .
@@ -218,7 +222,12 @@ sub genGnuPlot
 
 
   open(MYOUTFILE, ">$gnuplotfile");
-  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
+#
+#
+# Changed to use PNGs for portability -PAD
+#
+  print MYOUTFILE "set terminal png small transparent color " .
+#  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
   "xffffff x000000 xadd8e6 " .
   "x9500d3 \n" .
   "set output \"$jpegfile\" \n" .

@@ -4,12 +4,12 @@
 use strict;
 use CGI;
 use URI::Escape;
+use RPS::rps_env;
 
+rps_env->InitENV("bufferclients");
 
-$ENV{"PATH"} .= ":/home/shoykhet/RPS-development/bin/I386/LINUX";
-
-my $server = "behemoth.cs.northwestern.edu";
-my $serverport = "7777";
+my $server = $ENV{"RPS_PREDSERVER_HOST"};
+my $serverport = $ENV{"RPS_PREDSERVER_PORT"};
 
 
 my $user = "shoykhet";
@@ -17,7 +17,9 @@ my $passwd = "statqos";
 my $cgi = new CGI();
 my $input = "";
 
+
 printHeading();
+
 
 my ($file,
     $text,
@@ -259,6 +261,8 @@ sub printBoth
   my $predzerotime;
   
   my @output = `pred_reqresp_client client:tcp:$server:$serverport temp/$name $numahead $conf $modifier $model 2>&1`;
+  
+
   ($predzerotime,@graphs) = genGnuPredData(@output);
 
   my $rows = 29;
@@ -330,7 +334,12 @@ sub genGnuPlot
    }
 
   open(MYOUTFILE, ">gnuplot/$gnuplotfile");
-  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
+#
+#
+# Changed to use PNGs for portability -PAD
+#
+  print MYOUTFILE "set terminal png small transparent color " .
+#  print MYOUTFILE "set terminal jpeg transparent small size $x,$y " .
   "xffffff x000000 xadd8e6 " .
   "x9500d3 \n" .
   "set output \"gnuplot/$jpegfile.jpeg\" \n" .

@@ -352,12 +352,14 @@ else
 	-mkdir $(RPS_INSTALL_DIR)/doc
 	-mkdir $(RPS_INSTALL_DIR)/lib
 	-mkdir $(RPS_INSTALL_DIR)/include
+	-mkdir $(RPS_INSTALL_DIR)/web
 	-cp $(RPS_DIR)/include/* $(RPS_INSTALL_DIR)/include
 	-cp $(RPS_DIR)/lib/$(ARCH)/$(OS)/* $(RPS_INSTALL_DIR)/lib
 	-cp $(RPS_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_INSTALL_DIR)/bin
 	-cp $(RPS_DIR)/Scripts/* $(RPS_INSTALL_DIR)/bin
 	-cp $(RPS_DIR)/doc/* $(RPS_INSTALL_DIR)/doc
-	-cp $(RPS_DIR)/README $(RPS_DIR)/LICENSE $(RPS_INSTALL_DIR)
+	-cp $(RPS_DIR)/README $(RPS_DIR)/LICENSE $(RPS_DIR)/ROADMAP $(RPS_INSTALL_DIR)
+	-cp -r $(RPS_DIR)/Web/rpsinterface/* $(RPS_INSTALL_DIR)/web
 	-echo "export RPS_DIR=$(RPS_INSTALL_DIR)" > $(RPS_INSTALL_DIR)/ENV
 	-echo "export RPS_OS=$(OS)" >> $(RPS_INSTALL_DIR)/ENV
 	-echo "export RPS_ARCH=$(ARCH)" >> $(RPS_INSTALL_DIR)/ENV

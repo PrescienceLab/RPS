@@ -7,7 +7,7 @@ use CGI;
 use URI::Escape;
 use RPS::rps_env;
 
-my $db = rps_env->initENV("shoykhet","statqos","ORACLE","streamclients");
+my $db = rps_env->InitENV("streamclients");
 
 $db->RPSDBinit($ENV{"RPSDB_USER"},$ENV{"RPSDB_PASSWD"},$ENV{"RPSDB_PATH"});
 
