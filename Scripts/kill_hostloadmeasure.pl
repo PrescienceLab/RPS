@@ -10,7 +10,8 @@ while (<FOO>) {
     $line = $_;
     @fields = split;
     $cmd = $fields[4];
-    if ($cmd =~ /loadserver/ || $cmd =~ /loadbuffer/ ) {
+    if ($cmd =~ /loadserver/ || $cmd =~ /loadbuffer/ || $cmd =~ /load2measure/
+         || $cmd =~ /measurebuffer/ ) {
 	$CMD = "kill $fields[0]";
 	print STDERR "KILL $line\n";
 	system "$CMD";

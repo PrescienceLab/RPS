@@ -79,7 +79,7 @@ HAVE_TRACE = YES
 HAVE_RTA = YES
 
 # Whether to build the Real-time Scheduling Advisor and testing tools
-HAVE_RTSA = NO
+HAVE_RTSA = YES
 
 # Whether to build the Component finder library
 HAVE_FINDER = YES

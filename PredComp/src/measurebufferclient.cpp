@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     fprintf(stderr,"measurebufferclient: Call to \"%s\" failed\n",argv[2]);
   } else {
     for (i=0;i<repl.num;i++) { 
-      repl.data[i].Print(stderr);
+      repl.data[i].Print();
     }
   }
 

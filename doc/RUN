@@ -1,35 +1,75 @@
-To build:
+Running RPS
+===========
 
-0. export RPS_DIR=your rps directory
-1. edit setup_rps_env as appropriate
-2. source setup_rps_env
-3. cp build/Makefile.conf.most_appropriate Makefile.conf
-4. edit Makefile.conf as needed
-5. make rebuild_all
+rps-help@cs.northwestern.edu
 
-To run:
+What it means to "Run RPS" is more complex that might be expected.  A
+typical RPS build generates about 10 libraries and over 60
+executables, not to mention another 20+ scripts.  Generally speaking,
+one runs RPS by either running Prediction Components (ie, those codes
+produced from the PredComp package) and Scripts (from the Scripts
+package).
 
-0. export RPS_DIR=your rps directory
-1. edit setup_rps_env as appropriate
-2. source setup_rps_env
-3. start_hostloadmeasure.pl
-4. start_hostloadpred.pl
-5. use loadbufferclient and predbufferclient 
+Setup
+-----
 
+First set the environment variable RPS_DIR to the root of your RPS
+tree.  The assumption here is that you are using an sh-derived shell.
 
+export RPS_DIR=/home/pdinda/RPS-development
 
-For Windows:
+Next, edit build/setup_rps_env as appropriate for your environment.
+Then source it:
 
-0. set RPS_DIR to be your rps directory from my computer->...
-1. load RPS.dsw in visual studio
-2. build all
-
-
-More information to come.  
-
-More information in this technical report: 
-  http://reports-archive.adm.cs.cmu.edu/anon/1999/abstracts/99-138.html
+source build/setup_rps_env
 
 
-Peter A. Dinda
-pdinda@cs.nwu.edu
+Host load measurement
+---------------------
+
+Start up the measurement system on this host:
+
+start_hostloadmeasure.pl
+
+Get a measurement:
+
+get_measurements_on.pl host
+
+shut down the measurement system:
+
+kill_hostloadmeasure.pl
+
+Notice that there are also _on and _list versions of these scripts.
+
+
+Host load prediction
+--------------------
+
+Start up the prediction system on this host:
+
+start_hostloadpred.pl
+
+Get a prediction:
+
+get_predictions_on.pl host
+
+shut down the measurement system:
+
+kill_hostloadpred.pl
+
+Notice that there are also _on and _list versions of these scripts.
+
+
+Java GUI
+--------
+
+Display measurements and predictions on a host:
+
+run_gui_on.pl host
+
+
+
+Use the individual components
+-----------------------------
+
+Consult README.PredComps and the RPS technical report.
