@@ -30,25 +30,27 @@ void FlatParser::ParseTimeDomain(deque<wisd> &samples, istream &in)
 
 bool FlatParser::ParseWaveletCoefsSample(vector<wosd> &wavecoefs, istream &in)
 {
-  if (in.eof()) {
-    return false;
-  }
+  bool read=true;
 
   unsigned sampletime, numsamples;
   int levelnum;
   double sampvalue;
-  in >> sampletime >> numsamples;
-  for (unsigned i=0; i<numsamples; i++) {
-    in >> levelnum >> sampvalue;
-    if (indices.find(levelnum) == indices.end()) {
-      indices[levelnum] = 0;
-    } else {
-      indices[levelnum] += 1;
+  if (in >> sampletime) {
+    in >> numsamples;
+    for (unsigned i=0; i<numsamples; i++) {
+      in >> levelnum >> sampvalue;
+      if (indices.find(levelnum) == indices.end()) {
+	indices[levelnum] = 0;
+      } else {
+	indices[levelnum] += 1;
+      }
+      wosd sample(sampvalue, levelnum, indices[levelnum]);
+      wavecoefs.push_back(sample);
     }
-    wosd sample(sampvalue, levelnum, indices[levelnum]);
-    wavecoefs.push_back(sample);
+  } else {
+    read=false;
   }
-  return true;
+  return read; 
 }
 
 
@@ -59,8 +61,8 @@ ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
   unsigned indextime, numsamples;
   int levelnum;
   double sampvalue;
-  while(!in.eof()) {
-    in >> indextime >> numsamples;
+  while(in >> indextime) {
+    in >> numsamples;
     for (unsigned i=0; i<numsamples; i++) {
       in >> levelnum >> sampvalue;
       if (indices.find(levelnum) == indices.end()) {
@@ -79,46 +81,44 @@ bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
 				     vector<wosd> &dcoefs,
 				     istream &in)
 {
-  //  if (in.eof()) {
-  //    return false;
-  //  }
-  
-  bool moredata=true;
+  bool read=true;
   unsigned sampletime, numsamples;
   char mratype;
   int levelnum;
   double sampvalue;
+  if (in >> sampletime) {
+    in >> mratype >> numsamples;
+    for (unsigned i=0; i<numsamples; i++) {
+      in >> levelnum >> sampvalue;
 
-  in >> sampletime >> mratype >> numsamples;
-  for (unsigned i=0; i<numsamples; i++) {
-    in >> levelnum >> sampvalue;
-
-    if (mratype == 'A') {
-      if (LevelInSpec(spec.approximations, levelnum)) {
-	if (a_indices.find(levelnum) == a_indices.end()) {
-	  a_indices[levelnum] = 0;
-	} else {
-	  a_indices[levelnum] += 1;
+      if (mratype == 'A') {
+	if (LevelInSpec(spec.approximations, levelnum)) {
+	  if (a_indices.find(levelnum) == a_indices.end()) {
+	    a_indices[levelnum] = 0;
+	  } else {
+	    a_indices[levelnum] += 1;
+	  }
+	  wosd sample(sampvalue, levelnum, indices[levelnum]);
+	  acoefs.push_back(sample);
 	}
-	wosd sample(sampvalue, levelnum, indices[levelnum]);
-	acoefs.push_back(sample);
-      }
-    } else if (mratype == 'D') {
-      if (LevelInSpec(spec.details, levelnum)) {
-	if (d_indices.find(levelnum) == d_indices.end()) {
-	  d_indices[levelnum] = 0;
-	} else {
-	  d_indices[levelnum] += 1;
+      } else if (mratype == 'D') {
+	if (LevelInSpec(spec.details, levelnum)) {
+	  if (d_indices.find(levelnum) == d_indices.end()) {
+	    d_indices[levelnum] = 0;
+	  } else {
+	    d_indices[levelnum] += 1;
+	  }
+	  wosd sample(sampvalue, levelnum, indices[levelnum]);
+	  dcoefs.push_back(sample);
 	}
-	wosd sample(sampvalue, levelnum, indices[levelnum]);
-	dcoefs.push_back(sample);
+      } else {
+	cerr << "Invalid MRA type.\n";
       }
-    } else {
-      cerr << "Invalid MRA type.\n";
-      moredata=false;
     }
+  } else {
+    read=false;
   }
-  return moredata;
+  return read;
 }
 
 
@@ -126,40 +126,41 @@ bool FlatParser::ParseMRACoefsSample(vector<wosd> &acoefs,
 				     vector<wosd> &dcoefs,
 				     istream &in)
 {
-  if (in.eof()) {
-    return false;
-  }
-   
+  bool read=true;
   unsigned sampletime, numsamples;
   char mratype;
   int levelnum;
   double sampvalue;
 
-  in >> sampletime >> mratype >> numsamples;
-  for (unsigned i=0; i<numsamples; i++) {
-    in >> levelnum >> sampvalue;
+  if (in >> sampletime) {
+    in >> mratype >> numsamples;
+    for (unsigned i=0; i<numsamples; i++) {
+      in >> levelnum >> sampvalue;
 
-    if (mratype == 'A') {
-      if (a_indices.find(levelnum) == a_indices.end()) {
-	a_indices[levelnum] = 0;
+      if (mratype == 'A') {
+	if (a_indices.find(levelnum) == a_indices.end()) {
+	  a_indices[levelnum] = 0;
+	} else {
+	  a_indices[levelnum] += 1;
+	}
+	wosd sample(sampvalue, levelnum, indices[levelnum]);
+	acoefs.push_back(sample);
+      } else if (mratype == 'D') {
+	if (d_indices.find(levelnum) == d_indices.end()) {
+	  d_indices[levelnum] = 0;
+	} else {
+	  d_indices[levelnum] += 1;
+	}
+	wosd sample(sampvalue, levelnum, indices[levelnum]);
+	dcoefs.push_back(sample);
       } else {
-	a_indices[levelnum] += 1;
+	cerr << "Invalid MRA type.\n";
       }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      acoefs.push_back(sample);
-    } else if (mratype == 'D') {
-      if (d_indices.find(levelnum) == d_indices.end()) {
-	d_indices[levelnum] = 0;
-      } else {
-	d_indices[levelnum] += 1;
-      }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      dcoefs.push_back(sample);
-    } else {
-      cerr << "Invalid MRA type.\n";
     }
+  } else {
+    read=false;
   }
-  return true;
+  return read;
 }
 
 void FlatParser::ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &acoefs,
@@ -170,8 +171,8 @@ void FlatParser::ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &aco
   char mratype;
   int levelnum;
   double sampvalue;
-  while (!in.eof()) {
-    in >> indextime >> mratype >> numsamples;
+  while (in >> indextime) {
+    in >> mratype >> numsamples;
 
     if (mratype == 'A') {
       for (unsigned i=0; i<numsamples; i++) {
