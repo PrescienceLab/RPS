@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
   for (unsigned i=0; i<MIN(finaloutput.size(), samples.size()); i++) {
     *outstr.tie() << i << "\t" << samples[i].GetSampleValue() << "\t"
-	    << finaloutput[i].GetSampleValue() << endl;
+		  << finaloutput[i].GetSampleValue() << endl;
   }
   *outstr.tie() << endl;
 
