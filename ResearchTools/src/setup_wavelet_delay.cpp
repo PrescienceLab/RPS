@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -11,28 +12,51 @@ int pow2(int i)
   return s;
 }
 
+void usage()
+{
+  fprintf(stdout,"waveint NUMCOEFS NUMLEVELS DELAY_CONSTRAINT\n\n");
+}
+
 int main(int argc, char *argv[])
 {
   int n, l, k;
   
+  if (argc != 4) {
+    usage();
+    return 1;
+  }
+
   n=atoi(argv[1]);
   l=atoi(argv[2]);
   k=atoi(argv[3]);
 
   int d[l];
 
-  int bsyk=((pow2(l)-1)*(n-1))%pow2(l);
+  int bsyk=((pow2(l-1)-1)*(n-1))%pow2(l-1);
+  int last=bsyk;
 
   fprintf(stdout,"bsyk=%d\n",bsyk);
 
   if (k>bsyk) {
     while (k>bsyk) {
-      bsyk+=pow2(l);
+      last = bsyk;
+      bsyk+=pow2(l-1);
     }
+
+    if ((bsyk-k) > (k-last)) {
+      bsyk = last;
+    }
+
   } else if (k<bsyk) {
     while (k<bsyk) {
-      bsyk-=pow2(l);
+      last = bsyk;
+      bsyk-=pow2(l-1);
     }
+
+    if ((k-bsyk) > (last-k)) {
+      bsyk = last;
+    }
+    
   }
   
   fprintf(stdout,"bsyk nearest k=%d is %d\n", k,bsyk);

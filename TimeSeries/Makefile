@@ -146,5 +146,5 @@ depend: Makefile $(SRCS)
 	$(CC) $(CFLAGS) -MM $(SRCS) | awk '/:/ {printf "%s", "$(OBJDIR)/"} {print}' >  .dependencies.$(ARCH).$(OS)
 
 
-include .dependencies.$(ARCH).$(OS)
+include $(ROOT)/.dependencies.$(ARCH).$(OS)
 
