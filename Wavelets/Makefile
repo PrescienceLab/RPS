@@ -37,7 +37,8 @@ EXECLIST = testcoefs  \
 	   testSFWTblock \
 	   testSFWTmixed \
 	   sample_static_streaming_test \
-	   sample_static_sfwt
+	   sample_static_sfwt \
+	   sample_static_srwt
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

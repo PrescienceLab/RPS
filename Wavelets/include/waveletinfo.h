@@ -1,6 +1,11 @@
 #ifndef _waveletinfo
 #define _waveletinfo
 
+#include <cstdlib>
+#include <stdlib.h>
+#include <stdio.h>
+
+
 // Increment as a new wavelet type is added, also update coefTable and 
 //  numCoefTable with the coefficients and number of coefficients
 const int NUM_WAVELET_TYPES=12;
