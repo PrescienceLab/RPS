@@ -141,6 +141,9 @@ int main(int argc, char *argv[])
 
   unsigned i;
 
+  // Instantiate a static forward wavelet transform
+  StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
+
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages+1];
@@ -151,32 +154,35 @@ int main(int argc, char *argv[])
   StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
 
   double usrbegin, sysbegin, usrend, sysend;
-
-  FlatParser fp;
   if (sample) {
 
-    // Result buffers
-    vector<vector<wosd> > samples;
+    // Read the data from file into an input vector
+    vector<wisd> samples;
+    FlatParser fp;
+    fp.ParseTimeDomain(samples, *is);
+    infile.close();
 
-    vector<wosd> waveletcoefs;
+    // Produce the wavelet coefficients
+    vector<wosd> outsamples;
+    vector<vector<wosd> > waveletcoefs;
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+      waveletcoefs.push_back(outsamples);
+      outsamples.clear();
+    }
+
     vector<wosd> delaysamples;
     vector<wisd> currentoutput;
     vector<wisd> reconst;
 
-    // Read all of the sampletime data into a vector
-    while ( fp.ParseWaveletCoefsSample(waveletcoefs, *is) ) {
-      samples.push_back(waveletcoefs);
-      waveletcoefs.clear();
-    }
-
     for (unsigned test=0; test<numtests; test++) {
 
       GetRusage(sysbegin, usrbegin);
-      for (i=0; i<samples.size(); i++) {
+      for (i=0; i<waveletcoefs.size(); i++) {
 	if (sleep) {
 	  usleep(sleeptime_us);
 	}
-	dlyblk.StreamingSampleOperation(delaysamples, samples[i]);
+	dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs[i]);
 	if (srwt.StreamingTransformSampleOperation(currentoutput, delaysamples)) {
 	  for (unsigned j=0; j<currentoutput.size(); j++) {
 	    reconst.push_back(currentoutput[j]);
@@ -204,25 +210,24 @@ int main(int argc, char *argv[])
     }
 
   } else { //Block mode
-
+    vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
     vector<vector<WaveletOutputSampleBlock<wosd> > > blocks;
-
-    vector<WaveletOutputSampleBlock<wosd> > waveletcoefs;
-    for (i=0; i<(unsigned)numstages+1; i++) {
-      waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
-    }
-
     vector<WaveletOutputSampleBlock<wosd> > delayoutput;
     WaveletInputSampleBlock<wisd> reconst;
     WaveletInputSampleBlock<wisd> finaloutput;
 
-    while( fp.ParseWaveletCoefsBlock(waveletcoefs, *is, blocksize)) {
 
-      blocks.push_back(waveletcoefs);
-      for (i=0; i<(unsigned)numstages+1; i++) {
-	waveletcoefs[i].ClearBlock();
-      }
+    // Read the data from file into an input vector
+    deque<wisd> samples;
+    FlatParser fp;
+    unsigned index=0;
+    while (fp.ParseTimeDomain(samples, *is, index, blocksize)) {
+      WaveletInputSampleBlock<wisd> inputblock(samples);
+      sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
+      blocks.push_back(forwardoutput);
+      forwardoutput.clear();
     }
+    infile.close();
 
     for (unsigned test=0; test<numtests; test++) {
 

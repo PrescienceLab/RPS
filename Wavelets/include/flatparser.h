@@ -31,6 +31,10 @@ public:
 
   void ParseTimeDomain(vector<wisd> &samples, istream &in);
   void ParseTimeDomain(deque<wisd> &samples, istream &in);
+  unsigned ParseTimeDomain(deque<wisd> &samples,
+		       istream &in,
+		       unsigned &index,
+		       const unsigned parsenum);
 
   bool ParseWaveletCoefsSample(vector<wosd> &wavecoefs, istream &in);
   void ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,

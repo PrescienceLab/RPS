@@ -27,6 +27,25 @@ void FlatParser::ParseTimeDomain(deque<wisd> &samples, istream &in)
   }
 }
 
+unsigned FlatParser::ParseTimeDomain(deque<wisd> &samples,
+				     istream &in,
+				     unsigned &index,
+				     const unsigned parsenum)
+{
+  double sample;
+  unsigned parsecount=0;
+  while (in >> sample) {
+    parsecount++;
+    wisd wavesample;
+    wavesample.SetSampleValue(sample);
+    wavesample.SetSampleIndex(index++);
+    samples.push_back(wavesample);
+    if ((index+1) % parsenum == 0) {
+      break;
+    }
+  }
+  return parsecount;
+}
 
 bool FlatParser::ParseWaveletCoefsSample(vector<wosd> &wavecoefs, istream &in)
 {

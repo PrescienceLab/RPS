@@ -14,9 +14,11 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
 CFLAGS = -I$(INCDIR)
 
+OPTIMIZE = YES
+
 ifeq ($(OPTIMIZE),YES)
-  CFLAGS +=  -O2
-  LD1FLAGS = -O2
+  CFLAGS +=  -O2 -funroll-all-loops -ffast-math
+  LD1FLAGS = -O2 -funroll-all-loops -ffast-math
 else
   CFLAGS += -g -gstabs+ -ggdb
   LD1FLAGS = -g  -gstabs+ -ggdb 
@@ -53,8 +55,8 @@ EXECLIST = setup_wavelet_delay			\
 	   discrete_reverse_mixed               \
 	   discrete_reverse_zerofill_transform  \
 	   discrete_transform_test              \
+           samplerate_perf_srwt                 \
            samplerate_perf_sfwt                 \
-	   samplerate_perf_srwt                 \
 	   samplerate_perf_dft                  \
 	   samplerate_perf_drt
 

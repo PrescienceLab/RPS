@@ -266,7 +266,7 @@ void OutputWaveletCoefs(ostream &os,
 
   // Find maximum blocksize and level
   unsigned maxblock=0;
-  unsigned level;
+  unsigned level=0;
   for (i=0; i<numlevels; i++) {
     if (levels[i].GetBlockSize() > maxblock) {
       maxblock = levels[i].GetBlockSize();
@@ -348,7 +348,7 @@ unsigned OutputWaveletCoefs(ostream &os,
 
   // Find maximum blocksize and level
   unsigned maxblock=0;
-  unsigned level;
+  unsigned level=0;
   for (i=0; i<numlevels; i++) {
     if (levels[i].GetBlockSize() > maxblock) {
       maxblock = levels[i].GetBlockSize();
@@ -431,7 +431,7 @@ void OutputMRACoefs(ostream &os,
 
   // Find maximum blocksize and level
   unsigned maxblock=0;
-  unsigned level;
+  unsigned level=0;
   for (i=0; i<alevels; i++) {
     if (approx[i].GetBlockSize() > maxblock) {
       maxblock = approx[i].GetBlockSize();
@@ -501,7 +501,7 @@ unsigned OutputMRACoefs(ostream &os,
 
   // Find maximum blocksize and level
   unsigned maxblock=0;
-  unsigned level;
+  unsigned level=0;
   for (i=0; i<alevels; i++) {
     if (approx[i].GetBlockSize() > maxblock) {
       maxblock = approx[i].GetBlockSize();
