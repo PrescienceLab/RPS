@@ -96,7 +96,8 @@ if (1) {
   $datasize = $initsize;
   $blk = $initblocksize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000*$blk/$hz);
+    $usec = int(1000000/$hz);
+    $usec*=$blk;
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $FLAT stdout > /dev/null";
@@ -114,7 +115,8 @@ if (1) {
   $blk = $initblocksize;
   $numblocks = $datasize / $blk;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000*$blk/$hz);
+    $usec = int(1000000/$hz);
+    $usec*=$blk;
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks $usec $FLAT stdout > /dev/null\"";
     system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks $usec $FLAT stdout > /dev/null";
@@ -135,7 +137,8 @@ if (1) {
   $datasize = $initsize;
   $blk = $initblocksize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000*$blk/$hz);
+    $usec = int(1000000/$hz);
+    $usec*=$blk;
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
@@ -152,7 +155,8 @@ if (1) {
   $datasize = $initsize;
   $blk = $initblocksize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000*$blk/$hz);
+    $usec = int(1000000/$hz);
+    $usec*=$blk;
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
