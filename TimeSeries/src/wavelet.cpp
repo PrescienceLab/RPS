@@ -301,6 +301,7 @@ int WaveletPredictor::ReadSpecFileAndConfigure()
 
 int WaveletPredictor::Begin()
 {
+  curindex=0;
   return 0;
 }
 
@@ -315,8 +316,36 @@ int WaveletPredictor::StepsToPrime() const
 //
 double WaveletPredictor::Step(const double obs)
 {
-  // Do Work
+  vector <WOSD> output;
+  vector <WOSD> predoutput;
+  vector <WISD> finalout;
+
+  xform->StreamingTransformSampleOperation(output,WISD(obs,curindex++));
+
+  for (unsigned i=0;i<output.size();i++) { 
+    int level = output[i].GetSampleLevel();
+    double value = output[i].GetSampleValue();
+    int index = output[i].GetSampleIndex();
+    double outval;
+
+    if (levelop[level].ahead<=0) { 
+      outval=levelop[level].delay->PopPush(value);
+    } else {
+      double preds[levelop[level].ahead];
+      levelop[level].pred->Step(value);
+      levelop[level].pred->Predict(levelop[level].ahead,preds);
+      outval=preds[levelop[level].ahead-1];
+    }
+    predoutput.push_back(WOSD(outval,level,index+levelop[level].ahead));
+  }
   
+  xformrev->StreamingTransformSampleOperation(finalout,predoutput);
+
+  for (unsigned i=0; i< finalout.size(); i++ ) {
+    nextval=finalout[i].GetSampleValue();
+    cerr << "i="<<i<<" => "<<nextval;
+  }
+
   return 0.0;
 }
 
@@ -325,7 +354,10 @@ double WaveletPredictor::Step(const double obs)
 //
 int WaveletPredictor::Predict(const int maxahead, double *preds) const
 {
-  // Do work
+  for (int i=0;i<maxahead;i++) { 
+    // note: WRONG
+    preds[i]=nextval;
+  }
   return 0;
 }
 

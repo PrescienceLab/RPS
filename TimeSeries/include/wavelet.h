@@ -93,6 +93,8 @@ private:
   WaveletType     wtype;
   unsigned        numlevels;
   WaveletLevelOp *levelop;
+  unsigned        curindex;
+  double          nextval;
 
 
   typedef WaveletInputSample<double> WISD;
