@@ -23,7 +23,7 @@ while (<IN>) {
   if ($useindex) {
     print OUT "$i\t$_[2]\n";
   } else {
-    print OteUT "$_[1]\t$_[2]\n";
+    print OUT "$_[1]\t$_[2]\n";
   }
   $i++;
 }

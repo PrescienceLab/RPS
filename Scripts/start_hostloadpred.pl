@@ -37,7 +37,7 @@ $model="AR 16";
 or die "usage: start_hostloadpred.pl [--period=period] [--rateport=rateport] [--bufferport=bufferport] [--numfit=numfit] [--numpred=numpred] [--mintest=mintest] [--maxtest=maxtest] [--maxabserr=maxabserr] [--maxerrmissest=maxerrmissest] [model=\"model\"]\n";
   
 
-$COMMAND = "(hostloadpred server:tcp:$rateport target:stdio:stdout $period $numfit $numpred $mintest $maxtest $maxabserr $maxerrmissest $model | predbuffer $bufferdepth source:stdio:stdin server:tcp:$bufferport) > /dev/null 2> /dev/null &";
+$COMMAND = "(hostloadpred server:tcp:$rateport target:stdio:stdout $period $numfit $numpred $mintest $maxtest $maxabserr $maxerrmissest $model | predbuffer $bufferdepth source:stdio:stdin server:tcp:$bufferport) &";
 
 #print STDERR "$COMMAND\n";
 
