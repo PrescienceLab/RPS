@@ -243,7 +243,7 @@ template <class SAMPLETYPE>
 DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
 DiscreteWaveletOutputSampleBlock(const unsigned numlevels, 
 				 const int lowest_level,
-				 const TransformType tt=TRANSFORM) :
+				 const TransformType) :
   OutputSampleBlock<SAMPLETYPE>()
 {
   this->numlevels = numlevels;
