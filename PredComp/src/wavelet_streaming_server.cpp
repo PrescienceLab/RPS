@@ -1,8 +1,13 @@
 #include <stdlib.h>
 
-#include "Wavelets.h"
 #include "PredComp.h"
+#include "Wavelets.h"
 
+
+
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define strcasecmp stricmp
+#endif
 
 WaveletRepresentationInfo outputrep;
 
