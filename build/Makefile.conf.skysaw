@@ -81,6 +81,8 @@ HAVE_RTA = YES
 # Whether to build the Real-time Scheduling Advisor and testing tools
 HAVE_RTSA = NO
 
+# Whether to build the Component finder library
+HAVE_FINDER = YES
 
 
 ####################################################################################
@@ -229,6 +231,15 @@ JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
 # currently none
 #
 
+####################################################################################
+#
+# Configuration Options for the Finder library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
 # These should figure themselves out
 #
 #
@@ -244,6 +255,7 @@ SPIN_DIR          = $(RPS_DIR)/Spin
 TRACE_DIR         = $(RPS_DIR)/Trace
 RTA_DIR           = $(RPS_DIR)/RTA
 RTSA_DIR          = $(RPS_DIR)/RTSA
+FINDER_DIR        = $(RPS_DIR)/Finder
 
 
 FRACDIFF_DIR      = $(TS_DIR)/FracDiff
@@ -295,6 +307,9 @@ RTA_LIB_DIR = $(RTA_DIR)/lib/$(ARCH)/$(OS)
 
 RTSA_INC_DIR = $(RTSA_DIR)/include
 RTSA_LIB_DIR = $(RTSA_DIR)/lib/$(ARCH)/$(OS)
+
+FINDER_INC_DIR = $(FINDER_DIR)/include
+FINDER_LIB_DIR = $(FINDER_DIR)/lib/$(ARCH)/$(OS)
 
 JAVAGUI_INC_DIR = $(JAVAGUI_DIR)
 JAVAGUI_LIB_DIR = $(JAVAGUI_DIR)
@@ -390,6 +405,30 @@ ifeq ($(HAVE_SPIN),YES)
 else
    SPIN_LDFLAGS =
    SPIN_CFLAGS =
+endif
+
+ifeq ($(HAVE_RTA),YES) 
+   RTA_LDFLAGS = -L$(RTA_LIB_DIR) -lRTA
+   RTA_CFLAGS = -DHAVE_RTA -I$(RTA_INC_DIR)
+else
+   RTA_LDFLAGS =
+   RTA_CFLAGS =
+endif
+
+ifeq ($(HAVE_RTSA),YES) 
+   RTSA_LDFLAGS = -L$(RTSA_LIB_DIR) -lspin
+   RTSA_CFLAGS = -DHAVE_RTSA -I$(RTSA_INC_DIR)
+else
+   RTSA_LDFLAGS =
+   RTSA_CFLAGS =
+endif
+
+ifeq ($(HAVE_FINDER),YES) 
+   FINDER_LDFLAGS = -L$(FINDER_LIB_DIR) -lFinder
+   FINDER_CFLAGS = -DHAVE_FINDER -I$(FINDER_INC_DIR)
+else
+   FINDER_LDFLAGS =
+   FINDER_CFLAGS =
 endif
 
 

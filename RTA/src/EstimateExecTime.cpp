@@ -453,19 +453,25 @@ int EstimateExecTime(PredictionResponse        &presp,
   ExecTimeEstimationRequest thereq=req;
   ExecTimeEstimationReply   therepl=repl;
 
+#if PRINT
   thereq.Print(stderr);
+#endif
 
 #if 0
   rc=EstimateExecTimeApproachOne(presp,thereq,therepl,tau);
+#if PRINT
   fprintf(stderr,"Approach One estimate\n");
   therepl.Print(stderr);
+#endif
 #if 0
   repl=therepl;
 #endif
 
   rc=EstimateExecTimeApproachTwo(presp,thereq,therepl,tau);
+#if PRINT
   fprintf(stderr,"Approach Two estimate\n");
   therepl.Print(stderr);
+#endif
 
 #if 0
   repl=therepl;
@@ -473,8 +479,10 @@ int EstimateExecTime(PredictionResponse        &presp,
 #endif
 
   rc=EstimateExecTimeApproachThree(presp,thereq,therepl,tau);
+#if PRINT
   fprintf(stderr,"Approach Three estimate\n");
   therepl.Print(stderr);
+#endif
 
 #if 1
   repl=therepl;

@@ -10,6 +10,8 @@ TimeStamp::TimeStamp(const unsigned sec, const unsigned usec)
   tv_usec = usec;
 }
 
+
+
 TimeStamp::TimeStamp(const struct timeval *tv) 
 {
   if (tv) {

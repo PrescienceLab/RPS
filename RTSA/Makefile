@@ -22,12 +22,21 @@ else
 endif
 
 CFLAGS += -I$(INCDIR) \
-          $(RTA_CFLAGS) 
+          $(GETLOADAVG_CFLAGS) \
+          $(RPSINT_CFLAGS) \
+          $(FINDER_CFLAGS) \
+          $(SPIN_CFLAGS) \
+          $(RTA_CFLAGS) \
+          $(MIRROR_CFLAGS) \
+          $(TIMESERIES_CFLAGS) 
 
 LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
+	   $(FINDER_LDFLAGS) \
            $(RTA_LDFLAGS) \
            $(RPSINT_LDFLAGS) \
            $(MIRROR_LDFLAGS) \
+           $(SPIN_LDFLAGS) \
+           $(TIMESERIES_LDFLAGS) -lm
 
 ifeq ($(OS),SOLARIS)
   LD3FLAGS = -lsocket -lkvm -lelf
@@ -36,7 +45,8 @@ else
 endif
 
 EXECLIST = test_sched       \
-           test_sched_aggressive
+           test_sched_aggressive \
+           test_rtsa
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

@@ -1,6 +1,8 @@
 #ifndef _EndPoint
 #define _EndPoint
 
+#include <stdio.h>
+
 // source:udp:host:port
 // source:tcp:host:port
 // source:file:stdin|stdout|stderr|file

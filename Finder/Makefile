@@ -8,53 +8,30 @@ BINDIR = $(ROOT)/bin/$(ARCH)/$(OS)
 SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
-LIBNAME = RTA
+LIBNAME = Finder
 
 LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
+CFLAGS = -I$(INCDIR) $(MIRROR_CFLAGS) $(RPSINT_CFLAGS)
 
-ifeq ($(OPTIMIZE),YES) 
-  CFLAGS = -O
-  LD1FLAGS = -O
+ifeq ($(OPTIMIZE),YES)
+  CFLAGS +=  -O
+  LD1FLAGS = -O 
 else
-  CFLAGS = -g -gstabs+ -ggdb
+  CFLAGS += -g -gstabs+ -ggdb
   LD1FLAGS = -g  -gstabs+ -ggdb 
 endif
 
-CFLAGS += -I$(INCDIR) \
-          $(GETLOADAVG_CFLAGS) \
-          $(TIMESERIES_CFLAGS) \
-          $(RPSINT_CFLAGS) \
-          $(MIRROR_CFLAGS) \
-          $(SPIN_CFLAGS) \
-          $(FINDER_CFLAGS) \
+LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME) \
+            $(MIRROR_LDFLAGS) \
+            $(RPSINT_LDFLAGS)
+LD2FLAGS =  
 
-LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
-           $(FINDER_LDFLAGS) \
-           $(RPSINT_LDFLAGS) \
-           $(MIRROR_LDFLAGS) \
-           $(GETLOADAVG_LDFLAGS) \
-           $(SPIN_LDFLAGS) \
-           $(TIMESERIES_LDFLAGS) \
-           $(FRACDIFF_LDFLAGS) \
-           $(RECIPES_LDFLAGS) \
-          -lm 
-
-ifeq ($(OS),SOLARIS)
-  LD3FLAGS = -lnsl -lsocket -lkvm -lelf
-else
-  LD3FLAGS = 
-endif
-
-EXECLIST = find_tau         \
-           rta_play         \
-           test_pred        \
-           test_pred_vartau \
-           test_rta
+EXECLIST = 
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
-LIBOBJSLIST = EstimateExecTime.o RTA.o
+LIBOBJSLIST = Finder.o    
 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))

@@ -113,6 +113,7 @@ struct BufferDataReply : public SerializeableInfo {
   
   BufferDataReply(unsigned size=0) { 
     num=size;
+    data=0;
     if (num>0) { 
       data=new SERINFO [num];
     }

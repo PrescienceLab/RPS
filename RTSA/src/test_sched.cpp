@@ -1,5 +1,5 @@
-#include "SpinServer.h"
-#include "EstimateExecTime.h"
+#include "Spin.h"
+#include "RTA.h"
 #include "random.h"
 #include "TimeStamp.h"
 #include "LoadMeasurement.h"
@@ -20,18 +20,18 @@ extern "C" int usleep(int);
 
 
 
-struct Host {
+struct HostHandler {
   char          *name;
   SpinServerRef *ssref;
   PredBufferRef **psrefs;
   LoadMeasureBufferRef *lmref;
 
-  Host(char *name, int numpred) { 
+  HostHandler(char *name, int numpred) { 
     this->name = new char [strlen(name)+1]; strcpy(this->name,name);
     psrefs = new PredBufferRef * [numpred];
   }
     
-  virtual ~Host() { 
+  virtual ~HostHandler() { 
     delete [] name;
     delete [] psrefs;
   }
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
   double minslack, maxslack;
   int i,j;
   char       **prednames;
-  Host       **hosts;
+  HostHandler       **hosts;
 
   if (argc<12) {
     usage();
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
   ExecTimeEstimationReply   *erepl = new ExecTimeEstimationReply [numhosts];
   int *possiblehosts = new int [numhosts];
 
-  hosts = new Host * [numhosts];
+  hosts = new HostHandler * [numhosts];
   prednames = new char * [numpreds+2];
   for (i=0;i<numpreds+2;i++) { prednames[i]=0; }
 
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 
   for (i=0;i<numhosts;i++ ) {
     EndPoint ep;
-    hosts[i] = new Host(argv[firsthostarg+i*(3+numpreds*2)+0],numpreds);
+    hosts[i] = new HostHandler(argv[firsthostarg+i*(3+numpreds*2)+0],numpreds);
     if (ep.Parse(argv[firsthostarg+i*(3+numpreds*2)+1])) { 
       fprintf(stderr,"Can't parse spinserver %s\n",argv[firsthostarg+i*(3+numpreds*2)+1]);
       goto fail;
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 	strcpy(prednames[j],argv[firsthostarg+i*(3+numpreds*2)+3+2*j]);
       } else {
 	if (strcasecmp(prednames[j],argv[firsthostarg+i*(3+numpreds*2)+3+2*j])) { 
-	  fprintf(stderr,"Host '%s' has predictor '%s' instead of '%s'\n");
+	  fprintf(stderr,"Host '%s' has wrong predictor\n", hosts[j]->name);
 	  goto fail;
 	}
       }
@@ -325,10 +325,10 @@ int main(int argc, char *argv[])
     }
 
     int deadlinemet = spinrepl.wallsecs < (1+slack)*erepl[host].cputime;
-    int execinrange = spinrepl.wallsecs <= erepl[host].ciupper && 
-                      spinrepl.wallsecs >= erepl[host].cilower;
+    //    int execinrange = spinrepl.wallsecs <= erepl[host].ciupper && 
+    //                  spinrepl.wallsecs >= erepl[host].cilower;
 
-    fprintf(stdout,"%lf\t%s\t%s\t%lf\t%lf\t%d\t%lf\t%lf\t%lf\t%lf\t%s\t%s\n",
+    fprintf(stdout,"%f\t%s\t%s\t%f\t%f\t%d\t%f\t%f\t%f\t%f\t%s\t%s\n",
 	    (double)now,hosts[host]->name, prednames[predictor],
 	    spinreq.secs, slack, numpossiblehosts, erepl[host].cilower,
 	    erepl[host].expectedtime,erepl[host].ciupper,

@@ -20,9 +20,11 @@ Measurement::Measurement(TimeStamp &ts,
 			 unsigned period_usec)
 {
   tag=0;
+  this->serlen=0;
+  this->series=0;
+  this->period_usec=period_usec;
   this->timestamp = ts;
   SetSeries(series,serlen);
-  this->period_usec=period_usec;
 }
 
 Measurement::Measurement(const Measurement &right) 
