@@ -60,15 +60,9 @@ $(LIB): $(LIBOBJS)
 	$(AR) ruv $(LIB)  $(LIBOBJS)
 
 
-ifeq ($(OS),FREEBSD)
-  define MakeExeAction
-    $(LD) $(LD1FLAGS) $< $(LD2FLAGS) $(LD3FLAGS) -o $(BINDIR)/$(@F)
-  endef
-else
   define MakeExeAction
     $(LD) $< $(LD1FLAGS) $(LD2FLAGS) $(LD3FLAGS) -o $(BINDIR)/$(@F)
   endef
-endif
 
 
 $(EXECS):$(BINDIR)/%:$(OBJDIR)/%.o $(LIB)
