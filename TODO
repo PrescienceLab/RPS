@@ -7,7 +7,9 @@ Wavelets
 TimeSeries
   => Fix costly variance recompute bug in managed predictors
   => Wavelet Predictor
+  => Fix serialization bug with Wavelet (and perhaps other) predictors
 
+Add RPS Banner to all codes
 
 RPSInterface
 
