@@ -9,15 +9,16 @@
 #  initsize      -> Data size that should be transformed into sfwt and dft
 #  initblocksize -> The initial blocksize used for discrete tests
 
-$usage = "measure_tsunami_system_perf.pl inputfile initsize initblocksize\n";
+$usage = "measure_tsunami_system_perf.pl inputfile initsize initblocksize hz\n";
 
-$#ARGV==2 or die $usage;
+$#ARGV==3 or die $usage;
 
 $file = shift;;
 $initsize = shift;
 $initblocksize =shift;
+$hz = shift;
 
-$maxhz=100;
+$maxhz=1000;
 
 $NOT_USED=1;
 $FLAT="flat";
@@ -50,8 +51,29 @@ system "clean_loadserver.pl 1000000 10000 > $OUTDIR/loadmonitor.out &";
 # capture combined behavior
 sleep(20);
 
-# Performance tests
 if (1) {
+
+  #-----------------------------------------------------------------------------
+
+  #SAMPLE PROCESSING, FORWARD
+
+  $datasize = $initsize;
+  for (;$hz<=$maxhz;$hz*=10) {
+    if ($hz > 100) {
+      $usec = 0;
+      $datasize = 4194304;
+    } else {
+      $usec = int(1000000/$hz);
+    }
+    print STDERR "$hz\t$usec\n";
+    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null\"";
+    system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null";
+    $datasize *= 8;
+  }
+}
+
+# Performance tests
+if (0) {
 
   #-----------------------------------------------------------------------------
 
@@ -189,7 +211,7 @@ if (0) {
 #  }
 }
 
-sleep(30);
+sleep(20);
 
 system "kill_matching.pl clean_vmstat";
 system "kill_matching.pl clean_loadserver";
