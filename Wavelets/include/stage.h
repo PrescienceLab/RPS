@@ -38,16 +38,26 @@ public:
 
   WaveletStageHelper & operator=(const WaveletStageHelper &rhs);
 
-  void     ChangeWaveletType(const WaveletType wavetype);
-  string   GetWaveletName();
+  void ChangeWaveletType(const WaveletType wavetype);
+  string GetWaveletName();
 
-  void     SetFilterCoefsLPF(const vector<double> &coefs);
+  void SetFilterCoefsLPF(const vector<double> &coefs);
   unsigned GetNumCoefsLPF();
-  void     PrintCoefsLPF();
+  void PrintCoefsLPF();
 
-  void     SetFilterCoefsHPF(const vector<double> &coefs);
+  void SetFilterCoefsHPF(const vector<double> &coefs);
   unsigned GetNumCoefsHPF();
-  void     PrintCoefsHPF();
+  void PrintCoefsHPF();
+
+  void ClearLPFDelayLine();
+  void LPFSampleOperation(OUTSAMPLE &out, INSAMPLE &in);
+  void LPFBufferOperation(SampleBlock<OUTSAMPLE> &out,
+			  SampleBlock<INSAMPLE>  &in);
+
+  void ClearHPFDelayLine();
+  void HPFSampleOperation(OUTSAMPLE &out, INSAMPLE &in);
+  void HPFBufferOperation(SampleBlock<OUTSAMPLE> &out,
+			  SampleBlock<INSAMPLE>  &in);
 
   ostream & Print(ostream &os) const;
 };
@@ -292,6 +302,47 @@ void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsHPF()
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ClearLPFDelayLine()
+{
+  lowpass.ClearDelayLine();
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::LPFSampleOperation
+(OUTSAMPLE &out, INSAMPLE &in)
+{
+  lowpass.GetFilterOutput(out,in);
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::LPFBufferOperation
+(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
+{
+  lowpass.GetFilterBufferOutput(out,in);
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ClearHPFDelayLine()
+{
+  highpass.ClearDelayLine();
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::HPFSampleOperation
+(OUTSAMPLE &out, INSAMPLE &in)
+{
+  highpass.GetFilterOutput(out,in);
+}
+
+
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::HPFBufferOperation
+(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
+{
+  highpass.GetFilterBufferOutput(out,in);
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
 ostream & WaveletStageHelper<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
   os << "WaveletStageHelper::" << endl;
@@ -337,7 +388,8 @@ ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::~ForwardWaveletStage()
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE> & ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
+ForwardWaveletStage<OUTSAMPLE, INSAMPLE> &
+ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
 (const ForwardWaveletStage &rhs)
 {
   // Check that the RTT is actually a ForwardWaveletStage, else
@@ -412,7 +464,24 @@ template <class OUTSAMPLE, class INSAMPLE>
 bool ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
 (OUTSAMPLE &out_l, OUTSAMPLE &out_h, INSAMPLE &in)
 {
-  bool result=false;
+  bool result;
+
+  // Filter the new input sample through the LPF and HPF filters
+  stagehelp.LPFSampleOperation(out_l,in);
+  stagehelp.HPFSampleOperation(out_h,in);
+
+  // Downsample the results
+  result = downsampler_l.KeepSample();
+  if (result != downsampler_h.KeepSample()) {
+    // REALLY WANT TO THROW AN EXCEPTION
+    // If the downsamplers are unsynchronized, reset them and return false
+    //  if this occurs, we will lose the output from the last filter 
+    //  operation
+    downsampler_l.ResetState();
+    downsampler_h.ResetState();
+    result = false;
+  }
+
   return result;
 }
 
@@ -421,7 +490,25 @@ unsigned ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
 (SampleBlock<OUTSAMPLE> &out_l, SampleBlock<OUTSAMPLE> &out_h, 
  SampleBlock<INSAMPLE>  &in)
 {
-  unsigned result=0 ;
+  unsigned result;
+
+  // Block filter and downsample the new input buffer
+  stagehelp.LPFBufferOperation(out_h, in);
+  stagehelp.HPFBufferOperation(out_h, in);  
+
+  downsampler_l.DownSampleBuffer(out_l, out_l);
+  downsampler_h.DownSampleBuffer(out_h, out_h);
+
+  result = out_l.GetBlockSize();
+  if (result != out_h.GetBlockSize()) {
+    // REALLY WANT TO THROW AN EXCEPTION
+    // If somehow the filter lengths are different, clear the delay line and
+    //  lose data (might want to refilter)
+    stagehelp.ClearLPFDelayLine();
+    stagehelp.ClearHPFDelayLine();
+    result = 0;
+  }
+
   return result;
 }
 
@@ -471,7 +558,8 @@ ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::~ReverseWaveletStage()
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE> & ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
+ReverseWaveletStage<OUTSAMPLE, INSAMPLE> & 
+ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
 (const ReverseWaveletStage &rhs)
 {
   // Check that the RTT is actually a ReverseWaveletStage, else

@@ -27,8 +27,8 @@ public:
   void   GetFilterCoefs(vector<double> &coefs);
   void   ClearDelayLine();
 
-  void   GetFilterOutput(OUTSAMPLE &out,
-			 INSAMPLE  &in);
+  void GetFilterOutput(OUTSAMPLE &out,
+		       INSAMPLE  &in);
 
   void GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out,
 			     SampleBlock<INSAMPLE>  &in);
