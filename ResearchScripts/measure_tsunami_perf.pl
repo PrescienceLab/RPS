@@ -30,12 +30,12 @@ print STDERR "Maximum sample rate test for streaming forward sample operation.\n
 
 # Determine maximum rate
 print STDERR "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.sr.sfwt.sample.DAUB10.10.t.0.out\n";
-#system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.sr.sfwt.sample.DAUB10.10.t.0.out";
+system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.sr.sfwt.sample.DAUB10.10.t.0.out";
 
 $nxt_srate = $sleeprate;
 for ($i=1; $i<$numsrtests; $i++) {
   print STDERR "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $nxt_srate $numtests $flat perf.sr.sfwt.sample.DAUB10.10.t.$nxt_srate.out\n";
-  #system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $nxt_srate $numtests $flat perf.sr.sfwt.sample.DAUB10.10.t.$nxt_srate.out";
+  system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $nxt_srate $numtests $flat perf.sr.sfwt.sample.DAUB10.10.t.$nxt_srate.out";
   $nxt_srate *= $multiplier;
 }
 
@@ -45,12 +45,12 @@ print STDERR "\nMaximum sample rate test for streaming forward block operation, 
 
 # Determine maximum rate
 print STDERR "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.sr.sfwt.block.DAUB10.10.t.0.out\n";
-#system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.sr.sfwt.block.DAUB10.10.t.0.out";
+system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.sr.sfwt.block.DAUB10.10.t.0.out";
 
 $nxt_srate = $sleeprate;
 for ($i=1; $i<$numsrtests; $i++) {
   print STDERR "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $nxt_srate $numtests $flat perf.sr.sfwt.block.DAUB10.10.t.$nxt_srate.out\n";
-  #system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $nxt_srate $numtests $flat perf.sr.sfwt.block.DAUB10.10.t.$nxt_srate.out";
+  system "samplerate_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $nxt_srate $numtests $flat perf.sr.sfwt.block.DAUB10.10.t.$nxt_srate.out";
   $nxt_srate *= $multiplier;
 }
 
@@ -60,12 +60,12 @@ print STDERR "\nMaximum sample rate test for streaming reverse sample operation.
 
 # Determine maximum rate
 print STDERR "samplerate_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.sr.srwt.sample.DAUB10.10.t.0.out\n";
-#system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.sr.srwt.sample.DAUB10.10.t.0.out";
+system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.sr.srwt.sample.DAUB10.10.t.0.out";
 
 $nxt_srate = $sleeprate;
 for ($i=1; $i<$numsrtests; $i++) {
   print STDERR "samplerate_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $nxt_srate $numtests $flat perf.sr.srwt.sample.DAUB10.10.t.$nxt_srate.out\n";
-  #system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $nxt_srate $numtests $flat perf.sr.srwt.sample.DAUB10.10.t.$nxt_srate.out";
+  system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $nxt_srate $numtests $flat perf.sr.srwt.sample.DAUB10.10.t.$nxt_srate.out";
   $nxt_srate *= $multiplier;
 }
 
@@ -75,12 +75,12 @@ print STDERR "\nMaximum sample rate test for streaming reverse block operation, 
 
 # Determine maximum rate
 print STDERR "samplerate_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.sr.srwt.block.DAUB10.10.t.0.out\n";
-#system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.sr.srwt.block.DAUB10.10.t.0.out";
+system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.sr.srwt.block.DAUB10.10.t.0.out";
 
 $nxt_srate = $sleeprate;
 for ($i=1; $i<$numsrtests; $i++) {
   print STDERR "samplerate_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $nxt_srate $numtests $flat perf.sr.srwt.block.DAUB10.10.t.$nxt_srate.out\n";
-  #system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $nxt_srate $numtests $flat perf.sr.srwt.block.DAUB10.10.t.$nxt_srate.out";
+  system "samplerate_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $nxt_srate $numtests $flat perf.sr.srwt.block.DAUB10.10.t.$nxt_srate.out";
   $nxt_srate *= $multiplier;
 }
 
@@ -89,7 +89,7 @@ for ($i=1; $i<$numsrtests; $i++) {
 print STDERR "\nScalability test for streaming forward sample operation, wavelet type=DAUB10, levels sweeped.\n";
 for ($i=1; $i<=$MAX_STAGES; $i++) {
   print STDERR "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalst.sfwt.sample.DAUB10.$stage_nums[$i]-stages.t.0.out\n";
-  #system "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalst.sfwt.sample.DAUB10.$stage_nums[$i]-stages.t.0.out";
+  system "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalst.sfwt.sample.DAUB10.$stage_nums[$i]-stages.t.0.out";
 }
 
 # Streaming scalability as wavelet type order increases, sample, forward
@@ -97,7 +97,7 @@ for ($i=1; $i<=$MAX_STAGES; $i++) {
 print STDERR "\nScalability test for streaming forward sample operation, stages=10, wavelet type sweeped.\n";
 for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
   print STDERR "samplerate_perf_sfwt $file $wavelet_types[$i] 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalwt.sfwt.sample.$wavelet_types[$i].10.t.0.out\n";
-  #system "samplerate_perf_sfwt $file $wavelet_types[$i] 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalwt.sfwt.sample.$wavelet_types[$i].10.t.0.out";
+  system "samplerate_perf_sfwt $file $wavelet_types[$i] 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalwt.sfwt.sample.$wavelet_types[$i].10.t.0.out";
 }
 
 # Streaming scalability test as levels added, block, forward
@@ -105,7 +105,7 @@ for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
 print STDERR "\nScalability test for streaming forward block operation, wavelet type=DAUB10, levels sweeped.\n";
 for ($i=1; $i<=$MAX_STAGES; $i++) {
   print STDERR "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalst.sfwt.block.DAUB10.$stage_nums[$i]-stages.t.0.out\n";
-  #system "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalst.sfwt.block.DAUB10.$stage_nums[$i]-stages.t.0.out";
+  system "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalst.sfwt.block.DAUB10.$stage_nums[$i]-stages.t.0.out";
 }
 
 # Streaming scalability as wavelet type order increases, block, forward
@@ -113,7 +113,7 @@ for ($i=1; $i<=$MAX_STAGES; $i++) {
 print STDERR "\nScalability test for streaming forward block operation, stages=10, wavelet type sweeped.\n";
 for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
   print STDERR "samplerate_perf_sfwt $file $wavelet_types[$i] 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalwt.sfwt.block.$wavelet_types[$i].10.t.0.out\n";
-  #system "samplerate_perf_sfwt $file $wavelet_types[$i] 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalwt.sfwt.block.$wavelet_types[$i].10.t.0.out";
+  system "samplerate_perf_sfwt $file $wavelet_types[$i] 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalwt.sfwt.block.$wavelet_types[$i].10.t.0.out";
 }
 
 # Streaming scalability test as levels added, sample, delay + reverse
@@ -121,7 +121,7 @@ for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
 print STDERR "\nScalability test for streaming reverse sample operation, wavelet type=DAUB10, levels sweeped.\n";
 for ($i=1; $i<=$MAX_STAGES; $i++) {
   print STDERR "samplerate_perf_srwt $file DAUB10 $i TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalst.srwt.sample.DAUB10.$stage_nums[$i]-stages.t.0.out\n";
-  #system "samplerate_perf_srwt $file DAUB10 $i TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalst.srwt.sample.DAUB10.$stage_nums[$i]-stages.t.0.out";
+  system "samplerate_perf_srwt $file DAUB10 $i TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalst.srwt.sample.DAUB10.$stage_nums[$i]-stages.t.0.out";
 }
 
 # Streaming scalability as wavelet type order increases, sample, delay + reverse
@@ -129,7 +129,7 @@ for ($i=1; $i<=$MAX_STAGES; $i++) {
 print STDERR "\nScalability test for streaming reverse sample operation, stages=10, wavelet type sweeped.\n";
 for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
   print STDERR "samplerate_perf_srwt $file $wavelet_types[$i] 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalwt.srwt.sample.$wavelet_types[$i].10.t.0.out\n";
-  #system "samplerate_perf_srwt $file $wavelet_types[$i] 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalwt.srwt.sample.$wavelet_types[$i].10.t.0.out";
+  system "samplerate_perf_srwt $file $wavelet_types[$i] 10 TRANSFORM SAMPLE $NOT_USED 0 $numtests $flat perf.scalwt.srwt.sample.$wavelet_types[$i].10.t.0.out";
 }
 
 # Streaming scalability test as levels added, block, delay + reverse
@@ -137,7 +137,7 @@ for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
 print STDERR "\nScalability test for streaming reverse block operation, wavelet type=DAUB10, levels sweeped.\n";
 for ($i=1; $i<=$MAX_STAGES; $i++) {
   print STDERR "samplerate_perf_srwt $file DAUB10 $i TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalst.srwt.block.DAUB10.$stage_nums[$i]-stages.t.0.out\n";
-  #system "samplerate_perf_srwt $file DAUB10 $i TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalst.srwt.block.DAUB10.$stage_nums[$i]-stages.t.0.out";
+  system "samplerate_perf_srwt $file DAUB10 $i TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalst.srwt.block.DAUB10.$stage_nums[$i]-stages.t.0.out";
 }
 
 # Streaming scalability as wavelet type order increases, block, delay + reverse
@@ -145,7 +145,7 @@ for ($i=1; $i<=$MAX_STAGES; $i++) {
 print STDERR "\nScalability test for streaming reverse block operation, stages=10, wavelet type sweeped.\n";
 for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
   print STDERR "samplerate_perf_srwt $file $wavelet_types[$i] 10 TRANSFORM BLOCK $blocksize 0 $numtests $flat perf.scalwt.srwt.block.$wavelet_types[$i].10.t.0.out\n";
-  #system "samplerate_perf_srwt $file $wavelet_types[$i] 10 TRANSFORM BLOCK $blocksize  0 $numtests $flat perf.scalwt.srwt.block.$wavelet_types[$i].10.t.0.out";
+  system "samplerate_perf_srwt $file $wavelet_types[$i] 10 TRANSFORM BLOCK $blocksize  0 $numtests $flat perf.scalwt.srwt.block.$wavelet_types[$i].10.t.0.out";
 }
 
 
@@ -158,12 +158,12 @@ print STDERR "\nMaximum sample rate test for discrete forward transform operatio
 
 # Determine maximum rate
 print STDERR "samplerate_perf_dft $file DAUB10 TRANSFORM $blocksize 0 $numtests $flat perf.sr.dft.DAUB10.$blocksize.t.0.out\n";
-#system "samplerate_perf_dft $file DAUB10 10 TRANSFORM $blocksize 0 $numtests $flat perf.sr.dft.DAUB10.$blocksize.t.0.out";
+system "samplerate_perf_dft $file DAUB10 10 TRANSFORM $blocksize 0 $numtests $flat perf.sr.dft.DAUB10.$blocksize.t.0.out";
 
 $nxt_srate = $sleeprate;
 for ($i=1; $i<$numsrtests; $i++) {
   print STDERR "samplerate_perf_dft $file DAUB10 TRANSFORM $blocksize $nxt_srate $numtests $flat perf.sr.dft.DAUB10.$blocksize.t.$nxt_srate.out\n";
-  #system "samplerate_perf_dft $file DAUB10 TRANSFORM $blocksize $nxt_srate $numtests $flat perf.sr.dft.DAUB10.$blocksize.t.$nxt_srate.out";
+  system "samplerate_perf_dft $file DAUB10 TRANSFORM $blocksize $nxt_srate $numtests $flat perf.sr.dft.DAUB10.$blocksize.t.$nxt_srate.out";
   $nxt_srate *= $multiplier;
 }
 
@@ -173,12 +173,12 @@ print STDERR "\nMaximum sample rate test for discrete reverse transform operatio
 
 # Determine maximum rate
 print STDERR "samplerate_perf_drt $file DAUB10 TRANSFORM $blocksize 0 $numtests $flat perf.sr.drt.DAUB10.$blocksize.t.0.out\n";
-#system "samplerate_perf_drt $file DAUB10 10 TRANSFORM $blocksize 0 $numtests $flat perf.sr.drt.DAUB10.$blocksize.t.0.out";
+system "samplerate_perf_drt $file DAUB10 10 TRANSFORM $blocksize 0 $numtests $flat perf.sr.drt.DAUB10.$blocksize.t.0.out";
 
 $nxt_srate = $sleeprate;
 for ($i=1; $i<$numsrtests; $i++) {
   print STDERR "samplerate_perf_drt $file DAUB10 TRANSFORM $blocksize $nxt_srate $numtests $flat perf.sr.drt.DAUB10.$blocksize.t.$nxt_srate.out\n";
-  #system "samplerate_perf_drt $file DAUB10 TRANSFORM $blocksize $nxt_srate $numtests $flat perf.sr.drt.DAUB10.$blocksize.t.$nxt_srate.out";
+  system "samplerate_perf_drt $file DAUB10 TRANSFORM $blocksize $nxt_srate $numtests $flat perf.sr.drt.DAUB10.$blocksize.t.$nxt_srate.out";
   $nxt_srate *= $multiplier;
 }
 
@@ -187,7 +187,7 @@ for ($i=1; $i<$numsrtests; $i++) {
 print STDERR "\nScalability test for streaming dft operation, wavelet type=DAUB10, blocksize sweeped 2...1024.\n";
 for ($nxt_blksize=2; $nxt_blksize<=1024; $nxt_blksize *= 2) {
   print STDERR "samplerate_perf_dft $file DAUB10 TRANSFORM $nxt_blksize 0 $numtests $flat perf.scalbs.dft.DAUB10.$nxt_blksize.t.0.out\n";
-  #system "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM $nxt_blksize 0 $numtests $flat perf.scalbs.dft.DAUB10.$nxt_blksize.t.0.out";
+  system "samplerate_perf_sfwt $file DAUB10 $i TRANSFORM $nxt_blksize 0 $numtests $flat perf.scalbs.dft.DAUB10.$nxt_blksize.t.0.out";
 }
 
 
@@ -196,7 +196,7 @@ for ($nxt_blksize=2; $nxt_blksize<=1024; $nxt_blksize *= 2) {
 print STDERR "\nScalability test for streaming forward block operation, stages=10, wavelet type sweeped.\n";
 for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
   print STDERR "samplerate_perf_dft $file $wavelet_types[$i] TRANSFORM $blocksize 0 $numtests $flat perf.scalwt.dft.$wavelet_types[$i].$blksize.t.0.out\n";
-  #system "samplerate_perf_dft $file $wavelet_types[$i] TRANSFORM $blocksize 0 $numtests $flat perf.scalwt.dft.$wavelet_types[$i].$blksize.t.0.out";
+  system "samplerate_perf_dft $file $wavelet_types[$i] TRANSFORM $blocksize 0 $numtests $flat perf.scalwt.dft.$wavelet_types[$i].$blksize.t.0.out";
 }
 
 # Discrete reverse scalability test as blocksize increases -> levels increase
@@ -204,7 +204,7 @@ for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
 print STDERR "\nScalability test for streaming drt operation, wavelet type=DAUB10, blocksize sweeped 2...1024.\n";
 for ($nxt_blksize=2; $nxt_blksize<=1024; $nxt_blksize *= 2) {
   print STDERR "samplerate_perf_drt $file DAUB10 TRANSFORM $nxt_blksize 0 $numtests $flat perf.scalbs.drt.DAUB10.$nxt_blksize.t.0.out\n";
-  #system "samplerate_perf_drt $file DAUB10 $i TRANSFORM $nxt_blksize 0 $numtests $flat perf.scalbs.drt.DAUB10.$nxt_blksize.t.0.out";
+  system "samplerate_perf_drt $file DAUB10 $i TRANSFORM $nxt_blksize 0 $numtests $flat perf.scalbs.drt.DAUB10.$nxt_blksize.t.0.out";
 }
 
 
@@ -213,5 +213,5 @@ for ($nxt_blksize=2; $nxt_blksize<=1024; $nxt_blksize *= 2) {
 print STDERR "\nScalability test for drt operation, blocksize = $blocksize, wavelet type sweeped.\n";
 for ($i=0; $i<$NUM_WAVELET_TYPES; $i++) {
   print STDERR "samplerate_perf_drt $file $wavelet_types[$i] TRANSFORM $blocksize 0 $numtests $flat perf.scalwt.dft.$wavelet_types[$i].$blksize.t.0.out\n";
-  #system "samplerate_perf_drt $file $wavelet_types[$i] TRANSFORM $blocksize 0 $numtests $flat perf.scalwt.dft.$wavelet_types[$i].$blksize.t.0.out";
+  system "samplerate_perf_drt $file $wavelet_types[$i] TRANSFORM $blocksize 0 $numtests $flat perf.scalwt.dft.$wavelet_types[$i].$blksize.t.0.out";
 }
