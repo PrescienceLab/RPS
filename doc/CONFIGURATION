@@ -1,0 +1,193 @@
+Understanding Makefile.conf
+===========================
+
+rps-help@cs.northwestern.edu
+
+This file is intended to be read after BUILD.  It describes the
+additional software requirements and Makefile.conf options for each of
+the packages. 
+
+
+
+Things You Must Set
+-------------------
+
+RPS_DIR = your RPS installation directory
+CC      = your C++ compiler
+F77     = your Fortran 77 compiler if you have one
+AR      = your library archiver
+RANLIB  = your ranlib 
+LD      = your linker
+JAVA    = your java compiler
+JAVAH   = your java JNI header generator (javah)
+
+OPTIMIZE = YES | NO
+DEBUG    = YES | NO
+
+ARCH     = your archtecture 
+OS       = your operating system
+
+
+What to set if you only have GNU Make and a C++ compiler
+--------------------------------------------------------
+
+RPS_DIR, CC, AR, RANLIB, LD, OPTIMIZE, DEBUG, ARCH, OS
+
+Then
+
+HAVE_GETLOADAVG = YES
+HAVE_GETFLOWBW = YES
+ HAVE_REMOS = NO
+HAVE_TIMESERIES = YES
+ HAVE_NUMERICAL_RECIPES = NO
+ HAVE_PVM = NO
+HAVE_FRACDIFF = NO
+HAVE_MIRROR = YES
+ HAVE_EXPAT = NO
+HAVE_RPSINT = YES
+HAVE_REMOSINT = YES
+HAVE_PREDCOMP = YES
+HAVE_JAVAGUI = NO
+HAVE_SPIN = YES
+HAVE_TRACE = YES
+HAVE_RTA = YES
+HAVE_RTSA = YES
+HAVE_FINDER = YES
+HAVE_RESEARCHTOOLS = NO
+
+
+GetLoadAvg
+----------
+
+HAVE_GETLOADAVG = YES | NO
+  Whether to build GetLoadAvg
+
+USE_UPTIME = YES | NO
+  Whether to use /bin/uptime to get load averages or a kernel call
+
+
+GetFlowBW
+---------
+
+HAVE_GETFLOWBW = YES | NO
+  Whether to build GetFlowBW 
+
+HAVE_REMOS = YES | NO
+  If remos exists (library doesn't work if you don't have it)
+
+REMOS_DIR = Remos installation directory
+
+
+
+TimeSeries
+----------
+
+HAVE_TIMESERIES = YES | NO
+  Whether to build TimeSeries
+
+HAVE_NUMERICAL_RECIPES = YES | NO
+RECIPES_DIR = directory of numerical recipes installation
+  The Numerical Recipes library is needed for MA, ARMA, and ARIMA models
+  If you set this to NO, then these modellers will return null
+  Notice that we expect to find the numerical recipes includes in 
+  $(RECIPES_DIR)/include  and the library in $(RECIPES_DIR)/lib/$(ARCH)/$(OS)
+  This is slightly different from where the recipes build process leaves 
+  things
+
+HAVE_PVM = YES | NO
+PVM_DIR  = directory of PVM 3.3.3 or later installation
+PVM_ARCH = pvm architecture symbol
+  PVM is required to build the parallel cross validation system
+  It is normal for a make depend to complain about missing pvm includes
+  if this is set to NO, even if you aren't building the crossval* stuff
+  if you are in doubt, say NO
+
+
+FracDiff
+--------
+
+HAVE_FRACDIFF = YES | NO
+  Whether to build the FracDiff library (used to implement ARFIMA models)
+  Notice that you need a fortran 77 compiler (f77) to build this
+
+Mirror
+------
+
+HAVE_MIRROR = YES | NO
+  Whether to build the Mirror template library and tools
+
+HAVE_EXPAT     = YES | NO
+EXPAT_DIR      = directory of expat installation
+  Limited XML serialization support - SAY NO
+
+RPSInterface
+------------
+
+HAVE_RPSINT = YES | NO
+  Whether to build the RPS interface library
+  Almost always yes
+
+RemosInterface
+--------------
+
+HAVE_REMOSINT = YES | NO
+  Whether to build the Remos interface library
+  Almost always yes
+
+PredComp
+--------
+HAVE_PREDCOMP = YES | NO
+  Whether to build the prediction components
+  This will almost always be yes
+
+
+JavaGUI
+-------
+
+HAVE_JAVAGUI = YES | NO
+  Whether to build The Java GUI
+  You must have a recent JDK in order to build this
+  The JNI interface is built assuming gcc is being used
+
+JDK_CFLAGS = -I flags that point to your jdk's JNI includes
+
+Spin
+----
+
+HAVE_SPIN = YES | NO
+  Whether to build the Spin library and tools
+
+
+Trace
+-----
+
+HAVE_TRACE = YES | NO
+  Whether to build the load trace access tools and playback tool
+
+RTA
+---
+
+HAVE_RTA = YES | NO
+  Whether to build the Running Time Advisor and testing tools
+
+
+RTSA
+----
+
+HAVE_RTSA = YES | NO
+  Whether to build the Real-time Scheduling Advisor and testing tools
+
+
+Finder
+------
+
+HAVE_FINDER = YES | NO
+  Whether to build the Component finder library
+
+
+ResearchTools
+-------------
+
+HAVE_RESEARCHTOOLS = YES
+  Whether to build various research tools
+

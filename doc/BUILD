@@ -38,7 +38,15 @@ To build on a Unix or Unix-like (cygwin) system:
 1. edit build/setup_rps_env as appropriate
 2. source setup_rps_env
 3. cp build/Makefile.conf.most_appropriate Makefile.conf
-4. edit Makefile.conf as needed
+4. edit Makefile.conf as needed (See doc/CONFIGURATION for more information)
+   a. you must set RPS_DIR appropriately
+   b. The first block of "HAVE_FOO" options determine which packages are built.
+      If you try to build a package for which you don't have the software, the
+      build process will fail.
+   c. Each package then has a block for its options.  In many cases, it is 
+      possible to build a package with reduced functionality even if you don't have
+      the software.  If you indicate you have the software but you really don't,
+      the build process will fail.
 5. make rebuild_all
 
 To build on native windows using Visual C++  (Not all components are built)
