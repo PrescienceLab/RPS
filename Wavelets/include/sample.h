@@ -56,6 +56,10 @@ public:
     return value;
   };
 
+  virtual void SetSampleLevel(int level) {};
+  virtual int GetSampleLevel() { return -1; };
+
+
   virtual ostream & Print(ostream &os) const {
     os << value << endl;
     return os;

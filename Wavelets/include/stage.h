@@ -60,12 +60,12 @@ public:
   void PrintCoefsHPF();
 
   void ClearLPFDelayLine();
-  void LPFSampleOperation(OUTSAMPLE &out, INSAMPLE &in);
+  void LPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in);
   void LPFBufferOperation(SampleBlock<OUTSAMPLE> &out,
 			  SampleBlock<INSAMPLE>  &in);
 
   void ClearHPFDelayLine();
-  void HPFSampleOperation(OUTSAMPLE &out, INSAMPLE &in);
+  void HPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in);
   void HPFBufferOperation(SampleBlock<OUTSAMPLE> &out,
 			  SampleBlock<INSAMPLE>  &in);
 
@@ -117,15 +117,12 @@ public:
   inline void SetOutputLevelHigh(int outlevel);
   inline int GetOutputLevelHigh();
 
+  inline void ClearFilterDelayLines();
+
   // Returns true if there is an output sample
-  bool PerformSampleOperation(OUTSAMPLE &out_l,
-			      OUTSAMPLE &out_h,
-			      INSAMPLE  &in);
-#if 0  
-  bool PerformSampleOperation(OUTSAMPLE &out_l,
-			      OUTSAMPLE &out_h,
-			      OUTSAMPLE &in);
-#endif
+  bool PerformSampleOperation(Sample<SAMPLETYPE> &out_l,
+			      Sample<SAMPLETYPE> &out_h,
+			      Sample<SAMPLETYPE> &in);
 
   // Returns output buffer length (both outputs same length)
   unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out_l, 
@@ -176,8 +173,12 @@ public:
   inline void SetUpSampleRateHigh(unsigned rate);
   inline unsigned GetUpSampleRateHigh();
 
+  inline void ClearFilterDelayLines();
+
   // Takes two inputs and produces an output, returns true if input accepted
-  bool PerformSampleOperation(OUTSAMPLE &out, INSAMPLE &in_l, INSAMPLE &in_h);
+  bool PerformSampleOperation(Sample<SAMPLETYPE> &out,
+			      Sample<SAMPLETYPE> &in_l,
+			      Sample<SAMPLETYPE> &in_h);
 
   unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out,
 				 SampleBlock<INSAMPLE>  &in_l,
@@ -364,7 +365,7 @@ void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearLPFDelayLine()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::LPFSampleOperation
-(OUTSAMPLE &out, INSAMPLE &in)
+(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
 {
   lowpass.GetFilterOutput(out,in);
 }
@@ -384,7 +385,7 @@ void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearHPFDelayLine()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::HPFSampleOperation
-(OUTSAMPLE &out, INSAMPLE &in)
+(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
 {
   highpass.GetFilterOutput(out,in);
 }
@@ -516,8 +517,16 @@ int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelHigh()
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearFilterDelayLines()
+{
+  stagehelp.ClearLPFDelayLine();
+  stagehelp.ClearHPFDelayLine();
+}
+
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformSampleOperation
-(OUTSAMPLE &out_l, OUTSAMPLE &out_h, INSAMPLE &in)
+(Sample<SAMPLETYPE> &out_l, Sample<SAMPLETYPE> &out_h, Sample<SAMPLETYPE> &in)
 {
   // Filter the new input sample through the LPF and HPF filters
   stagehelp.LPFSampleOperation(out_l,in);
@@ -691,11 +700,18 @@ unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateHi
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformSampleOperation
-(OUTSAMPLE &out, INSAMPLE &in_l, INSAMPLE &in_h)
+void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearFilterDelayLines()
 {
-  INSAMPLE  zero(0);
-  OUTSAMPLE tempout(0);
+  stagehelp.ClearLPFDelayLine();
+  stagehelp.ClearHPFDelayLine();
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformSampleOperation
+(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in_l, Sample<SAMPLETYPE> &in_h)
+{
+  Sample<SAMPLETYPE> zero(0);
+  Sample<SAMPLETYPE> tempout(0);
 
   out.SetSampleValue(0);
 

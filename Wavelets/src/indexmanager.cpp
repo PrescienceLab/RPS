@@ -1,0 +1,1 @@
+#include "indexmanager.h"

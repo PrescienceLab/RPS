@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
     for (unsigned j=0; j<outsamples.size(); j++) {
       cout << outsamples[j];
     }
+    outsamples.clear();
   }
   return 0;
 }
