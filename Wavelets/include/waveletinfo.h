@@ -18,6 +18,8 @@ enum WaveletType {DAUB2,
                   FILTERBANK_NBS_G8_D1,
                   FILTERBANK_NBS_H8_D1};
 
+const unsigned numberOfCoefs[NUM_WAVELET_TYPES] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 8, 8};
+
 const unsigned MAX_STAGES=20;
 
 #endif
