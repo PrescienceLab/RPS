@@ -54,6 +54,7 @@ endif
 
 EXECLIST = loadclient 				\
         predserver 				\
+        managed_predserver                      \
         predserver_core				\
         predclient 				\
         pred_reqresp_server 			\

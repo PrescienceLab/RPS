@@ -192,7 +192,7 @@ class ManagedPredictor : public Predictor {
     if (curpred) { 
       return curpred->ComputeVariances(maxahead,vars,vtype);
     } else {
-      int top= CO_VARIANCES ? maxahead*maxahead : maxahead;
+      int top= (vtype==CO_VARIANCES) ? maxahead*maxahead : maxahead;
       for (int i=0;i<top;i++) { 
 	vars[i]=0;
       }

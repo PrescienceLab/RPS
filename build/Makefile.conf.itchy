@@ -12,7 +12,8 @@ CC      = g++
 F77     = g77
 AR      = ar 
 RANLIB  = ranlib
-LD      = c++
+LD      = g++
+STRIP   = strip
 JAVA    = java
 JAVAH   = javah
 
@@ -25,7 +26,7 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = I386
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, CYGWIN
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
 OS       = CYGWIN
 
 
@@ -38,8 +39,11 @@ OS       = CYGWIN
 # Whether to build the GetLoadAvg Library
 HAVE_GETLOADAVG = YES
 
-# Whether to build the GetFlowBW Library
+# Whether to build the GetFlowBW Library (depends on Remos)
 HAVE_GETFLOWBW = YES
+
+# Whether to include the WatchTower sensor for RPS (Only works on WIN32 and CYGWIN)
+HAVE_WATCHTOWER = YES
 
 # Whether to build the Time Series Prediction Library (TS)
 HAVE_TIMESERIES = YES
@@ -65,8 +69,6 @@ HAVE_REMOSINT = YES
 # This provides the various prediction components listed in the tech report
 #
 HAVE_PREDCOMP = YES
-
-
 
 # This provides the java GUI
 #
@@ -122,21 +124,19 @@ REMOS_DIR = /home/Remos/Remos
 
 ####################################################################################
 #
+# Configuration Options for WatchTowerRPS
+#
+####################################################################################
+#
+# Currently none
+#
+
+####################################################################################
+#
 # Configuration Options for the Time Series Prediction Library (TS)
 #
 ####################################################################################
 
-#
-# The Numerical Recipes library is needed for MA, ARMA, and ARIMA models
-# If you set this to NO, then these modellers will return null
-#
-# Notice that we expect to find the numerical recipes includes in 
-# $(RECIPES_DIR)/include  and the library in $(RECIPES_DIR)/lib/$(ARCH)/$(OS)
-# This is slightly different from where the recipes build process leaves 
-# things
-#
-HAVE_NUMERICAL_RECIPES = NO
-RECIPES_DIR = /home/RPS/recipes_c-ansi
 
 #
 # PVM is required to build the parallel cross validation system
@@ -146,8 +146,8 @@ RECIPES_DIR = /home/RPS/recipes_c-ansi
 # if you are in doubt, say NO
 #
 HAVE_PVM = NO
-PVM_DIR  = /killdeer/usr3/pdinda/pvm
-PVM_ARCH = I386
+PVM_DIR  = /usr/share/pvm3
+PVM_ARCH = LINUX
 
 ####################################################################################
 #
@@ -164,11 +164,10 @@ PVM_ARCH = I386
 # Configuration Options for the Mirror Template Library and tools
 #
 ####################################################################################
-
-# For some data types, we can serialize/unserialize to/from xml if you have expat
 #
-HAVE_EXPAT     = NO
-EXPAT_DIR      = /afs/cs/project/cmcl-pdinda-3/XML/EXPAT
+# Currently none
+#
+#
 
 ####################################################################################
 #
@@ -200,7 +199,7 @@ EXPAT_DIR      = /afs/cs/project/cmcl-pdinda-3/XML/EXPAT
 # Configuration Options for the Java GUI
 #
 ####################################################################################
-JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
+JDK_CFLAGS=-I/usr/local/jdk/include -I/usr/local/jdk/include/linux
 
 
 
@@ -259,5 +258,8 @@ JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
 #
 
 
-include $(RPS_DIR)/build/Makefile.conf.shared
+#
+# DO NOT REMOVE THE FOLLOWING
+#
 
+include $(RPS_DIR)/build/Makefile.conf.shared
