@@ -357,14 +357,14 @@ void WaveletBlock::GetFromMeasurement(const Measurement &m)
   SetSeries(m.series,m.serlen);
 }
 
-void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const
+void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<wisd> &m) const
 {
   assert(rinfo.rtype==TIME_DOMAIN);
   m.SetBlockIndex(0);
   m.SetSamples(series, serlen);
 }
 
-void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m)
+void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<wisd> &m)
 {
   assert(rinfo.rtype==TIME_DOMAIN);
   tag=m.GetBlockIndex();
@@ -375,7 +375,7 @@ void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<
   m.GetSamples(series);
 }
 
-void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const
+void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<wosd> &m) const
 {
   assert(rinfo.rtype==WAVELET_DOMAIN_APPROX || 
 	 rinfo.rtype==WAVELET_DOMAIN_DETAIL || 
@@ -383,7 +383,7 @@ void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double
   m.SetSamples(series, serlen);
 }
 
-void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m)
+void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<wosd> &m)
 {
   assert(rinfo.rtype==WAVELET_DOMAIN_APPROX || 
 	 rinfo.rtype==WAVELET_DOMAIN_DETAIL || 

@@ -38,6 +38,8 @@ public:
   inline void SetBlockLevel(const int level);
   inline int GetBlockLevel() const;
 
+  void SetSamples(const double* series, const int serlen);
+
   bool AllSamplesLevelCorrect();
   void SetAllSamplesToCorrectLevel();
 };
@@ -126,6 +128,17 @@ int WaveletOutputSampleBlock<SAMPLETYPE>::
 GetBlockLevel() const
 {
   return level;
+}
+
+template <class SAMPLETYPE>
+void WaveletOutputSampleBlock<SAMPLETYPE>::
+SetSamples(const double* series, const int serlen)
+{
+  int i;
+  for (i=0; i<serlen; i++) {
+    SAMPLETYPE samp(series[i], this->level, blockindex+i);
+    samples.push_back(samp);
+  }
 }
 
 template <class SAMPLETYPE>

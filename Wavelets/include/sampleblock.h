@@ -69,7 +69,7 @@ public:
     samples = input;
   };
 
-  void SetSamples(const double* series, const int serlen) {
+  virtual void SetSamples(const double* series, const int serlen) {
     int i;
     for (i=0; i<serlen; i++) {
       SAMPLETYPE samp(series[i], blockindex+i);
@@ -84,7 +84,7 @@ public:
 
   void GetSamples(double *series) const {
     for (unsigned i=0; i<samples.size(); i++) {
-      series[i] = samples[i];
+      series[i] = samples[i].GetSampleValue();
     }
   };
 

@@ -24,6 +24,8 @@ public:
   WaveletOutputSample();
   WaveletOutputSample(const WaveletOutputSample &rhs);
   WaveletOutputSample(const SAMPLETYPE value,
+		      const unsigned index);
+  WaveletOutputSample(const SAMPLETYPE value,
 		      const int level,
 		      const unsigned index);
   virtual ~WaveletOutputSample();
@@ -94,6 +96,15 @@ WaveletOutputSample<SAMPLETYPE>::
 WaveletOutputSample(const WaveletOutputSample &rhs) :
   OutputSample<SAMPLETYPE>(rhs), level(rhs.level)
 {
+}
+
+template <class SAMPLETYPE>
+WaveletOutputSample<SAMPLETYPE>::
+WaveletOutputSample(const SAMPLETYPE value,
+		    const unsigned index) :
+  OutputSample<SAMPLETYPE>(value,index)
+{
+  this->level = 0;
 }
 
 template <class SAMPLETYPE>

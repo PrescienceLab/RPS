@@ -17,6 +17,9 @@
 
 using namespace std;
 
+typedef WaveletInputSample<double> wisd;
+typedef WaveletOutputSample<double> wosd;
+
 enum WaveletRepresentationType { WAVELET_DOMAIN_TRANSFORM, WAVELET_DOMAIN_APPROX, WAVELET_DOMAIN_DETAIL, TIME_DOMAIN, FREQUENCY_DOMAIN };
 enum WaveletTransformDirection { WAVELET_FORWARD, WAVELET_REVERSE };
 enum WaveletBlockEncodingType  { PREORDER, INORDER, POSTORDER};
@@ -143,11 +146,11 @@ struct WaveletStreamingBlock : public SerializeableInfo {
   int Resize(int len, bool copy=true);
   int SetSeries(double *ser, int len);
 
-  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const;
-  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m);
+  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<wisd> &m) const;
+  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<wisd> &m);
 
-  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const;
-  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m);
+  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<wosd> &m) const;
+  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<wosd> &m);
 
   int GetPackedSize() const;
   int GetMaxPackedSize() const;
@@ -195,11 +198,11 @@ struct WaveletBlock : public SerializeableInfo {
   void PutAsMeasurement(Measurement &m) const;
   void GetFromMeasurement(const Measurement &m);
 
-  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const;
-  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m);
+  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<wisd> &m) const;
+  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<wisd> &m);
 
-  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const;
-  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m);
+  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<wosd> &m) const;
+  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<wosd> &m);
 
   int GetPackedSize() const;
   int GetMaxPackedSize() const;
