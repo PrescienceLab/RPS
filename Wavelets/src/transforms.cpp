@@ -91,3 +91,25 @@ void FlattenSignalSpec(vector<int> &flatspec, const SignalSpec &spec)
     }
   }
 }
+
+unsigned NumberOfLevels(const unsigned length)
+{
+  unsigned J=0, bitsum=0, bittest=length;
+  for (unsigned i=0; i<sizeof(unsigned)*BITS_PER_BYTE; i++) {
+    if ((bittest & 0x1) == 1) {
+      J=i;
+      bitsum++;
+    }
+    bittest = bittest >> 1;
+  }
+
+  // This next test could be used in order to increase the level to J+1, and 
+  //  append zeros.  At this time it has been decided not to append zeros and
+  //  to simply use the first 2^J samples for computing the DWT.
+  //
+  //if (bitsum != 1) {
+  //  J++;
+  //}
+
+  return J;
+}

@@ -29,7 +29,6 @@ bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
 unsigned CalculateStreamingRealTimeDelay(const unsigned numcoefs,
 					 const unsigned numstages);
 
-
 template <class SAMPLE>
 class DelayBlock {
 private:

@@ -307,7 +307,7 @@ void OutputWaveletCoefs(ostream &os,
     deque<wosd> leveldata;
     dwosb.GetSamplesAtLevel(leveldata, plevel);
     for (j=0; j<leveldata.size(); j++) {
-      *os.tie() << leveldata[j].GetSampleValue() << endl;
+      *os.tie() << plevel << " " << leveldata[j].GetSampleValue() << endl;
     }
   }
 }

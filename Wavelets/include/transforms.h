@@ -36,6 +36,9 @@ void InvertSignalSpec(vector<int> &inversion,
 
 void FlattenSignalSpec(vector<int> &flatspec, const SignalSpec &spec);
 
+// Used in discrete transforms to find number of levels from block length
+unsigned NumberOfLevels(const unsigned length);
+
 template <class SAMPLE>
 void OutputSamplesToSpec(vector<SAMPLE> &out,
 			 const vector<SAMPLE> &in,
@@ -471,12 +474,10 @@ private:
   unsigned index_d[MAX_STAGES+1];
 
   // functions
-  unsigned NumberOfLevels(const unsigned length);
-
   void MultiplyAccumulateVectorsAndScale(vector<SAMPLETYPE> &output,
 					 const vector<double> &coefs,
 					 const vector<SAMPLETYPE> &input,
-					 const double scalar);
+					 const double scale);
 public:
   ForwardDiscreteWaveletTransform(const WaveletType wavetype=DAUB2,
 				  const int lowest_outlvl=0);
@@ -546,6 +547,15 @@ private:
 
   unsigned index;
 
+  void MultiplyAccumulateMatrixVectorAndScale(vector<SAMPLETYPE> &output,
+					      const vector<double *> &filter,
+					      const unsigned filterlen,
+					      const vector<SAMPLETYPE> &input,
+					      const double scale);
+  void AddVectors(vector<SAMPLETYPE> &output,
+		  const vector<SAMPLETYPE> &highout,
+		  const vector<SAMPLETYPE> &lowout);
+
 public:
   ReverseDiscreteWaveletTransform(const WaveletType wavetype=DAUB2);
   ReverseDiscreteWaveletTransform(const ReverseDiscreteWaveletTransform &rhs);
@@ -560,15 +570,16 @@ public:
   inline WaveletType GetWaveletType() const;
   bool ChangeWaveletType(const WaveletType wavetype);
 
-  bool DiscreteWaveletTransformOperation
+  unsigned DiscreteWaveletTransformOperation
     (SampleBlock<OUTSAMPLE> &outblock,
      const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock);
 
-  bool DiscreteWaveletTransformZeroFillOperation
+  unsigned DiscreteWaveletTransformZeroFillOperation
     (SampleBlock<OUTSAMPLE> &outblock,
-     const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock);
+     const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
+     const vector<int> &zerolevels);
 
-  bool DiscreteWaveletMixedOperation
+  unsigned DiscreteWaveletMixedOperation
     (SampleBlock<OUTSAMPLE> &outblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &approxblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &detailblock,
@@ -2568,12 +2579,10 @@ DiscreteWaveletOperation
     for (j=0; j<m; j++) {
       for (k=0, z_vector.clear(); k<N; k++) {
 	unsigned index=2*j+k;
-	if (index >= 2*m) {
-	  index -= 2*m;
-	}
+	while (index >= 2*m) { index -= 2*m; }
 	z_vector.push_back(a_vector[index]);
       }
-      // Vector multiply lpf*z_vector and hpf*z_vector with 1/2 scalar
+      // Vector multiply lpf*z_vector and hpf*z_vector with 1/2 scale
       MultiplyAccumulateVectorsAndScale(approx,lpfcoefs,z_vector,1);
       MultiplyAccumulateVectorsAndScale(detail,hpfcoefs,z_vector,1);
     }
@@ -2671,43 +2680,20 @@ DiscreteWaveletMixedOperation
 /********************************************************************************
  * Private member functions
  *******************************************************************************/
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-NumberOfLevels(const unsigned length)
-{
-  unsigned J=0, bitsum=0, bittest=length;
-  for (unsigned i=0; i<sizeof(unsigned)*BITS_PER_BYTE; i++) {
-    if ((bittest & 0x1) == 1) {
-      J=i;
-      bitsum++;
-    }
-    bittest = bittest >> 1;
-  }
-
-  // This next test could be used in order to increase the level to J+1, and 
-  //  append zeros.  At this time it has been decided not to append zeros and
-  //  to simply use the first 2^J samples for computing the DWT.
-  //
-  //if (bitsum != 1) {
-  //  J++;
-  //}
-
-  return J;
-}
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 MultiplyAccumulateVectorsAndScale(vector<SAMPLETYPE> &output,
 				  const vector<double> &coefs,
 				  const vector<SAMPLETYPE> &input,
-				  const double scalar)
+				  const double scale)
 {
   SAMPLETYPE acc=0;
   unsigned macs=coefs.size();
   for (unsigned i=0; i<macs; i++) {
     acc += coefs[macs-i-1]*input[i];
   }
-  acc *= scalar;
+  acc *= scale;
   output.push_back(acc);
 }
 
@@ -2798,118 +2784,121 @@ ChangeWaveletType(const WaveletType wavetype)
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletTransformOperation
 (SampleBlock<OUTSAMPLE> &outblock,
  const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock)
 {
-#if MOREWORK==1
+  unsigned J=NumberOfLevels(inblock.GetBlockSize());
+  unsigned lenofblock = 0x1 << J;
+  unsigned i, j, k;
 
-  // Check if inblock is a power of 2
-  unsigned M = inblock.GetBlockSize();
-  unsigned i, L, bitsum=0, bittest=M;
-  for (i=0; i<sizeof(unsigned)*8; i++) {
-    if ((bittest & 0x1) == 1) {
-      L=i;
-      bitsum++;
-    }
-    bittest = bittest >> 1;
+  // Create the output matrices used for work
+  vector<SAMPLETYPE> f_vector, z_vector, zz_vector;
+  for (i=0; i<inblock.GetBlockSize(); i++) {
+    f_vector.push_back(0);
   }
-  if (bitsum != 1) {
-    return false;
-  }
+  f_vector[0] = inblock[0].GetSampleValue();
 
-  // Clear the output storage
-  outblock.ClearBlock();
-
-  vector<double> lowcoefs, highcoefs;
+  // Get the coefficients for LPF, HPF
+  vector<double> lpfcoefs, hpfcoefs;
   unsigned N=wavecoefs.GetNumCoefs();
-  wavecoefs.GetInverseCoefsLPF(lowcoefs);
-  wavecoefs.GetInverseCoefsHPF(highcoefs);
+  wavecoefs.GetTransformCoefsLPF(lpfcoefs);
+  wavecoefs.GetTransformCoefsHPF(hpfcoefs);
 
-  // For efficiency, create a 2 x N/2 coefficient matrix for high and low
-  double lpfcoefs[2][N/2], hpfcoefs[2][N/2];
-  for (i=0; i<N/2; i++) {
-    lpfcoefs[1][i] = lowcoefs[N-2*i-2];
-    lpfcoefs[2][i] = lowcoefs[N-2*i-1];
-
-    hpfcoefs[1][i] = highcoefs[N-2*i-2];
-    hpfcoefs[2][i] = highcoefs[N-2*i-1];
+  // Place coefficients in streamlined data structure
+  const unsigned NUMROWS=2;
+  vector<double *> lpf, hpf;
+  for (i=0; i<NUMROWS; i++) {
+    double *pd_lpf=new double[N/2];
+    double *pd_hpf=new double[N/2];
+    lpf.push_back(pd_lpf); hpf.push_back(pd_hpf);
   }
 
-  // Transfer the input block samples to work
-  vector<SAMPLETYPE> work, tempout(M);
-  INSAMPLE insamp;
-  for (i=0; i<M; i++) {
-    insamp = inblock[i];
-    work.push_back(insamp.GetSampleValue());
+  for (j=0; j<N/2; j++) {
+    (lpf[0])[j]=lpfcoefs[2*j+1];
+    (lpf[1])[j]=lpfcoefs[2*j];
+    (hpf[0])[j]=hpfcoefs[2*j+1];
+    (hpf[1])[j]=hpfcoefs[2*j];
   }
 
-  tempout[0] = work[0];
-
-  vector<SAMPLETYPE> lowout(M), highout(M), inputh, inputl;
-  unsigned stagebound, j, k;
-  for (unsigned l=0; l<L; l++) {
-
-    // Stagebound is log base 2 of loop variable l
-    stagebound = 1;
-    for (i=0; i<l; i++) {
-      stagebound *= 2;
-    }
-
-    for (i=0; i<stagebound; i++) {
-      inputl.clear(), inputh.clear();
-      for (j=0; j<N/2; j++) {
-	unsigned index = stagebound + i + j + 1 - N/2;
-	while (index < stagebound) {
-	  index += stagebound;
-	}
-	inputh.push_back(work[index]);
-	inputl.push_back(work[index-stagebound]);
+  // Main IDWT processing loop
+  vector<SAMPLETYPE> outh, outl;
+  for (i=1; i<=J; i++) {
+    unsigned m=0x1 << (i-1);
+    for (j=0; j<m; j++) {
+      for (k=0, z_vector.clear(), zz_vector.clear(); k<N/2; k++) {
+	unsigned index=m+j-N/2+k+1;
+	while (index < m) { index += m; }
+	z_vector.push_back(inblock[index].GetSampleValue());
+	zz_vector.push_back(f_vector[index-m]);
       }
-
-      // Matrix multiply COEFS(2 x N/2) * INPUT(N/2 x 1) = OUT(2 x 1)
-      SAMPLETYPE r1=0, r2=0;
-      for (j=0; j<2; j++) {
-	for (k=0; k<N/2; k++) {
-	  r1 += lpfcoefs[j][k]*inputl[k];
-	  r2 += hpfcoefs[j][k]*inputh[k];
-	}
-	lowout[2*i+j-2]=(r1);
-	highout[2*i+j-2]=(r2);
-	r1=0; r2=0;
-      }
+      MultiplyAccumulateMatrixVectorAndScale(outh, hpf, N/2, z_vector, 1.0);
+      MultiplyAccumulateMatrixVectorAndScale(outl, lpf, N/2, zz_vector, 1.0);
     }
-
-    
-
-    // Add the two outputs together
-
+    AddVectors(f_vector, outh, outl);
   }
-  return true;
-#endif
-  return true;
+
+  for (i=0; i<NUMROWS; i++) {
+    CHK_DEL(lpf[i]);
+    CHK_DEL(hpf[i]);
+  }
+
+  return lenofblock;
 }
 
-
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletTransformZeroFillOperation
 (SampleBlock<OUTSAMPLE> &outblock,
- const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock)
+ const DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
+ const vector<int> &zerolevels)
 {
-  return true;
+  return 5;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletMixedOperation
 (SampleBlock<OUTSAMPLE> &outblock,
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &approxblock,
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &detailblock,
  const SignalSpec &spec)
 {
-  return true;
+  return 5;
+}
+
+/*******************************************************************************
+ * Private member functions
+ *******************************************************************************/
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+MultiplyAccumulateMatrixVectorAndScale(vector<SAMPLETYPE> &output,
+				       const vector<double *> &filter,
+				       const unsigned filterlen,
+				       const vector<SAMPLETYPE> &input,
+				       const double scale)
+{
+  for (unsigned i=0; i<filter.size(); i++) {
+    SAMPLETYPE acc=0;
+    for (unsigned j=0; j<filterlen; j++) {
+      acc += (filter[i])[j]*input[j];
+    }
+    acc *= scale;
+    output.push_back(acc);
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddVectors(vector<SAMPLETYPE> &output,
+	   const vector<SAMPLETYPE> &highout,
+	   const vector<SAMPLETYPE> &lowout)
+{
+  unsigned i;
+  for (i=0; i<MIN(highout.size(), lowout.size()); i++) {
+    output[i] = highout[i] + lowout[i];
+  }
 }
 
 #endif
