@@ -65,7 +65,7 @@ public:
     return *this;
   };
     
-  inline void SetSamples(const deque<SAMPLETYPE> &input) {
+  virtual inline void SetSamples(const deque<SAMPLETYPE> &input) {
     samples = input;
   };
 

@@ -18,8 +18,8 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " block_static_mixed_sfwt [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [specification-file] [flat] [output-file]\n\n";
+  cerr << " discrete_forward_mixed [input-file] [wavelet-type-init]\n";
+  cerr << "  [specification-file] [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]         = The name of the file containing time-\n";
@@ -31,10 +31,6 @@ void usage()
   cerr << "                       DAUB20}.  The 'DAUB' stands for\n";
   cerr << "                       Daubechies wavelet types and the order\n";
   cerr << "                       is the number of coefficients.\n";
-  cerr << "\n";
-  cerr << "[numstages-init]     = The number of stages to use in the\n";
-  cerr << "                       decomposition.  The number of levels is\n";
-  cerr << "                       equal to the number of stages + 1.\n";
   cerr << "\n";
   cerr << "[specification-file] = Mixed signal specification.\n";
   cerr << "\n";
@@ -52,7 +48,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=7) {
+  if (argc!=6) {
     usage();
     exit(-1);
   }
@@ -62,7 +58,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "discrete_forward_mixed: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -70,37 +66,31 @@ int main(int argc, char *argv[])
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
-  int numstages = atoi(argv[3]);
-  if (numstages <= 0) {
-    cerr << "block_static_mixed_sfwt: Number of stages must be positive.\n";
-    exit(-1);
-  }
-
   ifstream specfile;
-  specfile.open(argv[4]);
+  specfile.open(argv[3]);
   if (!specfile) {
-    cerr << "sample_static_mixed_sfwt: Cannot open specification file " << argv[4] << ".\n";
+    cerr << "sample_static_mixed_sfwt: Cannot open specification file " << argv[3] << ".\n";
     exit(-1);
   }
 
   bool flat=true;
-  if (toupper(argv[5][0])=='N') {
+  if (toupper(argv[4][0])=='N') {
     flat = false;
-  } else if (toupper(argv[5][0])!='F') {
-    cerr << "block_static_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
+  } else if (toupper(argv[4][0])!='F') {
+    cerr << "discrete_forward_mixed: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[6],"stdout")) {
+  if (!strcasecmp(argv[5],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[6],"stderr")) {
+  } else if (!strcasecmp(argv[5],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[6]);
+    outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "block_static_mixed_sfwt: Cannot open output file " << argv[6] << ".\n";
+      cerr << "discrete_forward_mixed: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
@@ -119,26 +109,29 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> inputblock(samples);
 
   // Instantiate a static forward wavelet transform
-  StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
+  ForwardDiscreteWaveletTransform<double, wosd, wisd> fdwt(wt,0);
 
   // Create result buffers
   vector<WaveletOutputSampleBlock<wosd> > approxout;
   vector<WaveletOutputSampleBlock<wosd> > detailout;
 
-  sfwt.StreamingMixedBlockOperation(approxout, detailout, inputblock, sigspec);
+  unsigned numlevels = fdwt.DiscreteWaveletMixedOperation(approxout,
+							  detailout,
+							  inputblock,
+							  sigspec);
 
   // Approximations
   if (!flat) {
     *outstr.tie() << "APPROXIMATIONS" << endl;
     *outstr.tie() << "--------------" << endl;
-    OutputLevelMetaData(outstr, approxout, numstages);
+    OutputLevelMetaData(outstr, approxout, numlevels);
 
     *outstr.tie() << endl << "DETAILS" << endl;
     *outstr.tie() << "-------" << endl;
-    OutputLevelMetaData(outstr, detailout, numstages);
+    OutputLevelMetaData(outstr, detailout, numlevels);
   }
 
   OutputMRACoefs(outstr, approxout, detailout);
-  
+
   return 0;
 }

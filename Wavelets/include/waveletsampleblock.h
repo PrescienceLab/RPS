@@ -40,6 +40,7 @@ public:
   inline int GetBlockLevel() const;
 
   void SetSamples(const double* series, const int serlen);
+  inline void SetSamples(const deque<SAMPLETYPE> &buf);
 
   bool AllSamplesLevelCorrect();
   void SetAllSamplesToCorrectLevel();
@@ -152,6 +153,13 @@ SetSamples(const double* series, const int serlen)
     SAMPLETYPE samp(series[i], this->level, blockindex+i);
     samples.push_back(samp);
   }
+}
+
+template <class SAMPLETYPE>
+void WaveletOutputSampleBlock<SAMPLETYPE>::
+SetSamples(const deque<SAMPLETYPE> &buf)
+{
+  samples=buf;
 }
 
 template <class SAMPLETYPE>

@@ -73,17 +73,16 @@ void OutputBlocksToSpec(vector<WaveletOutputSampleBlock<SAMPLE> > &out,
 template <class SAMPLE>
 void OutputDWTBlocksToSpec(vector<WaveletOutputSampleBlock<SAMPLE> > &out,
 			   const DiscreteWaveletOutputSampleBlock<SAMPLE> &in,
-			   const vector<int> &spec,
-			   const unsigned numlevels,
-			   const unsigned lowest_outlvl)
+			   const vector<int> &spec)
 {
   unsigned i;
   for (i=0; i<spec.size(); i++) {
-    unsigned level=spec[i]-lowest_outlvl;
-    unsigned first=(0x1 << (numlevels-1-level)) - 1;
-    unsigned last=first+(0x1 << (numlevels-1-level)) - 1;
     deque<SAMPLE> buf;
-    out[i].SetSamples(in.GetSamples(buf,first,last));
+    in.GetSamplesAtLevel(buf, spec[i]);
+    WaveletOutputSampleBlock<SAMPLE> wosb(spec[i]);
+    wosb.SetSamples(buf);
+    out.push_back(wosb);
+    buf.clear();
   }
 };
 
@@ -2657,17 +2656,16 @@ DiscreteWaveletMixedOperation
   unsigned J=NumberOfLevels(inblock.GetBlockSize());
   DiscreteWaveletOutputSampleBlock<OUTSAMPLE> ablock(J, lowest_outlvl, APPROX);
   DiscreteWaveletOutputSampleBlock<OUTSAMPLE> dblock(J, lowest_outlvl, DETAIL);
-  unsigned lenofblock=DiscreteWaveletOperation(ablock,dblock,inblock);
+  DiscreteWaveletOperation(ablock,dblock,inblock);
 
   OutputDWTBlocksToSpec<OUTSAMPLE>(approxblock,
 				   ablock,
-				   spec.approximations,
-				   lowest_outlvl);
+				   spec.approximations);
   OutputDWTBlocksToSpec<OUTSAMPLE>(detailblock,
 				   dblock,
-				   spec.details,
-				   lowest_outlvl);
-  return lenofblock;
+				   spec.details);
+
+  return J;
 }
 
 /********************************************************************************
