@@ -7,9 +7,11 @@
   <body>
     <h1>RPS One-off Predictions</h1>
 
-    <form enctype="multipart/form-data" method="POST" action="oneoffpred.pl">
+    <form method="POST" action="oneoffpred.pl">
+      <!-- <form enctype="multipart/form-data" method="POST" action="oneoffpred.pl"> -->
       <table>
-	<tr><td>Source File: </td> <td> <input type="file" name="inputfile"></td></tr>
+<!--	<tr><td>Source File: </td> <td> <input type="file" name="inputfile"></td></tr> -->
+	<tr><td>Data:</td> <td><input form type="text" name="data"></td></tr>
 	<tr><td>Fit From: </td><td><input type="text" name="fitfirst" value="0"> </td></tr>
 	<tr><td>Fit Number : </td><td><input type="text" name="fitnum"></td></tr>
 	<tr><td>Predict Number : </td><td><input type="text" name="testnum" value="1"></td></tr>

@@ -20,7 +20,9 @@ $port=shift;
 	     "/oneoffpred.html" => $dir."/oneoffpred.html"
 	   );
 
-%PostHash = ( "/oneoffpred.pl" => $dir."/oneoffpred.pl"
+%PostHash = ( "/oneoffpred.pl" => $dir."/oneoffpred.pl",
+	      "/hostloadmeasure.pl" => $dir."/hostloadmeasure.pl",
+              "/hostloadget.pl" => $dir."/hostloadget.pl"
 	    );
 
 
