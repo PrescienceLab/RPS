@@ -128,6 +128,8 @@ int DenetworkifyBinaryTrace(double *timestamps, double *vals, int num)
 #ifdef USE_PERVERT
 #ifdef IEEE_DOUBLE_LSB
   return PervertBinaryTrace(timestamps,vals,num);
+#else
+  return num;
 #endif
 #else
   int i;
@@ -144,6 +146,8 @@ int NetworkifyBinaryTrace(double *timestamps, double *vals, int num)
 #ifdef USE_PERVERT
 #ifdef IEEE_DOUBLE_LSB
   return PervertBinaryTrace(timestamps,vals,num);
+#else
+  return num;
 #endif
 #else
   int i;
@@ -311,7 +315,7 @@ int LoadAlphaBinaryTraceFile(char *name,
   int num = LoadRawBinaryTraceFile(name,timestamps,vals);
   /* Alpha is an IEEE_DOUBLE_LSB machine */
 #ifdef IEEE_DOUBLE_MSB
-  return PervertBinaryTrace(timestamps,vals,num);
+  return PervertBinaryTrace(*timestamps,*vals,num);
 #else
   return num;
 #endif

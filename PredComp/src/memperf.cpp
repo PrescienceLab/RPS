@@ -1,6 +1,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifdef SOLARIS
+#include <strings.h>
+#endif
+
 #include "PredComp.h"
 
 

@@ -43,7 +43,7 @@ LD2FLAGS =  $(RPSINT_LDFLAGS) \
             $(PREDCOMP_LDFLAGS) \
             -lm
 ifeq ($(OS),SOLARIS)
-  LD3FLAGS = -lsocket -lkvm -lelf
+  LD3FLAGS = -lnsl -lsocket -lkvm -lelf
 else
   LD3FLAGS = 
 endif
