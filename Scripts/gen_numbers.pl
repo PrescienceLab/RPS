@@ -4,7 +4,7 @@ use RPS;
 
 $usage=
 "Generate numbers for playing with RPS\n\n".
-"usage: gen_numbers.pl sample_rate alternate \n".
+"usage: gen_numbers.pl sample_rate alternate period \n".
 "                      count|random|sin freq|square freq |saw freq|file\n".RPSBanner();
 
 $#ARGV>=1 or die $usage;
