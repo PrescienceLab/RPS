@@ -55,6 +55,38 @@ void usage()
   delete [] b;
 }
 
+void ParseDWTCoefsWithIgnore(WaveletOutputSampleBlock<wosd> &wavecoefs,
+			     istream &in) 
+{
+  int levelnum;
+  double sampvalue;
+  map<int, unsigned, less<int> > indices;
+  while(in >> levelnum) {
+    in >> sampvalue;
+    if (indices.find(levelnum) == indices.end()) {
+      indices[levelnum] = 0;
+    } else {
+      indices[levelnum] += 1;
+    }
+    wosd sample(sampvalue, levelnum, indices[levelnum]);
+    wavecoefs.PushSampleBack(sample);
+  }
+}
+
+void GetNextBlock(DiscreteWaveletOutputSampleBlock<wosd> &block,
+		  WaveletOutputSampleBlock<wosd> &wavecoefs,
+		  const unsigned blknum,
+		  const unsigned blocksize)
+{
+  block.ClearBlock();
+  deque<wosd> dwosd;
+  wavecoefs.GetSamples(dwosd, blknum*blocksize, blknum*blocksize+blocksize);
+  block.SetSamples(dwosd);
+  block.SetLowestLevel(0);
+  block.SetNumberLevels(NumberOfLevels(block.GetBlockSize())+1);
+  block.SetTransformType(TRANSFORM);
+}
+
 int main(int argc, char *argv[])
 {
   if (argc!=8) {
@@ -117,28 +149,57 @@ int main(int argc, char *argv[])
   }
 
   unsigned i;
-  FlatParser fp;
-  DiscreteWaveletOutputSampleBlock<wosd> waveletcoefs;
-  vector<DiscreteWaveletOutputSampleBlock<wosd> > blocks;
-  while (fp.ParseWaveletCoefsBlock(waveletcoefs, *is, blocksize)) {
-    blocks.push_back(waveletcoefs);
-    waveletcoefs.ClearBlock();
-  }
+  WaveletOutputSampleBlock<wosd> wavecoefs;
+  ParseDWTCoefsWithIgnore(wavecoefs, *is);
   infile.close();
+
+  DiscreteWaveletOutputSampleBlock<wosd> block;
 
   // Instantiate a reverse discrete wavelet transform
   ReverseDiscreteWaveletTransform<double, wisd, wosd> rdwt(wt);
 
   // Create output buffers
-  WaveletInputSampleBlock<wisd> reconst, finaloutput;
+  WaveletInputSampleBlock<wisd> reconst;
 
-  // The operations
-  for (i=0; i<blocks.size(); i++) {
-    if (sleep) {
-      usleep(sleeptime_us);
+  unsigned numblocks = wavecoefs.GetBlockSize() / blocksize;
+  const unsigned NUMTESTS = 8;
+  const unsigned BLOCKS_IN_TEST = 1024;
+
+  // Sleep 50 seconds
+  usleep(1000000*50);
+
+  timeval sproc, eproc;
+  unsigned long proctime = 0;
+  unsigned long sleepduration;
+  for (unsigned j=0; j<NUMTESTS; j++) {
+
+    if (j == NUMTESTS-1) {
+      sleep = false;
     }
-    rdwt.DiscreteWaveletTransformOperation(reconst, blocks[i]);
-    reconst.ClearBlock();
+
+    // The operations
+    for (i=0; i<BLOCKS_IN_TEST; i++) {
+      if (sleep) {
+	sleepduration = (sleeptime_us > proctime) ?
+	  sleeptime_us - proctime : 0;
+	usleep(sleepduration);
+      }
+      if (gettimeofday(&sproc, 0) < 0) {
+	cerr << "Can't obtain the current time.\n";
+	exit(-1);
+      }
+      GetNextBlock(block, wavecoefs, i % numblocks, blocksize);
+      rdwt.DiscreteWaveletTransformOperation(reconst, block);
+      reconst.ClearBlock();
+      if (gettimeofday(&eproc, 0) < 0) {
+	cerr << "Can't obtain the current time.\n";
+	exit(-1);
+      }
+      proctime =
+	(eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
+    }
+    blocksize *= 2;
+    numblocks = wavecoefs.GetBlockSize() / blocksize;
   }
 
   // Print the output with appropriate tag

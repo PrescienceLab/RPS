@@ -52,6 +52,17 @@ void usage()
   delete [] b;
 }
 
+void GetNextBlock(WaveletInputSampleBlock<wisd> &block,
+		  WaveletInputSampleBlock<wisd> &inputsamples,
+		  const unsigned blknum,
+		  const unsigned blocksize)
+{
+  block.ClearBlock();
+  deque<wisd> dwisd;
+  inputsamples.GetSamples(dwisd, blknum*blocksize, blknum*blocksize+blocksize);
+  block.SetSamples(dwisd);
+}
+
 int main(int argc, char *argv[])
 {
   if (argc!=8) {
@@ -127,54 +138,106 @@ int main(int argc, char *argv[])
   fp.ParseTimeDomain(samples, *is);
   infile.close();
 
-  WaveletInputSampleBlock<wisd> inputblock(samples);
-  vector<WaveletInputSampleBlock<wisd> > blocks;
-  unsigned numblocks = samples.size() / blocksize;
-  for (i=0; i<numblocks; i++) {
-    deque<wisd> dwisd;
-    inputblock.GetSamples(dwisd, i*blocksize, i*blocksize+blocksize);
-    blocks.push_back(WaveletInputSampleBlock<wisd>(dwisd));
-    dwisd.clear();
-  }
-
   // Instantiate a forward discrete wavelet transform
   ForwardDiscreteWaveletTransform<double, wosd, wisd> fdwt(wt,0);
 
   // Create result buffers
   DiscreteWaveletOutputSampleBlock<wosd> forwardoutput;
 
-  switch(tt) {
-  case APPROX: {
-    for (i=0; i<blocks.size(); i++) {
-      if (sleep) {
-	usleep(sleeptime_us);
-      }
-      forwardoutput.SetTransformType(APPROX);
-      fdwt.DiscreteWaveletApproxOperation(forwardoutput, blocks[i]);
+  WaveletInputSampleBlock<wisd> inputblock(samples);
+  WaveletInputSampleBlock<wisd> block;
+
+  const unsigned NUMTESTS = 8;
+  const unsigned BLOCKS_IN_TEST = 1024;
+
+  unsigned numblocks = samples.size() / blocksize;
+
+  // Sleep 50 seconds
+  usleep(1000000*50);
+
+  timeval sproc, eproc;
+  unsigned long proctime = 0;
+  unsigned long sleepduration;
+  for (unsigned j=0; j<NUMTESTS; j++) {
+
+    if (j == NUMTESTS-1) {
+      sleep = false;
     }
-    break;
-  }
-  case DETAIL: {
-    for (i=0; i<blocks.size(); i++) {
-      if (sleep) {
-	usleep(sleeptime_us);
+
+    switch(tt) {
+    case APPROX: {
+      for (i=0; i<BLOCKS_IN_TEST; i++) {
+	if (sleep) {
+	  sleepduration = (sleeptime_us > proctime) ?
+	    sleeptime_us - proctime : 0;
+	  usleep(sleepduration);
+	}
+	if (gettimeofday(&sproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	GetNextBlock(block, inputblock, i % numblocks, blocksize);
+	forwardoutput.SetTransformType(APPROX);
+	fdwt.DiscreteWaveletApproxOperation(forwardoutput, block);
+	if (gettimeofday(&eproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	proctime =
+	  (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
       }
-      forwardoutput.SetTransformType(DETAIL);
-      fdwt.DiscreteWaveletDetailOperation(forwardoutput, blocks[i]);
+      break;
     }
-    break;
-  }
-  case TRANSFORM: {
-    for (i=0; i<blocks.size(); i++) {
-      if (sleep) {
-	usleep(sleeptime_us);
+    case DETAIL: {
+      for (i=0; i<BLOCKS_IN_TEST; i++) {
+	if (sleep) {
+	  sleepduration = (sleeptime_us > proctime) ?
+	    sleeptime_us - proctime : 0;
+	  usleep(sleepduration);
+	}
+	if (gettimeofday(&sproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	GetNextBlock(block, inputblock, i % numblocks, blocksize);
+	forwardoutput.SetTransformType(DETAIL);
+	fdwt.DiscreteWaveletDetailOperation(forwardoutput, block);
+	if (gettimeofday(&eproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	proctime =
+	  (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
       }
-      fdwt.DiscreteWaveletTransformOperation(forwardoutput, blocks[i]);
+      break;
     }
-    break;
-  }
-  default:
-    break;
+    case TRANSFORM: {
+      for (i=0; i<BLOCKS_IN_TEST; i++) {
+	if (sleep) {
+	  sleepduration = (sleeptime_us > proctime) ?
+	    sleeptime_us - proctime : 0;
+	  usleep(sleepduration);
+	}
+	if (gettimeofday(&sproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	GetNextBlock(block, inputblock, i % numblocks, blocksize);
+	fdwt.DiscreteWaveletTransformOperation(forwardoutput, block);
+	if (gettimeofday(&eproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	proctime =
+	  (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
+      }
+      break;
+    }
+    default:
+      break;
+    }
+    blocksize *= 2;
+    numblocks = samples.size() / blocksize;
   }
 
   // Print the output with appropriate tag

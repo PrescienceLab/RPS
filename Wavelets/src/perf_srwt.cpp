@@ -155,6 +155,8 @@ int main(int argc, char *argv[])
 
     vector<wosd> samplecoefs;
     vector<vector<wosd> > waveletcoefs;
+    vector<wosd> delaysamples;
+    vector<wisd> currentoutput;
 
     FlatParser fp;
     while ( fp.ParseWaveletCoefsSample(samplecoefs, *is) ) {
@@ -163,15 +165,49 @@ int main(int argc, char *argv[])
     }
     infile.close();
 
-    vector<wosd> delaysamples;
-    vector<wisd> currentoutput;
+    // Find the number of tests
+    unsigned datasize = numblocks * blocksize;
 
-    for (unsigned i=0; i<waveletcoefs.size(); i++) {
-      if (sleep) {
-	usleep(sleeptime_us);
+    const unsigned NUMTESTS = 8;
+    const unsigned BLOCKS_IN_TEST = 1024;
+
+    // Sleep 50 seconds
+    usleep(1000000*50);
+
+    timeval sproc, eproc;
+    unsigned long proctime = 0;
+    unsigned long sleepduration;
+    for (unsigned j=0; j<NUMTESTS; j++) {
+
+      if (j == NUMTESTS-1) {
+	sleep = false;
       }
-      dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs[i]);
-      srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
+
+      for (unsigned i=0; i<BLOCKS_IN_TEST; i++) {
+	if (sleep) {
+	  sleepduration = (sleeptime_us > proctime) ?
+	    sleeptime_us - proctime : 0;
+	  usleep(sleepduration);
+	}
+
+	if (gettimeofday(&sproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	for (unsigned k=0; k<blocksize; k++) {
+	  dlyblk.StreamingSampleOperation(delaysamples,
+					  waveletcoefs[(i % numblocks)*blocksize+k]);
+	  srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
+	}
+	if (gettimeofday(&eproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	proctime =
+	  (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
+      }
+      blocksize *= 2;
+      numblocks = datasize / blocksize;
     }
   } else { //Block mode
 

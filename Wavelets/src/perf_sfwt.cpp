@@ -18,7 +18,7 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " perf_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << " perf_sfwt1 [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [sample-or-block]\n";
   cerr << "  [blocksize] [sleeprate] [flat] [output-file]\n\n";
   cerr << "----------------------------------------------------------------\n";
@@ -60,6 +60,17 @@ void usage()
   delete [] b;
 }
 
+void GetNextBlock(WaveletInputSampleBlock<wisd> &block,
+		  WaveletInputSampleBlock<wisd> &inputsamples,
+		  const unsigned blknum,
+		  const unsigned blocksize)
+{
+  block.ClearBlock();
+  deque<wisd> dwisd;
+  inputsamples.GetSamples(dwisd, blknum*blocksize, blknum*blocksize+blocksize);
+  block.SetSamples(dwisd);
+}
+
 int main(int argc, char *argv[])
 {
   if (argc!=10) {
@@ -73,7 +84,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "perf_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "perf_sfwt1: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -83,7 +94,7 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "perf_sfwt: Number of stages must be positive.\n";
+    cerr << "perf_sfwt1: Number of stages must be positive.\n";
     exit(-1);
   }
 
@@ -95,7 +106,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[4][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "perf_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "perf_sfwt1: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     exit(-1);
   }
 
@@ -105,13 +116,13 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[5][0])=='B') {
     sample=false;
   } else {
-    cerr << "perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
+    cerr << "perf_sfwt1: Operation type.  Choose SAMPLE | BLOCK.\n";
     exit(-1);
   }
 
   unsigned blocksize = atoi(argv[6]);
   if (blocksize == 0) {
-    cerr << "perf_sfwt: Must be greater than 0.\n";
+    cerr << "perf_sfwt1: Must be greater than 0.\n";
     exit(-1);
   }
 
@@ -125,7 +136,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[8][0])=='N') {
     flat = false;
   } else if (toupper(argv[8][0])!='F') {
-    cerr << "perf_sfwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "perf_sfwt1: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -137,7 +148,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[9]);
     if (!outfile) {
-      cerr << "perf_sfwt: Cannot open output file " << argv[9] << ".\n";
+      cerr << "perf_sfwt1: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
@@ -158,40 +169,110 @@ int main(int argc, char *argv[])
   vector<wosd> outsamples;
   vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
 
+
   if (sample) {
-    switch(tt) {
-    case APPROX: {
-      for (i=0; i<samples.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
-	}
-	sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
-	outsamples.clear();
+
+    WaveletInputSampleBlock<wisd> inputblock(samples);
+    WaveletInputSampleBlock<wisd> block;
+
+    const unsigned NUMTESTS = 8;
+    const unsigned BLOCKS_IN_TEST = 1024;
+
+    unsigned numblocks = samples.size() / blocksize;
+
+    // Sleep 50 seconds
+    usleep(1000000*50);
+
+    timeval sproc, eproc;
+    unsigned long proctime = 0;
+    unsigned long sleepduration;
+    for (unsigned j=0; j<NUMTESTS; j++) {
+
+      if (j == NUMTESTS-1) {
+      	sleep = false;
       }
-      break;
-    }
-    case DETAIL: {
-      for (i=0; i<samples.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
+
+      switch(tt) {
+      case APPROX: {
+	for (i=0; i<BLOCKS_IN_TEST; i++) {
+	  if (sleep) {
+	    sleepduration = (sleeptime_us > proctime) ?
+	      sleeptime_us - proctime : 0;
+	    usleep(sleepduration);
+	  }
+	  if (gettimeofday(&sproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  GetNextBlock(block, inputblock, i % numblocks, blocksize);
+	  for (unsigned k=0; k<blocksize; k++) {
+	    sfwt.StreamingApproxSampleOperation(outsamples, block[k]);
+	    outsamples.clear();
+	  }
+	  if (gettimeofday(&eproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  proctime =
+	    (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
 	}
-	sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
-	outsamples.clear();
+	break;
       }
-      break;
-    }
-    case TRANSFORM: {
-      for (i=0; i<samples.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
+      case DETAIL: {
+	for (i=0; i<BLOCKS_IN_TEST; i++) {
+	  if (sleep) {
+	    sleepduration = (sleeptime_us > proctime) ?
+	      sleeptime_us - proctime : 0;
+	    usleep(sleepduration);
+	  }
+	  if (gettimeofday(&sproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  GetNextBlock(block, inputblock, i % numblocks, blocksize);
+	  for (unsigned k=0; k<blocksize; k++) {
+	    sfwt.StreamingDetailSampleOperation(outsamples, block[k]);
+	    outsamples.clear();
+	  }
+	  if (gettimeofday(&eproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  proctime =
+	    (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
 	}
-	sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-	outsamples.clear();
+	break;
       }
-      break;
-    }
-    default:
-      break;
+      case TRANSFORM: {
+	for (i=0; i<BLOCKS_IN_TEST; i++) {
+	  if (sleep) {
+	    sleepduration = (sleeptime_us > proctime) ?
+	      sleeptime_us - proctime : 0;
+	    usleep(sleepduration);
+	  }
+	  if (gettimeofday(&sproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  GetNextBlock(block, inputblock, i % numblocks, blocksize);
+	  for (unsigned k=0; k<blocksize; k++) {
+	    sfwt.StreamingTransformSampleOperation(outsamples, block[k]);
+	    outsamples.clear();
+	  }
+	  if (gettimeofday(&eproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  proctime =
+	    (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
+	}
+	break;
+      }
+      default:
+	break;
+      }
+      blocksize *= 2;
+      numblocks = samples.size() / blocksize;
     }
   } else { // block modes
 
