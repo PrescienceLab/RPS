@@ -522,7 +522,7 @@ public:
     (vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approxblock,
      vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detailblock,
      const SampleBlock<INSAMPLE> &inblock,
-     const SignalSpec &spec);
+     const SignalSpec &sigspec);
 
   ostream & operator<<(ostream &os) const { 
     return (os << "ForwardDiscreteWaveletTransform...");
@@ -582,12 +582,13 @@ public:
      DiscreteWaveletOutputSampleBlock<INSAMPLE> &inblock,
      const vector<int> &zerolevels);
 
+  // Assumes approxblock and detailblock already filterd by a 
+  // signal specification
   unsigned DiscreteWaveletMixedOperation
     (SampleBlock<OUTSAMPLE> &outblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &approxblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &detailblock,
-     const unsigned numlevels,
-     const SignalSpec &spec);
+     const unsigned numlevels);
 
   ostream & operator<<(ostream &os) const {
     return (os << "ReverseDiscreteWaveletTransform...");
@@ -2886,9 +2887,8 @@ DiscreteWaveletTransformZeroFillOperation
   unsigned numlevels=inblock.GetNumberLevels();
   for (unsigned i=0; i<zerolevels.size(); i++) {
     unsigned lvl_index = zerolevels[i] - this->lowest_inlvl;
-    unsigned lvl_size = (lvl_index==numlevels-1) ? 
-      (0x1 << (numlevels - lvl_index - 2)) :
-      (0x1);
+    unsigned lvl_size = (lvl_index==numlevels-1) ?
+      (0x1) : (0x1 << (numlevels - lvl_index - 2));
     deque<INSAMPLE> zeros(lvl_size,INSAMPLE(0,0));
     inblock.SetSamplesAtLevel(zeros, zerolevels[i]);
   }
@@ -2908,8 +2908,7 @@ DiscreteWaveletMixedOperation
 (SampleBlock<OUTSAMPLE> &outblock,
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &approxblock,
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &detailblock,
- const unsigned numlevels,
- const SignalSpec &spec)
+ const unsigned numlevels)
 {
   unsigned blocksize=0x1 << (numlevels);
 

@@ -65,6 +65,7 @@ void ParseZeroSpec(vector<int> &spec, ifstream &file)
 {
   const char pound = '#';
   const char space = ' ';
+  const char zero = 'Z';
   char c;
 
   unsigned i;
@@ -74,7 +75,7 @@ void ParseZeroSpec(vector<int> &spec, ifstream &file)
   while ( (c=file.get()) != EOF) {
     if (c == pound) {
       file.ignore(SHRT_MAX, '\n');
-    } else {
+    } else if (c == zero) {
       file.ignore(SHRT_MAX, space);
       file >> numlevels;
       for (i=0; i<numlevels; i++) {

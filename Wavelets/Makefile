@@ -26,8 +26,7 @@ LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME)
 
 LD2FLAGS =  
 
-EXECLIST = 	   discrete_reverse_mixed               \
-setup_wavelet_delay			\
+EXECLIST = setup_wavelet_delay			\
 	   sample_static_sfwt			\
 	   block_static_sfwt 			\
 	   sample_static_mixed_sfwt		\
@@ -51,6 +50,7 @@ setup_wavelet_delay			\
 	   discrete_forward_transform           \
 	   discrete_reverse_transform           \
 	   discrete_forward_mixed               \
+	   discrete_reverse_mixed               \
 	   discrete_reverse_zerofill_transform  \
 	   discrete_transform_test
 

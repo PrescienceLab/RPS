@@ -145,8 +145,7 @@ int main(int argc, char *argv[])
   rdwt.DiscreteWaveletMixedOperation(reconst,
 				     approxcoefs,
 				     detailcoefs,
-				     numstages+1,
-				     sigspec);
+				     numstages+1);
 
   if (!flat) {
     *outstr.tie() << "The real-time system delay is no less than "

@@ -79,9 +79,12 @@ void FlatParser::
 ParseWaveletCoefsBlock(DiscreteWaveletOutputSampleBlock<wosd> &wavecoefs,
 		       istream &in)
 {
-  int levelnum;
+  int levelnum, lowlevel=0;
   double sampvalue;
   while(in >> levelnum) {
+    if (lowlevel > levelnum) {
+      lowlevel = levelnum;
+    }
     in >> sampvalue;
     if (indices.find(levelnum) == indices.end()) {
       indices[levelnum] = 0;
@@ -93,7 +96,7 @@ ParseWaveletCoefsBlock(DiscreteWaveletOutputSampleBlock<wosd> &wavecoefs,
   }
 
   // Fill in meta data for the discrete block
-  wavecoefs.SetLowestLevel(wavecoefs[0].GetSampleLevel());
+  wavecoefs.SetLowestLevel(lowlevel);
   wavecoefs.SetNumberLevels(NumberOfLevels(wavecoefs.GetBlockSize())+1);
   wavecoefs.SetTransformType(TRANSFORM);
 }
