@@ -1,7 +1,7 @@
 export RPSDIR=$RPS_DIR
 export PPSDIR=$RPSDIR
 
-export PATH=${PATH}:${RPSDIR}/Scripts:${RPSDIR}/bin/I386/LINUX
+export PATH=${PATH}:${RPSDIR}/Scripts:${RPSDIR}/bin/${RPS_ARCH}/${RPS_OS}
 
 
 export HOSTLOADPREDCTRLPORT=5000

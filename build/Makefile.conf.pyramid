@@ -9,7 +9,7 @@ RPS_DIR  = /usr5/pdinda/RPS-development
 
 # which tools to use to build
 CC      = g++
-F77     = g77
+F77     = f77
 AR      = ar 
 RANLIB  = ranlib
 LD      = c++
@@ -25,7 +25,7 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = ALPHA
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, WIN32
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, CYGWIN
 OS       = DUX
 
 

@@ -9,7 +9,7 @@ RPS_DIR  = /usr5/pdinda/RPS-development
 
 # which tools to use to build
 CC      = g++
-F77     = g77
+F77     = f77
 AR      = ar 
 RANLIB  = ranlib
 LD      = c++
