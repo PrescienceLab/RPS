@@ -3,18 +3,18 @@
 /********************************************************************************
  * Blocks of wavelet input samples
  *******************************************************************************/
-WaveletInputSampleBlock::WaveletInputSampleBlock()
+WaveletInputSampleBlock::WaveletInputSampleBlock() : 
+  InputSampleBlock<WaveletInputSample>()
 {
 }
 
 WaveletInputSampleBlock::WaveletInputSampleBlock
-(const WaveletInputSampleBlock &rhs) :
-  InputSampleBlock<WaveletInputSample>(rhs)
+(const vector<WaveletInputSample> &input) : 
+  InputSampleBlock<WaveletInputSample>(input)
 {
 }
 
-WaveletInputSampleBlock::WaveletInputSampleBlock
-(vector<WaveletInputSample> &rhs) :
+WaveletInputSampleBlock::WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs) :
   InputSampleBlock<WaveletInputSample>(rhs)
 {
 }
@@ -23,10 +23,18 @@ WaveletInputSampleBlock::~WaveletInputSampleBlock()
 {
 }
 
+WaveletInputSampleBlock* WaveletInputSampleBlock::clone()
+{
+  return new WaveletInputSampleBlock(*this);
+}
+
+
 /*******************************************************************************
  * Block output samples
  *******************************************************************************/
-WaveletOutputSampleBlock::WaveletOutputSampleBlock()
+
+WaveletOutputSampleBlock::WaveletOutputSampleBlock() :
+  OutputSampleBlock<WaveletOutputSample>()
 {
 }
 
@@ -36,12 +44,36 @@ WaveletOutputSampleBlock::WaveletOutputSampleBlock
 {
 }
 
-WaveletOutputSampleBlock::WaveletOutputSampleBlock
-(vector<WaveletOutputSample> &outcoefs) :
-  OutputSampleBlock<WaveletOutputSample>(outcoefs)
+WaveletOutputSampleBlock::~WaveletOutputSampleBlock()
 {
 }
 
-WaveletOutputSampleBlock::~WaveletOutputSampleBlock()
+WaveletOutputSampleBlock* WaveletOutputSampleBlock::clone()
 {
+  return new WaveletOutputSampleBlock(*this);
+}
+
+void WaveletOutputSampleBlock::SetBlockLevel(int level)
+{
+  if (!samples.empty()) {
+    for (unsigned i=0; i<samples.size(); i++) {
+      samples[i].SetSampleLevel(level);
+    }
+  }
+}
+
+int WaveletOutputSampleBlock::GetBlockLevel()
+{
+  int tlevel = -1;
+  if (!samples.empty()) {
+    tlevel = samples[0].GetSampleLevel();
+    
+    // Force unified level representation in block
+    for (unsigned i=1; i<samples.size(); i++) {
+      if (tlevel != samples[i].GetSampleLevel()) {
+	samples[i].SetSampleLevel(tlevel);
+      }
+    }
+  }
+  return tlevel;
 }

@@ -29,7 +29,7 @@ public:
     return *this;
   };
 
-  virtual SampleBlock & operator+(const SampleBlock &rhs) {
+  SampleBlock & operator+(const SampleBlock &rhs) {
     unsigned minsize = (GetBlockSize() <= rhs.GetBlockSize()) ?
       GetBlockSize() : rhs.GetBlockSize();
 
@@ -42,7 +42,7 @@ public:
     return *this;
   };
 
-  virtual SampleBlock & operator+=(const SampleBlock &rhs) {
+  SampleBlock & operator+=(const SampleBlock &rhs) {
     unsigned minsize = (GetBlockSize() <= rhs.GetBlockSize()) ?
       GetBlockSize() : rhs.GetBlockSize();
 
@@ -55,115 +55,75 @@ public:
     return *this;
   };
     
-  virtual void SetSamples(const vector<SAMPLETYPE> &input) {
+  void SetSamples(const vector<SAMPLETYPE> &input) {
     samples = input;
   };
 
-  virtual void GetSamples(vector<SAMPLETYPE> &buf) const {
+  void GetSamples(vector<SAMPLETYPE> &buf) const {
     buf = samples;
   };
 
-  virtual void SetSample(SAMPLETYPE &input) {
+  void SetSample(SAMPLETYPE &input) {
     samples.push_back(input);
   };
 
-  virtual void GetSample(SAMPLETYPE *samp, unsigned i) const {
+  void GetSample(SAMPLETYPE *samp, unsigned i) const {
     if (i < samples.size())
       *samp = samples[i];
   };
 
-  virtual void ClearBlock() {
+  void AppendBlock(SampleBlock &block) {
+    SAMPLETYPE newsamp;
+    for (unsigned i=0; i<block.GetBlockSize(); i++) {
+      block.GetSample(&newsamp,i);
+      samples.push_back(newsamp);
+    }
+  };
+
+  void ClearBlock() {
     samples.clear();
   };
 
-  virtual unsigned GetBlockSize() const {
+  unsigned GetBlockSize() const {
     return samples.size();
   };
 
-  virtual SampleBlock* clone()=0;
-  virtual void SetBlockLevel(int level)=0;
-  virtual int GetBlockLevel()=0;
+  virtual SampleBlock* clone() {
+    return new SampleBlock(*this);
+  };
 
-  virtual ostream & Print(ostream &os) const=0;
+  virtual ostream & Print(ostream &os) const {
+    os << "SampleBlock::" << endl;
+    for (unsigned i=0; i<samples.size(); i++) {
+      cout << "\t" << i << "\t" << samples[i];
+    }
+    return os;
+  };
+
+  virtual void SetBlockLevel(int level) {};
+  virtual int GetBlockLevel() { return -1;};
 };
 
 template <class SAMPLETYPE>
 class InputSampleBlock : public SampleBlock<SAMPLETYPE> {
 public:
   InputSampleBlock() {};
-
-  InputSampleBlock(const InputSampleBlock &rhs) :
+  InputSampleBlock(const InputSampleBlock &rhs) : 
     SampleBlock<SAMPLETYPE>(rhs) {};
-
-  InputSampleBlock(const vector<SAMPLETYPE> &input) :
+  InputSampleBlock(const vector<SAMPLETYPE> &input) : 
     SampleBlock<SAMPLETYPE>(input) {};
-
   virtual ~InputSampleBlock() {};
-
-  virtual InputSampleBlock* clone() {
-    return new InputSampleBlock(*this);
-  };
-  
-  virtual void SetBlockLevel(int level) {};
-  virtual int GetBlockLevel() { return -1;};
-
-  virtual ostream & Print(ostream &os) const {
-    os << "InputSampleBlock::" << endl;
-    for (unsigned i=0; i<samples.size(); i++) {
-      cout << "\t" << i << "\t" << samples[i];
-    }
-    return os;
-  };
 };
 
 template <class SAMPLETYPE>
 class OutputSampleBlock : public SampleBlock<SAMPLETYPE> {
 public:
   OutputSampleBlock() {};
-
-  OutputSampleBlock(const OutputSampleBlock &rhs) :
+  OutputSampleBlock(const OutputSampleBlock &rhs) : 
     SampleBlock<SAMPLETYPE>(rhs) {};
-
-  OutputSampleBlock(const vector<SAMPLETYPE> &output) :
-    SampleBlock<SAMPLETYPE>(output) {};
-
+  OutputSampleBlock(const vector<SAMPLETYPE> &input) : 
+    SampleBlock<SAMPLETYPE>(input) {};
   virtual ~OutputSampleBlock() {};
-
-  virtual OutputSampleBlock* clone() {
-    return new OutputSampleBlock(*this);
-  };
-
-  virtual void SetBlockLevel(int level) {
-    if (!samples.empty()) {
-      for (unsigned i=0; i<samples.size(); i++) {
-	samples[i].SetSampleLevel(level);
-      }
-    }
-  };
-
-  virtual int GetBlockLevel() {
-    int tlevel = -1;
-    if (!samples.empty()) {
-      tlevel = samples[0].GetSampleLevel();
-      
-      // Force unified level representation in block
-      for (unsigned i=1; i<samples.size(); i++) {
-	if (tlevel != samples[i].GetSampleLevel()) {
-	  samples[i].SetSampleLevel(tlevel);
-	}
-      }
-    }
-    return tlevel;
-  };
-
-  virtual ostream & Print(ostream &os) const {
-    os << "OutputSampleBlock::" << endl;
-    for (unsigned i=0; i<samples.size(); i++) {
-      cout << "\t" << i << "\t" << samples[i];
-    }
-    return os;
-  };
-
 };
 
 #endif

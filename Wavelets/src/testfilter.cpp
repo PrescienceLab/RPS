@@ -81,7 +81,8 @@ int main(int argc, char *argv[])
   WaveletOutputSampleBlock output;
 
   // Create a filter
-  FIRFilter<WaveletOutputSample, WaveletInputSample> lpfilter(wc.GetNumCoefs());
+  FIRFilter<double, WaveletOutputSample, WaveletInputSample> 
+    lpfilter(wc.GetNumCoefs());
   lpfilter.SetFilterCoefs(translpf);
   
   lpfilter.GetFilterBufferOutput(output, input);

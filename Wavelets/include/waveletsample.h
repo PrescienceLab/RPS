@@ -4,26 +4,31 @@
 #include "util.h"
 #include "sample.h"
 
-class WaveletInputSample : public InputSample<double> {
-public:
-  WaveletInputSample();
-  WaveletInputSample(const WaveletInputSample &rhs);
-  WaveletInputSample(double value);
-  virtual ~WaveletInputSample();
-
-  virtual WaveletInputSample & operator=(const Sample<double> &rhs);
-  virtual WaveletInputSample & operator=(const double rhs);
-};
+typedef InputSample<double> WaveletInputSample;
 
 class WaveletOutputSample : public OutputSample<double> { 
+protected:
+  int level;
+  int index;
+
 public:
   WaveletOutputSample();
   WaveletOutputSample(const WaveletOutputSample &rhs);
-  WaveletOutputSample(double value, int level, int index);
+  WaveletOutputSample(const double value, const int level, const int index);
   virtual ~WaveletOutputSample();
 
   virtual WaveletOutputSample & operator=(const Sample<double> &rhs);
-  virtual WaveletOutputSample & operator=(const double rhs);
+  WaveletOutputSample & operator=(const WaveletOutputSample &rhs);
+
+  virtual inline void SetSampleLevel(int level);
+  virtual inline int GetSampleLevel();
+  virtual inline void SetSampleIndex(int index);
+  virtual inline int GetSampleIndex();
+
+  virtual ostream & Print(ostream &os) const {
+    os << "level: " << level << "\tvalue: " << value << "\tindex: " << index << endl;
+    return os;
+  };
 };
 
 #endif

@@ -5,9 +5,10 @@
 #include <iostream>
 
 #include "util.h"
+#include "sample.h"
 #include "sampleblock.h"
 
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class DownSample {
 private:
   unsigned rate;
@@ -34,27 +35,28 @@ public:
   ostream & Print(ostream &os) const;
 };
 
-template <class OUTSAMPLE, class INSAMPLE>
-DownSample<OUTSAMPLE, INSAMPLE>::DownSample(unsigned rate=1)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSample(unsigned rate=1)
 {
   this->rate = rate;
   samplecount = 0;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-DownSample<OUTSAMPLE, INSAMPLE>::DownSample(const DownSample &rhs)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSample(const DownSample &rhs)
 {
   rate = rhs.rate;
   samplecount = rhs.samplecount;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-DownSample<OUTSAMPLE, INSAMPLE>::~DownSample()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~DownSample()
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-DownSample<OUTSAMPLE, INSAMPLE> & DownSample<OUTSAMPLE, INSAMPLE>::operator=
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
+DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 (const DownSample &rhs)
 {
   rate = rhs.rate;
@@ -62,8 +64,8 @@ DownSample<OUTSAMPLE, INSAMPLE> & DownSample<OUTSAMPLE, INSAMPLE>::operator=
   return *this;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-bool DownSample<OUTSAMPLE, INSAMPLE>::KeepSample()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::KeepSample()
 {
   bool keep=false;
   if (samplecount%rate == 0) {
@@ -74,38 +76,39 @@ bool DownSample<OUTSAMPLE, INSAMPLE>::KeepSample()
   return keep;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void DownSample<OUTSAMPLE, INSAMPLE>::DownSampleBuffer
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
 (SampleBlock<OUTSAMPLE> &output, SampleBlock<INSAMPLE> &input)
 {
   output.ClearBlock();
 
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     if (KeepSample()) {
-      INSAMPLE newin;
+      Sample<SAMPLETYPE>  newin;
       input.GetSample(&newin,i);
       output.SetSample(newin);
     }
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void DownSample<OUTSAMPLE, INSAMPLE>::DownSampleBuffer
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
 (SampleBlock<OUTSAMPLE> &output, SampleBlock<OUTSAMPLE> &input)
 {
   output.ClearBlock();
 
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     if (KeepSample()) {
-      OUTSAMPLE newin;
+      OUTSAMPLE  newin;
       input.GetSample(&newin,i);
       output.SetSample(newin);
     }
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ostream & DownSample<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
   os << "DownSample information:\n";
   os << "  Current downsample rate: " << rate << endl;

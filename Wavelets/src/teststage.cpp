@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
   // Instantiate a forward stage
   cout << "ForwardWaveletStage instantiation" << endl;
-  ForwardWaveletStage<WaveletOutputSample, WaveletInputSample> 
+  ForwardWaveletStage<double, WaveletOutputSample, WaveletInputSample> 
     fwd_stage(wt,2,2,0,1);
 
   WaveletOutputSampleBlock output_l, output_h;
@@ -66,7 +66,14 @@ int main(int argc, char *argv[])
   }
   infile.close();
 
+  cout << "The Samples of the input file: " << endl;
+  for (unsigned i=0; i<samples.size(); i++) {
+    cout << "\t" << samples[i];
+  }
+
   WaveletInputSampleBlock  input(samples);
+  cout << "The WaveletInputSampleBlock: " << endl;
+  cout << input;
 
   fwd_stage.PerformBlockOperation(output_l, output_h, input);
 
@@ -88,7 +95,7 @@ int main(int argc, char *argv[])
 
   // Instantiate a reverse stage
   cout << "ReverseWaveletStage instantiation" << endl;
-  ReverseWaveletStage<WaveletInputSample, WaveletOutputSample> 
+  ReverseWaveletStage<double, WaveletInputSample, WaveletOutputSample> 
     rev_stage(wt,2,2);
 
   WaveletInputSampleBlock reverseout;

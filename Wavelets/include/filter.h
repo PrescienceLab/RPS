@@ -6,14 +6,15 @@
 #include <iostream>
 
 #include "util.h"
+#include "sample.h"
 #include "sampleblock.h"
 
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class FIRFilter {
 private:
-  vector<double>    coefs;
-  deque<INSAMPLE>   delayline;
-  unsigned          numcoefs;
+  vector<double>             coefs;
+  deque<Sample<SAMPLETYPE> > delayline;
+  unsigned                   numcoefs;
 
 public:
   FIRFilter(unsigned numcoefs=0);
@@ -27,8 +28,8 @@ public:
   void   GetFilterCoefs(vector<double> &coefs);
   void   ClearDelayLine();
 
-  void GetFilterOutput(OUTSAMPLE &out,
-		       INSAMPLE  &in);
+  void GetFilterOutput(Sample<SAMPLETYPE> &out,
+		       Sample<SAMPLETYPE> &in);
 
   void GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out,
 			     SampleBlock<INSAMPLE>  &in);
@@ -36,13 +37,12 @@ public:
   ostream & Print(ostream &os) const;
 };
 
-template <class OUTSAMPLE, class INSAMPLE>
-FIRFilter<OUTSAMPLE, INSAMPLE>::FIRFilter(unsigned numcoefs)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter(unsigned numcoefs)
 {
   this->numcoefs = numcoefs;
   
-  INSAMPLE zero;
-  zero = 0;
+  Sample<SAMPLETYPE> zero(0);
   coefs.clear();
   delayline.clear();
   for (unsigned i=0; i<numcoefs; i++) {
@@ -51,22 +51,22 @@ FIRFilter<OUTSAMPLE, INSAMPLE>::FIRFilter(unsigned numcoefs)
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-FIRFilter<OUTSAMPLE, INSAMPLE>::FIRFilter(const FIRFilter &rhs)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter(const FIRFilter &rhs)
 {
   coefs = rhs.coefs;
   delayline = rhs.delayline;
   numcoefs = rhs.numcoefs;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-FIRFilter<OUTSAMPLE, INSAMPLE>::FIRFilter
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::FIRFilter
 (unsigned numcoefs, vector<double> &coefs)
 {
   this->numcoefs = numcoefs;
   this->coefs = coefs;
 
-  INSAMPLE zero = 0;
+  Sample<SAMPLETYPE> zero(0);
 
   delayline.clear();
   for (unsigned i=0; i<numcoefs; i++) {
@@ -74,14 +74,14 @@ FIRFilter<OUTSAMPLE, INSAMPLE>::FIRFilter
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-FIRFilter<OUTSAMPLE, INSAMPLE>::~FIRFilter()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~FIRFilter()
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-FIRFilter<OUTSAMPLE, INSAMPLE> & 
-FIRFilter<OUTSAMPLE, INSAMPLE>::operator=
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
+FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 (const FIRFilter &rhs)
 {
   coefs = rhs.coefs;
@@ -91,15 +91,14 @@ FIRFilter<OUTSAMPLE, INSAMPLE>::operator=
 
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<OUTSAMPLE, INSAMPLE>::SetFilterCoefs
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefs
 (vector<double> &coefs)
 {
   this->numcoefs = coefs.size();
   this->coefs = coefs;
   
-  INSAMPLE zero;
-  zero = 0;
+  Sample<SAMPLETYPE> zero(0);
 
   delayline.clear();
   for (unsigned i=0; i<numcoefs; i++) {
@@ -107,52 +106,52 @@ void FIRFilter<OUTSAMPLE, INSAMPLE>::SetFilterCoefs
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<OUTSAMPLE, INSAMPLE>::GetFilterCoefs
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterCoefs
 (vector<double> &coefs)
 {
   coefs = this->coefs;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<OUTSAMPLE, INSAMPLE>::ClearDelayLine()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearDelayLine()
 {
   for (unsigned i=0; i<numcoefs; i++) {
     delayline[i] = 0;
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<OUTSAMPLE, INSAMPLE>::GetFilterOutput
-(OUTSAMPLE &out, INSAMPLE &in)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterOutput
+(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
 {
   delayline.push_front(in); // insert newest element
   delayline.pop_back();     // remove oldest element
 
-  OUTSAMPLE output;
+  Sample<SAMPLETYPE> output;
   for (unsigned i=0; i<numcoefs; i++) {
     output += delayline[i]*coefs[i];
   }
   out = output;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void FIRFilter<OUTSAMPLE, INSAMPLE>::GetFilterBufferOutput
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetFilterBufferOutput
 (SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
 {
   out.ClearBlock();
   in.GetBlockSize();
   for (unsigned i=0; i<in.GetBlockSize(); i++) {
     OUTSAMPLE newout;
-    INSAMPLE newin;
+    INSAMPLE  newin;
     in.GetSample(&newin,i);
     GetFilterOutput(newout,newin);
     out.SetSample(newout);
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ostream & FIRFilter<OUTSAMPLE, INSAMPLE>::Print
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print
 (ostream &os) const
 {
   os << "FIRFilter information:\n";

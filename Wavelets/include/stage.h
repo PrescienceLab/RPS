@@ -31,15 +31,15 @@ enum StageType {FORWARD, REVERSE};
  *  between a forward wavelet stage and a reverse wavelet stage.
  *
  *******************************************************************************/
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class WaveletStageHelper {
 protected:
   StageType           stagetype;
   WaveletType         wavetype;
   WaveletCoefficients wavecoefs;
 
-  FIRFilter<OUTSAMPLE, INSAMPLE> lowpass;
-  FIRFilter<OUTSAMPLE, INSAMPLE> highpass;
+  FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> lowpass;
+  FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> highpass;
 
 public:
   WaveletStageHelper(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD);
@@ -80,18 +80,18 @@ public:
  *  a set of operations for functioning in a streaming or block fashion.
  *
  *******************************************************************************/
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ForwardWaveletStage {
 protected:
-  WaveletStageHelper<OUTSAMPLE, INSAMPLE> stagehelp;
+  WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE> stagehelp;
 
   unsigned rate_l;
   unsigned rate_h;
   int      outlevel_l;
   int      outlevel_h;
 
-  DownSample<OUTSAMPLE, INSAMPLE> downsampler_l;
-  DownSample<OUTSAMPLE, INSAMPLE> downsampler_h;
+  DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> downsampler_l;
+  DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> downsampler_h;
 
 public:
   ForwardWaveletStage(WaveletType wavetype=DAUB2);
@@ -121,11 +121,20 @@ public:
   bool PerformSampleOperation(OUTSAMPLE &out_l,
 			      OUTSAMPLE &out_h,
 			      INSAMPLE  &in);
+#if 0  
+  bool PerformSampleOperation(OUTSAMPLE &out_l,
+			      OUTSAMPLE &out_h,
+			      OUTSAMPLE &in);
+#endif
 
   // Returns output buffer length (both outputs same length)
   unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out_l, 
 				 SampleBlock<OUTSAMPLE> &out_h, 
 				 SampleBlock<INSAMPLE>  &in);
+
+  unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out_l,
+				 SampleBlock<OUTSAMPLE> &out_h,
+				 SampleBlock<OUTSAMPLE> &in);
 
   ostream & Print(ostream &os) const;
 };
@@ -140,16 +149,16 @@ public:
  *  for peforming the inverse wavelet transform in a streaming or block fashion.
  *
  *******************************************************************************/
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ReverseWaveletStage {
 protected:
-  WaveletStageHelper<OUTSAMPLE, INSAMPLE> stagehelp;
+  WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE> stagehelp;
 
   unsigned rate_l;
   unsigned rate_h;
 
-  UpSample<OUTSAMPLE, INSAMPLE> upsampler_l;
-  UpSample<OUTSAMPLE, INSAMPLE> upsampler_h;
+  UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> upsampler_l;
+  UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> upsampler_h;
 
 public:
   ReverseWaveletStage(WaveletType wavetype=DAUB2);
@@ -183,8 +192,8 @@ public:
  * Member functions for the WaveletStageHelper Class
  *
  *******************************************************************************/
-template <class OUTSAMPLE, class INSAMPLE>
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::WaveletStageHelper
 (WaveletType wavetype=DAUB2, StageType stagetype=FORWARD) :
   wavecoefs(wavetype)
 {
@@ -221,22 +230,22 @@ WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::WaveletStageHelper
 (const WaveletStageHelper &rhs) : 
   stagetype(rhs.stagetype), wavetype(rhs.wavetype), wavecoefs(rhs.wavecoefs),
   lowpass(rhs.lowpass), highpass(rhs.highpass)
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::~WaveletStageHelper()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~WaveletStageHelper()
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-WaveletStageHelper<OUTSAMPLE, INSAMPLE> & 
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::operator=(const WaveletStageHelper &rhs)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=(const WaveletStageHelper &rhs)
 {
   // Make sure that the RTT of rhs is WaveletStageHelper, otherwise throw an
   //  exception
@@ -253,9 +262,9 @@ WaveletStageHelper<OUTSAMPLE, INSAMPLE>::operator=(const WaveletStageHelper &rhs
   return *this;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void 
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ChangeWaveletType
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ChangeWaveletType
 (const WaveletType wavetype)
 {
   vector<double> &coefs;
@@ -291,28 +300,28 @@ WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ChangeWaveletType
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-string WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetWaveletName()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+string WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetWaveletName()
 {
   return wavecoefs.GetWaveletName();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::SetFilterCoefsLPF
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefsLPF
 (const vector<double> &coefs)
 {
   lowpass.SetFilterCoefs(coefs);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetNumCoefsLPF()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetNumCoefsLPF()
 {
   return lowpass.GetNumCoefs();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsLPF()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PrintCoefsLPF()
 {
   vector<double> coefs;
   lowpass.GetFilterCoefs(coefs);
@@ -322,22 +331,22 @@ void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsLPF()
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void 
-WaveletStageHelper<OUTSAMPLE, INSAMPLE>::SetFilterCoefsHPF
+WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetFilterCoefsHPF
 (const vector<double> &coefs)
 {
   highpass.SetFilterCoefs(coefs);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetNumCoefsHPF()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetNumCoefsHPF()
 {
   return highpass.GetNumCoefs();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsHPF()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PrintCoefsHPF()
 {
   vector<double> coefs;
   highpass.GetFilterCoefs(coefs);
@@ -347,49 +356,49 @@ void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsHPF()
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ClearLPFDelayLine()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearLPFDelayLine()
 {
   lowpass.ClearDelayLine();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::LPFSampleOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::LPFSampleOperation
 (OUTSAMPLE &out, INSAMPLE &in)
 {
   lowpass.GetFilterOutput(out,in);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::LPFBufferOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::LPFBufferOperation
 (SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
 {
   lowpass.GetFilterBufferOutput(out,in);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ClearHPFDelayLine()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ClearHPFDelayLine()
 {
   highpass.ClearDelayLine();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::HPFSampleOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::HPFSampleOperation
 (OUTSAMPLE &out, INSAMPLE &in)
 {
   highpass.GetFilterOutput(out,in);
 }
 
 
-template <class OUTSAMPLE, class INSAMPLE>
-void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::HPFBufferOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::HPFBufferOperation
 (SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
 {
   highpass.GetFilterBufferOutput(out,in);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ostream & WaveletStageHelper<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
   os << "WaveletStageHelper::" << endl;
   os << wavecoefs << endl;
@@ -403,24 +412,24 @@ ostream & WaveletStageHelper<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
  * Member functions for the ForwardWaveletStage Class
  *
  *******************************************************************************/
-template <class OUTSAMPLE, class INSAMPLE>
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
 (WaveletType wavetype=DAUB2) : stagehelp(wavetype, FORWARD), 
   rate_l(2), rate_h(2), outlevel_l(-1), outlevel_h(-1), 
   downsampler_l(rate_l), downsampler_h(rate_h)
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
-(const ForwardWaveletStage<OUTSAMPLE, INSAMPLE> &rhs) : stagehelp(rhs.stagehelp),
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
+(const ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &rhs) : stagehelp(rhs.stagehelp),
    rate_l(rhs.rate_l), rate_h(rhs.rate_h), outlevel_l(rhs.outlevel_l), 
    outlevel_h(rhs.outlevel_h), downsampler_l(rhs.rate_l), downsampler_h(rhs.rate_h)
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
 (WaveletType wavetype, unsigned rate_l, unsigned rate_h, 
  int outlevel_l, int outlevel_h) : stagehelp(wavetype, FORWARD), rate_l(rate_l),
   rate_h(rate_h), outlevel_l(outlevel_l), outlevel_h(outlevel_h),
@@ -428,14 +437,14 @@ ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::~ForwardWaveletStage()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~ForwardWaveletStage()
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE> &
-ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
+ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 (const ForwardWaveletStage &rhs)
 {
   // Check that the RTT is actually a ForwardWaveletStage, else
@@ -456,63 +465,67 @@ ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
   return *this;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::SetDownSampleRateLow
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetDownSampleRateLow
 (unsigned rate)
 {
   downsampler_l.SetDownSampleRate(rate);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::GetDownSampleRateLow()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetDownSampleRateLow()
 {
   return downsampler_l.GetDownSampleRate();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::SetDownSampleRateHigh
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetDownSampleRateHigh
 (unsigned rate)
 {
   downsampler_h.SetDownSampleRate(rate);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::GetDownSampleRateHigh()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetDownSampleRateHigh()
 {
   return downsampler_h.GetDownSampleRate();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::SetOutputLevelLow(int outlevel)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetOutputLevelLow(int outlevel)
 {
   outlevel_l = outlevel;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-int ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::GetOutputLevelLow()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelLow()
 {
   return outlevel_l;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::SetOutputLevelHigh(int outlevel)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetOutputLevelHigh(int outlevel)
 {
   outlevel_h = outlevel;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-int ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::GetOutputLevelHigh()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+int ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetOutputLevelHigh()
 {
   return out_level_h;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-bool ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformSampleOperation
 (OUTSAMPLE &out_l, OUTSAMPLE &out_h, INSAMPLE &in)
 {
   // Filter the new input sample through the LPF and HPF filters
   stagehelp.LPFSampleOperation(out_l,in);
   stagehelp.HPFSampleOperation(out_h,in);
+
+  // Set the appropriate levels
+  out_l.SetSampleLevel(outlevel_l);
+  out_h.SetSampleLevel(outlevel_h);
 
   // Downsample the results
   bool state;
@@ -528,8 +541,8 @@ bool ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
   return state;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOperation
 (SampleBlock<OUTSAMPLE> &out_l, SampleBlock<OUTSAMPLE> &out_h, 
  SampleBlock<INSAMPLE>  &in)
 {
@@ -558,8 +571,38 @@ unsigned ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
   return blocksize;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ostream & ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOperation
+(SampleBlock<OUTSAMPLE> &out_l, SampleBlock<OUTSAMPLE> &out_h, 
+ SampleBlock<OUTSAMPLE> &in)
+{
+  // Need a temporary output block for filter operations
+  SampleBlock<OUTSAMPLE>* tempblock_l = out_l.clone();
+  SampleBlock<OUTSAMPLE>* tempblock_h = out_h.clone();
+
+  // Block filter and downsample the new input buffer
+  stagehelp.LPFBufferOperation(*tempblock_l, in);
+  stagehelp.HPFBufferOperation(*tempblock_h, in);  
+
+  downsampler_l.DownSampleBuffer(out_l, *tempblock_l);
+  downsampler_h.DownSampleBuffer(out_h, *tempblock_h);
+
+  out_l.SetBlockLevel(outlevel_l);
+  out_h.SetBlockLevel(outlevel_h);
+
+  unsigned blocksize;
+  if ((blocksize = out_l.GetBlockSize()) != out_h.GetBlockSize()) {
+    // If somehow the filter output lengths are different, clear the delay line
+    //  and may lose data (might want to refilter)
+    stagehelp.ClearLPFDelayLine();
+    stagehelp.ClearHPFDelayLine();
+    throw OperationSyncException();    
+  }
+  return blocksize;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
   os << "ForwardWaveletStage::" << endl;
   os << "  " << stagehelp << endl;
@@ -576,36 +619,36 @@ ostream & ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
  * Member functions for the ReverseWaveletStage Class
  *
  *******************************************************************************/
-template <class OUTSAMPLE, class INSAMPLE>
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
 (WaveletType wavetype=DAUB2) : stagehelp(wavetype, REVERSE), 
   rate_l(2), rate_h(2), upsampler_l(rate_l), upsampler_h(rate_h)
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
 (const ReverseWaveletStage &rhs) : stagehelp(rhs.stagehelp), rate_l(rhs.rate_l),
   rate_h(rhs.rate_h), upsampler_l(rhs.rate_l), upsampler_h(rhs.rate_h)
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
 (WaveletType wavetype, unsigned rate_l, unsigned rate_h) : 
   stagehelp(wavetype, REVERSE), rate_l(rate_l), rate_h(rate_h), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::~ReverseWaveletStage()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~ReverseWaveletStage()
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE> & 
-ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
+ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=
 (const ReverseWaveletStage &rhs)
 {
   // Check that the RTT is actually a ReverseWaveletStage, else
@@ -623,32 +666,32 @@ ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::operator=
   return *this;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::SetUpSampleRateLow(unsigned rate)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetUpSampleRateLow(unsigned rate)
 {
   upsampler_l.SetUpSampleRate(rate);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::GetUpSampleRateLow()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateLow()
 {
   return upsampler_l.GetUpSampleRate();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::SetUpSampleRateHigh(unsigned rate)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::SetUpSampleRateHigh(unsigned rate)
 {
   upsampler_h.SetUpSampleRate(rate);
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::GetUpSampleRateHigh()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::GetUpSampleRateHigh()
 {
   return upsampler_h.GetUpSampleRate();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-bool ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformSampleOperation
 (OUTSAMPLE &out, INSAMPLE &in_l, INSAMPLE &in_h)
 {
   INSAMPLE  zero(0);
@@ -678,8 +721,8 @@ bool ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformSampleOperation
   return !zerosample;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::PerformBlockOperation
 (SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in_l, 
  SampleBlock<INSAMPLE> &in_h)
 {
@@ -711,8 +754,8 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
   return out.GetBlockSize();
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ostream & ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
   os << "ReverseWaveletStage::" << endl;
   os << "  " << stagehelp << endl;

@@ -5,9 +5,10 @@
 #include <iostream>
 
 #include "util.h"
+#include "sample.h"
 #include "sampleblock.h"
 
-template <class OUTSAMPLE, class INSAMPLE>
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class UpSample {
 private:
   unsigned rate;
@@ -28,41 +29,41 @@ public:
   void UpSampleBuffer(SampleBlock<OUTSAMPLE> &output,
 		      SampleBlock<INSAMPLE>  &input);
   void UpSampleBuffer(SampleBlock<INSAMPLE> &output,
-		      SampleBlock<INSAMPLE> &input);
+		      SampleBlock<INSAMPLE>  &input);
 
   ostream & Print(ostream &os) const;
 };
 
-template <class OUTSAMPLE, class INSAMPLE>
-UpSample<OUTSAMPLE, INSAMPLE>::UpSample(unsigned rate=1)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(unsigned rate=1)
 {
   this->rate = rate;
   samplecount = 0;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-UpSample<OUTSAMPLE, INSAMPLE>::UpSample(const UpSample &rhs)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSample(const UpSample &rhs)
 {
   rate = rhs.rate;
   samplecount = rhs.samplecount;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-UpSample<OUTSAMPLE, INSAMPLE>::~UpSample()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::~UpSample()
 {
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-UpSample<OUTSAMPLE, INSAMPLE> & UpSample<OUTSAMPLE, INSAMPLE>::operator=
-(const UpSample &rhs)
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE> & 
+UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::operator=(const UpSample &rhs)
 {
   rate = rhs.rate;
   samplecount = rhs.samplecount;
   return *this;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-bool UpSample<OUTSAMPLE, INSAMPLE>::ZeroSample()
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::ZeroSample()
 {
   bool zero=true;
   if (samplecount%rate == 0) {
@@ -73,8 +74,8 @@ bool UpSample<OUTSAMPLE, INSAMPLE>::ZeroSample()
   return zero;
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 (SampleBlock<OUTSAMPLE> &output, SampleBlock<INSAMPLE> &input)
 {
   output.ClearBlock();
@@ -97,8 +98,8 @@ void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 (SampleBlock<INSAMPLE> &output, SampleBlock<INSAMPLE> &input)
 {
   output.ClearBlock();
@@ -106,7 +107,7 @@ void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 
   unsigned i;
   for (i=0; i<input.GetBlockSize(); i++) {
-    newin = 0;
+    newin=0;
     while (ZeroSample()) {
       output.SetSample(newin);
     }
@@ -121,8 +122,8 @@ void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
   }
 }
 
-template <class OUTSAMPLE, class INSAMPLE>
-ostream & UpSample<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
   os << "UpSample information:\n";
   os << "  Current upsample rate: " << rate << endl;

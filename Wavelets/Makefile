@@ -29,7 +29,8 @@ LD2FLAGS =
 
 EXECLIST = testcoefs \
 	   testfilter \
-           teststage
+           teststage \
+           testSFWT
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
@@ -41,7 +42,8 @@ LIBOBJSLIST = coefficients.o \
               sampleblock.o \
               waveletsample.o \
               waveletsampleblock.o \
-              stage.o
+              stage.o \
+              transforms.o
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
 LIBOBJS = $(foreach m, $(LIBOBJSLIST),$(OBJDIR)/$(m))
