@@ -13,8 +13,6 @@ public:
   WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs);
   WaveletInputSampleBlock(vector<WaveletInputSample> &rhs);
   virtual ~WaveletInputSampleBlock();
-
-  WaveletInputSampleBlock & operator=(const WaveletInputSampleBlock &rhs);
 };
 
 class WaveletOutputSampleBlock : public OutputSampleBlock<WaveletOutputSample> {
@@ -23,8 +21,6 @@ public:
   WaveletOutputSampleBlock(const WaveletOutputSampleBlock &rhs);
   WaveletOutputSampleBlock(vector<WaveletOutputSample> &outcoefs);
   virtual ~WaveletOutputSampleBlock();
-
-  WaveletOutputSampleBlock & operator=(const WaveletOutputSampleBlock &rhs);
 };
 
 #endif

@@ -315,7 +315,7 @@ unsigned WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetNumCoefsLPF()
 template <class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsLPF()
 {
-  vector<double> &coefs;
+  vector<double> coefs;
   lowpass.GetFilterCoefs(coefs);
   cout << "LPF coefs:" << endl;
   for (unsigned i=0; i<coefs.size(); i++) {
@@ -340,7 +340,7 @@ unsigned WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetNumCoefsHPF()
 template <class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsHPF()
 {
-  vector<double> &coefs;
+  vector<double> coefs;
   highpass.GetFilterCoefs(coefs);
   cout << "HPF coefs:" << endl;
   for (unsigned i=0; i<coefs.size(); i++) {
@@ -686,19 +686,21 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
  SampleBlock<INSAMPLE> &in_h)
 {
   // Need a temporary output block for filter operations
-  SampleBlock<INSAMPLE>* tempblock_l = in_l.clone();
-  SampleBlock<INSAMPLE>* tempblock_h = in_h.clone();
+  SampleBlock<INSAMPLE>* tempin_l = in_l.clone();
+  SampleBlock<INSAMPLE>* tempin_h = in_h.clone();
 
   // Upsample the input blocks
-  upsampler_l.UpSampleBuffer(*tempblock_l, in_l);
-  upsampler_h.UpSampleBuffer(*tempblock_h, in_h);
+  upsampler_l.UpSampleBuffer(*tempin_l, in_l);
+  upsampler_h.UpSampleBuffer(*tempin_h, in_h);
 
   // Filter the tempblocks
-  SampleBlock<OUTSAMPLE>* tempout = out.clone();
-  stagehelp.LPFBufferOperation(out, *tempblock_l);
-  stagehelp.HPFBufferOperation(*tempout, *tempblock_h);
+  SampleBlock<OUTSAMPLE>* tempout_l = out.clone();
+  SampleBlock<OUTSAMPLE>* tempout_h = out.clone();
 
-  if (out.GetBlockSize() != tempout->GetBlockSize()) {
+  stagehelp.LPFBufferOperation(*tempout_l, *tempin_l);
+  stagehelp.HPFBufferOperation(*tempout_h, *tempin_h);
+
+  if (tempout_l->GetBlockSize() != tempout_h->GetBlockSize()) {
     // If somehow the input filter blocks are different length, clear the delay
     // line and may lose data (might want to refilter)
     stagehelp.ClearLPFDelayLine();
@@ -707,7 +709,7 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
   }
 
   // Add the two outputs of the filters
-  out += *tempout;
+  out = *tempout_l + *tempout_h;
   return out.GetBlockSize();
 }
 

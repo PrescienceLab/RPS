@@ -22,36 +22,19 @@ WaveletInputSample::~WaveletInputSample()
 {
 }
 
-WaveletInputSample & WaveletInputSample::operator=(const WaveletInputSample &rhs) 
+WaveletInputSample & WaveletInputSample::operator=(const Sample<double> &rhs) 
 {
   if (&rhs != this) {
     // invoke InputSample copy assignment operator
-    this->InputSample<double>::operator=(rhs);
+    this->Sample<double>::operator=(rhs);
   }
   return *this;
 }
 
 WaveletInputSample & WaveletInputSample::operator=(const double rhs)
 {
-  this->InputSample<double>::operator=(rhs);
+  this->Sample<double>::operator=(rhs);
   return *this;
-}
-
-WaveletInputSample & WaveletInputSample::operator+=(const WaveletInputSample &rhs)
-{
-  this->InputSample<double>::operator+=(rhs);
-  return *this;
-}
-
-WaveletInputSample & WaveletInputSample::operator+=(const double rhs)
-{
-  this->InputSample<double>::operator+=(rhs);
-  return *this;
-}
-
-double WaveletInputSample::operator*(const double rhs)
-{
-  return this->InputSample<double>::operator*(rhs);
 }
 
 /********************************************************************************
@@ -76,33 +59,16 @@ WaveletOutputSample::~WaveletOutputSample()
 {
 }
 
-WaveletOutputSample & WaveletOutputSample::operator=(const WaveletOutputSample &rhs)
+WaveletOutputSample & WaveletOutputSample::operator=(const Sample<double> &rhs)
 {
   if (&rhs != this) {
-    this->OutputSample<double>::operator=(rhs);
+    this->Sample<double>::operator=(rhs);
   }
   return *this;
 }
 
 WaveletOutputSample & WaveletOutputSample::operator=(const double rhs)
 {
-  this->OutputSample<double>::operator=(rhs);
+  this->Sample<double>::operator=(rhs);
   return *this;
-}
-
-WaveletOutputSample & WaveletOutputSample::operator+=(const WaveletOutputSample &rhs)
-{
-  this->OutputSample<double>::operator+=(rhs);
-  return *this;
-}
-
-WaveletOutputSample & WaveletOutputSample::operator+=(const double rhs)
-{
-  this->OutputSample<double>::operator+=(rhs);
-  return *this;
-}
-
-double WaveletOutputSample::operator*(const double rhs)
-{
-  return this->OutputSample<double>::operator*(rhs);
 }

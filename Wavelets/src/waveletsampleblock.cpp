@@ -3,7 +3,6 @@
 /********************************************************************************
  * Blocks of wavelet input samples
  *******************************************************************************/
-
 WaveletInputSampleBlock::WaveletInputSampleBlock()
 {
 }
@@ -22,16 +21,6 @@ WaveletInputSampleBlock::WaveletInputSampleBlock
 
 WaveletInputSampleBlock::~WaveletInputSampleBlock()
 {
-}
-
-WaveletInputSampleBlock & 
-WaveletInputSampleBlock::operator=(const WaveletInputSampleBlock & rhs)
-{
-  if (&rhs != this) {
-    // invoke InputSampleBlock copy assignment operator
-    this->InputSampleBlock<WaveletInputSample>::operator=(rhs);
-  }
-  return *this;
 }
 
 /*******************************************************************************
@@ -55,14 +44,4 @@ WaveletOutputSampleBlock::WaveletOutputSampleBlock
 
 WaveletOutputSampleBlock::~WaveletOutputSampleBlock()
 {
-}
-
-WaveletOutputSampleBlock & 
-WaveletOutputSampleBlock::operator=(const WaveletOutputSampleBlock &rhs)
-{
-  if (&rhs != this) {
-    // invoke InputSampleBlock copy assignment operator
-    this->OutputSampleBlock<WaveletOutputSample>::operator=(rhs);
-  }
-  return *this;
 }

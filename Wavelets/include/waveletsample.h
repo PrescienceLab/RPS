@@ -11,11 +11,8 @@ public:
   WaveletInputSample(double value);
   virtual ~WaveletInputSample();
 
-  WaveletInputSample & operator=(const WaveletInputSample &rhs);
-  WaveletInputSample & operator=(const double rhs);
-  WaveletInputSample & operator+=(const WaveletInputSample &rhs);
-  WaveletInputSample & operator+=(const double rhs);
-  inline double operator*(const double rhs);
+  virtual WaveletInputSample & operator=(const Sample<double> &rhs);
+  virtual WaveletInputSample & operator=(const double rhs);
 };
 
 class WaveletOutputSample : public OutputSample<double> { 
@@ -25,11 +22,8 @@ public:
   WaveletOutputSample(double value, int level);
   virtual ~WaveletOutputSample();
 
-  WaveletOutputSample & operator=(const WaveletOutputSample &rhs);
-  WaveletOutputSample & operator=(const double rhs);
-  WaveletOutputSample & operator+=(const WaveletOutputSample &rhs);
-  WaveletOutputSample & operator+=(const double rhs);
-  inline double operator*(const double rhs);
+  virtual WaveletOutputSample & operator=(const Sample<double> &rhs);
+  virtual WaveletOutputSample & operator=(const double rhs);
 };
 
 #endif
