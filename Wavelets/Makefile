@@ -48,8 +48,6 @@ LIBOBJSLIST = coefficients.o       \
               waveletsample.o      \
               waveletsampleblock.o \
               stage.o              \
-              indexmanager.o       \
-              jitterhelper.o       \
               transforms.o         \
               delay.o
 
