@@ -341,6 +341,7 @@ StreamingBlockOperation(vector<WaveletOutputSampleBlock<SAMPLE> > &outblock,
     if (StreamBlock(block, inblock[i])) {
       outblock.push_back(block);
     }
+    block.ClearBlock();
   }
   return outblock.size();
 }
@@ -382,7 +383,8 @@ StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out,
   SAMPLE outsamp;
 
   unsigned block_indx = in.GetBlockIndex();
-  int level_indx = in.GetBlockLevel() - lowest_level;
+  int block_lvl = in.GetBlockLevel();
+  int level_indx = block_lvl - lowest_level;
 
   assert((level_indx >= 0) || (level_indx <= (int) numlevels));
 
@@ -392,9 +394,11 @@ StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out,
     outsamp = dbanks[level_indx]->back();
     dbanks[level_indx]->pop_back();
     outsamp.SetSampleIndex(sampleindex);
+    outsamp.SetSampleLevel(block_lvl);
     out.PushSampleBack(outsamp);
   }
   out.SetBlockIndex(block_indx);
+  out.SetBlockLevel(block_lvl);
   return out.GetBlockSize();
 }
 

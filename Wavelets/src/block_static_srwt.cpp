@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
   vector<WaveletOutputSampleBlock<wosd> > waveletcoefs;
   for (unsigned i=0; i<numlevels; i++) {
-    waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>() );
+    waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
   }
 
   // Read in the wavelet coefficients
@@ -158,10 +158,9 @@ int main(int argc, char *argv[])
 	indices[levelnum] += 1;
       }
       wosd sample(sampvalue, levelnum, indices[levelnum]);
-      waveletcoefs[i].PushSampleBack(sample);
+      waveletcoefs[levelnum].PushSampleBack(sample);
     }
   }
-
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
@@ -179,7 +178,6 @@ int main(int argc, char *argv[])
   // The operations
   dlyblk.StreamingBlockOperation(delayoutput, waveletcoefs);
   srwt.StreamingTransformBlockOperation(reconst, delayoutput);
-
 
   if (!flat) {
     unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;

@@ -15,7 +15,7 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " sample_static_streaming_test [input-file] [wavelet-type-init]\n";
+  cerr << " block_static_streaming_test [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "sample_static_streaming_test: Cannot open input file " << argv[1] << ".\n";
+      cerr << "block_static_streaming_test: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -94,12 +94,12 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "sample_static_streaming_test: Number of stages must be positive.\n";
+    cerr << "block_static_streaming_test: Number of stages must be positive.\n";
     exit(-1);
   }
 
   if (toupper(argv[4][0])!='T') {
-    cerr << "sample_static_streaming_test: For streaming tests, only TRANSFORM type allowed.\n";
+    cerr << "block_static_streaming_test: For streaming tests, only TRANSFORM type allowed.\n";
     exit(-1);
   }
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "sample_static_streaming_test: Cannot open output file " << argv[5] << ".\n";
+      cerr << "block_static_streaming_test: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);

@@ -86,6 +86,7 @@ WaveletOutputSample<SAMPLETYPE>::
 WaveletOutputSample() :
   OutputSample<SAMPLETYPE>()
 {
+  this->level = 0;  
 }
 
 template <class SAMPLETYPE>

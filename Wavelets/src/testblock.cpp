@@ -114,6 +114,11 @@ int main(int argc, char *argv[])
   srwt.StreamingTransformBlockOperation(reverseoutput, delayoutput);
 
   // Print the outputs
+  for (unsigned i=0; i<reverseoutput.GetBlockSize(); i++) {
+    cout << i << "\t" << reverseoutput[i] << endl;
+  }
+
+
 
   if (delay != 0) {
     delete[] delay;

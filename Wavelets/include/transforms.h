@@ -1635,9 +1635,9 @@ StreamingTransformBlockOperation
     AddBlockToIntersignals(interblock, 0);
     interblock.ClearBlock();
 
-    RUN_STAGE_BLOCK_OPERATION(last_stage, 
-			      outblock, 
-			      *intersignals[0], 
+    RUN_STAGE_BLOCK_OPERATION(last_stage,
+			      outblock,
+			      *intersignals[0],
 			      *insignals[0]);
     outblock.SetBlockIndex(index);
     index += outblock.GetBlockSize();
@@ -1836,7 +1836,7 @@ AddRemainingBlockToInsignals(const SampleBlock<INSAMPLE> &block,
     INSAMPLE samp;
     for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
       samp = block[i];
-      insignals[level]->PushSampleFront(samp);
+      insignals[level]->PushSampleBack(samp);
     }
   }
 }
@@ -1859,7 +1859,7 @@ AddRemainingBlockToIntersignals(const SampleBlock<INSAMPLE> &block,
     INSAMPLE samp;
     for (unsigned i=minsize; i<block.GetBlockSize(); i++) {
       samp = block[i];
-      intersignals[level]->PushSampleFront(samp);
+      intersignals[level]->PushSampleBack(samp);
     }
   }
 }
