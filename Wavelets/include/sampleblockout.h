@@ -12,7 +12,8 @@ public:
   OutputSampleBlock() {};
   virtual ~OutputSampleBlock() {};
 
-  virtual OutputSampleBlock & operator=(const OutputSampleBlock &rhs) {};
+  virtual OutputSampleBlock & operator=(const OutputSampleBlock &rhs) {
+    return *this; };
 
   virtual void SetWaveletCoef(reprType &coef)=0;
   virtual void GetWaveletCoef(reprType *coef, unsigned i)=0;

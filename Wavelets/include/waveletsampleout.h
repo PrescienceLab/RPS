@@ -34,7 +34,7 @@ public:
   WaveletOutputSampleVector(vector<WaveletOutputSample> &outcoefs);
   virtual ~WaveletOutputSampleVector();
 
-  virtual WaveletOutputSampleVector & operator=(const WaveletOutputSampleVector &rhs);
+  WaveletOutputSampleVector & operator=(const WaveletOutputSampleVector &rhs);
 
   inline virtual void SetWaveletCoef(WaveletOutputSample &coef);
   inline virtual void GetWaveletCoef(WaveletOutputSample *coef, unsigned i);

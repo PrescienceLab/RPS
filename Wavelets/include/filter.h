@@ -100,6 +100,7 @@ FIRFilter<outSample, inSample, inputType>::operator=
   delayline = rhs.delayline;
   numcoefs = rhs.numcoefs;
   return *this;
+
 }
 
 template <class outSample, class inSample, class inputType>
