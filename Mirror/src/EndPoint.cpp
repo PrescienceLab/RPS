@@ -155,19 +155,12 @@ int EndPoint::Parse(const char *s)
 	    file=stderr;
 	  }
 	} else {
-	  if (atype==EP_TARGET) {
-	    file = fopen(tok,"wb");
-	    if (!file) {
-	      goto FAIL;
-	    }
-	  } else if (atype==EP_SOURCE) { 
-	    file = fopen(tok,"rb");
-	    if (!file) {
-	      goto FAIL;
-	    }
-	  } else {
-	    goto FAIL;
-	  }
+	  goto FAIL;
+	}
+      }
+      if (ctype==COMM_FILE) {
+	if (atype!=EP_TARGET && atype!=EP_SOURCE) { 
+	  goto FAIL;
 	}
       }
     }

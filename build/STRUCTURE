@@ -19,6 +19,7 @@ Package Structure
 All releases contain the following:
 
    $RPS_DIR            Makefile, RPS.dsw for Windows, README
+     build             Info on configuring, building, and running RPS
      JavaGUI           simple Java GUI
      Mirror            Mirror Template Library
      PredComp          Prediction Components
