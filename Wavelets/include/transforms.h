@@ -331,6 +331,23 @@ StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> {
 public:
   DynamicForwardWaveletTransform() :
     StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>() {};
+
+  DynamicForwardWaveletTransform(const unsigned numstages=1,
+				 const int lowest_outlvl=0) :
+    StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(numstages,
+								   lowest_outlvl){};
+
+  DynamicForwardWaveletTransform(const unsigned numstages,
+				 const WaveletType wavetype,
+				 const unsigned rate_l,
+				 const unsigned rate_h,
+				 const int lowest_outlvl) :
+    StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(numstages,
+								   wavetype,
+								   rate_l,
+								   rate_h,
+								   lowest_outlvl){};
+
   DynamicForwardWaveletTransform(const DynamicForwardWaveletTransform &rhs) :
     StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(rhs) {};
   virtual ~DynamicForwardWaveletTransform() {};
@@ -339,8 +356,13 @@ public:
   bool AddStage(const WaveletType wavetype,
 		const unsigned rate_l,
 		const unsigned rate_h);
-		
+
   bool RemoveStage();
+
+  bool ChangeAllWaveletTypes(const WaveletType wavetype);
+  bool ChangeStageWaveletTypes(const WaveletType wavetype,
+			       const unsigned stagenum);
+
   ostream & operator<<(ostream &os) const {
     return (os << "DynamicForwardWaveletTransform...");
   };
@@ -369,6 +391,11 @@ public:
 		const unsigned rate_h);
 
   bool RemoveStage();
+
+  bool ChangeAllWaveletTypes(const WaveletType wavetype);
+  bool ChangeStageWaveletTypes(const WaveletType wavetype,
+			       const unsigned stagenum);
+
   ostream & operator<<(ostream &os) const { 
     return (os << "DynamicReverseWaveletTransform...");
   };
@@ -1449,7 +1476,7 @@ StreamingTransformZeroFillSampleOperation(vector<OUTSAMPLE> &out,
   unsigned i, j;
   unsigned ref_index=newin[0].GetSampleIndex();
   int ref_level = newin[0].GetSampleLevel();
-  unsigned sampletime = ref_index << (ref_level == numlevels-1) ?
+  unsigned sampletime = ref_index << ((unsigned)(ref_level-lowest_inlvl) == numlevels-1) ?
     (ref_level - lowest_inlvl) : (ref_level - lowest_inlvl+1);
 
   // Incoming index structure initialized?
@@ -1467,7 +1494,7 @@ StreamingTransformZeroFillSampleOperation(vector<OUTSAMPLE> &out,
   // Add missing samples to input
   for (i=0; i<numlevels; i++) {
     for (j=0; j<zerolevels.size(); j++) {
-      if ((i == (zerolevels[j] - lowest_inlvl)) && 
+      if ((i == (unsigned)(zerolevels[j] - lowest_inlvl)) && 
 	  (sampletime == (incoming_index[i] << (i==numlevels-1) ? i : i+1))) {
 	// Zero fill a sample
 	INSAMPLE zero(0.0,i+lowest_inlvl,incoming_index[i]);
@@ -1504,8 +1531,9 @@ StreamingMixedSampleOperation(vector<OUTSAMPLE> &out,
     // Put approximation in the new input with updated level
     for (i=0; i<approx_in.size(); i++) {
       if (min_approx == approx_in[i].GetSampleLevel()) {
-	approx_in[i].SetSampleLevel(min_approx+1);
-	newin.push_back(approx_in[i]);
+	INSAMPLE samp = approx_in[i];
+	samp.SetSampleLevel(min_approx+1);
+	newin.push_back(samp);
       }
     }
     levels.push_back(min_approx+1);
@@ -1658,7 +1686,7 @@ StreamingTransformZeroFillBlockOperation
  const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock,
  const vector<int> &zerolevels)
 {
-  if (inblock.GetBlockSize() == 0) {
+  if (inblock.size() == 0) {
     return 0;
   }
 
@@ -1677,7 +1705,7 @@ StreamingTransformZeroFillBlockOperation
   // Create missing blocks that are smaller than reference blocksize
   for (i=n_blklevel; i==0; i--) {
     for (j=0; j<zerolevels.size(); j++) {
-      if (i + lowest_inlvl == zerolevels[j]) {
+      if ( (int)(lowest_inlvl + i) == zerolevels[j]) {
 	ref_blksize *= 2;
 	CREATE_ZERO_BLOCK(newinblock,
 			  ref_blksize,
@@ -1689,10 +1717,10 @@ StreamingTransformZeroFillBlockOperation
 
   // Create missing blocks bigger than minindex
   ref_blksize=newinblock[0].GetBlockSize();
-  for (i=nblk_level+1; i<numlevels; i++) {
+  for (i=n_blklevel+1; i<numlevels; i++) {
     for (j=0; j<zerolevels.size(); j++) {
       ref_blksize = (i==numlevels-1) ? ref_blksize : ref_blksize >> 1;
-      if ((ref_blksize) && (i + lowest_inlvl == zerolevels[j])) {
+      if ((ref_blksize) && ( (int)(i + lowest_inlvl) == zerolevels[j])) {
 	CREATE_ZERO_BLOCK(newinblock,
 			  ref_blksize,
 			  incoming_index[i],
@@ -1730,8 +1758,9 @@ StreamingMixedBlockOperation
     // Put approximation in the new input block with updated level
     for (i=0; i<approx_block.size(); i++) {
       if (min_approx == approx_block[i].GetBlockLevel()) {
-	approx_block[i].SetBlockLevel(min_approx+1);
-	newinblock.push_back(approx_block[i]);
+	WaveletOutputSampleBlock<INSAMPLE> wosb = approx_block[i];
+	wosb.SetBlockLevel(min_approx+1);
+	newinblock.push_back(wosb);
       }
     }
     levels.push_back(min_approx+1);
@@ -1880,7 +1909,7 @@ InvertSignalSpec(vector<int> &inversion, const vector<int> &spec)
   for (i=0; i<numlevels; i++) {
     in_levels = false;
     for (j=0; j<spec.size(); j++) {
-      if ((lowest_inlvl + i) == spec[j]) {
+      if ((lowest_inlvl + (int)i) == spec[j]) {
 	in_levels = true;
 	break;
       }
@@ -1965,6 +1994,21 @@ RemoveStage()
   this->numlevels = this->numstages+1;
   return true;
 }
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeAllWaveletTypes(const WaveletType wavetype)
+{
+
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeStageWaveletTypes(const WaveletType wavetype, const unsigned stagenum)
+{
+
+}
+
 
 /********************************************************************************
  * 
@@ -2063,6 +2107,20 @@ RemoveStage()
   this->numstages--;
   this->numlevels = this->numstages+1;
   return true;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeAllWaveletTypes(const WaveletType wavetype)
+{
+
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeStageWaveletTypes(const WaveletType wavetype, const unsigned stagenum)
+{
+
 }
 
 /********************************************************************************

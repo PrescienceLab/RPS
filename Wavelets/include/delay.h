@@ -17,6 +17,10 @@ bool CalculateWaveletDelayBlock(const unsigned numcoefs,
 				const unsigned numlevels, 
 				int* delay_vals);
 
+bool CalculateMRADelayBlock(const unsigned numcoefs,
+			    const unsigned numlevels,
+			    int* delay_vals);
+
 bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
 				   const unsigned numlevels,
 				   const unsigned twoband_delay,

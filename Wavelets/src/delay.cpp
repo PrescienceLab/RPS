@@ -29,6 +29,36 @@ bool CalculateWaveletDelayBlock(const unsigned numcoefs,
   return true;
 };
 
+bool CalculateMRADelayBlock(const unsigned numcoefs, 
+			    const unsigned numlevels, 
+			    int* delay_vals)
+{
+  if (!delay_vals) {
+    return false;
+  }
+
+  switch (numlevels) {
+  case 0:
+    return false;
+  case 1:
+    delay_vals[0]=0;
+
+  case 2:
+    delay_vals[numlevels-1] = 0;
+    delay_vals[numlevels-2] = numcoefs;;
+    break;
+
+  default:
+    delay_vals[numlevels-1] = 0;
+    delay_vals[numlevels-2] = numcoefs;
+    for (int i=numlevels-3; i>=0; i--) {
+      delay_vals[i] = numcoefs + 2*delay_vals[i+1] - 2;
+    }
+  }
+  return true;
+};
+
+
 bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
 				   const unsigned numlevels,
 				   const unsigned twoband_delay,

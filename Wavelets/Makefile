@@ -26,16 +26,27 @@ LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME)
 
 LD2FLAGS =  
 
-EXECLIST = setup_wavelet_delay \
-	   sample_static_sfwt \
-	   block_static_sfwt \
-	   sample_static_mixed_sfwt \
-	   block_static_mixed_sfwt \
-	   sample_static_srwt \
-	   block_static_srwt \
-	   sample_static_streaming_test \
-	   block_static_streaming_test
-
+EXECLIST = setup_wavelet_delay			\
+	   sample_static_sfwt			\
+	   block_static_sfwt 			\
+	   sample_static_mixed_sfwt		\
+	   block_static_mixed_sfwt		\
+	   sample_static_srwt			\
+	   block_static_srwt			\
+	   sample_static_mixed_srwt		\
+	   block_static_mixed_srwt		\
+	   sample_static_streaming_test		\
+	   block_static_streaming_test		\
+	   sample_dynamic_sfwt			\
+	   block_dynamic_sfwt			\
+	   sample_dynamic_mixed_sfwt		\
+	   block_dynamic_mixed_sfwt		\
+	   sample_dynamic_srwt			\
+	   block_dynamic_srwt			\
+	   sample_dynamic_mixed_srwt		\
+	   block_dynamic_mixed_srwt		\
+	   sample_dynamic_streaming_test	\
+	   block_dynamic_streaming_test
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

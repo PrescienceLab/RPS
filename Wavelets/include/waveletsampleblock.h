@@ -28,6 +28,9 @@ protected:
 public:
   WaveletOutputSampleBlock(const int level=0);
   WaveletOutputSampleBlock(const WaveletOutputSampleBlock &rhs);
+  WaveletOutputSampleBlock(const deque<SAMPLETYPE> &input, const unsigned index) :
+    OutputSampleBlock<SAMPLETYPE>(input,index) {};
+
   virtual ~WaveletOutputSampleBlock();
 
   virtual WaveletOutputSampleBlock* clone() const;
