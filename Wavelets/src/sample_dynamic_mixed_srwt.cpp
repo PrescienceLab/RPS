@@ -137,8 +137,6 @@ int main(int argc, char *argv[])
     outstr.tie(&outfile);
   }
 
-  unsigned i;
-
   SignalSpec sigspec;
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
@@ -146,71 +144,104 @@ int main(int argc, char *argv[])
   // Optimize the operations
   SignalSpec optim_spec;
   unsigned optim_stages;
-  bool transform=StructureOptimizer(optim_spec, optim_stages, numstages, 0, sigspec);
+  bool transform=StructureOptimizer(optim_spec,
+				    optim_stages,
+				    MIN(numstages, numstages_new),
+				    0,
+				    sigspec);
 
-  // Parameterize and instantiate the delay block
+  // Parameterize and instantiate delay block init
   unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[numstages];
-  CalculateMRADelayBlock(wtcoefnum, numstages, delay);
-  DelayBlock<wosd> approx_dlyblk(numstages, 0, delay);
-  DelayBlock<wosd> detail_dlyblk(numstages, 0, delay);
+  int *delay = new int[optim_stages+1];
+  CalculateWaveletDelayBlock(wtcoefnum, optim_stages+1, delay);
 
-  if (!flat) {
-    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
-  }
+  unsigned wtcoefnum_new = numberOfCoefs[wtnew];
+  int *delay_new = new int[optim_stages+1];
+  CalculateWaveletDelayBlock(wtcoefnum_new, optim_stages+1, delay_new);
+
+  DelayBlock<wosd> dlyblk(optim_stages+1, 0, delay);
 
   // Instantiate a static reverse wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
+  DynamicReverseWaveletTransform<double, wisd, wosd> drwt(optim_stages,wt,2,2,0);
 
   // Create buffers
   vector<wosd> approxcoefs;
   vector<wosd> detailcoefs;
-  vector<wosd> approx_dlysamples;
-  vector<wosd> detail_dlysamples;
+  vector<wosd> wavecoefs;
+  vector<wosd> dlysamples;
   vector<wisd> currentoutput;
   vector<wisd> reconst;
 
-  unsigned sampletime, numsamples;
-  char mratype;
-  int levelnum;
-  double sampvalue;
-  map<int, unsigned, less<int> > indices;
-  while (!cin.eof()) {
-    cin >> sampletime >> mratype >> numsamples;
-    for (unsigned i=0; i<numsamples; i++) {
-      cin >> levelnum >> sampvalue;
-      if (indices.find(levelnum) == indices.end()) {
-	indices[levelnum] = 0;
-      } else {
-	indices[levelnum] += 1;
-      }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      if (mratype == 'A') {
-	approxcoefs.push_back(sample);
-      } else if (mratype == 'D') {
-	detailcoefs.push_back(sample);
-      } else {
-	cerr << "sample_static_mixed_srwt: Invalid MRA type.\n";
-      }
+  // Dynamic bookkeeping
+  bool orig_struct=true;
+  int current_interval=0;
+
+  FlatParser fp;
+  while (fp.ParseMRACoefsSample(optim_spec, approxcoefs, detailcoefs, cin)) {
+
+    // Transfer the coefficients into wavecoefs and change level of approx
+    if (approxcoefs.size()) {
+      wosd asamp=approxcoefs[0];
+      asamp.SetSampleLevel(asamp.GetSampleLevel()+1);
+      wavecoefs.push_back(asamp);
+    }
+    for (unsigned i=0; i<detailcoefs.size(); i++) {
+      wavecoefs.push_back(detailcoefs[i]);
     }
 
-    approx_dlyblk.StreamingSampleOperation(approx_dlysamples, approxcoefs);
-    detail_dlyblk.StreamingSampleOperation(detail_dlysamples, detailcoefs);
+    // Toggle the structure if change interval expired
+    if (++current_interval == change_interval) {
+      bool success1 = (orig_struct) ?
+	drwt.ChangeStructure(optim_stages, wtnew) :
+	drwt.ChangeStructure(optim_stages, wt);
 
-    if (srwt.StreamingMixedSampleOperation(currentoutput, 
-					   approx_dlysamples,
-					   detail_dlysamples,
-					   sigspec)) {
-      for (unsigned j=0; j<currentoutput.size(); j++) {
-	reconst.push_back(currentoutput[j]);
+      bool success2 = (orig_struct) ?
+	dlyblk.ChangeDelayConfig(optim_stages+1, 0, delay_new) :
+	dlyblk.ChangeDelayConfig(optim_stages+1, 0, delay);
+
+      if (!success1 && !success2) {
+	cerr << "sample_dynamic_srwt: Structure change failure.\n";
       }
-      approxcoefs.clear();
-      detailcoefs.clear();
+      current_interval=0;
+      (orig_struct) ? (orig_struct=false) : (orig_struct=true);
     }
+
+    dlyblk.StreamingSampleOperation(dlysamples, wavecoefs);
+
+    if (transform) {
+      if (drwt.StreamingTransformSampleOperation(currentoutput, dlysamples)) {
+	for (unsigned j=0; j<currentoutput.size(); j++) {
+	  reconst.push_back(currentoutput[j]);
+	}
+      }
+    } else {
+      vector<int> zerospec;
+      vector<int> specs;
+      FlattenSignalSpec(specs, optim_spec);
+      InvertSignalSpec(zerospec, specs, optim_stages+1, 0);
+      if (drwt.StreamingTransformZeroFillSampleOperation(currentoutput,
+							 dlysamples,
+							 zerospec)) {
+	for (unsigned j=0; j<currentoutput.size(); j++) {
+	  reconst.push_back(currentoutput[j]);
+	}
+      }
+    }
+    approxcoefs.clear();
+    detailcoefs.clear();
+    wavecoefs.clear();
+  }
+
+  if (!flat) {
+    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,optim_stages)-1;
+    if (sampledelay <= (unsigned)change_interval) {
+      *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
+    } else {
+      *outstr.tie() << "The real-time system delay cannot be calculated." << endl;
+    }
+    *outstr.tie() << endl;
+    *outstr.tie() << "Index\tValue\n" << endl;
+    *outstr.tie() << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.size(); i++) {
@@ -221,6 +252,10 @@ int main(int argc, char *argv[])
   if (delay != 0) {
     delete[] delay;
     delay=0;
+  }
+  if (delay_new != 0) {
+    delete[] delay_new;
+    delay_new=0;
   }
 
   return 0;

@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     outstr.tie(&outfile);
   }
 
-  // Parameterize and instantiate the delay block one
+  // Parameterize and instantiate delay block init
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages+1];
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
