@@ -5,6 +5,7 @@
 #include <deque>
 #include <iostream>
 
+#include "waveletinfo.h"
 #include "filter.h"
 #include "sample.h"
 #include "sampleblock.h"
@@ -12,20 +13,37 @@
 #include "jitterhelper.h"
 #include "util.h"
 
-void CalculateWaveletDelayBlock(unsigned numcoefs, unsigned numlevels, int *delay_vals) {
-  delay_vals[numlevels-1] = 0;
-  delay_vals[numlevels-2] = 0;
-  delay_vals[numlevels-3] = numcoefs;
-  for (int i=numlevels-4; i>=0; i--) {
-    delay_vals[i] = numcoefs + 2*delay_vals[i+1] - 2;
-  } 
+bool CalculateWaveletDelayBlock(unsigned numcoefs, unsigned numlevels, int* delay_vals) {
+  if (!delay_vals) {
+    return false;
+  }
+
+  switch (numlevels) {
+  case 0:
+  case 1:
+    return false;
+
+  case 2:
+    delay_vals[numlevels-1] = 0;
+    delay_vals[numlevels-2] = 0;
+    break;
+
+  default:
+    delay_vals[numlevels-1] = 0;
+    delay_vals[numlevels-2] = 0;
+    delay_vals[numlevels-3] = numcoefs;
+    for (int i=numlevels-4; i>=0; i--) {
+      delay_vals[i] = numcoefs + 2*delay_vals[i+1] - 2;
+    }
+  }
+  return true;
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class DelayBlock {
 private:
   unsigned numlevels;
-  int      *delay_vals;
+  int*     delay_vals;
 
   vector<FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> *> dbanks;
   vector<IndexManager *> indexmgrs;
@@ -34,8 +52,8 @@ private:
   vector<INSAMPLE> jitter_buffer;
 
 public:
-  DelayBlock(unsigned numlevels=1, 
-	     int      *delay_vals=0, 
+  DelayBlock(unsigned numlevels=2, 
+	     int*     delay_vals=0, 
 	     unsigned backlog=5);
   DelayBlock(const DelayBlock &rhs);
   virtual ~DelayBlock();
@@ -48,7 +66,7 @@ public:
   void SetDelayValueOfLevel(unsigned level, unsigned delay);
 
   bool ChangeDelayConfig(unsigned numlevels,
-			 int      *delay_vals, 
+			 int*     delay_vals, 
 			 unsigned backlog);
 
   void ClearLevelDelayLine(unsigned level);
@@ -64,12 +82,12 @@ public:
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-DelayBlock(unsigned numlevels=1, int *delay_vals=0, unsigned backlog=5) :
+DelayBlock(unsigned numlevels=2, int* delay_vals=0, unsigned backlog=5) :
   jitterhelp(backlog)
 {
-  if (numlevels == 0) {
-    // Need at least one level
-    this->numlevels = 1;
+  if ((numlevels == 0) || (numlevels > MAX_STAGES+1)) {
+    // Need at least two level
+    this->numlevels = 2;
   } else {
     this->numlevels = numlevels;
   }
@@ -77,18 +95,25 @@ DelayBlock(unsigned numlevels=1, int *delay_vals=0, unsigned backlog=5) :
   // Initialize the delay value vector
   unsigned i;
   this->delay_vals = new int[numlevels];
-  for (i=0; i<numlevels; i++) {
-    this->delay_vals[i] = delay_vals[i];
+
+  if (delay_vals == 0) {
+    for (i=0; i<numlevels; i++) {
+      this->delay_vals[i] = 0;
+    }
+  } else {
+    for (i=0; i<numlevels; i++) {
+      this->delay_vals[i] = delay_vals[i];
+    }
   }
 
   // Initialize the delay filters
   vector<double> coefs;
   for (i=0; i<numlevels; i++) {
     coefs.clear();
-    if (delay_vals[i] == 0) {
+    if (this->delay_vals[i] == 0) {
       coefs.push_back(1.0);
     } else {
-      vector<double> tcoefs(delay_vals[i]-1, 0);
+      vector<double> tcoefs(this->delay_vals[i]-1, 0);
       tcoefs.push_back(1.0);
       coefs = tcoefs;
     } 
@@ -115,7 +140,7 @@ DelayBlock(const DelayBlock &rhs) :
   // Initialize the delay value vector
   this->delay_vals = new int[numlevels];
   for (int i=0; i<numlevels; i++) {
-    this->delay_vals[i] = delay_vals[i];
+    this->delay_vals[i] = rhs.delay_vals[i];
   }
 }
 
@@ -123,13 +148,16 @@ template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ~DelayBlock()
 {
-  delete[] delay_vals;
+  if (delay_vals != 0) {
+    delete[] delay_vals;
+    delay_vals=0;
+  }
 
   FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfir;
   IndexManager* pim;
   for (unsigned i=0; i<numlevels; i++) {
-    pfir = dbanks[i]; delete pfir;
-    pim = indexmgrs[i]; delete pim;
+    pfir = dbanks[i]; CHK_DEL(pfir);
+    pim = indexmgrs[i]; CHK_DEL(pim);
   }
   dbanks.clear();
   indexmgrs.clear();
@@ -182,9 +210,9 @@ SetDelayValueOfLevel(unsigned level, unsigned delay)
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ChangeDelayConfig(unsigned numlevels, int *delay_vals, unsigned backlog)
+ChangeDelayConfig(unsigned numlevels, int* delay_vals, unsigned backlog)
 {
-  if (numlevels == 0) {
+  if ((numlevels == 0) || (numlevels > MAXSTAGES + 1) || (delay_vals == 0)) {
     return false;
   }
 
@@ -198,10 +226,10 @@ ChangeDelayConfig(unsigned numlevels, int *delay_vals, unsigned backlog)
       this->delay_vals[i] = delay_vals[i];      
 
       vector<double> coefs;
-      if (delay_vals[i] == 0) {
+      if (this->delay_vals[i] == 0) {
 	coefs.push_back(1.0);
       } else {
-	vector<double> tcoefs(delay_vals[i]-1, 0);
+	vector<double> tcoefs(this->delay_vals[i]-1, 0);
 	tcoefs.push_back(1.0);
 	coefs = tcoefs;
       }
@@ -209,21 +237,19 @@ ChangeDelayConfig(unsigned numlevels, int *delay_vals, unsigned backlog)
       indexmgrs[i]->ClearIndexSetFlag();
     }
   } else {
-    delete[] this->delay_vals;
+    if (this->delay_vals != 0) {
+      delete[] this->delay_vals;
+      this->delay_vals=0;
+    }
 
     for (i=0; i<this->numlevels; i++) {
-      delete dbanks[i];
-      delete indexmgrs[i];
+      CHK_DEL(dbanks[i]);
+      CHK_DEL(indexmgrs[i]);
     }
     dbanks.clear();
     indexmgrs.clear();
 
-    if (numlevels == 0) {
-      // Need at least one level
-      this->numlevels = 1;
-    } else {
-      this->numlevels = numlevels;
-    }
+    this->numlevels = numlevels;
 
     // Initialize the delay value vector
     this->delay_vals = new int[numlevels];
@@ -235,10 +261,10 @@ ChangeDelayConfig(unsigned numlevels, int *delay_vals, unsigned backlog)
     vector<double> coefs;
     for (i=0; i<numlevels; i++) {
       coefs.clear();
-      if (delay_vals[i] == 0) {
+      if (this->delay_vals[i] == 0) {
 	coefs.push_back(1.0);
       } else {
-	vector<double> tcoefs(delay_vals[i]-1, 0);
+	vector<double> tcoefs(this->delay_vals[i]-1, 0);
 	tcoefs.push_back(1.0);
 	coefs = tcoefs;
       } 

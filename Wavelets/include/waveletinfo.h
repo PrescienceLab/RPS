@@ -3,7 +3,7 @@
 
 // Increment as a new wavelet type is added, also update coefTable and 
 //  numCoefTable with the coefficients and number of coefficients
-#define NUM_WAVELET_TYPES 10
+const int NUM_WAVELET_TYPES=10;
 
 enum WaveletType {DAUB2,
 		  DAUB4,
@@ -15,5 +15,7 @@ enum WaveletType {DAUB2,
 		  DAUB16,
 		  DAUB18,
 		  DAUB20};
+
+const unsigned MAX_STAGES=20;
 
 #endif

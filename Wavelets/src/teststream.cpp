@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 
+
 #include "waveletsample.h"
 #include "waveletsampleblock.h"
 #include "transforms.h"
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
 
   // Parameterize the delay block
   unsigned wtcoefnum = numcoefs[type];
+  cout << "The number of levels: " << numstages+1 << endl;
   int *delay = new int[numstages+1];
   unsigned backlog = 0; // Not expecting jitter
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
@@ -95,8 +97,6 @@ int main(int argc, char *argv[])
   // Instantiate a delay block
   DelayBlock<double, WaveletOutputSample, WaveletOutputSample>
     dlyblk(numstages+1, delay, backlog);
-
-  delete[] delay;
 
   // Instantiate a static forward wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
@@ -113,6 +113,11 @@ int main(int argc, char *argv[])
   cout << "The final output samples: " << endl;
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingSampleOperation(outsamples, samples[i]);
+
+    for (unsigned j=0; j<outsamples.size(); j++) {
+      cout << "OUT: " << outsamples[j] << endl;
+    }
+
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
 
     if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
@@ -123,5 +128,11 @@ int main(int argc, char *argv[])
     outsamples.clear();
     delaysamples.clear();
   }
+
+  if (delay != 0) {
+    delete[] delay;
+    delay=0;
+  }
+
   return 0;
 }

@@ -105,23 +105,31 @@ int main(int argc, char *argv[])
     outsamples.clear();
   }
 
+  cout << "The size of each level:" << endl;
   for (i=0; i<numlevels; i++) {
-    cout << "Level " << i << "\tIndex\t";
-  }
-  cout << endl;
-  for (i=0; i<numlevels; i++) {
-    cout << "-------\t-----\t";
+    cout << "\tLevel " << i << " size = " << levels[i]->size() << endl;
   }
   cout << endl;
 
-  for (i=0; i<levels[0]->size(); i++) {
+  cout << "Index     ";
+  for (i=0; i<numlevels; i++) {
+    cout << "Level " << i << "        " ;
+  }
+  cout << endl << "-----     ";
+  for (i=0; i<numlevels; i++) {
+    cout << "-------        ";
+  }
+  cout << endl;
+
+  unsigned loopsize = levels[0]->size();
+  for (i=0; i<loopsize; i++) {
+    cout << i << "\t";
 
     for (unsigned j=0; j<numlevels; j++) {
       if (!levels[j]->empty()) {
 	WaveletOutputSample wos;
 	wos = levels[j]->back();
 	cout << wos.GetSampleValue() << "\t";
-	cout << wos.GetSampleIndex() << "\t";
 	levels[j]->pop_back();
       }
     }
@@ -129,7 +137,7 @@ int main(int argc, char *argv[])
   }
 
   for (i=0; i<numlevels; i++) {
-    delete levels[i];
+    CHK_DEL(levels[i]);
   }
   levels.clear();
 

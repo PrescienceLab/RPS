@@ -4,15 +4,13 @@
 #include <vector>
 #include <deque>
 
+#include "waveletinfo.h"
 #include "stage.h"
 #include "sample.h"
 #include "sampleblock.h"
 #include "indexmanager.h"
 #include "jitterhelper.h"
 #include "util.h"
-
-// This is to limit static transforms to 20 stages
-const unsigned MAX_STAGES = 20;
 
 /********************************************************************************
  *
@@ -165,12 +163,12 @@ StaticForwardWaveletTransform(unsigned numstages=1, int lowest_outlvl=0)
   } else {
     this->numstages = numstages;
   }
-  this->numlevels = numstages + 1;
+  this->numlevels = this->numstages + 1;
   this->lowest_outlvl = lowest_outlvl;
   
   int outlvl = lowest_outlvl;
   unsigned i;
-  for (i=0; i<numstages-1; i++) {
+  for (i=0; i<this->numstages-1; i++) {
     ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfws = 
       new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>();
     pfws->SetOutputLevelHigh(outlvl++);
@@ -216,12 +214,12 @@ StaticForwardWaveletTransform(unsigned    numstages,
   } else {
     this->numstages = numstages;
   }
-  this->numlevels = numstages + 1;
+  this->numlevels = this->numstages + 1;
   this->lowest_outlvl = lowest_outlvl;
   
   int outlvl = lowest_outlvl;
   unsigned i;
-  for (i=0; i<numstages-1; i++) {
+  for (i=0; i<this->numstages-1; i++) {
     ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfws = 
       new ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(wavetype, 
 							       rate_l, 
@@ -260,11 +258,11 @@ StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 
   unsigned i;
   for (i=0; i<numstages; i++) {
-    pfws = stages[i]; delete pfws;
+    pfws = stages[i]; CHK_DEL(pfws);
   }
   for (i=0; i<numlevels; i++) {
-    pdos = outsamples[i]; delete pdos;
-    psbo = outblocks[i]; delete psbo;
+    pdos = outsamples[i]; CHK_DEL(pdos);
+    psbo = outblocks[i]; CHK_DEL(psbo);
   }
   stages.clear();
   outsamples.clear();
@@ -310,11 +308,11 @@ ChangeNumberStages(unsigned numstages)
 
   unsigned i;
   for (i=0; i<this->numstages; i++) {
-    pfws = stages[i]; delete pfws;
+    pfws = stages[i]; CHK_DEL(pfws);
   }
   for (i=0; i<this->numlevels; i++) {
-    pdos = outsamples[i]; delete pdos;
-    psbo = outblocks[i]; delete psbo;
+    pdos = outsamples[i]; CHK_DEL(pdos);
+    psbo = outblocks[i]; CHK_DEL(psbo);
   }
   stages.clear();
   outsamples.clear();
@@ -366,11 +364,11 @@ ChangeNumberStages(unsigned    numstages,
 
   unsigned i;
   for (i=0; i<this->numstages; i++) {
-    pfws = stages[i]; delete pfws;
+    pfws = stages[i]; CHK_DEL(pfws);
   }
   for (i=0; i<this->numlevels; i++) {
-    pdos = outsamples[i]; delete pdos;
-    psbo = outblocks[i]; delete psbo;
+    pdos = outsamples[i]; CHK_DEL(pdos);
+    psbo = outblocks[i]; CHK_DEL(psbo);
   }
   stages.clear();
   outsamples.clear();
@@ -592,7 +590,7 @@ StaticReverseWaveletTransform(unsigned numstages=1, unsigned backlog=5) :
   } else {
     this->numstages = numstages;
   }
-  this->numlevels = numstages+1;
+  this->numlevels = this->numstages+1;
 
   unsigned i;
   for (i=0; i<numlevels; i++) {
@@ -603,7 +601,7 @@ StaticReverseWaveletTransform(unsigned numstages=1, unsigned backlog=5) :
     indexmgrs.push_back(pim);
   }
 
-  for (i=0; i<numstages; i++) {
+  for (i=0; i<this->numstages; i++) {
     ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* prws = 
       new ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>();
     stages.push_back(prws);
@@ -632,7 +630,7 @@ StaticReverseWaveletTransform(unsigned    numstages,
     this->numstages = numstages;
   }
   
-  this->numlevels = numstages+1;
+  this->numlevels = this->numstages+1;
 
   unsigned i;
   for (i=0; i<numlevels; i++) {
@@ -643,7 +641,7 @@ StaticReverseWaveletTransform(unsigned    numstages,
     indexmgrs.push_back(pim);
   }
 
-  for (i=0; i<numstages; i++) {
+  for (i=0; i<this->numstages; i++) {
     ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* prws = 
       new ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(wavetype, 
 							       rate_l, 
@@ -658,12 +656,12 @@ StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 {
   unsigned i;
   for (i=0; i<numlevels; i++) {
-    delete insignals[i];
-    delete indexmgrs[i];
+    CHK_DEL(insignals[i]);
+    CHK_DEL(indexmgrs[i]);
   }
 
   for (unsigned i=0; i<numstages; i++) {
-    delete stages[i];
+    CHK_DEL(stages[i]);
   }
   insignals.clear();
   stages.clear();
@@ -702,12 +700,12 @@ ChangeNumberStages(unsigned numstages)
 
   unsigned i;
   for (i=0; i<this->numlevels; i++) {
-    delete insignals[i];
-    delete indexmgrs[i];
+    CHK_DEL(insignals[i]);
+    CHK_DEL(indexmgrs[i]);
   }
   
   for (i=0; i<this->numstages; i++) {
-    delete stages[i];
+    CHK_DEL(stages[i]);
   }
 
   insignals.clear();
@@ -748,12 +746,12 @@ ChangeNumberStages(unsigned    numstages,
   
   unsigned i;
   for (i=0; i<this->numlevels; i++) {
-    delete insignals[i];
-    delete indexmgrs[i];
+    CHK_DEL(insignals[i]);
+    CHK_DEL(indexmgrs[i]);
   }
 
   for (i=0; i<this->numstages; i++) {
-    delete stages[i];
+    CHK_DEL(stages[i]);
   }
   insignals.clear();
   indexmgrs.clear();
