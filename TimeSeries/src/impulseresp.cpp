@@ -28,7 +28,7 @@ void usage(const char *n)
 
   fprintf(stdout,
 	  "Output the impulse or step response of a model fitted to given data\n\n"
-	  "usage: %s inputfile fitfirst fitnum testnum numahead model\n\n"
+	  "usage: %s inputfile resplen model\n\n"
 	  "inputfile = 1 or 2 column ascii trace file\n"
 	  "resplen   = length of response to compute - prepend with 's' for step response\n"
 	  "model     = model, as below\n\n%s\n%s\n",n,s,b);

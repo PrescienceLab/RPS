@@ -39,7 +39,7 @@ or die "usage: start_hostloadpred.pl [--period=period] [--rateport=rateport] [--
 
 $COMMAND = "(hostloadpred server:tcp:$rateport target:stdio:stdout $period $numfit $numpred $mintest $maxtest $maxabserr $maxerrmissest $model | predbuffer $bufferdepth source:stdio:stdin server:tcp:$bufferport) > /dev/null 2> /dev/null &";
 
-print STDERR "$COMMAND\n";
+#print STDERR "$COMMAND\n";
 
 system "$COMMAND";
 

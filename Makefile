@@ -140,6 +140,7 @@ final_fixup: $(PROJS) shared
 	-rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/libRPS.a
 	$(AR) ruv $(RPS_DIR)/lib/$(ARCH)/$(OS)/libRPS.a $(RPS_DIR)/obj/$(ARCH)/$(OS)/*.o
 	$(RANLIB) $(RPS_DIR)/lib/$(ARCH)/$(OS)/libRPS.a
+	$(STRIP) `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS`
 
 shared: $(PROJS)
 	cp `find $(SHARED_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
@@ -161,7 +162,7 @@ GetFlowBW: force
 Sensors : $(HGLA_DEP) $(HGFB_DEP) force
 	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
-TimeSeries: $(HFD_DEP) force
+TimeSeries: $(HFD_DEP) $(HT_DEP) force
 	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp `find $(TS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(TS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -228,7 +229,7 @@ Spin: $(HMT_DEP) $(HTS_DEP) $(HWA_DEP) $(HRPSI_DEP) force
 	cp `find $(SPIN_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 	cp `find $(SPIN_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
-Trace: $(HGLA_DEP) $(HSP_DEP) force
+Trace:  force
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(TRACE_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(TRACE_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)

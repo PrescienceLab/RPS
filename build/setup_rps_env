@@ -1,7 +1,7 @@
 export RPSDIR=$RPS_DIR
 export PPSDIR=$RPSDIR
 
-export PATH=${RPSDIR}/Scripts:${RPSDIR}/bin/${RPS_ARCH}/${RPS_OS}:$PATH
+export PATH=${RPSDIR}/Scripts:${RPSDIR}/bin/${RPS_ARCH}/${RPS_OS}:${RPSDIR}/ResearchScripts:$PATH
 
 
 export HOSTLOADPREDCTRLPORT=5000

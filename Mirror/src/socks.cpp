@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #if defined(__sparc__)
 #include <sys/filio.h>
 #endif
@@ -98,7 +99,7 @@ unsigned ToIPAddress(char *hostname)
 }
 
 
-#define WELL_KNOWN_HOST "www.cnn.com"
+#define WELL_KNOWN_HOST ((char*)"www.cnn.com")
 #define WELL_KNOWN_PORT 80
 
 unsigned GetMyIPAddress()
@@ -106,6 +107,12 @@ unsigned GetMyIPAddress()
 #if 1
   static unsigned adx=0;
   static bool setup=false;
+  char *host;
+  short port;
+
+  host = getenv("RPS_WELL_KNOWN_HOST") ? getenv("RPS_WELL_KNOWN_HOST") : WELL_KNOWN_HOST;
+  port = getenv("RPS_WELL_KNOWN_PORT") ? atoi(getenv("RPS_WELL_KNOWN_PORT")) : WELL_KNOWN_PORT;
+
 
   if (setup) {
     return adx;
@@ -113,14 +120,16 @@ unsigned GetMyIPAddress()
     // Connect to a well known machine and check out our socket's address
     int fd = CreateAndSetupTcpSocket();
     if (fd) {
-      if (ConnectToHost(fd,WELL_KNOWN_HOST,WELL_KNOWN_PORT)) {
+      if (ConnectToHost(fd,host,port)) {
 	CLOSE(fd);
+	setup=true;
 	return adx;
       }
       struct sockaddr_in glarpy_sa;
       SOCKOPT_LEN_TYPE len = sizeof(glarpy_sa);
       if (getsockname(fd,(struct sockaddr*)&glarpy_sa,&len)) {
 	CLOSE(fd);
+	setup=true;
 	return adx;
       }
       assert(glarpy_sa.sin_family == AF_INET);

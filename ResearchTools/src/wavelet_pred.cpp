@@ -1,6 +1,8 @@
 #include "TimeSeries.h"
 #include "Wavelets.h"
 
+#include "ioutil.h"
+
 /*
  
  Input File Format:
