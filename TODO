@@ -9,29 +9,6 @@ TimeSeries
 
 Add RPS Banner to all codes
 
-RPSInterface
-
-void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const
-{
-  // WRITE THIS
-}
-
-void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m)
-{
-  // WRITE THIS
-}
-
-void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const
-{
-  // WRITE THIS
-}
-
-void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m)
-{
-  // WRITE THIS
-}
-
-
 PredComp
   => New tools
     => Low pass (Measurement->Measurement
