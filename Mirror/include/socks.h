@@ -2,7 +2,6 @@
 #define _socks
 
 #if defined(WIN32) && !defined(__CYGWIN__)
-#warning "including windows"
 #include <windows.h>
 #include <winsock.h>
 #else

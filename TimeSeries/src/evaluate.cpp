@@ -55,4 +55,5 @@ int main(int argc, char *argv[])
   }
   
   CHK_DEL(stats);
+  return 0;
 }

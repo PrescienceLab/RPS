@@ -1,7 +1,7 @@
 ./obj/I386/WIN32/LoadTrace.o: ./src/LoadTrace.cpp include/LoadTrace.h
 ./obj/I386/WIN32/genload.o: ./src/genload.cpp include/LoadTrace.h \
  /home/pdinda/Codes/RPS-development/Spin/include/timing.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
  /home/pdinda/Codes/RPS-development/Spin/include/apply.h
 ./obj/I386/WIN32/defilter_trace.o: ./src/defilter_trace.cpp include/LoadTrace.h
 ./obj/I386/WIN32/select_from_binary_trace_file.o: \

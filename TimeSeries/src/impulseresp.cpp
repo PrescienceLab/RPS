@@ -134,6 +134,8 @@ int main(int argc, char *argv[])
    CHK_DEL(model);
    CHK_DEL(pred);
    CHK_DEL_MAT(seq);
+
+   return 0;
    
 }
 

@@ -28,7 +28,7 @@ LIBOBJS = $(foreach m, $(LIBOBJSLIST), $(OBJDIR)/$(m))
 
 OBJS = $(LIBOBJS) $(MAINOBJS)
 
-SRCS = $(foreach m, $(OBJSLIST:.o=.c), $(SRCDIR)/$(m))
+SRCS = $(foreach m, $(OBJSLIST:.o=.cpp), $(SRCDIR)/$(m))
 
 
 CFLAGS = -I$(INCDIR) 
@@ -75,7 +75,7 @@ $(EXECS):$(BINDIR)/%:$(OBJDIR)/%.o
 	$(MakeExeAction)
 
 
-$(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$(@F)
 
 .dependencies.$(ARCH).$(OS) : $(SRCS)

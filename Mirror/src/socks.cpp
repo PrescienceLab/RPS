@@ -199,7 +199,7 @@ int CreateAndSetupUdpSocket(int bufsize,bool nonblocking)
 
   if (nonblocking) {
     val=1;
-    if (ioctl(mysocket,FIONBIO,&val)) {
+    if (IOCTL(mysocket,FIONBIO,&val)) {
       CLOSE(mysocket);
       return -1;
     }
@@ -251,7 +251,7 @@ int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
 
   if (nonblocking) {
     val=1;
-    if (ioctl(mysocket,FIONBIO,&val)) {
+    if (IOCTL(mysocket,FIONBIO,&val)) {
       CLOSE(mysocket);
       return -1;
     }
@@ -295,7 +295,7 @@ int CreateAndSetupUnixDomainSocket(int bufsize, bool nonblocking)
 
   if (nonblocking) {
     val=1;
-    if (ioctl(mysocket,FIONBIO,&val)) {
+    if (IOCTL(mysocket,FIONBIO,&val)) {
       CLOSE(mysocket);
       return -1;
     }
@@ -305,7 +305,7 @@ int CreateAndSetupUnixDomainSocket(int bufsize, bool nonblocking)
 }
 
 
-int SetNoDelaySocket(const int fd, bool nodelay=true)
+int SetNoDelaySocket(const int fd, bool nodelay)
 {
   int val = nodelay == true;
 

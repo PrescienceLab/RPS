@@ -238,5 +238,6 @@ int main(int argc, char *argv[])
    CHK_DEL_MAT(variances);
    CHK_DEL_MAT(seq);
    
+   return 0;
 }
 

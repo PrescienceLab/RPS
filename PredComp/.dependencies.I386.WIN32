@@ -1,7 +1,7 @@
 ./obj/I386/WIN32/loadclient.o: ./src/loadclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -48,8 +48,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/predserver.o: ./src/predserver.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -97,8 +97,8 @@
  include/predserver_core.h
 ./obj/I386/WIN32/predserver_core.o: ./src/predserver_core.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -146,8 +146,8 @@
  include/predserver_core.h
 ./obj/I386/WIN32/predclient.o: ./src/predclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -195,8 +195,8 @@
 ./obj/I386/WIN32/pred_reqresp_server.o: ./src/pred_reqresp_server.cpp \
  include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -244,8 +244,8 @@
 ./obj/I386/WIN32/pred_reqresp_client.o: ./src/pred_reqresp_client.cpp \
  include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -292,8 +292,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/loadbuffer.o: ./src/loadbuffer.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -340,8 +340,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/loadbufferclient.o: ./src/loadbufferclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -388,8 +388,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/load2measure.o: ./src/load2measure.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -436,8 +436,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/predbuffer.o: ./src/predbuffer.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -484,8 +484,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/predbufferclient.o: ./src/predbufferclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -532,8 +532,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/measureclient.o: ./src/measureclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -580,8 +580,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/measurebuffer.o: ./src/measurebuffer.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -629,8 +629,8 @@
 ./obj/I386/WIN32/measurebufferclient.o: ./src/measurebufferclient.cpp \
  include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -677,8 +677,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/predreconfig.o: ./src/predreconfig.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -723,10 +723,10 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/ModelInfo.h \
  /home/pdinda/Codes/RPS-development/RPSInterface/include/shared.h \
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/WIN32/evalfit.o: ./src/evalfit.cpp include/Predcomp.h \
+./obj/I386/WIN32/evalfit.o: ./src/evalfit.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -773,8 +773,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/predlatclient.o: ./src/predlatclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -821,8 +821,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/loadlatclient.o: ./src/loadlatclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -869,8 +869,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/loadreconfig.o: ./src/loadreconfig.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -917,8 +917,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/fileloadserver.o: ./src/fileloadserver.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -965,8 +965,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/memperf.o: ./src/memperf.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1013,8 +1013,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/flowbwclient.o: ./src/flowbwclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1061,8 +1061,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/flowbwbuffer.o: ./src/flowbwbuffer.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1109,8 +1109,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/flowbwbufferclient.o: ./src/flowbwbufferclient.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1157,8 +1157,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/flowbw2measure.o: ./src/flowbw2measure.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1205,8 +1205,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/flowbwreconfig.o: ./src/flowbwreconfig.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1253,8 +1253,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/loadserver.o: ./src/loadserver.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1301,8 +1301,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/sensorperf.o: ./src/sensorperf.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1349,8 +1349,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/hostloadpred.o: ./src/hostloadpred.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \
@@ -1397,8 +1397,8 @@
  /home/pdinda/Codes/RPS-development/RPSInterface/include/PredictionRequestResponse.h
 ./obj/I386/WIN32/flowbwserver.o: ./src/flowbwserver.cpp include/PredComp.h \
  /home/pdinda/Codes/RPS-development/Sensors/include/Sensors.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
- /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/getflowbw.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/TimeSeries.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/abstract.h \
  /home/pdinda/Codes/RPS-development/TimeSeries/include/none.h \

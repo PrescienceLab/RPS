@@ -69,10 +69,10 @@ void Handler::SetLast(const TimeValue &last) {
 void Handler::SetMask(const int mask) { this->mask=mask; } 
 int  Handler::GetMask()const { return mask; }
 
-bool Handler::HandlesRead() const { return GetMask() & HANDLE_READ;}
-bool Handler::HandlesWrite() const { return GetMask() & HANDLE_WRITE;}
-bool Handler::HandlesTimeout() const { return GetMask() & HANDLE_TIMEOUT;}
-bool Handler::HandlesException() const { return GetMask() & HANDLE_EXCEPTION;}
+bool Handler::HandlesRead() const { return (GetMask() & HANDLE_READ)!=0;}
+bool Handler::HandlesWrite() const { return (GetMask() & HANDLE_WRITE)!=0;}
+bool Handler::HandlesTimeout() const { return (GetMask() & HANDLE_TIMEOUT)!=0;}
+bool Handler::HandlesException() const { return (GetMask() & HANDLE_EXCEPTION)!=0;}
 void Handler::SetHandlesRead()  { SetMask(GetMask()|HANDLE_READ);}
 void Handler::SetHandlesWrite()  { SetMask(GetMask()|HANDLE_WRITE);}
 void Handler::SetHandlesTimeout()  { SetMask(GetMask()|HANDLE_TIMEOUT);}

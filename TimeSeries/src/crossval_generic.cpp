@@ -325,5 +325,7 @@ int main(int argc, char *argv[])
 	    100.0*meanimproveoverbm[i]/meanbmmsqerr[i]);
      }
 #endif
+
+   return 0;
 }
 

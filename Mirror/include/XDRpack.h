@@ -11,7 +11,7 @@
 #define IEEE_FLOAT_LSB
 #elif defined(sun) || defined(sparc)
 #define IEEE_FLOAT_MSB
-#elif defined(__i386__) || defined(i386) || defined(__i386)
+#elif defined(__i386__) || defined(i386) || defined(__i386) || defined(I386)
 #define IEEE_FLOAT_LSB
 #else
 #error Can not determine IEEE float byte order
@@ -23,7 +23,7 @@
 #define IEEE_DOUBLE_LSB
 #elif defined(sun) || defined(sparc)
 #define IEEE_DOUBLE_MSB
-#elif defined(__i386__) || defined(i386) || defined(__i386)
+#elif defined(__i386__) || defined(i386) || defined(__i386) || defined(I386)
 #define IEEE_DOUBLE_LSB
 #else
 #error Can not determine IEEE double byte order

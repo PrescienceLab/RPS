@@ -3,9 +3,15 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define strcasecmp stricmp
+#include <winsock.h>
+#else
 #include <strings.h>
-#include <assert.h>
 #include <arpa/inet.h>
+#endif
+#include <assert.h>
+
 
 #include "ar.h"
 #include "ma.h"
@@ -374,9 +380,9 @@ ModelTemplate *ParseModel(int argc, char *argv[])
 
    mt->mt = mclass;
    if (refitting) { 
-     mt->ps = new RefittingPDQParameterSet(p,d,q,refitinterval);
+     mt->ps = new RefittingPDQParameterSet(p,(int)d,q,refitinterval);
    } else {
-     mt->ps = new PDQParameterSet(p,d,q);
+     mt->ps = new PDQParameterSet(p,(int)d,q);
    }
    
    return mt;

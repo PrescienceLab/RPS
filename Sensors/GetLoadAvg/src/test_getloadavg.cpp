@@ -9,4 +9,6 @@ int main()
 
   printf("rc=%d, [%f %f %f]\n",rc,
 	 avgs[0],avgs[1],avgs[2]);
+
+  return 0;
 }

@@ -14,13 +14,13 @@ template <class T>
 class QueueNode {
  public:
 	T *data;
-	class QueueNode<T> *next, *prev;
+	QueueNode<T> *next, *prev;
 };
 
 template <class T> 
 class Queue {
 protected:
-	class QueueNode<T> *first, *last, *current;
+	QueueNode<T> *first, *last, *current;
 	T *ReturnCurrent() { return (current==NULL) ? (T*) NULL : current->data;};
 public:
 	Queue();

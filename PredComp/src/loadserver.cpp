@@ -157,5 +157,6 @@ int main(int argc, char *argv[])
   }
   fprintf(stderr,"loadserver running.\n");
   server->Run();
+  return 0;
 }
 
