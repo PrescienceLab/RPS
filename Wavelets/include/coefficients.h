@@ -8,7 +8,7 @@
 #include "waveletinfo.h"
 #include "util.h"
 
-class WaveletCoefficients {
+class CQFWaveletCoefficients {
 private:
   WaveletType wt;
   string waveletname;
@@ -18,11 +18,11 @@ private:
   void init(const WaveletType wt);
 
 public:
-  WaveletCoefficients(const WaveletType wt=DAUB2);
-  WaveletCoefficients(const WaveletCoefficients &rhs);
-  virtual ~WaveletCoefficients();
+  CQFWaveletCoefficients(const WaveletType wt=DAUB2);
+  CQFWaveletCoefficients(const CQFWaveletCoefficients &rhs);
+  virtual ~CQFWaveletCoefficients();
 
-  WaveletCoefficients & operator=(const WaveletCoefficients &rhs);
+  CQFWaveletCoefficients & operator=(const CQFWaveletCoefficients &rhs);
 
   void Initialize(const WaveletType wt);
   void ChangeType(const WaveletType wt);
@@ -38,7 +38,7 @@ public:
   ostream & operator<<(ostream &os) const;
 };
 
-inline ostream & operator<<(ostream &os, const WaveletCoefficients &rhs)
+inline ostream & operator<<(ostream &os, const CQFWaveletCoefficients &rhs)
 { 
   return rhs.operator<<(os);
 };

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
 
   // Test all member types and operations
-  WaveletCoefficients wc;
+  CQFWaveletCoefficients wc;
   wc.Initialize(wt);
   cout << "Number of coefs: " << wc.GetNumCoefs() << endl;
   wc.GetTransformCoefsLPF(translpf);

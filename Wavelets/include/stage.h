@@ -37,7 +37,7 @@ class WaveletStageHelper {
 protected:
   StageType stagetype;
   WaveletType wavetype;
-  WaveletCoefficients wavecoefs;
+  CQFWaveletCoefficients wavecoefs;
 
   FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> lowpass;
   FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> highpass;

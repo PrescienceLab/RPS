@@ -384,7 +384,7 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ForwardDiscreteWaveletTransform {
 private:
   WaveletType wavetype;
-  WaveletCoefficients wavecoefs;
+  CQFWaveletCoefficients wavecoefs;
 
   int lowest_outlvl;
   unsigned index_a[MAX_STAGES+1];
@@ -463,7 +463,7 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ReverseDiscreteWaveletTransform {
 private:
   WaveletType wavetype;
-  WaveletCoefficients wavecoefs;
+  CQFWaveletCoefficients wavecoefs;
 
   unsigned index;
 

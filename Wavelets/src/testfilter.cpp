@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   // Grab the coefficients for the specified type
   vector<double> translpf;
 
-  WaveletCoefficients wc;
+  CQFWaveletCoefficients wc;
   wc.Initialize(wt);
   cout << "Number of coefs: " << wc.GetNumCoefs() << endl;
   wc.GetInverseCoefsLPF(translpf);

@@ -202,9 +202,9 @@ char *waveletNames[NUM_WAVELET_TYPES] = {"Daubechies 2 (Haar)",
                                          "NBS Filterbank G8, delay 1",
                                          "NBS Filterbank H8, delay 1"};
 
-WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
+CQFWaveletCoefficients::CQFWaveletCoefficients(const WaveletType wt)
 {
-  DEBUG_PRINT("WaveletCoefficients::WaveletCoefficients(const WaveletType wt)");
+  DEBUG_PRINT("CQFWaveletCoefficients::CQFWaveletCoefficients(const WaveletType wt)");
 
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
@@ -238,10 +238,10 @@ WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
 	      << "  &h_coefs= " << h_coefs << endl);
 }
 
-WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
+CQFWaveletCoefficients::CQFWaveletCoefficients(const CQFWaveletCoefficients &rhs)
 {
-  DEBUG_PRINT("WaveletCoefficients::WaveletCoefficients"
-	      <<"(const WaveletCoefficients &rhs)");
+  DEBUG_PRINT("CQFWaveletCoefficients::CQFWaveletCoefficients"
+	      <<"(const CQFWaveletCoefficients &rhs)");
 
   wt = rhs.wt;
   waveletname = rhs.waveletname;
@@ -258,9 +258,9 @@ WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
 }
 
 
-WaveletCoefficients::~WaveletCoefficients()
+CQFWaveletCoefficients::~CQFWaveletCoefficients()
 {
-  DEBUG_PRINT("WaveletCoefficients::~WaveletCoefficients()"<<endl
+  DEBUG_PRINT("CQFWaveletCoefficients::~CQFWaveletCoefficients()"<<endl
 	      << "  &g_coefs= " << g_coefs << endl
 	      << "  &h_coefs= " << h_coefs << endl);
 
@@ -268,10 +268,10 @@ WaveletCoefficients::~WaveletCoefficients()
   CHK_DEL(h_coefs);
 }
 
-WaveletCoefficients & WaveletCoefficients::operator=
-(const WaveletCoefficients &rhs)
+CQFWaveletCoefficients & CQFWaveletCoefficients::operator=
+(const CQFWaveletCoefficients &rhs)
 {
-  DEBUG_PRINT("WaveletCoefficients::operator=(const WaveletCoefficients &rhs)");
+  DEBUG_PRINT("CQFWaveletCoefficients::operator=(const CQFWaveletCoefficients &rhs)");
 
   wt = rhs.wt;
   CHK_DEL(g_coefs);
@@ -280,7 +280,7 @@ WaveletCoefficients & WaveletCoefficients::operator=
   return *this;
 }
 
-void WaveletCoefficients::Initialize(const WaveletType wt)
+void CQFWaveletCoefficients::Initialize(const WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
@@ -289,7 +289,7 @@ void WaveletCoefficients::Initialize(const WaveletType wt)
   init(wt);
 }
 
-void WaveletCoefficients::ChangeType(const WaveletType wt)
+void CQFWaveletCoefficients::ChangeType(const WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
@@ -298,17 +298,17 @@ void WaveletCoefficients::ChangeType(const WaveletType wt)
   init(wt);
 }
 
-string WaveletCoefficients::GetWaveletName() const
+string CQFWaveletCoefficients::GetWaveletName() const
 {
   return waveletname;
 }
 
-unsigned WaveletCoefficients::GetNumCoefs() const
+unsigned CQFWaveletCoefficients::GetNumCoefs() const
 {
   return numcoefs;
 }
 
-void WaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs) const
+void CQFWaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   unsigned i;
@@ -323,7 +323,7 @@ void WaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs) const
   }
 }
 
-void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs) const
+void CQFWaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   unsigned i;
@@ -339,7 +339,7 @@ void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs) const
 }
 
 
-void WaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs) const
+void CQFWaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   unsigned i;
@@ -354,7 +354,7 @@ void WaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs) const
   }
 }
 
-void WaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
+void CQFWaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
   unsigned i;
@@ -369,7 +369,7 @@ void WaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
   }
 }
 
-ostream & WaveletCoefficients::Print(ostream &os) const
+ostream & CQFWaveletCoefficients::Print(ostream &os) const
 {
   os << "Daubechies, " << numcoefs << " coefficients" << endl;
   os << "LPF Coefficients,\tHPF Coefficients" << endl;
@@ -379,7 +379,7 @@ ostream & WaveletCoefficients::Print(ostream &os) const
   return os;
 }
 
-ostream & WaveletCoefficients::operator<<(ostream &os) const
+ostream & CQFWaveletCoefficients::operator<<(ostream &os) const
 {
   return Print(os);
 }
@@ -387,7 +387,7 @@ ostream & WaveletCoefficients::operator<<(ostream &os) const
 
 
 // Private functions
-void WaveletCoefficients::init(const WaveletType wt)
+void CQFWaveletCoefficients::init(const WaveletType wt)
 {
   numcoefs = numWaveletCoefTable[wt];
   waveletname = waveletNames[wt];
