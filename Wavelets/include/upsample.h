@@ -28,8 +28,6 @@ public:
   bool ZeroSample();
   void UpSampleBuffer(SampleBlock<OUTSAMPLE> &output,
 		      SampleBlock<INSAMPLE>  &input);
-  void UpSampleBuffer(SampleBlock<INSAMPLE> &output,
-		      SampleBlock<INSAMPLE>  &input);
 
   ostream & Print(ostream &os) const;
 };
@@ -96,6 +94,7 @@ void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
   }
 }
 
+#if 0
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 (SampleBlock<INSAMPLE> &output, SampleBlock<INSAMPLE> &input)
@@ -119,6 +118,7 @@ void UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::UpSampleBuffer
     output.PushSampleBack(newin);
   }
 }
+#endif
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ostream & UpSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::Print(ostream &os) const

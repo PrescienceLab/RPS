@@ -43,7 +43,7 @@ private:
   unsigned numlevels;
   int*     delay_vals;
 
-  vector<FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> *> dbanks;
+  vector<deque<INSAMPLE> *> dbanks;
 
 public:
   DelayBlock(unsigned numlevels=2, 
@@ -56,12 +56,12 @@ public:
   inline unsigned GetNumberLevels() const;
   inline unsigned GetDelayValueOfLevel(unsigned level) const;
 
-  void SetDelayValueOfLevel(unsigned level, unsigned delay);
+  bool SetDelayValueOfLevel(unsigned level, unsigned delay);
 
   bool ChangeDelayConfig(unsigned numlevels,
 			 int*     delay_vals);
 
-  void ClearLevelDelayLine(unsigned level);
+  bool ClearLevelDelayLine(unsigned level);
   void ClearAllDelayLines();
 
   bool StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in);
@@ -97,23 +97,13 @@ DelayBlock(unsigned numlevels=2, int* delay_vals=0)
     }
   }
 
-  // Initialize the delay filters
-  vector<double> coefs;
+  // Initialize the delay deques
   for (i=0; i<numlevels; i++) {
-    coefs.clear();
-    if (this->delay_vals[i] == 0) {
-      coefs.push_back(1.0);
-    } else {
-      vector<double> tcoefs(this->delay_vals[i]-1, 0);
-      tcoefs.push_back(1.0);
-      coefs = tcoefs;
-    } 
-    
-    FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfir =
-      new FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(coefs.size(), coefs);
-
-    dbanks.push_back(pfir);
+    int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
+    deque<INSAMPLE>* pdis = new deque<INSAMPLE>(delay_sz);
+    dbanks.push_back(pdis);
   }
+
 }
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -137,9 +127,8 @@ DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
     delay_vals=0;
   }
 
-  FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfir;
   for (unsigned i=0; i<numlevels; i++) {
-    pfir = dbanks[i]; CHK_DEL(pfir);
+    CHK_DEL(dbanks[i]);
   }
   dbanks.clear();
 }
@@ -172,19 +161,19 @@ GetDelayValueOfLevel(unsigned level) const
 }
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 SetDelayValueOfLevel(unsigned level, unsigned delay)
 {
-  delay_vals[level] = delay;
-  vector<double> coefs;
-  if (delay == 0) {
-    coefs.push_back(1.0);
-  } else {
-    vector<double> tcoefs(delay-1, 0);
-    tcoefs.push_back(1.0);
-    coefs = tcoefs;
+  if (level > numlevels) {
+    return false;
   }
-  dbanks[level]->SetFilterCoefs(tcoefs);
+
+  delay_vals[level] = delay;
+  CHK_DEL(dbanks[level]);
+
+  int delay_sz = (delay == 0) ? 0 : delay-1;
+  dbanks[level] = new deque<INSAMPLE>(delay_sz);
+  return true;
 }
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -199,17 +188,8 @@ ChangeDelayConfig(unsigned numlevels, int* delay_vals)
   if (this->numlevels == numlevels) {
     for (i=0; i<numlevels; i++) {
       this->delay_vals[i] = delay_vals[i];      
-
-      vector<double> coefs;
-      if (this->delay_vals[i] == 0) {
-	coefs.push_back(1.0);
-      } else {
-	vector<double> tcoefs(this->delay_vals[i]-1, 0);
-	tcoefs.push_back(1.0);
-	coefs = tcoefs;
-      }
-      dbanks[i]->SetFilterCoefs(coefs);
-     }
+      SetDelayValueOfLevel(i, this->delay_vals[i]);
+    }
   } else {
     if (this->delay_vals != 0) {
       delete[] this->delay_vals;
@@ -218,7 +198,7 @@ ChangeDelayConfig(unsigned numlevels, int* delay_vals)
 
     for (i=0; i<this->numlevels; i++) {
       CHK_DEL(dbanks[i]);
-     }
+    }
     dbanks.clear();
  
     this->numlevels = numlevels;
@@ -229,22 +209,26 @@ ChangeDelayConfig(unsigned numlevels, int* delay_vals)
       this->delay_vals[i] = delay_vals[i];
     }
 
-    // Initialize the delay filters
-    vector<double> coefs;
+    // Initialize the delay deques
     for (i=0; i<numlevels; i++) {
-      coefs.clear();
-      if (this->delay_vals[i] == 0) {
-	coefs.push_back(1.0);
-      } else {
-	vector<double> tcoefs(this->delay_vals[i]-1, 0);
-	tcoefs.push_back(1.0);
-	coefs = tcoefs;
-      }
-    
-      FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfir =
-	new FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(coefs.size(), coefs);
- 
-      dbanks.push_back(pfir);
+      int delay_sz = (this->delay_vals[i] == 0) ? 0 : this->delay_vals[i]-1;
+      deque<INSAMPLE>* pdis = new deque<INSAMPLE>(delay_sz);
+      dbanks.push_back(pdis);
+    }
+  }
+  return true;
+}
+
+template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ClearLevelDelayLine(unsigned level)
+{
+  if (level > numlevels) {
+    return false;
+  } else {
+    INSAMPLE zero;
+    for (unsigned i=0; i<dbanks[level]->size(); i++) {
+      dbanks[level]->operator[](i) = zero;
     }
   }
   return true;
@@ -252,17 +236,10 @@ ChangeDelayConfig(unsigned numlevels, int* delay_vals)
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ClearLevelDelayLine(unsigned level)
-{
-  dbanks[level]->ClearDelayLine();
-}
-
-template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ClearAllDelayLines()
 {
   for (unsigned i=0; i<numlevels; i++) {
-    dbanks[i]->ClearDelayLine();
+    ClearLevelDelayLine(i);
   }
 }
 
@@ -283,7 +260,9 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
     samplelevel = in[i].GetSampleLevel();
     sampleindex = in[i].GetSampleIndex();
 
-    dbanks[samplelevel]->GetFilterOutput(outsamp, in[i]);
+    dbanks[samplelevel]->push_front(in[i]);
+    outsamp = dbanks[samplelevel]->back();
+    dbanks[samplelevel]->pop_back();
     outsamp.SetSampleLevel(samplelevel);
     outsamp.SetSampleIndex(sampleindex);
     out.push_back(outsamp);
@@ -297,6 +276,7 @@ unsigned DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
 			vector<SampleBlock<INSAMPLE> *>  &inblock)
 {
+#if 0
   if ((inblock.size() != numlevels) || (outblock.size() != numlevels)) {
     return 0;
   }
@@ -318,7 +298,8 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
     dbanks[i]->GetFilterBufferOutput(*psbo, *psbi);
     blocklen += psbo->GetBlockSize();
   }
-  return blocklen;
+#endif
+  return 5;
 }
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

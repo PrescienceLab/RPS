@@ -28,9 +28,6 @@ public:
   bool KeepSample();
   void DownSampleBuffer(SampleBlock<OUTSAMPLE> &output,
 			SampleBlock<INSAMPLE>  &input);
-  void DownSampleBuffer(SampleBlock<OUTSAMPLE> &output,
-			SampleBlock<OUTSAMPLE> &input);
-
 
   ostream & Print(ostream &os) const;
 };
@@ -84,13 +81,14 @@ void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
 
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     if (KeepSample()) {
-      Sample<SAMPLETYPE>  newin;
+      INSAMPLE newin;
       input.GetSample(&newin,i);
       output.PushSampleBack(newin);
     }
   }
 }
 
+#if 0
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
 (SampleBlock<OUTSAMPLE> &output, SampleBlock<OUTSAMPLE> &input)
@@ -99,12 +97,13 @@ void DownSample<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::DownSampleBuffer
 
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     if (KeepSample()) {
-      OUTSAMPLE  newin;
+      INSAMPLE newin;
       input.GetSample(&newin,i);
       output.PushSampleBack(newin);
     }
   }
 }
+#endif
 
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

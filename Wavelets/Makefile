@@ -12,7 +12,7 @@ LIBNAME = wavelets
 
 LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
-CFLAGS = -I$(INCDIR) $(TIMESERIES_CFLAGS)
+CFLAGS = -I$(INCDIR)
 
 ifeq ($(OPTIMIZE),YES)
   CFLAGS +=  -O
@@ -22,8 +22,7 @@ else
   LD1FLAGS = -g  -gstabs+ -ggdb 
 endif
 
-LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME) \
-            $(TIMESERIES_LDFLAGS)
+LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME)
 
 LD2FLAGS =  
 
@@ -33,6 +32,7 @@ EXECLIST = testcoefs  \
            testSFWT   \
            testdelay  \
            teststream
+#           testblock
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

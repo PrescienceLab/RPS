@@ -63,9 +63,11 @@ int main(int argc, char *argv[])
   // Read the data from file into an input vector
   vector<WaveletInputSample> samples;
   double sample;
+  unsigned index=0;
   while (infile >> sample) {
     WaveletInputSample wavesample;
     wavesample.SetSampleValue(sample);
+    wavesample.SetSampleIndex(index++);
     samples.push_back(wavesample);
   }
   infile.close();
@@ -110,14 +112,10 @@ int main(int argc, char *argv[])
   vector<WaveletInputSample>  outsamp;
 
   for (i=0; i<samples.size(); i++) {
-    cout << "sample: " << i << endl;
-    cout << "FORWARD: sample in.\n";
     sfwt.StreamingSampleOperation(outsamples, samples[i]);
-
-    cout << "DELAY: sample in. \n";
+    
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
 
-    cout << "REVERSE: sample in. \n" << endl;
     if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
       for (unsigned j=0; j<outsamp.size(); j++) {
 	finaloutput.push_back(outsamp[j]);
@@ -128,7 +126,7 @@ int main(int argc, char *argv[])
     outsamples.clear();
     delaysamples.clear();
   }
-  
+
   cout << "The size of the output: " << finaloutput.size() << endl;
   cout << "The final output samples: " << endl;
   for (i=0; i<finaloutput.size(); i++) {
