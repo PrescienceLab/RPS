@@ -44,7 +44,7 @@ for ($row=0;$row<$numfiles/$cols;$row++) {
 print TEX "\\end{longtable}\n\n\\end{document}\n";
 close(TEX);
 
-system "latex2e _epsnup";
+system "latex _epsnup";
 system "dvips -f _epsnup.dvi -o $outfile";
 system "rm -f _epsnup.*";
 
