@@ -41,7 +41,8 @@ FIRFilter<OUTSAMPLE, INSAMPLE>::FIRFilter(unsigned numcoefs)
 {
   this->numcoefs = numcoefs;
   
-  INSAMPLE zero = 0;
+  INSAMPLE zero;
+  zero = 0;
   coefs.clear();
   delayline.clear();
   for (unsigned i=0; i<numcoefs; i++) {
@@ -97,7 +98,8 @@ void FIRFilter<OUTSAMPLE, INSAMPLE>::SetFilterCoefs
   this->numcoefs = coefs.size();
   this->coefs = coefs;
   
-  INSAMPLE zero = 0;
+  INSAMPLE zero;
+  zero = 0;
 
   delayline.clear();
   for (unsigned i=0; i<numcoefs; i++) {

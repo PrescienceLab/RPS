@@ -648,10 +648,11 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
   upsampler_h.UpSampleBuffer(*tempblock_h, in_h);
 
   // Filter the tempblocks
+  SampleBlock<OUTSAMPLE>* tempout = out.clone();
   stagehelp.LPFBufferOperation(out, *tempblock_l);
-  stagehelp.HPFBufferOperation(*tempblock_h, *tempblock_h);
+  stagehelp.HPFBufferOperation(*tempout, *tempblock_h);
 
-  if (out.GetBlockSize() != tempblock_h->GetBlockSize()) {
+  if (out.GetBlockSize() != tempout->GetBlockSize()) {
     // If somehow the input filter blocks are different length, clear the delay
     // line and may lose data (might want to refilter)
     stagehelp.ClearLPFDelayLine();
@@ -660,7 +661,7 @@ unsigned ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::PerformBlockOperation
   }
 
   // Add the two outputs of the filters
-  out += *tempblock_h;
+  out += *tempout;
   return out.GetBlockSize();
 }
 

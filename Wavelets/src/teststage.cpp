@@ -73,7 +73,30 @@ int main(int argc, char *argv[])
   cout << "The low output of the stage" << endl;
   cout << output_l << endl;
   cout << "The high output of the stage" << endl;
-  cout << output_h << endl;
+  cout << output_h << endl << endl;
+
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------";
+  cout << "----------" << endl << endl;
+
+  // Instantiate a reverse stage
+  cout << "ReverseWaveletStage instantiation" << endl;
+  ReverseWaveletStage<WaveletInputSample, WaveletOutputSample> 
+    rev_stage(wt,2,2);
+
+  WaveletInputSampleBlock reverseout;
+
+  rev_stage.PerformBlockOperation(reverseout, output_l, output_h);
+
+  cout << "The output of the reverse stage" << endl;
+  cout << reverseout << endl;
 
   return 0;
 }

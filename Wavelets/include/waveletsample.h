@@ -12,6 +12,7 @@ public:
   virtual ~WaveletInputSample();
 
   WaveletInputSample & operator=(const WaveletInputSample &rhs);
+  WaveletInputSample & operator=(const double rhs);
   WaveletInputSample & operator+=(const WaveletInputSample &rhs);
   WaveletInputSample & operator+=(const double rhs);
   inline double operator*(const double rhs);
@@ -25,6 +26,7 @@ public:
   virtual ~WaveletOutputSample();
 
   WaveletOutputSample & operator=(const WaveletOutputSample &rhs);
+  WaveletOutputSample & operator=(const double rhs);
   WaveletOutputSample & operator+=(const WaveletOutputSample &rhs);
   WaveletOutputSample & operator+=(const double rhs);
   inline double operator*(const double rhs);

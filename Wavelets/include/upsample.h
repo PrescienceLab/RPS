@@ -27,6 +27,8 @@ public:
   bool ZeroSample();
   void UpSampleBuffer(SampleBlock<OUTSAMPLE> &output,
 		      SampleBlock<INSAMPLE>  &input);
+  void UpSampleBuffer(SampleBlock<INSAMPLE> &output,
+		      SampleBlock<INSAMPLE> &input);
 
   ostream & Print(ostream &os) const;
 };
@@ -80,6 +82,22 @@ void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
 
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     newin=0;
+    if (!ZeroSample()) {
+      input.GetSample(&newin,i);
+    }
+    output.SetSample(newin);
+  }
+}
+
+template <class OUTSAMPLE, class INSAMPLE>
+void UpSample<OUTSAMPLE, INSAMPLE>::UpSampleBuffer
+(SampleBlock<INSAMPLE> &output, SampleBlock<INSAMPLE> &input)
+{
+  output.ClearBlock();
+  INSAMPLE newin;
+
+  for (unsigned i=0; i<input.GetBlockSize(); i++) {
+    newin = 0;
     if (!ZeroSample()) {
       input.GetSample(&newin,i);
     }

@@ -19,6 +19,11 @@ public:
     return *this;
   };
 
+  virtual Sample & operator=(const SAMPLETYPE rhs) {
+    value = rhs;
+    return *this;
+  };
+
   virtual Sample & operator+(const Sample &rhs) {
     value = value + rhs.value;
     return *this;
@@ -62,7 +67,12 @@ public:
     return *this;
   };
 
-  virtual InputSample & operator+(const InputSample &rhs) {
+  InputSample & operator=(const SAMPLETYPE rhs) {
+    value = rhs;
+    return *this;
+  };
+
+  InputSample & operator+(const InputSample &rhs) {
     value = value + rhs.value;
     return *this;
   };
@@ -118,6 +128,11 @@ public:
   OutputSample & operator=(const OutputSample &rhs) {
     value = rhs.value;
     level = rhs.level;
+    return *this;
+  };
+
+  OutputSample & operator=(const SAMPLETYPE rhs) {
+    value = rhs;
     return *this;
   };
 

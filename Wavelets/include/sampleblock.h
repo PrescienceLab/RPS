@@ -29,6 +29,11 @@ public:
     return *this;
   };
 
+  virtual SampleBlock & operator+=(const SampleBlock &rhs) {
+    samples = rhs.samples;
+    return *this;
+  };
+    
   virtual SampleBlock* clone()=0;
 
   virtual void SetSamples(const vector<SAMPLETYPE> &input)=0;
