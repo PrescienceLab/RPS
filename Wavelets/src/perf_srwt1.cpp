@@ -174,6 +174,9 @@ int main(int argc, char *argv[])
     // Sleep 50 seconds
     usleep(1000000*50);
 
+    timeval sproc, eproc;
+    unsigned long proctime = 0;
+    unsigned long sleepduration;
     for (unsigned j=0; j<NUMTESTS; j++) {
 
       if (j == NUMTESTS-1) {
@@ -182,13 +185,26 @@ int main(int argc, char *argv[])
 
       for (unsigned i=0; i<BLOCKS_IN_TEST; i++) {
 	if (sleep) {
-	  usleep(sleeptime_us);
+	  sleepduration = (sleeptime_us > proctime) ?
+	    sleeptime_us - proctime : 0;
+	  usleep(sleepduration);
+	}
+
+	if (gettimeofday(&sproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
 	}
 	for (unsigned k=0; k<blocksize; k++) {
 	  dlyblk.StreamingSampleOperation(delaysamples,
 					  waveletcoefs[(i % numblocks)*blocksize+k]);
 	  srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
 	}
+	if (gettimeofday(&eproc, 0) < 0) {
+	  cerr << "Can't obtain the current time.\n";
+	  exit(-1);
+	}
+	proctime =
+	  (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
       }
       blocksize *= 2;
       numblocks = datasize / blocksize;

@@ -162,39 +162,44 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> reconst;
 
   unsigned numblocks = wavecoefs.GetBlockSize() / blocksize;
-  const unsigned MINBLOCKS = 512;
-
-  // Find number of tests
-  unsigned numtests=0;
-  unsigned blocksize_save = blocksize;
-  while (numblocks >= MINBLOCKS) {
-    numtests++;
-    blocksize *= 2;
-    numblocks = wavecoefs.GetBlockSize() / blocksize;
-  }
-
-  blocksize = blocksize_save;
-  numblocks = MINBLOCKS;
+  const unsigned NUMTESTS = 10;
+  const unsigned BLOCKS_IN_TEST = 1024;
 
   // Sleep 50 seconds
   usleep(1000000*50);
 
-  for (unsigned j=0; j<numtests; j++) {
+  timeval sproc, eproc;
+  unsigned long proctime = 0;
+  unsigned long sleepduration;
+  for (unsigned j=0; j<NUMTESTS; j++) {
 
-    if (j == numtests-1) {
+    if (j == NUMTESTS-1) {
       sleep = false;
     }
 
     // The operations
-    for (i=0; i<numblocks; i++) {
+    for (i=0; i<BLOCKS_IN_TEST; i++) {
       if (sleep) {
-	usleep(sleeptime_us);
+	sleepduration = (sleeptime_us > proctime) ?
+	  sleeptime_us - proctime : 0;
+	usleep(sleepduration);
       }
-      GetNextBlock(block, wavecoefs, i, blocksize);
+      if (gettimeofday(&sproc, 0) < 0) {
+	cerr << "Can't obtain the current time.\n";
+	exit(-1);
+      }
+      GetNextBlock(block, wavecoefs, i % numblocks, blocksize);
       rdwt.DiscreteWaveletTransformOperation(reconst, block);
       reconst.ClearBlock();
+      if (gettimeofday(&eproc, 0) < 0) {
+	cerr << "Can't obtain the current time.\n";
+	exit(-1);
+      }
+      proctime =
+	(eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
     }
     blocksize *= 2;
+    numblocks = wavecoefs.GetBlockSize() / blocksize;
   }
 
   // Print the output with appropriate tag
