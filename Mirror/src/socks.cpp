@@ -98,7 +98,7 @@ unsigned ToIPAddress(char *hostname)
 }
 
 
-#define WELL_KNOWN_HOST "www.cs.cmu.edu"
+#define WELL_KNOWN_HOST "www.cs.northwestern.edu"
 #define WELL_KNOWN_PORT 23
 
 unsigned GetMyIPAddress()
@@ -331,7 +331,7 @@ int BindSocket(int mysocket, unsigned adx, int myport)
 
 int BindSocket(int mysocket, int myport)
 {
-  return BindSocket(mysocket,GetMyIPAddress(),myport);
+  return BindSocket(mysocket,INADDR_ANY,myport);
 }  
 
 int BindSocket(int mysocket, char *host_or_ip, int myport)
