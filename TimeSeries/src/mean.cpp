@@ -28,6 +28,7 @@ MeanModel::~MeanModel()
 
 MeanModel & MeanModel::operator=(const MeanModel &rhs)
 {
+  this->~MeanModel();
   return *(new(this)MeanModel(rhs));
 }
 
@@ -91,6 +92,7 @@ MeanPredictor::~MeanPredictor()
 
 MeanPredictor & MeanPredictor::operator=(const MeanPredictor &rhs) 
 {
+  this->~MeanPredictor();
   return *(new(this)MeanPredictor(rhs));
 }
 
@@ -187,6 +189,7 @@ MeanModeler::~MeanModeler()
 
 MeanModeler &MeanModeler::operator=(const MeanModeler &rhs)
 {
+  this->~MeanModeler();
   return *(new(this)MeanModeler(rhs));
 }
 

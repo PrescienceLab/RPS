@@ -4,7 +4,12 @@
   /home/pdinda/RPS-development/shared/include/banner.h \
   /home/pdinda/RPS-development/Trace/include/Trace.h \
   /home/pdinda/RPS-development/Trace/include/LoadTrace.h
-./obj/I386/LINUX/test_generic.o: src/test_generic.cpp include/fit.h include/abstract.h \
+./obj/I386/LINUX/test_fit.o: src/test_fit.cpp include/fit.h include/abstract.h \
+  include/pdqparamsets.h include/util.h include/tools.h \
+  /home/pdinda/RPS-development/shared/include/banner.h \
+  /home/pdinda/RPS-development/Trace/include/Trace.h \
+  /home/pdinda/RPS-development/Trace/include/LoadTrace.h
+./obj/I386/LINUX/test_project.o: src/test_project.cpp include/fit.h include/abstract.h \
   include/pdqparamsets.h include/util.h include/tools.h \
   /home/pdinda/RPS-development/shared/include/banner.h \
   /home/pdinda/RPS-development/Trace/include/Trace.h \
@@ -41,12 +46,12 @@
   /home/pdinda/RPS-development/shared/include/banner.h
 ./obj/I386/LINUX/test_await.o: src/test_await.cpp include/TimeSeries.h include/abstract.h \
   include/none.h include/mean.h include/bestmean.h include/etathetapred.h \
-  include/poly.h include/last.h include/ar.h include/pdqparamsets.h \
-  include/ma.h include/arma.h include/arima.h include/util.h \
-  include/arfima.h include/refit.h include/await.h include/managed.h \
-  /home/pdinda/RPS-development/shared/include/rps_log.h \
-  include/evaluate_core.h include/fit.h include/it.h include/maths.h \
-  include/random.h include/tools.h \
+  include/poly.h include/bestmedian.h include/last.h include/ar.h \
+  include/pdqparamsets.h include/ma.h include/arma.h include/arima.h \
+  include/util.h include/arfima.h include/refit.h \
+  /home/pdinda/RPS-development/shared/include/rps_log.h include/await.h \
+  include/managed.h include/evaluate_core.h include/fit.h include/it.h \
+  include/maths.h include/random.h include/tools.h \
   /home/pdinda/RPS-development/shared/include/banner.h
 ./obj/I386/LINUX/polycalc.o: src/polycalc.cpp include/poly.h include/NewQueues.h
 ./obj/I386/LINUX/crossval_master.o: src/crossval_master.cpp /usr/share/pvm3/include/pvm3.h \
@@ -65,21 +70,34 @@
   include/evaluate_core.h include/random.h include/fit.h \
   include/crossval_pvm.h \
   /home/pdinda/RPS-development/shared/include/banner.h
-./obj/I386/LINUX/poly.o: src/poly.cpp include/poly.h include/maths.h \
+./obj/I386/LINUX/pdqparamsets.o: src/pdqparamsets.cpp include/pdqparamsets.h \
+  include/abstract.h
+./obj/I386/LINUX/fit.o: src/fit.cpp include/ar.h include/abstract.h include/etathetapred.h \
+  include/poly.h include/pdqparamsets.h include/ma.h include/arma.h \
+  include/arima.h include/util.h include/arfima.h include/bestmean.h \
+  include/bestmedian.h include/none.h include/mean.h include/last.h \
+  include/refit.h /home/pdinda/RPS-development/shared/include/rps_log.h \
+  include/await.h include/managed.h include/fit.h
+./obj/I386/LINUX/await.o: src/await.cpp include/await.h include/abstract.h \
+  include/pdqparamsets.h
+./obj/I386/LINUX/refit.o: src/refit.cpp include/refit.h include/abstract.h \
+  include/pdqparamsets.h \
   /home/pdinda/RPS-development/shared/include/rps_log.h
+./obj/I386/LINUX/managed.o: src/managed.cpp include/managed.h include/abstract.h \
+  /home/pdinda/RPS-development/shared/include/rps_log.h \
+  include/pdqparamsets.h
+./obj/I386/LINUX/none.o: src/none.cpp include/none.h include/abstract.h
+./obj/I386/LINUX/mean.o: src/mean.cpp include/mean.h include/abstract.h include/util.h \
+  include/tools.h
+./obj/I386/LINUX/last.o: src/last.cpp include/last.h include/abstract.h \
+  include/etathetapred.h include/poly.h include/bestmean.h
+./obj/I386/LINUX/bestmean.o: src/bestmean.cpp include/bestmean.h include/abstract.h \
+  include/etathetapred.h include/poly.h include/tools.h include/util.h \
+  include/pdqparamsets.h include/ar.h
+./obj/I386/LINUX/bestmedian.o: src/bestmedian.cpp include/bestmedian.h include/abstract.h \
+  include/util.h include/tools.h include/pdqparamsets.h
 ./obj/I386/LINUX/ar.o: src/ar.cpp include/ar.h include/abstract.h include/etathetapred.h \
   include/poly.h include/pdqparamsets.h include/tools.h include/util.h
-./obj/I386/LINUX/arima.o: src/arima.cpp include/arima.h include/abstract.h include/util.h \
-  include/ar.h include/etathetapred.h include/poly.h \
-  include/pdqparamsets.h include/tools.h include/arma.h
-./obj/I386/LINUX/arfima.o: src/arfima.cpp include/arfima.h include/abstract.h \
-  include/util.h include/ar.h include/etathetapred.h include/poly.h \
-  include/pdqparamsets.h include/maths.h \
-  /home/pdinda/RPS-development/shared/include/rps_log.h include/tools.h
-./obj/I386/LINUX/etathetapred.o: src/etathetapred.cpp include/etathetapred.h \
-  include/abstract.h include/poly.h include/util.h
-./obj/I386/LINUX/tools.o: src/tools.cpp include/tools.h include/util.h include/maths.h \
-  /home/pdinda/RPS-development/shared/include/rps_log.h include/random.h
 ./obj/I386/LINUX/ma.o: src/ma.cpp include/ma.h include/abstract.h include/etathetapred.h \
   include/poly.h include/tools.h include/util.h \
   /home/pdinda/RPS-development/shared/include/rps_log.h \
@@ -89,11 +107,15 @@
   include/ar.h include/pdqparamsets.h include/ma.h \
   /home/pdinda/RPS-development/shared/include/rps_log.h \
   include/nr-internal.h
-./obj/I386/LINUX/bestmean.o: src/bestmean.cpp include/bestmean.h include/abstract.h \
-  include/etathetapred.h include/poly.h include/tools.h include/util.h \
-  include/pdqparamsets.h include/ar.h
-./obj/I386/LINUX/it.o: src/it.cpp include/util.h include/tools.h include/NewHashTable.h \
-  include/NewQueues.h include/it.h
+./obj/I386/LINUX/arima.o: src/arima.cpp include/arima.h include/abstract.h include/util.h \
+  include/ar.h include/etathetapred.h include/poly.h \
+  include/pdqparamsets.h include/tools.h include/arma.h
+./obj/I386/LINUX/arfima.o: src/arfima.cpp include/arfima.h include/abstract.h \
+  include/util.h include/ar.h include/etathetapred.h include/poly.h \
+  include/pdqparamsets.h include/maths.h \
+  /home/pdinda/RPS-development/shared/include/rps_log.h include/tools.h
+./obj/I386/LINUX/etathetapred.o: src/etathetapred.cpp include/etathetapred.h \
+  include/abstract.h include/poly.h include/util.h
 ./obj/I386/LINUX/evaluate_core.o: src/evaluate_core.cpp include/evaluate_core.h \
   include/util.h include/maths.h \
   /home/pdinda/RPS-development/shared/include/rps_log.h include/random.h \
@@ -104,27 +126,11 @@
   include/util.h include/arfima.h include/bestmean.h include/tools.h \
   include/evaluate_core.h include/random.h include/fit.h \
   /home/pdinda/RPS-development/shared/include/rps_log.h
-./obj/I386/LINUX/mean.o: src/mean.cpp include/mean.h include/abstract.h include/util.h \
-  include/tools.h
-./obj/I386/LINUX/last.o: src/last.cpp include/last.h include/abstract.h \
-  include/etathetapred.h include/poly.h include/bestmean.h
-./obj/I386/LINUX/none.o: src/none.cpp include/none.h include/abstract.h
-./obj/I386/LINUX/fit.o: src/fit.cpp include/ar.h include/abstract.h include/etathetapred.h \
-  include/poly.h include/pdqparamsets.h include/ma.h include/arma.h \
-  include/arima.h include/util.h include/arfima.h include/bestmean.h \
-  include/bestmedian.h include/none.h include/mean.h include/last.h \
-  include/refit.h include/await.h include/managed.h \
-  /home/pdinda/RPS-development/shared/include/rps_log.h include/fit.h
-./obj/I386/LINUX/await.o: src/await.cpp include/await.h include/abstract.h
-./obj/I386/LINUX/refit.o: src/refit.cpp include/refit.h include/abstract.h
+./obj/I386/LINUX/tools.o: src/tools.cpp include/tools.h include/util.h include/maths.h \
+  /home/pdinda/RPS-development/shared/include/rps_log.h include/random.h
+./obj/I386/LINUX/it.o: src/it.cpp include/util.h include/tools.h include/NewHashTable.h \
+  include/NewQueues.h include/it.h
+./obj/I386/LINUX/poly.o: src/poly.cpp include/poly.h include/maths.h \
+  /home/pdinda/RPS-development/shared/include/rps_log.h
 ./obj/I386/LINUX/nr-internal.o: src/nr-internal.cpp include/nr-internal.h \
   /home/pdinda/RPS-development/shared/include/rps_log.h
-./obj/I386/LINUX/bestmedian.o: src/bestmedian.cpp \
-  /usr/local/include/g++-v3/backward/algobase.h \
-  /usr/local/include/g++-v3/backward/pair.h \
-  /usr/local/include/g++-v3/backward/iterator.h \
-  /usr/local/include/g++-v3/backward/function.h \
-  /usr/local/include/g++-v3/backward/iostream.h \
-  /usr/local/include/g++-v3/backward/tempbuf.h include/bestmedian.h \
-  include/abstract.h include/util.h include/tools.h \
-  include/pdqparamsets.h

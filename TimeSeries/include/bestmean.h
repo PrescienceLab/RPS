@@ -10,11 +10,11 @@
 // Mean-of-last-n Model for the best n
 
 class BestMeanModel : public Model {
-private:
+ private:
   int      order;
   double   variance;
   double   mean;
-public:
+ public:
   BestMeanModel();
   BestMeanModel(const BestMeanModel &rhs);
   virtual ~BestMeanModel();

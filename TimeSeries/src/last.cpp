@@ -16,6 +16,7 @@ LastModel::~LastModel()
 
 LastModel &LastModel::operator=(const LastModel &rhs)
 {
+  this->~LastModel();
   return *(new(this)LastModel(rhs));
 }
 
@@ -35,7 +36,9 @@ ostream & LastModel::operator<<(ostream &os) const
 
 Predictor *LastModel::MakePredictor() const
 {
-  return BestMeanModel::MakePredictor();
+  LastPredictor *p= new LastPredictor();
+  p->Initialize(1,GetVariance());
+  return p;
 }
 
 LastPredictor::LastPredictor() : BestMeanPredictor()
@@ -49,6 +52,7 @@ LastPredictor::~LastPredictor()
 
 LastPredictor & LastPredictor::operator=(const LastPredictor &rhs) 
 {
+  this->~LastPredictor();
   return *(new(this)LastPredictor(rhs));
 }
  
@@ -75,6 +79,7 @@ LastModeler::~LastModeler()
 {}
 LastModeler &LastModeler::operator=(const LastModeler &rhs)
 {
+  this->~LastModeler();
   return *(new(this)LastModeler(rhs));
 }
 

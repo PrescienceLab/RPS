@@ -1,3 +1,4 @@
+#include <new>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -6,6 +7,8 @@
 #include "maths.h"
 #include "random.h"
 #include "tools.h"
+
+using namespace std;
 
 // evaluate [numpred] < sequence 
 //
@@ -26,11 +29,39 @@ Evaluator::Evaluator()
   resids=0;
 }
 
+Evaluator::Evaluator(const Evaluator &rhs) 
+{
+  numpred=numsamples=0;
+  row=0;
+  maxerr=minerr=msqerr=meanabserr=meanerr=0;
+  resids=0;
+  Initialize(rhs.numpred,rhs.seensamples);
+  numpred=rhs.numpred;
+  numsamples=rhs.numsamples;
+  seensamples=rhs.seensamples;
+  for (int i=0;i<numpred+1;i++) {
+    memcpy(row[i],rhs.row[i],sizeof(double)*(numpred+1));
+  }
+  memcpy(maxerr,rhs.maxerr,sizeof(double)*numpred);
+  memcpy(minerr,rhs.minerr,sizeof(double)*numpred);
+  memcpy(msqerr,rhs.msqerr,sizeof(double)*numpred);
+  memcpy(meanabserr,rhs.meanabserr,sizeof(double)*numpred);
+  memcpy(meanerr,rhs.meanerr,sizeof(double)*numpred);
+  memcpy(resids,rhs.resids,sizeof(double)*residbufsize);
+}
+
+Evaluator & Evaluator::operator=(const Evaluator &rhs)
+{
+  this->~Evaluator();
+  return *(new(this)Evaluator(rhs));
+}
+  
+
 Evaluator::~Evaluator()
 {
   Clear();
 }
-int Evaluator::Realloc(int numresids)
+int Evaluator::Realloc(const int numresids)
 {
   int size = numresids<=0 ? 2*residbufsize : numresids;
 
@@ -62,7 +93,7 @@ int Evaluator::Clear()
   return 0;
 }  
   
-int Evaluator::Initialize(int numpred, int numresids)
+int Evaluator::Initialize(const int numpred, const int numresids)
 {
   int i;
 
@@ -97,12 +128,12 @@ int Evaluator::Initialize(int numpred, int numresids)
 }
 
 
-int Evaluator::Step(double *curandpreds)
+int Evaluator::Step(const double *curandpreds)
 {
   return Step(curandpreds[0],&(curandpreds[1]));
 }
 
-int Evaluator::Step(double cur, double *pred)
+int Evaluator::Step(const double cur, const double *pred)
 {
   int j;
   double err;
@@ -150,28 +181,6 @@ int Evaluator::Step(double cur, double *pred)
   return 0;
 }
 
-/*
-int Evaluator::StepNoData()
-{
-  int j;
-  double err;
-
-    for (j=0;j<numpred;j++) {
-      err = row[numsamples%(numpred+1)][j+1] 
-	- row[(numsamples+j+1)%(numpred+1)][0];
-      if (err>maxerr[j]) { 
-	maxerr[j]=err;
-      }	
-      if (err<minerr[j]) { 
-	minerr[j]=err;
-      }
-      msqerr[j]+=err*err;
-      meanabserr[j]+=fabs(err);
-      meanerr[j]+=err;
-    }
-    return 0;
-}  
-*/
 
 int Evaluator::Drain()
 {
@@ -204,7 +213,7 @@ int Evaluator::Drain()
   return 0;
 }
 
-PredictionStats *Evaluator::GetStats(int maxlag,double acfconf)
+PredictionStats *Evaluator::GetStats(const int maxlag, const double acfconf) const
 {
   int j;
 
@@ -263,7 +272,7 @@ PredictionStats *Evaluator::GetStats(int maxlag,double acfconf)
   return stats;	
 }
 
-double Evaluator::GetCurrentPlusOneMeanSquareError()
+double Evaluator::GetCurrentPlusOneMeanSquareError() const
 {
   if (numsamples>0) {
     return msqerr[0]/numsamples;
@@ -275,19 +284,143 @@ double Evaluator::GetCurrentPlusOneMeanSquareError()
     
 
 
-int Evaluator::Dump(FILE *out)
+int Evaluator::Dump(FILE *out) const
 {
-  fprintf(out,"Evaluator(numpred=%d,numsamples=%d,seensamples=%d)\n",
-	  numpred,numsamples,seensamples);
+  fprintf(out,"Evaluator:  numpred=%d, numsamples=%d, seensamples=%d, residbufsize=%d rows follow\n",
+	  numpred,numsamples,seensamples,residbufsize);
+  for (int i=0;i<numpred+1;i++) {
+    for (int j=0;j<numpred+1;j++) {
+      if (j>0) {
+	fprintf(out,", ");
+      }
+      fprintf(out,"%f",row[i][j]);
+    }
+    fprintf(out,"\n");
+  }
+  fprintf(out,"maxerror data follows\n");
+  for (int i=0;i<numpred;i++) {
+    fprintf(out,"%f\n",maxerr[i]);
+  }
+  fprintf(out,"minerror data follows\n");
+  for (int i=0;i<numpred;i++) {
+    fprintf(out,"%f\n",minerr[i]);
+  }
+  fprintf(out,"msqerror data follows\n");
+  for (int i=0;i<numpred;i++) {
+    fprintf(out,"%f\n",msqerr[i]);
+  }
+  fprintf(out,"meanabserror data follows\n");
+  for (int i=0;i<numpred;i++) {
+    fprintf(out,"%f\n",meanabserr[i]);
+  }
+  fprintf(out,"meanerror data follows\n");
+  for (int i=0;i<numpred;i++) {
+    fprintf(out,"%f\n",meanerr[i]);
+  }
+  fprintf(out,"residuals follow");
+  for (int i=0;i<numsamples;i++) {
+    fprintf(out,"%f\n",resids[i]);
+  }
   return 0;
 }
 	  
+
+ostream & Evaluator::operator<<(ostream &os) const
+{
+  os << "Evaluator(numpred="<<numpred<<", numsamples="<<numsamples<<", seensamples="<<seensamples;
+  os << "residbufsize="<<residbufsize<<"rows=(";
+  for (int i=0;i<numpred+1;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << "(";
+    for (int j=0;j<numpred+1;j++) {
+      if (j>0) {
+	os <<", ";
+      }
+      os << row[i][j];
+    }
+    os << ")";
+  }
+  os <<"), maxerror=(";
+  for (int i=0;i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << maxerr[i];
+  }
+  os <<"), minerror=(";
+  for (int i=0;i<numpred;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << minerr[i];
+  }
+  os <<"), msqerror=(";
+  for (int i=0;i<numpred;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << msqerr[i];
+  }
+  os <<"), meanabserror=(";
+  for (int i=0;i<numpred;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << meanabserr[i];
+  }
+  os <<"), meanerror=(";
+  for (int i=0;i<numpred;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << meanerr[i];
+  }
+  os <<"), resids=(";
+  for (int i=0;i<numsamples;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << resids[i];
+  }
+  return os;
+}
+
 
 PredictionStats::PredictionStats()
 {
   valid=0; usertags=0;
   msqerr=meanabserr=meanerr=minerr=maxerr=0;
 }
+
+PredictionStats::PredictionStats(const PredictionStats &rhs)
+{
+  valid=rhs.valid;
+  usertags=rhs.usertags;
+  numsamples=rhs.numsamples;
+  numpred=rhs.numsamples;
+  maxlag=rhs.maxlag;
+  acfconf=rhs.acfconf;
+  msqerr = new double [numpred]; memcpy(msqerr,rhs.msqerr,sizeof(double)*numpred);
+  meanabserr = new double [numpred]; memcpy(meanabserr,rhs.meanabserr,sizeof(double)*numpred);
+  meanerr = new double [numpred]; memcpy(meanerr,rhs.meanerr,sizeof(double)*numpred);
+  minerr = new double [numpred]; memcpy(minerr,rhs.minerr,sizeof(double)*numpred);
+  maxerr = new double [numpred]; memcpy(maxerr,rhs.maxerr,sizeof(double)*numpred);
+  medianresid=rhs.medianresid;
+  sigacffrac=rhs.sigacffrac;
+  tpfrac=rhs.tpfrac;
+  scfrac=rhs.scfrac;
+  portmanteauQ=rhs.portmanteauQ;
+  r2normfit=rhs.r2normfit;
+}
+
+PredictionStats & PredictionStats::operator=(const PredictionStats &rhs)
+{
+  this->~PredictionStats();
+  return *(new(this)PredictionStats(rhs));
+}
+
 
 int PredictionStats::Initialize(int numpred)
 {
@@ -309,7 +442,7 @@ PredictionStats::~PredictionStats()
   CHK_DEL_MAT(maxerr);
 }
 
-double PredictionStats::GetMeanSquaredError(int pred)
+double PredictionStats::GetMeanSquaredError(int pred) const
 {
   if (pred<1 || pred > numpred) {
     return 9.9e99;
@@ -319,7 +452,7 @@ double PredictionStats::GetMeanSquaredError(int pred)
 }
 
 
-double PredictionStats::GetMeanAbsError(int pred)
+double PredictionStats::GetMeanAbsError(int pred) const
 {
   if (pred<1 || pred > numpred) {
     return 9.9e99;
@@ -327,7 +460,7 @@ double PredictionStats::GetMeanAbsError(int pred)
     return meanabserr[pred-1];
   }
 }
-double PredictionStats::GetMeanError(int pred)
+double PredictionStats::GetMeanError(int pred) const
 {
   if (pred<1 || pred > numpred) {
     return 9.9e99;
@@ -336,7 +469,7 @@ double PredictionStats::GetMeanError(int pred)
   }
 }
 
-double PredictionStats::GetMinError(int pred)
+double PredictionStats::GetMinError(int pred) const
 {
   if (pred<1 || pred > numpred) {
     return 9.9e99;
@@ -345,7 +478,7 @@ double PredictionStats::GetMinError(int pred)
   }
 }
   
-double PredictionStats::GetMaxError(int pred)
+double PredictionStats::GetMaxError(int pred) const
 {
   if (pred<1 || pred > numpred) {
     return 9.9e99;
@@ -357,7 +490,7 @@ double PredictionStats::GetMaxError(int pred)
 
 
 int PredictionStats::Pack(PackDoubles PD,
-			  PackInts    PI)
+			  PackInts    PI) 
 {
   PI(&valid,1);
   PI(&usertags,1);
@@ -382,7 +515,7 @@ int PredictionStats::Pack(PackDoubles PD,
 }
 
 int PredictionStats::Unpack(UnpackDoubles UD,
-			    UnpackInts    UI)
+			    UnpackInts    UI) 
 {
   UI(&valid,1);
   UI(&usertags,1);
@@ -412,7 +545,7 @@ int PredictionStats::Unpack(UnpackDoubles UD,
 #define PRINT_INT(out,name) fprintf((out),"%s:\t%d\n",STRINGIZE(name),name)
 #define PRINT_FLOAT(out,name) fprintf((out),"%s:\t%f\n",STRINGIZE(name),name)
 
-int PredictionStats::Dump(FILE *out)
+int PredictionStats::Dump(FILE *out) const
 {
   fprintf(out,"PredictionStats::Dump\n");
   PRINT_HEX(out,valid);
@@ -439,4 +572,63 @@ int PredictionStats::Dump(FILE *out)
 	    meanerr[i], minerr[i], maxerr[i]);
   }
   return 0;
+}
+
+
+ostream & PredictionStats::operator<<(ostream &os) const
+{
+  os<<"PredictionStats(valid="<<valid<<", usertags="<<usertags<<", numsamples="<<numsamples
+    <<", numpred="<<numpred<<", maxlag="<<maxlag<<", acfconf="<<acfconf<<", medianresid="
+    <<medianresid<<", sigacffrac="<<sigacffrac<<", tpfrac="<<tpfrac<<", scfrac="<<scfrac
+    <<", portmanteauQ="<<portmanteauQ<<", r2normfit="<<r2normfit;
+  os <<", msqerr=(";
+  for (int i=0; i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << msqerr[i];
+  }
+  os <<")";
+  os <<", msqerr=(";
+  for (int i=0; i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << msqerr[i];
+  }
+  os <<")";
+  os <<", meanabserr=(";
+  for (int i=0; i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << meanabserr[i];
+  }
+  os <<")";
+  os <<", meanerr=(";
+  for (int i=0; i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << meanerr[i];
+  }
+  os <<")";
+  os <<", minerr=(";
+  for (int i=0; i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << minerr[i];
+  }
+  os <<")";
+  os <<", maxerr=(";
+  for (int i=0; i<numpred;i++) {
+    if (i>0) {
+      os << ", ";
+    }
+    os << maxerr[i];
+  }
+  os <<")";
+  os <<")";
+  return os;
 }

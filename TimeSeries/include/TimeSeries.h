@@ -6,6 +6,7 @@
 #include "none.h"
 #include "mean.h"
 #include "bestmean.h"
+#include "bestmedian.h"
 #include "last.h"
 #include "ar.h"
 #include "ma.h"

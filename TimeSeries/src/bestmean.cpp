@@ -26,6 +26,7 @@ BestMeanModel::~BestMeanModel()
 
 BestMeanModel & BestMeanModel::operator=(const BestMeanModel &rhs)
 {
+  this->~BestMeanModel();
   return *(new(this)BestMeanModel(rhs));
 }
 
@@ -137,6 +138,7 @@ BestMeanPredictor::~BestMeanPredictor()
 
 BestMeanPredictor & BestMeanPredictor::operator=(const BestMeanPredictor &rhs)
 {
+  this->~BestMeanPredictor();
   return *(new(this)BestMeanPredictor(rhs));
 }
 
@@ -260,6 +262,7 @@ ostream & BestMeanPredictor::operator<<(ostream &os) const
     }
     os <<samples[i];
   }
+  os << "))";
   return os;
 }
 
@@ -278,6 +281,7 @@ BestMeanModeler::~BestMeanModeler()
 
 BestMeanModeler & BestMeanModeler::operator=(const BestMeanModeler &rhs)
 {
+  this->~BestMeanModeler();
   return *(new(this)BestMeanModeler(rhs));
 }
 

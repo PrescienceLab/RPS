@@ -36,12 +36,12 @@ inline double UniformRandom()
   return drand48();
 }
 
-inline double UniformRandom(double lower, double upper)
+inline double UniformRandom(const double lower, const double upper)
 {
   return lower + (upper-lower)*UniformRandom();
 }
 
-inline double NormalRandom(double mean, double sdev)
+inline double NormalRandom(const double mean, const double sdev)
 {
   const int n=12;
   int i;
@@ -55,7 +55,7 @@ inline double NormalRandom(double mean, double sdev)
   return mean + sdev*((sum-((double)n)/2.0)/sqrt(((double)n)/12.0));
 }
 
-inline double ExpRandom(double mean)
+inline double ExpRandom(const double mean)
 {
   return -mean*log(UniformRandom());
 }

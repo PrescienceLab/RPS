@@ -2,7 +2,9 @@
 #define _await
 
 #include <new>
+#include <typeinfo>
 #include "abstract.h"
+#include "pdqparamsets.h"
 
 template <class MODELER> 
 class AwaitingPredictor : public Predictor {
@@ -67,6 +69,7 @@ class AwaitingPredictor : public Predictor {
       seq[cur]=obs;
       cur++;
       if (cur==seqlen) { 
+	RPSLog(CONTEXT,10,"Fitting model given that we now have %d points\n",cur);
 	FitNow();
       } 
       return obs;
@@ -100,23 +103,37 @@ class AwaitingPredictor : public Predictor {
   }
 
   void Dump(FILE *out=stdout) const {
-    fprintf(out, "AwaitingPredictor cur=%d seqlen=%d lastobs=%f curmodel and curpredictor follow\n",
-	    cur,seqlen,lastobs);
-    if (model) { 
+    fprintf(out, "AwaitingPredictor<%s> cur=%d seqlen=%d lastobs=%f parameterset, model, predictor and sequence follow\n",
+	    typeid(MODELER).name(),cur,seqlen,lastobs);
+    if (ps) {
+      ps->Dump(out);
+    } else {
+      fprintf(out,"No Parameter Set\n");
+    }
+    if (model) {
       model->Dump(out);
     } else {
-      fprintf(out,"No current model\n");
-    } 
-    if (pred) { 
-      pred->Dump(out);  
+      fprintf(out,"No Current Model\n");
+    }
+    if (pred) {
+      pred->Dump(out);
     } else {
-      fprintf(out,"No current predictor\n");
+      fprintf(out,"No Current Predictor\n");
+    }
+    for (int i=0;i<seqlen;i++) {
+      fprintf(out,"%f\n",seq[i]);
     }
   }
   ostream & operator<<(ostream &os) const {
-    os << "AwaitingPredictor(cur="<<cur<<", seqlen="<<seqlen<<", lastobs="<<lastobs<<", model=";
+    os << "AwaitingPredictor<"<<typeid(MODELER).name()<<">(cur="<<cur<<", seqlen="<<seqlen<<", lastobs="<<lastobs<<", ps=";
+    if (ps) {
+      os << *ps;
+    } else {
+      os<<"none";
+    }
+    os << ", model=";
     if (model) {
-      os <<*model;
+      os << *model;
     } else {
       os <<"none";
     }
@@ -126,7 +143,14 @@ class AwaitingPredictor : public Predictor {
     } else {
       os <<"none";
     }
-    os <<")";
+    os << ", seq=("; 
+    for (int i=0;i<seqlen;i++) {
+      if (i>0) {
+	os << ", ";
+      }
+      os << seq[i];
+    }
+    os << "))";
     return os;
   }
 };
@@ -162,11 +186,21 @@ class AwaitingModel : public Model {
     return new AwaitingPredictor<MODELER>(*params,awaitinterval);
   }
   void Dump(FILE *out=stdout) const {
-    fprintf(out,"AwaitingModel, awaitinterval=%d, parameterset follows\n", awaitinterval);
-    params->Dump(out);
+    fprintf(out,"AwaitingModel<%s>, awaitinterval=%d, parameterset follows\n", typeid(MODELER).name(),awaitinterval);
+    if (params) {
+      params->Dump(out);
+    } else {
+      fprintf(out,"No Parameter Set\n");
+    }
   }
   ostream & operator<<(ostream &os) const {
-    os <<"AwaitingModel(awaitinterval="<<awaitinterval<<", params="<<*params<<")";
+    os <<"AwaitingModel<"<<typeid(MODELER).name()<<">(awaitinterval="<<awaitinterval<<", params=";
+    if (params) {
+      os << *params;
+    } else {
+      os <<"none";
+    }
+    os <<")";
     return os;
   }
 };
@@ -183,19 +217,25 @@ class AwaitingModeler : public Modeler {
   AwaitingModeler() {}
   AwaitingModeler(const AwaitingModeler<MODELER> &rhs) {}
   ~AwaitingModeler() {}
-  AwaitingModeler &operator=(const AwaitingModeler<MODELER> &rhs) { return *(new(this)AwaitingModeler<MODELER>(rhs));}
-  static Model *Fit(const double *sequence, const int len, const ParameterSet &ps) {
-    assert(0);
-  }
+  AwaitingModeler &operator=(const AwaitingModeler<MODELER> &rhs) { 
+    this->~AwaitingModeler();
+    return *(new(this)AwaitingModeler<MODELER>(rhs));}
   static AwaitingModel<MODELER> *Fit(const ParameterSet &ps,
 				     const int awaitinterval) {
     return new AwaitingModel<MODELER>(ps,awaitinterval);
   }
+  static Model *Fit(const double *sequence, const int len, const ParameterSet &ps) {
+    assert(ps.GetType()==AwaitingPDQ);
+    const AwaitingPDQParameterSet &aps = (const AwaitingPDQParameterSet &)ps;
+    PDQParameterSet p(aps);
+    int await; aps.GetAwait(await);
+    return Fit(p,await);
+  }
   void Dump(FILE *out=stdout) const {
-    fprintf(out,"AwaitingModeler\n");
+    fprintf(out,"AwaitingModeler<%s>\n",typeid(MODELER).name());
   }
   ostream & operator<<(ostream &os) const {
-    os <<"AwaitingModeler()";
+    os <<"AwaitingModeler<"<<typeid(MODELER).name()<<">()";
     return os;
   }
 };

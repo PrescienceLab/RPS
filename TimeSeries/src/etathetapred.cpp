@@ -38,6 +38,7 @@ EtaThetaPredictor::~EtaThetaPredictor()
 
 EtaThetaPredictor & EtaThetaPredictor::operator=(const EtaThetaPredictor &rhs)
 {
+  this->~EtaThetaPredictor();
   return *(new(this) EtaThetaPredictor(rhs));
 }
 
@@ -340,14 +341,16 @@ ostream & EtaThetaPredictor::operator<<(ostream &os) const
    ComputeCoVariances(NUM_COVARS_TO_PRINT,covars);
    for (i=0;i<NUM_COVARS_TO_PRINT;i++) {
      if (i>0) {
-       os <<";";
+       os <<",";
      }
+     os << "(";
      for (j=0;j<NUM_COVARS_TO_PRINT;j++) { 
        if (j>0) {
 	 os << ", ";
        }
        os << covars[i*NUM_COVARS_TO_PRINT+j];
      }
+     os << ")";
    }
    os << ")";
    delete [] covars;

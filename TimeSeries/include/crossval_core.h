@@ -20,12 +20,12 @@
 // Tags
 #define BLOWUP_TAG    1
 
-typedef int (*PackDoubles)(double *buf,int len);
-typedef int (*UnpackDoubles)(double *buf,int len);
-typedef int (*PackInts)(int *buf,int len);
-typedef int (*UnpackInts)(int *buf,int len);
-typedef int (*PackString)(char *buf, int len);
-typedef int (*UnpackString)(char *buf, int len);
+typedef int (*PackDoubles)( double *buf, int len);
+typedef int (*UnpackDoubles)(double *buf,  int len);
+typedef int (*PackInts)( int *buf, int len);
+typedef int (*UnpackInts)(int *buf,  int len);
+typedef int (*PackString)( char *buf,  int len);
+typedef int (*UnpackString)(char *buf,  int len);
 
 #define TAGLEN 40
 typedef char Tag[TAGLEN];
@@ -78,16 +78,6 @@ public:
   }
   Testcase *GenerateRandomTestcase();
 };
-
-/* moved to "fit"
-Model *FitThis(ModelType mclass,
-	       double *seq, int numsamples, 
-	       int p, double d, int q);
-
-
-Model *FitThis(double *seq, int numsamples, 
-	       int p, double d, int q);
-	       */
 
 int Simulate(double          *seq,
 	     Testcase        *testcase,

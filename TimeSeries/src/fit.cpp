@@ -533,7 +533,7 @@ Model *FitThis(const double *seq, const int numsamples, const ModelTemplate &mt)
   }
 }
     
-ModelTemplate *ParseModel(const int argc, const char *argv[])
+ModelTemplate *ParseModel(const int argc, char *argv[])
 {
   int p=0;
   double d=0;
@@ -717,6 +717,10 @@ ModelTemplate *ParseModel(const char *buf)
     i++;
   }
   
+  // note that I *know* that ParseModel will not
+  // alias argv and screw it up.  
+  // furthermore, I am deleting argv very soon
+  // at the end of the function
   mt = ParseModel(i,argv);
   
  out:
@@ -736,20 +740,39 @@ void ModelTemplate::Print(FILE *out) const
 {
   char *temp = GetName();
 
-  fprintf(out,"ModelTemplate: %s\n", temp);
+  fprintf(out,"ModelTemplate: mt=%d human-name='%s' Parameter Set Follows\n", mt, temp);
+  if (ps) {
+    ps->Dump(out);
+  } else {
+    fprintf(out, "No Parameter Set\n");
+  }
   
   delete [] temp;
+}
+
+void ModelTemplate::Dump(FILE *out) const
+{
+  Print(out);
 }
 
 ostream &ModelTemplate::Print(ostream &os) const
 {
   char *temp = GetName();
 
-  os<<"ModelTemplate("<<temp<<")";
-  
+  os<<"ModelTemplate(mt="<<mt<<", ps=";
+  if (ps) { 
+    os << *ps;
+  } else {
+    os <<"none";
+  }
+  os <<", human-name='"<<temp<<"')";
   delete [] temp;
-  
   return os;
+}
+
+ostream &ModelTemplate::operator<<(ostream &os) const
+{
+  return Print(os);
 }
 
 char *ModelTemplate::GetName() const

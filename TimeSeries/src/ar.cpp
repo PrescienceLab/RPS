@@ -20,12 +20,13 @@ ARModel::ARModel(const ARModel &rhs)
 ARModel::~ARModel()
 {
   if (coeffs!=0) {
-    delete coeffs;
+    delete [] coeffs;
   }
 }
 
 ARModel & ARModel::operator=(const ARModel &rhs)
 {
+  this->~ARModel();
   return *(new(this)ARModel(rhs));
 }
 
@@ -33,7 +34,7 @@ ARModel & ARModel::operator=(const ARModel &rhs)
 void ARModel::Initialize(const int order)
 {
   if (coeffs!=0) {
-    delete coeffs;
+    delete [] coeffs;
   }
   
   this->order=order;
@@ -166,6 +167,7 @@ ARModeler::~ARModeler()
 
 ARModeler & ARModeler::operator=(const ARModeler &rhs)
 {
+  this->~ARModeler();
   return *(new(this)ARModeler(rhs));
 }
 

@@ -30,6 +30,7 @@ ARIMAModel::~ARIMAModel()
 
 ARIMAModel & ARIMAModel::operator=(const ARIMAModel &rhs)
 {
+  this->~ARIMAModel();
   return *(new(this)ARIMAModel(rhs));
 }
 
@@ -166,7 +167,7 @@ void ARIMAModel::Dump(FILE *out) const
 
 ostream & ARIMAModel::operator<<(ostream &os) const 
 {
-  os <<" ARIMAModel(p="<<p<<", d="<<d<<", q="<<q<<", mean="<<mean<<", variance="<<variance<<", phis=(";
+  os <<"ARIMAModel(p="<<p<<", d="<<d<<", q="<<q<<", mean="<<mean<<", variance="<<variance<<", phis=(";
   for (int i=0;i<p;i++) {
     if (i>0) { 
       os <<", ";
@@ -235,6 +236,7 @@ ARIMAModeler::~ARIMAModeler()
 
 ARIMAModeler & ARIMAModeler::operator=(const ARIMAModeler &rhs)
 {
+  this->~ARIMAModeler();
   return *(new(this)ARIMAModeler(rhs));
 }
 

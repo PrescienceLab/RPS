@@ -6,7 +6,13 @@ use Getopt::Long;
 
 &GetOptions(("matlab"=>\$matlab, "step"=>\$step));
 
-$#ARGV>= 2 or die "usage: plot_impulse_resp.pl [--matlab] [--step] file length model\n";
+$#ARGV>= 2 or die 
+"usage: plot_impulse_resp.pl [--matlab] [--step] file length model\n\n".
+"Plots the impulse response of a time series model fitted to the data\n".
+"in file.  The response is plotted to length steps.  For information\n".
+"on models, run ts_example.  Gnuplot is used for plotting unless \n".
+"--matlab is stated, which gives a more in-depth presentation\n".
+"--step plots the step response instead of the impulse response\n\nPart of RPS (http://www.cs.northwestern.edu/~RPS)\n\n";
 
 $infile = shift; 
 $resplen=shift;
@@ -48,6 +54,7 @@ DONE
 
   print MATLAB $cmds;
 
+  print "<enter> to exit, p file<enter> to print\n";
 
   $finish = <STDIN>;
   if ($finish =~ /^p\s+(.*)/) {
@@ -62,6 +69,8 @@ DONE
   GNUPLOT->autoflush(1);
   $cmds = <<DONE2
 set title "impulse response of $infile $model
+set xlabel "lag"
+set ylabel "absolute response"
 plot "impulseresp.txt" using 1:3 with linespoints
 DONE2
 ;
@@ -70,6 +79,8 @@ DONE2
   }
 
   print GNUPLOT $cmds;
+
+  print "<enter> to exit, p file<enter> to print\n";
 
   $finish = <STDIN>;
   if ($finish =~ /^p\s+(.*)/) {

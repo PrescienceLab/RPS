@@ -1,8 +1,11 @@
 #ifndef _managed
 #define _managed
 
+#include <new>
+#include <typeinfo>
 #include "abstract.h"
 #include "rps_log.h"
+#include "pdqparamsets.h"
 
 template <class MODELER> 
 class ManagedPredictor : public Predictor {
@@ -47,6 +50,31 @@ class ManagedPredictor : public Predictor {
     err_s2=0;
   }
  public:
+  ManagedPredictor() :
+    num_await(0), num_refit(0), min_num_test(0), errlimit(0), varlimit(0), params(0),
+    seq(0),  cur(0), err_n(0), err_nres(0), err_s(0), err_res(0), err_s2(0), lastpred(0), 
+    curmodel(0), curpred(0)
+  {}
+
+  ManagedPredictor(const ManagedPredictor &rhs) {
+    num_await=rhs.numawait;
+    num_refit=rhs.numrefit;
+    min_num_test=rhs.min_num_test;
+    errlimit=rhs.errlimit;
+    varlimit=rhs.errlimit;
+    params=rhs.params->Clone();
+    seq = new double [num_refit];
+    memcpy(seq,rhs.seq,num_refit*sizeof(double));
+    cur = rhs.cur;
+    err_n=rhs.err_n;
+    err_nres=rhs.err_nres;
+    err_s=rhs.err_s;
+    err_s2=rhs.err.s2;
+    lastpred=rhs.lastpred;
+    curmodel=rhs.curmodel->Clone();
+    curpred=rhs.curpred->Clone();
+  }
+   
   ManagedPredictor(ParameterSet *params,
 		   int num_await,
 		   int num_refit,
@@ -70,6 +98,7 @@ class ManagedPredictor : public Predictor {
     curmodel=0;
     curpred=0;
   }
+
   ~ManagedPredictor() { 
     CHK_DEL_MAT(seq);
     cur=0;
@@ -77,13 +106,19 @@ class ManagedPredictor : public Predictor {
     CHK_DEL(curpred);
     CHK_DEL(params);
   }
+
+  ManagedPredictor & operator=(const ManagedPredictor &rhs) {
+    this->~ManagedPredictor();
+    return *(new(this)ManagedPredictor<MODELER>(rhs));
+  }
+
   int Begin() {
     return 0;
   }
-  int StepsToPrime() { 
+  int StepsToPrime() const { 
     return 0;
   }
-  double Step(double obs) {
+  double Step(const double obs) {
     seq[cur%num_refit]=obs;
     cur++;
     // First, see if we can now fit for the first time
@@ -141,7 +176,7 @@ class ManagedPredictor : public Predictor {
     }
   }
   
-  int Predict(int maxahead, double *predictions) {
+  int Predict(const int maxahead, double *predictions) const {
     if (curpred==0) { 
       for (int i=0;i<maxahead;i++) { 
 	predictions[i]=lastpred;
@@ -152,8 +187,8 @@ class ManagedPredictor : public Predictor {
     }
   }
   
-  int ComputeVariances(int maxahead, double *vars, 
-		       enum VarianceType vtype=POINT_VARIANCES) {
+  int ComputeVariances(const int maxahead, double *vars, 
+		       const enum VarianceType vtype=POINT_VARIANCES) const {
     if (curpred) { 
       return curpred->ComputeVariances(maxahead,vars,vtype);
     } else {
@@ -165,9 +200,14 @@ class ManagedPredictor : public Predictor {
     }
   }
 
-  void Dump(FILE *out=stdout) {
-    fprintf(out, "ManagedPredictor cur=%d num_refit=%d num_refit=%d curmodel and curpredictor follow\n",
-	    cur,num_refit,num_refit);
+  void Dump(FILE *out=stdout) const {
+    fprintf(out, "ManagedPredictor<%s> cur=%d num_await=%d num_refit=%d min_num_test=%d errlimit=%f varlimit=%f err_n=%d err_nres=%d err_s=%f err_res=%f err_s2=%f lastpred=%f, parameter set, curmodel, curpredictor, and sequence follow\n",
+	    typeid(MODELER).name(),cur,num_await,num_refit,min_num_test,errlimit,varlimit,err_n,err_nres,err_s,err_res,err_s2,lastpred);
+    if (params) { 
+      params->Dump(out);
+    } else {
+      fprintf(out,"No parameter set\n");
+    }
     if (curmodel) {
       curmodel->Dump(out);
     } else {
@@ -178,8 +218,44 @@ class ManagedPredictor : public Predictor {
     } else {
       fprintf(out,"No current predictor\n");
     }
+    for (int i=0;i<num_refit;i++) {
+      fprintf(out,"%f\n",seq[i]);
+    }
   }
+  ostream & operator<<(ostream &os) const {
+    os << "ManagedPredictor<"<<typeid(MODELER).name()<<"<(num_await="<<num_await<<", num_refit="<<num_refit<<", min_num_test="<<min_num_test<<", errlimit="<<errlimit<<", varlimit="<<varlimit<<", err_n="<<err_n<<", err_nres="<<err_nres<<", err_s="<<err_s<<", err_res="<<err_res<<", err_s2="<<err_s2<<", lastpred="<<lastpred<<", ps=";
+    if (params) {
+      os << *params;
+    } else {
+      os << "none";
+    }
+    os <<", curmodel=";
+    if (curmodel) {
+      os <<*curmodel;
+    } else {
+      os <<"none";
+    }
+    os <<", curpred=";
+    if (curpred) {  
+      os << *curpred;
+    } else {
+      os <<"none";
+    }
+    os << ", cur="<<cur<<", seq=("; 
+    for (int i=0;i<num_refit;i++) {
+      if (i>0) {
+	os << ", ";
+      }
+      os << seq[i];
+    }
+    os << "))";
+    return os;
+  }
+};
 
+template <class MODELER>
+inline ostream & operator<< (ostream &os, const ManagedPredictor<MODELER> &p) {
+  return p.operator<<(os);
 };
 
 
@@ -193,6 +269,12 @@ class ManagedModel : public Model {
   double varlimit;
   ParameterSet *params;
  public:
+  ManagedModel() : num_await(0), num_refit(0), min_num_test(0), errlimit(0), varlimit(0), params(0) 
+  {}
+  ManagedModel(const ManagedModel<MODELER> &rhs) : num_await(rhs.num_await), num_refit(rhs.num_refit),
+    min_num_test(rhs.min_num_test), errlimit(rhs.errlimit), varlimit(rhs.varlimit),
+    params(rhs.params->Clone()) 
+  {}
   ManagedModel(const ParameterSet &ps,
 	       int num_await,
 	       int num_refit,
@@ -209,7 +291,12 @@ class ManagedModel : public Model {
   ~ManagedModel() { 
     CHK_DEL(params);
   }
-  Predictor * MakePredictor() { 
+  ManagedModel<MODELER> & operator=(const ManagedModel<MODELER> &rhs) {
+    this->~ManagedModel();
+    return *(new(this)ManagedModel<MODELER>(rhs));
+  }
+
+  Predictor * MakePredictor() const { 
     return new ManagedPredictor<MODELER>(params,
 					 num_await,
 					 num_refit,
@@ -218,10 +305,31 @@ class ManagedModel : public Model {
 					 varlimit);
 					 
   }
-  void Dump(FILE *out=stdout) {
-    fprintf(out,"ManagedModel, num_await=%d num_refit=%d min_num_test=%d, errlimit=%f varlimit=%f\n", num_await, num_refit, min_num_test, errlimit, varlimit);
-
+  void Dump(FILE *out=stdout) const {
+    fprintf(out,"ManagedModel<%s> num_await=%d num_refit=%d min_num_test=%d, errlimit=%f varlimit=%f paramters follow\n", 
+	    typeid(MODELER).name(), num_await, num_refit, min_num_test, errlimit, varlimit);
+    if (params) {
+      params->Dump(out);
+    } else {
+      fprintf(out,"No Parameter Set\n");
+    }
   }
+  ostream & operator<< (ostream &os) const {
+    os <<"ManagedModel<"<<typeid(MODELER).name()<<">(num_await="<<num_await<<", num_refit="<<num_refit
+       <<", min_num_test="<<min_num_test<<", errlimit="<<errlimit<<", varlimit="<<varlimit<<", params=";
+    if (params) { 
+      os << *params;
+    } else {
+      os <<"none";
+    }
+    os << ")";
+    return os;
+  }
+};
+
+template <class MODELER>
+inline ostream & operator<< (ostream &os, const ManagedModel<MODELER> &p) {
+  return p.operator<<(os);
 };
 
 
@@ -236,19 +344,46 @@ class ManagedModel : public Model {
 template <class MODELER>
 class ManagedModeler : public Modeler {
  public:
-  static Model *Fit(double *sequence, int len, const ParameterSet &ps) {
-    assert(0);
+  ManagedModeler() {}
+  ManagedModeler(const ManagedModeler &rhs) {}
+  ~ManagedModeler() {}
+  ManagedModeler & operator= (const ManagedModeler &rhs) {
+    this->~ManagedModeler();
+    return *(new(this)ManagedModeler<MODELER>(rhs));
   }
   static ManagedModel<MODELER> *Fit(const ParameterSet &ps,
-				    int num_await,
-				    int num_refit,
-				    int min_num_test,
-				    double errlimit,
-				    double varlimit) {
+				    const int num_await,
+				    const int num_refit,
+				    const int min_num_test,
+				    const double errlimit,
+				    const double varlimit) {
     assert(num_refit>=num_await);
     return new ManagedModel<MODELER>(ps,num_await,num_refit,min_num_test,
 				     errlimit, varlimit);
   }
+  static Model *Fit(double *sequence, int len, const ParameterSet &ps) {
+    assert(ps.GetType()==ManagedPDQ);
+    const ManagedPDQParameterSet &aps = (const ManagedPDQParameterSet &)ps;
+    PDQParameterSet p(aps);
+    int await; aps.GetAwait(await);
+    int refit; aps.GetRefit(refit);
+    int min_num_test; aps.GetMinTest(min_num_test);
+    double errlimit; aps.GetErrorLimit(errlimit);
+    double varlimit; aps.GetVarLimit(varlimit);
+    return Fit(p,await,refit,min_num_test,errlimit,varlimit);
+  }
+  void Dump(FILE *out=stdout) const {
+    fprintf(out,"ManagedModeler<%s>\n",typeid(MODELER).name());
+  }
+  ostream & operator<<(ostream &os) const {
+    os <<"ManagedModeler<"<<typeid(MODELER).name()<<">()";
+    return os;
+  }
+};
+
+template <class MODELER>
+inline ostream & operator<< (ostream &os, const ManagedModeler<MODELER> &p) {
+  return p.operator<<(os);
 };
 
 

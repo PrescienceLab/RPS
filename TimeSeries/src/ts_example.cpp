@@ -118,6 +118,8 @@ int main(int argc, char *argv[])
      exit(-1);
    }
 
+   if (!getenv("RPS_NEWSTYLEOUTPUT")) { mt->Dump(stderr);} else { cerr<<*mt<<endl;}
+
    model=FitThis(&(seq[fitfirst]),fitnum,*mt);
 
    if (model==0) {
@@ -125,7 +127,7 @@ int main(int argc, char *argv[])
      exit(-1);
    }
 
-   model->Dump(stderr);
+   if (!getenv("RPS_NEWSTYLEOUTPUT")) { model->Dump(stderr); } else { cerr<<*model<<endl;}
 
    CHK_DEL(pred);
 
@@ -145,7 +147,8 @@ int main(int argc, char *argv[])
      pred->Step(seq[i]);
    }
 
-   pred->Dump(stderr);
+   if (!getenv("RPS_NEWSTYLEOUTPUT")) { pred->Dump(stderr); } else { cerr<<*pred<<endl;}
+
 
    // now we can ask the predictor what it thinks its prediction
    // errors will be:
@@ -203,7 +206,7 @@ int main(int argc, char *argv[])
    eval.Drain();
    PredictionStats *teststats = eval.GetStats();
 
-   teststats->Dump(stderr);
+   if (!getenv("RPS_NEWSTYLEOUTPUT")) { teststats->Dump(stderr); } else { cerr<<*teststats<<endl;}
 
    // Cleanup nicely
    CHK_DEL(model);

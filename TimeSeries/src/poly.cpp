@@ -112,6 +112,7 @@ Polynomial::~Polynomial()
 
 Polynomial & Polynomial::operator=(const Polynomial &rhs)
 {
+  this->~Polynomial();
   return *(new(this)Polynomial(rhs));
 }
 

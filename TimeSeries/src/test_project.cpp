@@ -15,11 +15,10 @@ void usage(const char *n)
   char *s=GetAvailableModels();
   char *b=GetRPSBanner();
   fprintf(stdout,
-	  "Fit and predict using a model\n\n"
-	  "usage: %s inputfile numahead conf|noconf model\n\n"
+	  "Fit a model to file and predict the next n values\n\n"
+	  "usage: %s inputfile numahead model\n\n"
 	  "inputfile   = 1 or 2 column ascii input file\n"
 	  "numahead    = steps into the future to predict\n"
-	  "conf|noconf = show 95%% confidence intervals or not\n"
 	  "model       = predictive model (see below)\n\n%s\n%s\n",n,s,b);
   delete [] s;
   delete [] b;
@@ -29,28 +28,27 @@ void usage(const char *n)
 int main(int argc, char *argv[])
 {
    char *infile;
-   int numahead, conf;
+   int numahead;
 
    int numsamples;
    double *seq;
    double *predictions;
    double *variances;
-   int first_model=4;
-   int i,j;
+   int first_model=3;
+   int i;
 
    ModelTemplate *mt;
    Model *model;
    Predictor *pred;
 
 
-   if (argc<5) {
+   if (argc<4) {
       usage(argv[0]);
       exit(-1);
    }
 
    infile=argv[1];
    numahead=atoi(argv[2]);
-   conf = !strcmp(argv[3],"conf");
 
    predictions = new double [numahead];
    variances = new double [numahead];
@@ -103,17 +101,16 @@ int main(int argc, char *argv[])
    pred->Begin();
 
    for (i=0;i<numsamples;i++) {
+     fprintf(stdout,"%d\t%f\t%f\n",i,seq[i],0.0);
      pred->Step(seq[i]);
-     pred->Predict(numahead,predictions);
-     fprintf(stdout,"%f",seq[i]);
-     for (j=0;j<numahead;j++) {
-       fprintf(stdout," %f",predictions[j]);
-       if (conf) {
-         fprintf(stdout," %f",1.96*sqrt(variances[j]));  // 95% conf
-       }
-     }
-     fprintf(stdout,"\n");
    }
+
+   pred->Predict(numahead,predictions);
+
+   for (i=0;i<numahead;i++) {
+     fprintf(stdout,"%d\t%f\t%f\n",i+numsamples,0.0,predictions[i]);
+   }
+
    return 0;
 }
 

@@ -14,7 +14,7 @@ struct ModelTemplate;
 
 char *GetAvailableModels();
 
-ModelTemplate *ParseModel(const int argc, const char *argv[]);
+ModelTemplate *ParseModel(const int argc, char *argv[]);
 ModelTemplate *ParseModel(const char *buf);
 
 Model *FitThis(const double *seq, const int numsamples, const ModelTemplate &mt);
@@ -80,8 +80,14 @@ struct ModelTemplate {
   int _Unpack(ByteStream &bs);
   
   void Print(FILE *out=stdout) const;
-  void Dump(FILE *out=stdout) const { Print(out);}
+  void Dump(FILE *out=stdout) const;
   ostream &Print(ostream &os) const;
+  ostream &operator<<(ostream &os) const;
 };
+
+
+inline ostream & operator<< (ostream &os, const ModelTemplate &p) {
+  return p.operator<<(os);
+}
 
 #endif

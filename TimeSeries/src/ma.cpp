@@ -33,6 +33,7 @@ MAModel::~MAModel()
 
 MAModel & MAModel::operator=(const MAModel &rhs)
 {
+  this->~MAModel();
   return *(new(this) MAModel(rhs));
 }
 
@@ -195,6 +196,7 @@ MAModeler::~MAModeler()
 
 MAModeler & MAModeler:: operator=(MAModeler &rhs)
 {
+  this->~MAModeler();
   return *(new(this)MAModeler(rhs));
 }
 

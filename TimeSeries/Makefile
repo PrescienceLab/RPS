@@ -55,8 +55,10 @@ endif
 # mi               average mutual information profile from abarbanel method
 # polycalc         polynomial calculator
 
-EXECLIST = ts_example 	    \
-           test_generic     \
+EXECLIST = \
+           ts_example 	    \
+           test_fit         \
+	   test_project     \
            evaluate         \
            crossval_generic \
            impulseresp      \
@@ -73,10 +75,29 @@ endif
 
 MAINLIST = $(EXECLIST:=.o)
 
-LIB_TS_OBJECTS_LIST = poly.o ar.o arima.o arfima.o etathetapred.o \
-                      tools.o ma.o arma.o bestmean.o it.o evaluate_core.o \
-                      crossval_core.o mean.o last.o none.o fit.o \
-                      await.o refit.o nr-internal.o bestmedian.o
+LIB_TS_OBJECTS_LIST =    \
+        pdqparamsets.o   \
+        fit.o            \
+        await.o          \
+        refit.o          \
+        managed.o        \
+        none.o           \
+        mean.o           \
+        last.o           \
+        bestmean.o       \
+        bestmedian.o     \
+	ar.o             \
+        ma.o             \
+        arma.o           \
+        arima.o          \
+	arfima.o         \
+	etathetapred.o   \
+        evaluate_core.o  \
+        crossval_core.o  \
+	tools.o          \
+        it.o             \
+	poly.o           \
+        nr-internal.o 
 
 SRCLIST = $(MAINLIST:.o=.cpp) $(LIB_TS_OBJECTS_LIST:.o=.cpp)
 

@@ -11,6 +11,7 @@ NonePredictor::~NonePredictor()
 
 NonePredictor & NonePredictor::operator=(const NonePredictor &rhs)
 {
+  this->~NonePredictor();
   return *(new(this)NonePredictor(rhs));
 }
 
@@ -76,6 +77,7 @@ NoneModel::~NoneModel()
 
 NoneModel & NoneModel::operator=(const NoneModel &rhs)
 {
+  this->~NoneModel();
   return *(new(this)NoneModel(rhs));
 }
 
@@ -102,6 +104,7 @@ NoneModeler::~NoneModeler()
 
 NoneModeler & NoneModeler::operator=(const NoneModeler &rhs)
 {
+  this->~NoneModeler();
   return *(new(this)NoneModeler(rhs));
 }
 

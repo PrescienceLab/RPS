@@ -35,6 +35,7 @@ ARMAModel::~ARMAModel()
 
 ARMAModel & ARMAModel::operator=(const ARMAModel &rhs)
 {
+  this->~ARMAModel();
   return *(new(this)ARMAModel(rhs));
 }
 

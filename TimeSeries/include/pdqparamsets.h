@@ -8,77 +8,84 @@ class PDQParameterSet : public ParameterSet {
   int p,d,q;
 
  public:
-  PDQParameterSet(const int p, const int d, const int q) { 
-    this->p=p; this->d=d; this->q=q;
-  }
-  void Get(int &p, int &d, int &q) const {
-    p=this->p; d=this->d; q=this->q;
-  }
-  void Set(const int p, const int d, const int q) {
-    this->p=p; this->d=d; this->q=q;
-  }
-  ParameterSet *Clone() const { 
-    return new PDQParameterSet(*this);
-  }
-  ParameterSetType GetType() const {
-    return PDQ;
-  }
-  void Print(FILE *out=stdout) const {
-    fprintf(out,"PDQParameterSet(%d,%d,%d)\n",p,d,q);
-  }
+  PDQParameterSet();
+  PDQParameterSet(const PDQParameterSet &rhs);
+  PDQParameterSet(const int p, const int d, const int q);
+  ~PDQParameterSet();
+
+  PDQParameterSet & operator=(const PDQParameterSet &rhs);
+
+  void Get(int &p, int &d, int &q) const;
+  void Set(const int p, const int d, const int q);
+  ParameterSet *Clone() const; 
+  ParameterSetType GetType() const;
+
+  void Print(FILE *out=stdout) const;
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<< (ostream &os, const PDQParameterSet &p) {
+  return p.operator<<(os);
+}
 
 class RefittingPDQParameterSet : public PDQParameterSet {
  protected: 
   int refitint;
  public:
+  RefittingPDQParameterSet();
+  RefittingPDQParameterSet(const RefittingPDQParameterSet &rhs);
   RefittingPDQParameterSet(const int p,
 			   const int d,
 			   const int q,
-			   const int refit) :
-    PDQParameterSet(p,d,q), refitint(refit) {}
-  void GetRefit(int &refit) const { 
-    refit=refitint;
-  }
-  void SetRefit(const int &refit) { 
-    refitint=refit;
-  }
-  ParameterSet *Clone() const { 
-    return new RefittingPDQParameterSet(*this);
-  }
-  ParameterSetType GetType() const { 
-    return RefittingPDQ;
-  }
-  void Print(FILE *out=stdout) const {
-    fprintf(out,"RefittingPDQParameterSet(%d,%d,%d,%d)\n",p,d,q,refitint);
-  }
+			   const int refit);
+  virtual ~RefittingPDQParameterSet();
+  
+  RefittingPDQParameterSet & operator=(const RefittingPDQParameterSet &rhs);
+
+  void GetRefit(int &refit) const;
+  void SetRefit(const int &refit); 
+  ParameterSet *Clone() const;
+  ParameterSetType GetType() const;
+
+  void Print(FILE *out=stdout) const;
+  void Dump(FILE *out=stdout) const;
+  ostream &operator<<(ostream &os) const;
+
 };
+
+inline ostream & operator<< (ostream &os, const RefittingPDQParameterSet &p) {
+  return p.operator<<(os);
+}
 
 class AwaitingPDQParameterSet : public PDQParameterSet {
  protected: 
   int awaitint;
  public:
+  AwaitingPDQParameterSet();
+  AwaitingPDQParameterSet(const AwaitingPDQParameterSet &rhs);
   AwaitingPDQParameterSet(const int p,
-			   const int d,
-			   const int q,
-			  const int await)  :
-    PDQParameterSet(p,d,q), awaitint(await) {}
-  void GetAwait(int &await) const { 
-    await=awaitint;
-  }
-  void SetAwait(const int &await) { 
-    awaitint=await;
-  }
-  ParameterSet *Clone() const { 
-    return new AwaitingPDQParameterSet(*this);
-  }
-  ParameterSetType GetType() const { 
-    return AwaitingPDQ;
-  }
-  void Print(FILE *out=stdout) const {
-    fprintf(out,"AwaitingPDQParameterSet(%d,%d,%d,%d)\n",p,d,q,awaitint);
-  }
+			  const int d,
+			  const int q,
+			  const int await);
+  ~AwaitingPDQParameterSet();
+
+  AwaitingPDQParameterSet & operator=(const   AwaitingPDQParameterSet &rhs);
+
+  void GetAwait(int &await) const;
+  void SetAwait(const int &await);
+  ParameterSet *Clone() const;
+  ParameterSetType GetType() const;
+
+  void Print(FILE *out=stdout) const;
+  void Dump(FILE *out=stdout) const;
+  ostream &operator<<(ostream &os) const;
 };
+
+inline ostream & operator<< (ostream &os, const AwaitingPDQParameterSet &p) {
+  return p.operator<<(os);
+}
+
 
 class ManagedPDQParameterSet : public PDQParameterSet {
  protected: 
@@ -88,6 +95,8 @@ class ManagedPDQParameterSet : public PDQParameterSet {
   double errlimit;
   double varlimit;
  public:
+  ManagedPDQParameterSet();
+  ManagedPDQParameterSet(const ManagedPDQParameterSet &rhs);
   ManagedPDQParameterSet(const int p,
 			 const int d,
 			 const int q,
@@ -95,51 +104,33 @@ class ManagedPDQParameterSet : public PDQParameterSet {
 			 const int refit,
 			 const int mintest,
 			 const double errlim,
-			 const double varlim) :
-    PDQParameterSet(p,d,q), num_await(await),
-    num_refit(refit), min_num_test(mintest),
-    errlimit(errlim), varlimit(varlim) 
-    {}
-  void GetAwait(int &await) const { 
-    await=num_await;
-  }
-  void SetAwait(const int &await) { 
-    num_await=await;
-  }
-  void GetRefit(int &refit) const { 
-    refit=num_refit;
-  }
-  void SetRefit(const int &refit) { 
-    num_refit=refit;;
-  }
-  void GetMinTest(int &mintest) const { 
-    mintest=min_num_test;
-  }
-  void SetMinTest(const int &mintest) { 
-    min_num_test=mintest;
-  }
-  void GetErrorLimit(double &errlim) const { 
-    errlim=errlimit;
-  }
-  void SetErrorLimit(const double &errlim) { 
-    errlimit=errlim;
-  }
-  void GetVarLimit(double &varlim) const { 
-    varlim=varlimit;
-  }
-  void SetVarLimit(const double &varlim) { 
-    varlimit=varlim;
-  }
-  ParameterSet *Clone() const { 
-    return new ManagedPDQParameterSet(*this);
-  }
-  ParameterSetType GetType() const { 
-    return ManagedPDQ;
-  }
-  void Print(FILE *out=stdout) const {
-    fprintf(out,"ManagedPDQParameterSet(%d,%d,%d,%d,%d,%d,%f,%f)\n",p,d,q,
-	    num_await,num_refit,min_num_test,errlimit,varlimit);
-  }
+			 const double varlim);
+  ~ManagedPDQParameterSet();
+
+  ManagedPDQParameterSet & operator=(const ManagedPDQParameterSet &rhs);
+
+  void GetAwait(int &await) const;
+  void SetAwait(const int &await);
+  void GetRefit(int &refit) const ;
+  void SetRefit(const int &refit) ;
+  void GetMinTest(int &mintest) const ;
+  void SetMinTest(const int &mintest) ;
+  void GetErrorLimit(double &errlim) const ;
+  void SetErrorLimit(const double &errlim) ;
+  void GetVarLimit(double &varlim) const ;
+  void SetVarLimit(const double &varlim) ;
+
+  ParameterSet *Clone() const;
+  ParameterSetType GetType() const;
+
+  void Print(FILE *out=stdout) const;
+  void Dump(FILE *out=stdout) const ;
+  ostream &operator<<(ostream &os) const;
+
 };
+
+inline ostream & operator<< (ostream &os, const ManagedPDQParameterSet &p) {
+  return p.operator<<(os);
+}
 
 #endif

@@ -24,6 +24,7 @@ BestMedianModel::~BestMedianModel()
 
 BestMedianModel & BestMedianModel::operator=(const BestMedianModel &rhs)
 {
+  this->~BestMedianModel();
   return *(new(this)BestMedianModel(rhs));
 }
 
@@ -64,10 +65,12 @@ BestMedianPredictor::~BestMedianPredictor()
 {
   numsamples=0;
   order=0;
+  window.clear();
 }
 
 BestMedianPredictor & BestMedianPredictor::operator=(const BestMedianPredictor &rhs)
 {
+  this->~BestMedianPredictor();
   return *(new(this)BestMedianPredictor(rhs));
 }
 
@@ -189,6 +192,7 @@ BestMedianModeler::~BestMedianModeler()
 
 BestMedianModeler & BestMedianModeler::operator=(const BestMedianModeler &rhs)
 {
+  this->~BestMedianModeler();
   return *(new(this)BestMedianModeler(rhs));
 }
 

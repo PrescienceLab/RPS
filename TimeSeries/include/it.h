@@ -4,24 +4,24 @@
 
 // Count unique values in sequence
 // values and counts are also allocated and returned
-int CountUnique(double *seq, int len, int *numuniq, 
+int CountUnique(const double *seq, const int len, int *numuniq, 
                 double **values, int **counts);
 // Compute the average information (shannon entropy)
-double AverageInformation(double *seq, int len);
+double AverageInformation(const double *seq, const int len);
 // Compute the average mutual information between two sequences
-double AverageMutualInformation(double *seq1, int len1, 
-				double *seq2, int len2);
+double AverageMutualInformation(const double *seq1, const int len1, 
+				const double *seq2, const int len2);
 // Compute the average mutual information between the sequence and
 // lagged versions of itself
-int    AverageMutualInformationLagged(double *seq, int len,
+int    AverageMutualInformationLagged(const double *seq, const int len,
 				      double *mutinfo, 
-				      int minlag, int steplag, int maxlag);
+				      const int minlag, const int steplag, const int maxlag);
 
 // Compute the fraction of nearest neighbors that are false for
 // global embedding dimensions
-int    GlobalFalseNearestNeighbors(double *seq, int len, int spacing, 
+int    GlobalFalseNearestNeighbors(const double *seq, const int len, const int spacing, 
 				   double *fractfalse, 
-				   int mindim, int stepdim, int maxdim,
-				   double threshold);
+				   const int mindim, const int stepdim, const int maxdim,
+				   const double threshold);
 
 #endif

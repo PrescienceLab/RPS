@@ -29,6 +29,7 @@ ARFIMAModel::ARFIMAModel(const ARFIMAModel &rhs)
 
 ARFIMAModel &ARFIMAModel::operator=(const ARFIMAModel &rhs)
 {
+  this->~ARFIMAModel();
   return *(new(this) ARFIMAModel(rhs));
 }
  
@@ -171,6 +172,8 @@ ostream &ARFIMAModel::operator<<(ostream &os) const
   for (int i=0;i<p;i++) {
     if (i>0) { 
       os << "," << phis[i];
+    } else {
+      os << phis[i];
     }
   }
   os << "), thetas=(";
@@ -181,7 +184,7 @@ ostream &ARFIMAModel::operator<<(ostream &os) const
       os << thetas[i];
     }
   }
-  os << ")";
+  os << "))";
   return os;
 }
 
@@ -239,6 +242,7 @@ ARFIMAModeler::~ARFIMAModeler()
 
 ARFIMAModeler & ARFIMAModeler::operator=(const ARFIMAModeler &rhs)
 {
+  this->~ARFIMAModeler();
   return *(new(this) ARFIMAModeler(rhs));
 }
 
@@ -449,5 +453,18 @@ Model *ARFIMAModeler::Fit(const double *seq, const int len, const ParameterSet &
   ((const PDQParameterSet &)ps).Get(p,d,q);
   
   return Fit(seq,len,p,(double)d,q);
+}
+
+
+
+void ARFIMAModeler::Dump(FILE *out) const
+{
+  fprintf(out,"ARFIMAModeler\n");
+}
+
+ostream &ARFIMAModeler::operator<<(ostream &os) const
+{
+  os << "ARFIMAModeler()";
+  return os;
 }
 

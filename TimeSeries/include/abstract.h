@@ -26,7 +26,12 @@ class ParameterSet {
   virtual ~ParameterSet() {};
   virtual ParameterSetType GetType() const =0;
   virtual ParameterSet *Clone() const =0;
+
+  virtual void Dump(FILE *out=stdout) const =0;
+  virtual ostream & operator<<(ostream &os) const = 0;
 };
+
+inline ostream & operator<<(ostream &os, const ParameterSet &p) { return p.operator<<(os);}
 
 enum VarianceType {
   POINT_VARIANCES,     // variance of for each lead time
@@ -49,6 +54,8 @@ public:
 	virtual ostream & operator<<(ostream &os) const = 0;
 };
 
+inline ostream & operator<<(ostream &os, const Predictor &p) { return p.operator<<(os);}
+
 class Model {
 public:
 	virtual ~Model() {} ;
@@ -58,6 +65,9 @@ public:
 //        virtual ParamterSet *GetParameterSet()=0;
 };
 
+inline ostream & operator<<(ostream &os, const Model &p) { return p.operator<<(os);}
+
+
 class Modeler {
 public:
    virtual ~Modeler() {}
@@ -66,5 +76,6 @@ public:
    virtual ostream & operator<<(ostream &os) const = 0;
 };
 
+inline ostream & operator<<(ostream &os, const Modeler &p) { return p.operator<<(os);}
 
 #endif
