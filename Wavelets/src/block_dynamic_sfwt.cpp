@@ -90,7 +90,6 @@ int main(int argc, char *argv[])
     cerr << "block_dynamic_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
-  unsigned numlevels = numstages + 1;
 
   TransformType tt;
   if (toupper(argv[4][0])=='A') {
@@ -112,7 +111,6 @@ int main(int argc, char *argv[])
     cerr << "sample_dynamic_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
-  unsigned numlevels_new = numstages_new + 1;
 
   int change_interval = atoi(argv[7]);
   if (change_interval <= 0) {
@@ -172,14 +170,32 @@ int main(int argc, char *argv[])
   deque<wisd> buf;
 
   unsigned *levelsize=0;
+  unsigned levelcnt;
   if (tt==APPROX || tt==DETAIL) {
-    levelsize = new unsigned[MAX(numstages, numstages_new)];
+    levelcnt = MAX(numstages, numstages_new);
+    levelsize = new unsigned[levelcnt];
   } else {
-    levelsize = new unsigned[MAX(numstages+1, numstages_new+1)];
+    levelcnt = MAX(numstages+1, numstages_new+1);
+    levelsize = new unsigned[levelcnt];
+  }
+  for (i=0; i<levelcnt; i++) {
+    levelsize[i]=0;
   }
 
-  while (inputblock.GetBlockSize() - samplecnt >= 0) {
+  if (!flat) {
+    *outstr.tie() << "Index     ";
+    for (i=0; i<levelcnt; i++) {
+      *outstr.tie() << "Level " << i << "        " ;
+    }
+    *outstr.tie() << endl << "-----     ";
+    for (i=0; i<levelcnt; i++) {
+      *outstr.tie() << "-------        ";
+    }
+    *outstr.tie() << endl;
+  }
 
+  unsigned globalcount=0;
+  while (inputblock.GetBlockSize() - samplecnt > 0) {
     if ( (unsigned)(samplecnt + change_interval) <= inputblock.GetBlockSize()) {
       inputblock.GetSamples(buf, samplecnt, samplecnt+change_interval);
       samplecnt += change_interval;
@@ -205,6 +221,39 @@ int main(int argc, char *argv[])
     }
 
     // Print the results and clear the buffer
+    unsigned loopsize = forwardoutput[0].GetBlockSize();
+    for (i=0; i<loopsize; i++) {
+      *outstr.tie() << globalcount++ << "\t";
+
+      // Find number of samples for this line and update counts
+      unsigned numsamples=0;
+      for (unsigned j=0; j<forwardoutput.size(); j++) {
+	levelsize[j] += forwardoutput[j].GetBlockSize();
+	if (!forwardoutput[j].Empty()) {
+	  numsamples++;
+	}
+      }
+
+      if (flat) {
+	*outstr.tie() << numsamples << "\t";
+      }
+
+      for (unsigned j=0; j<numsamples; j++) {
+	if (!forwardoutput[j].Empty()) {
+	  wosd wos;
+	  wos = forwardoutput[j].Front();
+
+	  if (flat) {
+	    *outstr.tie() << wos.GetSampleLevel() << " ";
+	  }
+
+	  *outstr.tie() << wos.GetSampleValue() << "\t";
+	  forwardoutput[j].PopSampleFront();
+	}
+      }
+      *outstr.tie() << endl;
+    }
+    forwardoutput.clear();
 
     // Toggle the structure
     bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
@@ -215,61 +264,16 @@ int main(int argc, char *argv[])
     (orig_struct) ? (orig_struct=false) : (orig_struct=true);
   }
 
-  numlevels = (orig_struct) ? (numlevels-1) : (numlevels_new-1);
-
   // Human readable output
   if (!flat) {
     *outstr.tie() << "The size of each level:" << endl;
-    for (i=0; i<numlevels; i++) {
+    for (i=0; i<levelcnt; i++) {
       *outstr.tie() << "\tLevel " << i << " size = " 
-		    << forwardoutput[i].GetBlockSize() << endl;
-    }
-    *outstr.tie() << endl;
-
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
+		    << levelsize[i] << endl;
     }
     *outstr.tie() << endl;
   }
 
-
-  unsigned loopsize = forwardoutput[0].GetBlockSize();
-  for (i=0; i<loopsize; i++) {
-    *outstr.tie() << i << "\t";
-
-
-    // Find number of samples for this line
-    unsigned numsamples=0;
-    for (unsigned j=0; j<numlevels; j++) {
-      if (!forwardoutput[j].Empty()) {
-	numsamples++;
-      }
-    }
-
-    if (flat) {
-      *outstr.tie() << numsamples << "\t";
-    }
-
-    for (unsigned j=0; j<numsamples; j++) {
-      if (!forwardoutput[j].Empty()) {
-	wosd wos;
-	wos = forwardoutput[j].Front();
-
-	if (flat) {
-	  *outstr.tie() << wos.GetSampleLevel() << " ";
-	}
-
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	forwardoutput[j].PopSampleFront();
-      }
-    }
-    *outstr.tie() << endl;
-  }
   
   return 0;
 }
