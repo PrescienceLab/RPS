@@ -1,0 +1,8 @@
+export PATH=${PATH}:${RPS_DIR}/bin
+
+export LD_LIBRARY_PATH=${RPS_DIR}/lib:${LD_LIBRARY_PATH}
+
+export RPS_NEWSTYLEOUTPUT=yes
+
+
+
