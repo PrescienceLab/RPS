@@ -1661,6 +1661,8 @@ StreamingMixedSampleOperation(vector<OUTSAMPLE> &out,
 #define RUN_STAGE_BLOCK_OPERATION(p_stage, out, low, high)     \
   if (BlockPairReady((low), (high))) {                         \
     (p_stage)->PerformBlockOperation((out), (low), (high));    \
+    (low).ClearBlock();                                        \
+    (high).ClearBlock();                                       \
   } else {                                                     \
     unsigned l_blksize = (low).GetBlockSize();                 \
     unsigned h_blksize = (high).GetBlockSize();                \
@@ -1714,12 +1716,12 @@ StreamingTransformBlockOperation
   }
 
   if (numstages == 1) {
-      RUN_STAGE_BLOCK_OPERATION(last_stage,
-				outblock,
-				*insignals[numstages], 
-				*insignals[numstages-1]);
-      outblock.SetBlockIndex(index);
-      index += outblock.GetBlockSize();
+    RUN_STAGE_BLOCK_OPERATION(last_stage,
+			      outblock,
+			      *insignals[numstages], 
+			      *insignals[numstages-1]);
+    outblock.SetBlockIndex(index);
+    index += outblock.GetBlockSize();
   } else {
     // Perform the topstage and rest using reverse iteration through the stages
     typename vector<ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *>::

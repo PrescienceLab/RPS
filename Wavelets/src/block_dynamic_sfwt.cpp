@@ -178,13 +178,13 @@ int main(int argc, char *argv[])
     levelsize[i]=0;
   }
 
-  while (inputblock.GetBlockSize() - samplecnt > 0) {
+  while ((int)inputblock.GetBlockSize() - samplecnt > 0) {
     if ( (unsigned)(samplecnt + change_interval) <= inputblock.GetBlockSize()) {
       inputblock.GetSamples(buf, samplecnt, samplecnt+change_interval);
       samplecnt += change_interval;
     } else {
-      inputblock.GetSamples(buf, samplecnt, inputblock.GetBlockSize()-1);
-      samplecnt += inputblock.GetBlockSize() - samplecnt -1;
+      inputblock.GetSamples(buf, samplecnt, inputblock.GetBlockSize());
+      samplecnt = inputblock.GetBlockSize();
     }
 
     switch(tt) {

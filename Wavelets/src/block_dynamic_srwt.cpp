@@ -162,8 +162,15 @@ int main(int argc, char *argv[])
     waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
   }
 
-  unsigned diff=(numstages < numstages_new) ? 
-    numstages_new - numstages : numstages - numstages_new;
+  unsigned diff=0;
+  bool action_dir=true;  // True means add levels to waveletcoefs
+
+  if (numstages < numstages_new) {
+    diff = numstages_new - numstages;
+  } else {
+    diff = numstages - numstages_new;
+    action_dir=false;
+  }
 
   // Dynamic bookkeeping
   bool orig_struct=true;
@@ -192,24 +199,38 @@ int main(int argc, char *argv[])
     if (!success1 && !success2) {
       cerr << "block_dynamic_srwt: Structure change failure.\n";
     }
-    (orig_struct) ? (orig_struct=false) : (orig_struct=true);
 
     finaloutput.AppendBlockBack(reconst);
 
     for (i=0; i<numlevels; i++) {
       waveletcoefs[i].ClearBlock();
     }
+    reconst.ClearBlock();
 
-    // Either add stages or remove from input structure to accomodate structure
+    // Either add stages or remove from input data structure to accomodate structure
     //  change
     if (diff) {
-      if (numstages > numstages_new) {
-	
+      if (action_dir) {
+	// Increase levels in wavecoefs
+	for (i=0; i<diff; i++) {
+	  waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(numlevels+i) );
+	}
       } else {
-
+	// Decrease levels in wavecoefs
+	for (i=0; i<diff; i++) {
+	  waveletcoefs.pop_back();
+	}
       }
+      action_dir = (action_dir) ? false : true;
     }
-    numlevels = (orig_struct) ? numstages_new+1 : numstages+1;
+
+    if (orig_struct) {
+      numlevels=numstages_new+1;
+      orig_struct=false;
+    } else {
+      numlevels=numlevels=numstages+1;
+      orig_struct=true;
+    }
     phasenum++;
   }
 
@@ -225,8 +246,8 @@ int main(int argc, char *argv[])
     *outstr.tie() << "-----\t-----\n" << endl << endl;
   }
 
-  for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
-    *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
+  for (unsigned i=0; i<finaloutput.GetBlockSize(); i++) {
+    *outstr.tie() << i << "\t" << finaloutput[i].GetSampleValue() << endl;
   }
   *outstr.tie() << endl;
 

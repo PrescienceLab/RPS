@@ -99,11 +99,16 @@ UpSampleBuffer(SampleBlock<SAMPLE> &output, const SampleBlock<SAMPLE> &input)
     output.PushSampleBack(newin);
   }
 
+  // -------------------------------------------------------------------------+
+  // ** This block commented out because it adds extra samples in the dynamic |
+  // transforms.  I think it is now correctly implemented.                    |
+  // -------------------------------------------------------------------------+
+  //
   // Take care of remaining zero samples
-  newin=0;
-  for (i=0; i<rate-1; i++) {
-    output.PushSampleBack(newin);
-  }
+  // newin=0;
+  // for (i=0; i<rate-1; i++) {
+  //   output.PushSampleBack(newin);
+  // }
 }
 
 template <class SAMPLE>
