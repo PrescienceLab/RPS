@@ -34,6 +34,12 @@ Model *FitThis(ModelType mclass,
 	       double *seq, int numsamples, 
 	       int p, double d, int q, int refitinterval);
 
+Model *FitThis(ModelType mclass,
+	       const AwaitingPDQParameterSet &ps);
+
+Model *FitThis(ModelType mclass,
+	       int p, double d, int q, int await);
+
 
 
 class ByteStream {
@@ -60,6 +66,7 @@ struct ModelTemplate {
   int _Unpack(ByteStream &bs);
   
   void Print(FILE *out=stdout) const;
+  void Dump(FILE *out=stdout) const { Print(out);}
   ostream &Print(ostream &os) const;
 };
 

@@ -13,6 +13,7 @@
 #include "arima.h"
 #include "arfima.h"
 #include "refit.h"
+#include "await.h"
 
 #include "etathetapred.h"
 

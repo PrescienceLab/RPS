@@ -53,6 +53,7 @@ class RefittingPredictor : public Predictor {
     return 0;
   }
   int StepsToPrime() { 
+    
     return curpred->StepsToPrime();
   }
   double Step(double obs) {

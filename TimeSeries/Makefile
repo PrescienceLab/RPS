@@ -61,7 +61,8 @@ EXECLIST = ts_example 	    \
            gfnn             \
            mi               \
            crossval_wavelet \
-           wavelet_pred
+           wavelet_pred     \
+	   test_await
 
 ifeq ($(HAVE_PVM),YES)
    EXECLIST +=  crossval_master crossval_slave
@@ -72,7 +73,8 @@ MAINLIST = $(EXECLIST:=.o)
 
 LIB_TS_OBJECTS_LIST = poly.o ar.o arima.o arfima.o etathetapred.o \
                       tools.o ma.o arma.o bestmean.o it.o evaluate_core.o \
-                      crossval_core.o mean.o last.o none.o fit.o
+                      crossval_core.o mean.o last.o none.o fit.o \
+                      await.o refit.o
 
 SRCLIST = $(MAINLIST:.o=.cpp) $(LIB_TS_OBJECTS_LIST:.o=.cpp)
 

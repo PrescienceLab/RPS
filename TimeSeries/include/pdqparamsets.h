@@ -54,4 +54,30 @@ class RefittingPDQParameterSet : public PDQParameterSet {
   }
 };
 
+class AwaitingPDQParameterSet : public PDQParameterSet {
+ protected: 
+  int awaitint;
+ public:
+  AwaitingPDQParameterSet(const int p,
+			   const int d,
+			   const int q,
+			  const int await)  :
+    PDQParameterSet(p,d,q), awaitint(await) {}
+  void GetAwait(int &await) const { 
+    await=awaitint;
+  }
+  void SetAwait(const int &await) { 
+    awaitint=await;
+  }
+  ParameterSet *Clone() const { 
+    return new AwaitingPDQParameterSet(*this);
+  }
+  ParameterSetType GetType() const { 
+    return AwaitingPDQ;
+  }
+  void Print(FILE *out=stdout) const {
+    fprintf(out,"AwaitingPDQParameterSet(%d,%d,%d,%d)\n",p,d,q,awaitint);
+  }
+};
+
 #endif

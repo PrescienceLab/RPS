@@ -15,7 +15,7 @@ enum ModelType {NONE=0,
 		ARIMA=7, 
 		ARFIMA=8};
 
-enum ParameterSetType {PDQ, RefittingPDQ};
+enum ParameterSetType {PDQ, RefittingPDQ, AwaitingPDQ};
 
 class ParameterSet {
  public:

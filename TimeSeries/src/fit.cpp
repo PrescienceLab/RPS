@@ -23,6 +23,7 @@
 #include "mean.h"
 #include "last.h"
 #include "refit.h"
+#include "await.h"
 #include "fit.h"
 
 #include "pdqparamsets.h"
@@ -66,6 +67,7 @@ int ModelTemplate::_GetPackedSize() const
     return 4+4+3*4;
     break;
   case RefittingPDQ:
+  case AwaitingPDQ:
     return 4+4+4*4;
     break;
   // Add other types here
@@ -103,6 +105,14 @@ int ModelTemplate::_Pack(ByteStream &bs) const
   case RefittingPDQ:
     ((RefittingPDQParameterSet *)ps)->Get(p,d,q);
     ((RefittingPDQParameterSet *)ps)->GetRefit(r);
+    bi[2]=htonl(p);
+    bi[3]=htonl(d);
+    bi[4]=htonl(q);
+    bi[5]=htonl(r);
+    return 6*4==bs.Put((char*)bi,6*4);
+  case AwaitingPDQ:
+    ((AwaitingPDQParameterSet *)ps)->Get(p,d,q);
+    ((AwaitingPDQParameterSet *)ps)->GetAwait(r);
     bi[2]=htonl(p);
     bi[3]=htonl(d);
     bi[4]=htonl(q);
@@ -146,6 +156,13 @@ int ModelTemplate::_Unpack(ByteStream &bs)
     q=ntohl(bi[4]);
     r=ntohl(bi[5]);
     ps = new RefittingPDQParameterSet(p,d,q,r);
+  case AwaitingPDQ:
+    bs.Get((char*)&(bi[2]),4*4);
+    p=ntohl(bi[2]);
+    d=ntohl(bi[3]);
+    q=ntohl(bi[4]);
+    r=ntohl(bi[5]);
+    ps = new AwaitingPDQParameterSet(p,d,q,r);
     break;
   // Add other types here
   default:
@@ -254,6 +271,53 @@ Model *FitThis(ModelType mclass,
   return FitThis(mclass,seq,numsamples,ps);
 }
 
+Model *FitThis(ModelType mclass,
+	       const AwaitingPDQParameterSet &params)
+{
+  int await;
+  params.GetAwait(await);
+
+   switch (mclass) {
+   case AR:
+     return AwaitingModeler<ARModeler>::Fit(params,await);
+     break;
+   case MA:
+     return AwaitingModeler<MAModeler>::Fit(params,await);
+     break;
+   case ARMA:
+     return AwaitingModeler<ARMAModeler>::Fit(params,await);
+     break;
+   case ARIMA:
+     return AwaitingModeler<ARIMAModeler>::Fit(params,await);
+     break;
+   case ARFIMA:
+     return AwaitingModeler<ARFIMAModeler>::Fit(params,await);
+     break;
+   case BESTMEAN:
+     return AwaitingModeler<BestMeanModeler>::Fit(params,await);
+     break;
+   case MEAN:
+     return AwaitingModeler<MeanModeler>::Fit(params,await);
+     break;
+   case LAST:
+     return AwaitingModeler<LastModeler>::Fit(params,await);
+   case NONE:
+     return AwaitingModeler<NoneModeler>::Fit(params,await);
+     break;
+   default:
+     return 0;
+     break;
+   }
+}
+
+
+Model *FitThis(ModelType mclass,
+	       int p, double d, int q, int await)
+{
+  AwaitingPDQParameterSet ps(p,(int)d,q,await);
+  return FitThis(mclass,ps);
+}
+
 
 Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt)
 {
@@ -262,6 +326,8 @@ Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt)
     return FitThis(mt.mt,seq,numsamples,*((PDQParameterSet*)(mt.ps)));
   } else if (mt.ps->GetType()==RefittingPDQ) {
     return FitThis(mt.mt,seq,numsamples,*((RefittingPDQParameterSet*)(mt.ps)));
+  } else if (mt.ps->GetType()==AwaitingPDQ) {
+    return FitThis(mt.mt,*((AwaitingPDQParameterSet*)(mt.ps)));
   } else {
     return 0;
   }
@@ -273,7 +339,9 @@ ModelTemplate *ParseModel(int argc, char *argv[])
   double d=0;
   int q=0;
   bool refitting=false;
+  bool awaiting=false;
   int refitinterval=0;
+  int await=0;
   int first_model;
   ModelType mclass;
 
@@ -291,11 +359,22 @@ ModelTemplate *ParseModel(int argc, char *argv[])
     refitinterval = atoi(argv[1]);
     first_model=2;
   } else {
-    refitting=false;
-    refitinterval=0;
-    first_model=0;
+    if (!strcasecmp(argv[0],"AWAIT")) {
+      awaiting=true;
+      if (argc<2) { 
+	return 0;
+      }
+      await = atoi(argv[1]);
+      first_model=2;
+    } else {
+      refitting=false;
+      awaiting=false;
+      refitinterval=0;
+      await=0;
+      first_model=0;
+    }
   }
-    
+
   if (!strcasecmp(argv[first_model],"BESTMEAN") ||
       !strcasecmp(argv[first_model],"BM") ) {
       if (argc!=first_model+2) {
@@ -381,6 +460,8 @@ ModelTemplate *ParseModel(int argc, char *argv[])
    mt->mt = mclass;
    if (refitting) { 
      mt->ps = new RefittingPDQParameterSet(p,(int)d,q,refitinterval);
+   } if (awaiting) {
+     mt->ps = new AwaitingPDQParameterSet(p,(int)d,q,await);
    } else {
      mt->ps = new PDQParameterSet(p,(int)d,q);
    }
@@ -449,6 +530,7 @@ char *ModelTemplate::GetName() const
   int p,d,q,r;
 
   bool refit;
+  bool await;
 
   char *name = new char [1024];
 
@@ -459,10 +541,16 @@ char *ModelTemplate::GetName() const
     refit=true;
     ((RefittingPDQParameterSet*)ps)->Get(p,d,q);
     ((RefittingPDQParameterSet*)ps)->GetRefit(r);
+  } else if (ps->GetType()==AwaitingPDQ) { 
+    await=true;
+    ((AwaitingPDQParameterSet*)ps)->Get(p,d,q);
+    ((AwaitingPDQParameterSet*)ps)->GetAwait(r);
   }
 
   if (refit) {
     sprintf(name,"REFIT %d ",r);
+  } else if (await) {
+    sprintf(name,"AWAIT %d ",r);
   } else {
     name[0]=0;
   }
