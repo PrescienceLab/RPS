@@ -1,0 +1,19 @@
+This file describes LineGraphApp.java, its usage, and how it works
+Written by: Brandon O'Bryant on 3/10/01
+
+
+What It Does
+---------------
+	LineGraphApp is a framework from which a full scale program could be built.  Currently, it can only open a connection to a machine and get load measurements.  It makes use of LineGraph.java. 
+
+
+Usage
+---------------
+	It is run by simply typing "java LineGraphApp" at the command line.
+	Once open, in the File->Create menu you can select Create New Connection.  A window will spawn requesting connection information.  Fill in the appropriate information and press Create.  If the target is reachable, a window will open and the line graph will be displayed and updated until the window is closed. 
+
+
+How it Works
+---------------
+	Development on LineGraphApp is in very preliminary stages.  Hence, the code is straight forward and comments contained within it will suffice for its technical explanation.
+

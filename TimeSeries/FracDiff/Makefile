@@ -42,10 +42,10 @@ SRCS = $(foreach m, $(OBJSLIST:.o=.f), $(SRCDIR)/$(m))
 all: $(LIB) $(EXECS)
 
 $(BINDIR)/example: $(LIB) $(OBJDIR)/example.o
-	$(F77) $(FFLAGS) $(OBJDIR)/example.o $(LIB) -o $(BINDIR)/example
+	$(F77) $(FFLAGS) $(OBJDIR)/example.o $(FRACDIFF_LDFLAGS) -o $(BINDIR)/example
 
 $(BINDIR)/test: $(LIB) $(OBJDIR)/test.o
-	$(F77) $(FFLAGS) $(OBJDIR)/test.o $(LIB) -o $(BINDIR)/test
+	$(F77) $(FFLAGS) $(OBJDIR)/test.o $(FRACDIFF_LDFLAGS) -o $(BINDIR)/test
 
 $(LIB): $(LIBOBJS)
 	ar ruv $(LIB) $(LIBOBJS)

@@ -31,7 +31,7 @@ else
 endif
 
 ifeq ($(HAVE_RPSINT),YES)
-  HRPSI_DEP = Mirror TimeSeries
+  HRPSI_DEP = RPSInterface
 else
   HRPSI_DEP =
 endif
@@ -48,13 +48,19 @@ else
   HPC_DEP =
 endif
 
+ifeq ($(HAVE_JAVAGUI),YES)
+  HJG_DEP = JavaGUI
+else
+  HJG_DEP =
+endif
+
 ifeq ($(HAVE_SPIN),YES)
   HSP_DEP = Spin
 else
   HSP_DEP =
 endif
 
-PROJS = $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HSP_DEP)
+PROJS = $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP)
 
 all:  $(PROJS)
 
@@ -72,14 +78,13 @@ GetFlowBW: force
 	cp $(GETFLOWBW_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS)/test $(RPS_DIR)/bin/$(ARCH)/$(OS)/test_getflowbw
 
-TimeSeries: $(HFD_DEP) force
-	cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR)  all
+TimeSeries: $(HFD_DEP)
+	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp $(TS_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(TS_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(TS_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 FracDiff: force
-	echo $(FRACDIFF_DIR)
 	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(FRACDIFF_DIR)/include/*.h $(RPS_DIR)/include
 	cp $(FRACDIFF_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -107,6 +112,11 @@ PredComp:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP)
 	cp $(PREDCOMP_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
+JavaGUI:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(JAVAGUI_DIR)/*.so $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(JAVAGUI_DIR)/*.class $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
 Spin: $(HMT_DEP) force
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(SPIN_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -114,13 +124,29 @@ Spin: $(HMT_DEP) force
 	-cp $(SPIN_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 clean:
-	$(foreach m,$(PROJS),(cd $(m);$(MAKE) RPS_DIR=$(RPS_DIR) clean); )
-	(cd $(HTS_DEP)/$(HFD_DEP); $(MAKE) RPS_DIR=$(RPS_DIR) clean)
-	rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/*.a
-	rm -f $(RPS_DIR)/bin/$(ARCH)/$(OS)/*
+	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean ;
+	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	-rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/*.a
+	-rm -f $(RPS_DIR)/bin/$(ARCH)/$(OS)/*
 
 depend:
-	$(foreach m,$(PROJS),(cd $(m);$(MAKE) RPS_DIR=$(RPS_DIR) depend) ; )
-	(cd $(HTS_DEP)/$(HFD_DEP); $(MAKE) RPS_DIR=$(RPS_DIR) depend)
+	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend ;
+	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 
 force: ;

@@ -13,7 +13,7 @@ else
 endif
 
 ifeq ($(HAVE_TIMESERIES),YES)
-  HTS_DEP = TS
+  HTS_DEP = TimeSeries
 else
   HTS_DEP =
 endif
@@ -24,10 +24,34 @@ else
   HFD_DEP =
 endif
 
-ifeq ($(HAVE_LOADMON),YES)
-  HLM_DEP = LoadMon
+ifeq ($(HAVE_MIRROR),YES)
+  HMT_DEP = Mirror
 else
-  HLM_DEP =
+  HMT_DEP =
+endif
+
+ifeq ($(HAVE_RPSINT),YES)
+  HRPSI_DEP = RPSInterface
+else
+  HRPSI_DEP =
+endif
+
+ifeq ($(HAVE_REMOSINT),YES)
+  HREMOS_DEP = RemosInterface
+else
+  HREMOS_DEP =
+endif
+
+ifeq ($(HAVE_PREDCOMP),YES)
+  HPC_DEP = PredComp
+else
+  HPC_DEP =
+endif
+
+ifeq ($(HAVE_JAVAGUI),YES)
+  HJG_DEP = JavaGUI
+else
+  HJG_DEP =
 endif
 
 ifeq ($(HAVE_SPIN),YES)
@@ -36,51 +60,93 @@ else
   HSP_DEP =
 endif
 
-PROJS = $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HLM_DEP) $(HSP_DEP)
+PROJS = $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP)
 
 all:  $(PROJS)
 
 rebuild_all: clean depend all
 
-
 GetLoadAvg: force
-	cd $(GETLOADAVG_DIR); $(MAKE) $(MAKEFLAGS) RPS_DIR=$(RPS_DIR) all
+	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(GETLOADAVG_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(GETLOADAVG_DIR)/bin/$(ARCH)/$(OS)/test $(RPS_DIR)/bin/$(ARCH)/$(OS)/test_getloadavg
 
 GetFlowBW: force
-	cd $(GETFLOWBW_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
+	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(GETFLOWBW_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS)/test $(RPS_DIR)/bin/$(ARCH)/$(OS)/test_getflowbw
 
-TS: $(HFD_DEP) force
-	cd $(TS_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR)  all
+TimeSeries: $(HFD_DEP)
+	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp $(TS_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(TS_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(TS_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 FracDiff: force
-	echo $(FRACDIFF_DIR)
-	cd $(FRACDIFF_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
+	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(FRACDIFF_DIR)/include/*.h $(RPS_DIR)/include
 	cp $(FRACDIFF_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
 
-LoadMon:  $(HTS_DEP) $(HGLA_DEP) $(HGFB_DEP) force
-	cd $(LOADMON_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
-	cp $(LOADMON_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	-cp $(LOADMON_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+Mirror:  force
+	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(MIRROR_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(MIRROR_DIR)/include/*.h $(RPS_DIR)/include
+	-cp $(MIRROR_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-Spin: $(HLM_DEP) force
-	cd $(SPIN_DIR); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) all
+RPSInterface:  $(HGLA_DEP) $(HGFB_DEP) $(HTS_DEP) $(HMT_DEP) force
+	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(RPSINT_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(RPSINT_DIR)/include/*.h $(RPS_DIR)/include
+	-cp $(RPSINT_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+RemosInterface:  $(HRPSI_DEP) force
+	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(REMOSINT_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(REMOSINT_DIR)/include/*.h $(RPS_DIR)/include
+	-cp $(REMOSINT_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+PredComp:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(PREDCOMP_DIR)/include/*.h $(RPS_DIR)/include
+	-cp $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+JavaGUI:  $(HGLA_DEP) $(HGFB_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp $(JAVAGUI_DIR)/*.so $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(JAVAGUI_DIR)/*.class $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+Spin: $(HMT_DEP) force
+	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(SPIN_DIR)/lib/$(ARCH)/$(OS)/*.a $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp $(SPIN_DIR)/include/*.h $(RPS_DIR)/include
 	-cp $(SPIN_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 clean:
-	$(foreach m,$(PROJS),(cd $(m);$(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) clean); )
-	(cd TS/FracDiff; $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) clean)
-	rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/*.a
-	rm -f $(RPS_DIR)/bin/$(ARCH)/$(OS)/*
+	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean ;
+	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	-rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/*.a
+	-rm -f $(RPS_DIR)/bin/$(ARCH)/$(OS)/*
 
 depend:
-	$(foreach m,$(PROJS),(cd $(m);$(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) depend) ; )
-	(cd TS/FracDiff; $(MAKE) $(MAKEFLAGS) depend)
+	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend ;
+	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 
 force: ;
