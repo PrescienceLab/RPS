@@ -146,6 +146,19 @@ void OutputWaveletCoefsNonFlat(ostream &os,
   }
 }
 
+void OutputWaveletCoefs(ostream &os, vector<vector<wosd> > &levels)
+{
+  for (unsigned j=0; j<levels.size(); j++) {
+    *os.tie() << j << "\t" << levels[j].size() << "\t";
+    vector<wosd> &sampleout = levels[j];
+    for (unsigned k=0; k<sampleout.size(); k++) {
+      *os.tie() << sampleout[k].GetSampleLevel() << " "
+		    << sampleout[k].GetSampleValue() << "\t";
+    }
+    *os.tie() << endl;
+  }
+}
+
 void OutputWaveletCoefsFlat(ostream &os,
 			    vector<WaveletOutputSampleBlock<wosd> > &fwdout,
 			    const unsigned numlevels)
@@ -215,4 +228,29 @@ void OutputMRACoefsFlat(ostream &os,
     }
     *os.tie() << endl;
   }
+}
+
+void OutputLevelMetaData(ostream &os,
+			 vector<vector<wosd> > &levels,
+			 const unsigned numlevels)
+{
+  unsigned i, j;
+  vector<unsigned> sizes;
+  for (i=0; i<numlevels; i++) {
+    sizes.push_back(0);
+  }
+
+  for (i=0; i<levels.size(); i++) {
+    vector<wosd> &sampleout = levels[i];
+    for (j=0; j<sampleout.size(); j++) {
+      sizes[sampleout[j].GetSampleLevel()]++;
+    }
+  }
+
+  *os.tie() << "The size of each level:" << endl;
+  for (i=0; i<numlevels; i++) {
+    *os.tie() << "\tLevel " << i << " size = " 
+	      << sizes[i] << endl;
+  }
+  *os.tie() << endl;
 }

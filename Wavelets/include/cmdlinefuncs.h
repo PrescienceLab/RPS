@@ -21,12 +21,20 @@ void OutputWaveletCoefsNonFlat(ostream &os,
 			       vector<WaveletOutputSampleBlock<wosd> > &fwdout,
 			       const unsigned numlevels);
 
+void OutputWaveletCoefs(ostream &os, vector<vector<wosd> > &levels);
+
+
 void OutputWaveletCoefsFlat(ostream &os,
 			    vector<WaveletOutputSampleBlock<wosd> > &fwdout,
 			    const unsigned numlevels);
+
 
 void OutputMRACoefsFlat(ostream &os,
 			vector<WaveletOutputSampleBlock<wosd> > &mraout,
 			const char &ch,
 			const unsigned numlevels);
+
+void OutputLevelMetaData(ostream &os,
+			 vector<vector<wosd> > &levels,
+			 const unsigned numlevels);
 #endif

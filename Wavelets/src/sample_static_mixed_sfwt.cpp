@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
   vector<deque<wosd> *> approxlevels;
   vector<deque<wosd> *> detaillevels;
   deque<wosd>* pwos;
-  for (i=0; i<numstages; i++) {
+  for (i=0; i<(unsigned)numstages; i++) {
     pwos = new deque<wosd>();
     approxlevels.push_back(pwos);
 
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
     OutputWaveletCoefsNonFlat(outstr, detaillevels, numstages);
   }
   
-  for (i=0; i<numstages; i++) {
+  for (i=0; i<(unsigned)numstages; i++) {
     CHK_DEL(approxlevels[i]);
     CHK_DEL(detaillevels[i]);
   }

@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   // Get the samples from stream
   vector<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);\
+  fp.ParseTimeDomain(samples, cin);
   infile.close();
 
   // Instantiate a static forward wavelet transform
@@ -127,12 +127,8 @@ int main(int argc, char *argv[])
   // Create result buffers
   vector<wosd> outsamples;
 
-  // Create vectors for the level outputs
-  vector<deque<wosd> *> levels;
-  for (i=0; i<numlevels; i++) {
-    deque<wosd>* pwos = new deque<wosd>();
-    levels.push_back(pwos);
-  }
+  // Create vectors for output
+  vector<vector<wosd> > levels;
 
   for (i=0; i<samples.size(); i++) {
     switch(tt) {
@@ -152,21 +148,7 @@ int main(int argc, char *argv[])
       break;
     }
 
-    if (flat) {
-      *outstr.tie() << i << "\t" << outsamples.size() << "\t";
-    }
-
-    for (unsigned j=0; j<outsamples.size(); j++) {
-      int samplelevel = outsamples[j].GetSampleLevel();
-      levels[samplelevel]->push_front(outsamples[j]);
-      if (flat) {
-	*outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-      }
-    }
-    if (flat) {
-      *outstr.tie() << endl;
-    }
-
+    levels.push_back(outsamples);
     outsamples.clear();
   }
 
@@ -174,15 +156,12 @@ int main(int argc, char *argv[])
     numlevels--;
   }
 
-  // Human readable output
   if (!flat) {
-    OutputWaveletCoefsNonFlat(outstr, levels, numlevels);
+    // Output size data of each level
+    OutputLevelMetaData(outstr, levels, numlevels);
   }
-  
-  for (i=0; i<numlevels; i++) {
-    CHK_DEL(levels[i]);
-  }
-  levels.clear();
+
+  OutputWaveletCoefs(outstr, levels);
 
   return 0;
 }
