@@ -12,7 +12,7 @@ if ($#ARGV>=0) {
 }
 
 
-$n=2**($waveletnum+1);
+$n=2*($waveletnum+1);
 $l=$numlevels-1;
 $k=$delay;
 

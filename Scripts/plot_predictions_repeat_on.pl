@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 
+use POSIX;
 use FileHandle;
 use Getopt::Long;
 
@@ -8,6 +9,8 @@ $usage = "plot_predictions_repeat_on.pl [--bufferport=bufferport] [--refresh=sec
 $bufferport = $ENV{"HOSTLOADPREDBUFFERPORT"};
 
 $refresh=1.0;
+
+$tempfile="_temp".getpid();
 
 &GetOptions(("bufferport=i"=>\$bufferport,"num=i"=>\$num,"refresh=f"=>\$refresh)) ;
 
@@ -20,7 +23,7 @@ while (1) {
   $CMD = "get_predictions_on.pl --bufferport=$bufferport  $host |";
   
   open(IN,"$CMD");
-  open(OUT,">_temp");
+  open(OUT,">$tempfile");
   $line=<IN>;
   $line=~/.*F\((.*)Hz\).*M\((.*)secs\).*human-name=\'(.*)\'/;
   $period=1.0/$1;
@@ -36,7 +39,7 @@ while (1) {
   close(IN);
   close(OUT);
 
-  $infile = "_temp";
+  $infile = "$tempfile";
   $title = "Predictions on $host:$bufferport period:$period start=$timestart model=$model";
   $xlabel="Time";
   $ylabel="Value";
@@ -58,4 +61,4 @@ DONE2
 
   close(GNUPLOT);
 
-system "rm -f _temp";
+system "rm -f $tempfile";

@@ -88,9 +88,8 @@ ifeq ($(HAVE_WAVELETS),YES)
 	wavelet_streaming_client                \
         wavelet_buffer                          \
         wavelet_bufferclient                    \
-	wavelet_streaming_query
-#	wavelet_reqresp_server			\
-
+	wavelet_streaming_query                 \
+        wavelet_predict                         
 endif
 
 ifeq ($(HAVE_GETLOADAVG),YES)
