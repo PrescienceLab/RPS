@@ -18,6 +18,11 @@ tree.  The assumption here is that you are using an sh-derived shell.
 
 export RPS_DIR=/home/pdinda/RPS-development
 
+Next, export your OS and architecture:
+
+export RPS_OS=LINUX
+export RPS_ARCH=I386
+
 Next, edit build/setup_rps_env as appropriate for your environment.
 Then source it:
 

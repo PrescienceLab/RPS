@@ -34,7 +34,7 @@ Build Procedure
 
 To build on a Unix or Unix-like (cygwin) system:
 
-0. export RPS_DIR=your rps directory
+0. export RPS_DIR=your rps directory, RPS_OS=your os, RPS_ARCH=your arch
 1. edit build/setup_rps_env as appropriate
 2. source setup_rps_env
 3. cp build/Makefile.conf.most_appropriate Makefile.conf
@@ -43,7 +43,7 @@ To build on a Unix or Unix-like (cygwin) system:
 
 To build on native windows using Visual C++  (Not all components are built)
 
-0. set RPS_DIR=your rps directory
+0. set RPS_DIR=your rps directory, RPS_OS=WIN32, RPS_ARCH=I386
 1. make sure MSDEV.EXE is on your path and INCLUDE and LIB are set reasonably.
 2. build\build_windows.bat
 
