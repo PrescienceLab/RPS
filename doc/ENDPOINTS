@@ -1,0 +1,121 @@
+RPS Endpoints
+=============
+
+rps-help@cs.northwestern.edu
+
+RPS components can be interconnected at startup time using a variety
+of different transport mechanisms, including TCP, UDP, IP Multicast,
+Unix domain sockets, files, and pipes.  A "port" on a component is
+defined using an EndPoint, which is generally represented as a text
+string on the command line.  For example,
+
+host1% loadserver server:tcp:5000 connect:tcp:5001 \
+                  target:udp:239.239.239.239:5001
+
+starts up a host load sensor on the current machine which can be
+reconfigured via a TCP request/response interaction on port 5000,
+provides streaming measurements via TCP to programs that connect to
+port 5001, and also sends those streaming measurements to the
+multicast group defined by IP address 239.239.239.239 and port 5001.
+Similarly,
+
+host2% loadclient source:tcp:host:5001
+
+host3% loadclient source:udp:239.239.239.239:5001
+
+create clients that listen and print those streams using the TCP
+method (host2) and the multicast group (host 3).
+
+An endpoint string has three parts: a role, a transport protocol, and
+an address.  "server:tcp:5000" means the role is server (ie,
+request/response or RPC), the transport protocol is TCP, and the
+address is port 5000 on (implicitly) the local host.  
+
+Roles
+-----
+
+source
+ - the address will operate as a source of streaming measurements
+
+target
+ - the address will operate as a sink of streaming measurements
+
+connect
+ - the address will operate as a connection point for multiple targets
+ - this generally needed only for unix domain sockets and tcp
+
+client
+ - the address will operate as the RPC server
+ - the protocol is to send a request type and then read a response type.
+
+server
+ - the address will operate as a connection point for multiple clients
+
+
+Protocol
+--------
+
+tcp
+ - tcp protocol is used
+
+udp 
+ - udp protocol is used
+ - if the address is a multicast address, then this is ip multicast.
+      - source -> join group, and receive stream
+      - target -> join group, and send stream
+
+unix
+ - unix domain socket
+
+file
+ - a file
+
+stdio
+ - stdin, stdout, stderr
+
+
+Address
+-------
+
+port number
+
+ip address and port number
+
+pathname
+
+stdin,stdout,stderr
+
+
+Valid combinations
+------------------
+
+source:tcp:address:port
+
+source:udp:address:port
+
+source:unix:pathname
+
+source:file:pathname
+
+source:stdio:stdin|stdout|stderr
+
+target:udp:address:port
+
+target:unix:pathname
+
+target:file:pathname
+
+target:stdio:stdin|stdout|stderr
+  
+connect:tcp:port
+
+connect:unix:pathname
+
+client:tcp:address:port
+
+client:unix:pathname
+
+server:tcp:port
+
+server:unix:pathname
+

@@ -1,0 +1,17 @@
+Using RPS
+=========
+
+rps-help@cs.northwestern.edu
+
+In addition to binaries, which are described in RUN and
+README.PredComp and other files in the doc directory, an RPS build
+also includes libraries and include files for most of its packages.
+These can be used to build your own RPS programs.  
+
+The RPS technical report describes how to use the Sensors, TimeSeries
+and Mirror packages to build new components.
+
+TimeSeries is intended to itself be extensible with additional models.
+
+
+

@@ -1,0 +1,81 @@
+RPS and Windows
+===============
+
+rps-help@cs.northwestern.edu
+
+There are two ways to build RPS on windows.  The first is to build it
+under Cygwin (www.cygwin.org), in which case building and using it
+will look exactly as it does under a Unix environment.  Furthermore,
+everything will be built that is enabled and has the appropriate
+support software available.  The second way is to build it natively
+using visual studio, in which case the build process is entirely
+different and a number of things are currently NOT built.
+
+At this point, the native windows build is intended to serve mostly as
+a client.
+
+To build natively using visual studio
+
+0. set RPS_DIR=your rps directory
+1. make sure MSDEV.EXE is on your path and INCLUDE and LIB are set reasonably.
+2. build\build_windows.bat
+
+This will build the debug and release versions of the tools and copy
+the debug versions into {lib,bin}/I386/WIN32
+
+You can also build RPS by using the Visual Studio GUI.  The file
+"RPS.dsw" in the RPS base directory is the workspace.  There are some
+40-odd project (.dsp) files scattered throughout the package
+directories.
+
+What follows is a description of the missing functionality in the
+native windows build on a package by package basis.
+
+
+Extra
+ - not built
+
+Finder
+ - no missing functionality
+
+JavaGUI
+ - not built
+
+Mirror
+ - no missing functionality
+
+PredComp
+ - predserver and predserver_core are not built
+
+RPSInterface
+ - no missing functionality
+
+RemosInterface
+ - not built
+
+ResearchScripts
+ - n/a
+
+ResearchTools
+ - not built
+
+Scripts
+ - n/a
+
+Sensors
+ - both GetLoadAvg and GetFlowBW do not work and return errors
+
+Spin
+ - not built
+
+TimeSeries
+ - FracDiff is not built (no fortran compiler)
+ - Only MEAN, LAST, BM, and AR models are built, the others return errors
+    - the main issue here is that recipes in c is assumed not to exist
+ - parallel crossvalidation system is not built
+
+Trace
+ - not built
+
+
+

@@ -1,0 +1,224 @@
+>So, what is all this PPS stuff, anyway?
+
+
+PPS (Peter's Prediction Service) provides modularized on-line and
+query-based time series prediction services.  It consists of the following
+components:
+
+0. A "Host Load Collector" library (PPS/GetLoadAvg).  GetLoadAvg provides a
+single call, "int getloadavg(double vals[3],int num) for reading the current
+unix host load averages on a wide variety of unices.  If you compile with
+USE_UPTIME=YES set in the Makefile, it will do this using the "uptime"
+routine.  If USE_UPTIME=NO, it will use a much lower overhead, but
+OS-dependent mechanism for reading the values.  This is the prefered
+approach on DUX and Linux.  Some other platforms require that you be a
+privileged user in order to use these low overhead mechanisms.  If in doubt,
+compile and run PPS/GetLoadAvg/bin/ARCH/OS/test.  If the return code
+displayed is -1, then you don't have appropriate privliges and need to
+compile with USE_UPTIME=YES.
+
+1. A time series modelling and prediction library (PPS/TS).   TS consists of
+a set of {\em modellers}, which are used to fit particular sorts of {\em
+models} to a time series.  Currently, BestMean, AR, MA, ARMA, ARIMA, and
+fractional ARIMA models are supported.   Additional software (Fortran 77
+compiler, Numerical Recipes package) is needed to use some of these models.
+Models produce {\em predictors}, which are filters that transform a scalar
+stream of input measurements into predictions.  A prediction is a vector of
+values $[z_{t+1}, z_{t+2}, ... z_{t+n}]$ where $z_{t+k}$ predicts what the
+measurement value will be $k$ steps into the future.  In addition to the
+vector of predictions, a predictor also produces a vector of their
+corresponding variances.  These variances represent the predictor's
+confidence in its predictions.  The measurements and prediction vectors from
+a predictor can also be fed to an {\em evaluator}, which computes a wide
+variery of statistics about how well the predictor is actually doing.  Pages
+8-9 of the accompanying presentation may be useful in understanding this
+discussion.  There are also some useful files in PPS/GetLoadAvg.
+example.cpp shows how to use TS simply.  crossval*.cpp is a parallelized
+randomized crossvalidation system we use to evaluate the performance of
+different models.
+
+2. A library for building distributable software modules that can
+communicate in a wide variety of ways (tenatively called Mirror), and a set
+of prediction pipeline executables that using the library as well as TS and
+GetLoadAvg(PPS/LoadMon).  We will eventually give Mirror a real name and
+create a more reasonable directory structure.  Mirror is described in pages
+10-15 of the accompanying presentation.  The executables you will find in
+PPS/LoadMon/bin/ARCH/OS are:
+
+These execs are specific to *host load* measurements:
+loadserver - periodically measures load and sends (streams) measurement to
+all listeners - this is a "Host Load Collector"
+loadclient - receives and displays a load measurement stream
+loadbuffer - receives and buffers a load measurement stream, provides
+request/response access to buffer contents
+loadbufferclient - requests buffer contents from a loadbuffer and displays
+result
+load2measure - receives load measurements, converts them to generic
+time-series measurements (it can also deconvolve out the averaging), and
+sends them to all listeners
+
+The remainder of the execs work on measurements and predictions
+Measurements:
+measureclient - receives and displays a generic measurement stream
+measurebuffer - receives and buffers a generic measurement stream, provides
+request/response access to buffer contents
+measurebufferclient - requests buffer contents from a measurebuffer and
+displays result
+
+Predictions:
+predserver - receives a measurement stream and sends a prediction stream to
+all listeners.  It also provides a request/response interface for
+reconfiguring prediction parameters (models, etc.)  When this interface is
+used, predserver will call back to a measurebuffer.
+predserver_core - used internally by predserver for various reasons
+predclient - receives and displays a prediction stream
+predreconfig - used to initiate predserver reconfiguration
+predbuffer - receives and buffers a prediction stream, provides
+request/response access to buffer contents
+predbufferclient - requests buffer contents from a predbuffer and displays
+result
+pred_reqresp_server - provides a request/response interface for "one-off"
+predictions - you send it a sequence, a model type, and a prediction
+horizon, and it responds with a fitted model, predictions, and variances.
+pred_reqresp_client - client for making one-off predictions
+
+>What on earth is a "prediction pipeline?"
+
+A prediction pipeline is a pipeline (actually a more general flow-graph)
+whose stages/nodes consist of the executables described in (2) above.   The
+source is a collector of some kind (currently only Host Load Collectors (are
+available) and the sink is typically a predbuffer.  With the appropriate
+"endpoints", this pipeline can simultaneously provide access to current
+collector measurements, some history, and predictions to any number of
+clients using a variety of different communication mechanisms.  Each
+executable can be run on a different host.  Page 16 of the presentation
+shows an example of a host load prediction pipeline whose stages are
+connected using unix pipes, which also streams load measurements to TCP
+connected clients and IP multicast clients, streams generic measurements to
+TCP-connected clients, handles measurebuffer requests (ie,
+current+historical measurements) from TCP-connected clients, streams
+predictions to TCP-connected clients and IP multicast cleints, handles
+predbuffer requests from TCP-connected clients (ie, predicted future
+measurements), and prints predictions locally.  With different command-line
+arguments, these executables could easily be made to run on different
+machines.
+
+>What is it currently used for in Remos?
+
+Currently, remos uses a prediction pipeline running on a particular host to
+fill in the load parts of its "hostinfo" structures.  Notice that a remos
+query has a time interval associated with it.  If the interval you use is in
+the future, remos will get predictions from the predbuffer part of the
+pipeline.  If the interval is in the past or present, it will use the
+measurebuffer part of the pipeline.
+
+Please note that Remos integration of PPS is still at an early stage.  You
+are limited to host load predictions and you must manually start prediction
+pipelines on the hosts you are interested in (we provide scripts to simplify
+this.)
+
+>How might Remos use it in the future?
+
+In the future, Remos will also be able to predict bandwidth and latency of
+network links (for logical topology queries) and of network flows (for flow
+queries).    Because of the obvious complexity explosion (you want to have a
+prediction pipeline for every possible flow through the network?!), this
+will likely be implemented is a "dynamic query" - the Remos user will
+specify *which* (for example) application-level flows she is interested in
+monitoring and predicting.   This will cause the appropriate pipelines to be
+instantiated and subsequent flow queries will benefit from the pipeline.
+Eventually, the pipelines will be destroyed either because of inactivity or
+explicitly at the user's request.
+
+
+>What else is it good for?
+
+
+Obviously, TS, GetLoadAvg, Mirror, and the prediction pipeline executables
+are useful on their own.
+
+TS provides good implementations of the Box-Jenkins time series models,
+fractional ARIMA models, and  tools for evaluating models, including a
+parallelized unbiased, randomized crossvalidation engine.  The abstract
+modeller->model->predictor->evaluator structure can be fairly easily
+extended for other kinds of models.
+
+Mirror can be used to write filters and request-response servers that
+communicate with arbitarry numbers of data sources, sinks, and
+request-response clients via files, pipes, tcp, udp, and multicast.  It is
+unusual in that it does not use fork() or threads and thus is very low
+overhead and easily portable. Generally, we have found that the only
+difficulty in porting it is that some C++ compilers do not fully implement
+templates.
+
+The prediction pipeline executables can be used independently of Remos or
+load measurements.  Generally, to predict measurements from an aribitrary
+source, it is only necessary to write a program like load2measure.cpp which
+transforms to a generic measurement format.  One could run a
+pred_reqresp_server somewhere in order to enable "one-off" predictions from
+anywhere on the network.
+
+
+>How will PPS change in the future
+
+GetLoadAvg will provide an "unaveraged" measurement in addition to the three
+averages it currently does.
+
+TS will incorporate a kind of AR model that will refit on each new
+measurement, as well as a median filter. It may also provide Kalman filters.
+Also very low on the things-to-do-list is rewriting the MA.ARMA, and ARIMA
+model fitting to use the innovations algorithm.  This would not drastically
+change the quality of the fit, but would be faster and eliminate a
+dependence on Numerical Recipes for these models.
+
+Mirror and the prediction pipeline executables will get better names.   An
+evaluator executable will be added as well as a control executable that will
+refit models based on how well their predictions are working.
+
+>Where can I learn more about PPS / how do I know what model to use?
+
+If you use PPS through Remos, Remos will determine the appropriate model for
+you.  Figuring out what model to use and how many parameters is a part of
+the remos group's research.   Currently, for host load, we recommend AR(16)
+models or better.  You can read about our studies of the behavior of host
+load and one using linear models to predict it in
+
+Study of Host Load Behavior:
+@Article{DINDA-STAT-PROP-HOST-LOAD-SCIPROG-99,
+  author =       "Peter A. Dinda",
+  title =        "The Statistical Properties of Host Load",
+  journal =      "Scientific Programming",
+  year =         "1999",
+  note =         "To appear in fall of 1999. A version of this paper
+                  is also available as {CMU} Technical Report
+                  {CMU-CS-TR-98-175}.  A much earlier version appears
+                  in {LCR '98} and as {CMU-CS-TR-98-143} ",
+}
+
+Study of Host Load Prediction:
+@InProceedings{DINDA-LOAD-PRED-HPDC-99,
+  author =       "Peter A. Dinda and David R. O'Hallaron",
+  booktitle = "Proceedings of {HPDC '99}",
+  year =         "1999",
+  month =        "August",
+  note =         "To Appear.  Extended version available as {CMU} Technical
+Report {CMU-CS-TR-98-148}",
+}
+
+Application of Prediction in Best-effort Real-time:
+@incollection{DINDA-CASE-BERT-WPDRTS-99,
+author  =       "P. Dinda and B. Lowekamp and
+                  L. Kallivokas and D. O'Hallaron" ,
+title   =       "The Case for Prediction-Based Best-Effort Real-Time
+Systems",
+pages   =       "309--318" ,
+booktitle=      "Proc. of the 7th International Workshop on Parallel and
+                  Distributed Real-Time Systems (WPDRTS 1999)" ,
+series  =       "Lecture Notes in Computer Science",
+volume  =       "1586",
+year    =       1999,
+address =       "San Juan, PR" ,
+publisher=      "Springer-Verlag",
+note    =       "Extended version available as {CMU} Technical Report
+{CMU-CS-TR-98-174}",
+}
