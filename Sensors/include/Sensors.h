@@ -1,7 +1,7 @@
 #ifndef _Sensors
 #define _Sensors
 
-#include "getloadavg.h"
-#include "getflowbw.h"
+#include "GetLoadAvg.h"
+#include "GetFlowBW.h"
 
 #endif

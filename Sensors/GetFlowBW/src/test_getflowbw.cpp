@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "getflowbw.h"
+#include "GetFlowBW.h"
 
 void usage() 
 { 

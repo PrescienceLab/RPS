@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "getloadavg.h"
+#include "GetLoadAvg.h"
 
 int main()
 {
