@@ -3,8 +3,9 @@ To build:
 0. export RPS_DIR=your rps directory
 1. edit setup_rps_env as appropriate
 2. source setup_rps_env
-3. edit Makefile.conf as appropriate
-4. make clean depend all
+3. cp build/Makefile.conf.most_appropriate Makefile.conf
+4. edit Makefile.conf as needed
+5. make rebuild_all
 
 To run:
 
