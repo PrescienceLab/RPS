@@ -15,8 +15,6 @@
 
 const unsigned BITS_PER_BYTE=8;
 
-#define MOREWORK 1
-
 struct SignalSpec {
   vector<int> approximations;
   vector<int> details;
@@ -2833,8 +2831,8 @@ DiscreteWaveletTransformOperation
 	z_vector.push_back(inblock[index].GetSampleValue());
 	zz_vector.push_back(f_vector[index-m]);
       }
-      MultiplyAccumulateMatrixVectorAndScale(outh, hpf, N/2, z_vector, 1.0);
-      MultiplyAccumulateMatrixVectorAndScale(outl, lpf, N/2, zz_vector, 1.0);
+      MultiplyAccumulateMatrixVectorAndScale(outh, hpf, N/2, z_vector, 2.0);
+      MultiplyAccumulateMatrixVectorAndScale(outl, lpf, N/2, zz_vector, 2.0);
     }
     AddVectors(f_vector, outh, outl);
   }
