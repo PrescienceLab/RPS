@@ -10,23 +10,32 @@
 #include "PredictionRequestResponse.h"
 #include "glarp.h" 
 
+
+#define DEBUG_PRINT 0
+#define DEBUG_PRINT_START if (DEBUG_PRINT) {
+#define DEBUG_PRINT_END   }
+
+#define DPS DEBUG_PRINT_START
+#define DPE DEBUG_PRINT_END
+
 JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr, jstring host) {
     
-  EndPoint ep;  
-  int i;       // Counter
-  int num=1;   // I set this to return 1, normally is an argument
-  char hostName[128] = ""; // The host name and path
-  jboolean* hostBool;      // Necessary for GetStringUTFChars, not sure why
   
-  // Acquire host name from input argument and build the path
-  const char* str = env->GetStringUTFChars(host, hostBool);
-  strcat(hostName, str);
-  printf("\n%s",hostName);
-  env->ReleaseStringUTFChars(host, str);
-  if (ep.Parse(hostName) || ep.atype!=EndPoint::EP_SOURCE ) {
-    fprintf(stderr,"loadbufferclient: Failed to parse my input\n");
+  DPS fprintf(stderr,"Hi, in callLoadBufferClient\n"); DPE
+  // Acquire endpoint string
+  const char* endpointstr = env->GetStringUTFChars(host, 0);
+
+  DPS fprintf(stderr,"EndPoint: %s\n",endpointstr); DPE
+
+  EndPoint ep;  
+
+  if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
+    fprintf(stderr,"Invalid Endpoint\n");
     exit(-1);
   }
+
+  env->ReleaseStringUTFChars(host, endpointstr);
+
 
   Reference<BufferDataRequest,BufferDataReply<LoadMeasurement> > ref;
 
@@ -38,7 +47,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
     exit(-1);
   }
 
-  req.num=num;
+  req.num=1;
 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"loadbufferclient: Call failed\n");
@@ -48,49 +57,37 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
 
   ref.Disconnect();
 
+  int i;
+
+  DPS
   for (i=0;i<repl.num;i++) { 
     repl.data[i].Print(stderr);
   }
-
-  // Display data on the C++ side
-  printf("\nC++ data  ");
-  for (i=0;i<3;i++) {
-      printf("-%d-: %g  ",i+1,repl.data[0].avgs[i]);
-  }
-  printf("\n");
-
-  // Construct a jdouble array in which to place the data
-  jdouble retvalues[3];
-
-  // Fill the array with the data from the system
-  for (i=0;i<3;i++) {
-      retvalues[i] = (jdouble)repl.data[0].avgs[i];
-  }
+  DPE
 
   // Trasfer data from the jdouble array to the jdoubleArray
-  env->SetDoubleArrayRegion(jdArr,0,3,retvalues);
+  env->SetDoubleArrayRegion(jdArr,0,3,repl.data[0].avgs);
   
   return;
 }
 
 JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr1, jdoubleArray jdArr2, jstring host) {
-      
-  EndPoint ep;  
-  int i; // Counter
-  int num=1; // I set this to return 1, normally is an argument
-  char hostName[128] = ""; // The host name and path
-  jboolean* hostBool; // Necessary for GetStringUTFChars, not sure why
   
-  // Acquire host name from input and build the path
-  const char* str = env->GetStringUTFChars(host, hostBool);
-  strcat(hostName, str);
-  printf("\n%s",hostName);
-  env->ReleaseStringUTFChars(host, str);
-  if (ep.Parse(hostName) || ep.atype!=EndPoint::EP_SOURCE ) {
-    fprintf(stderr,"predbufferclient: Failed to parse my input\n");
+  
+  DPS fprintf(stderr,"Hi, in callPredBufferClient\n"); DPE
+  // Acquire endpoint string
+  const char* endpointstr = env->GetStringUTFChars(host, 0);
+  DPS fprintf(stderr,"EndPoint: %s\n",endpointstr); DPE
+
+  EndPoint ep;  
+
+  if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
+    fprintf(stderr,"Invalid Endpoint\n");
     exit(-1);
   }
-  
+
+  env->ReleaseStringUTFChars(host, endpointstr);
+
   Reference<BufferDataRequest,BufferDataReply<PredictionResponse> > ref;
   
   BufferDataRequest req;
@@ -101,7 +98,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject 
     exit(-1);
   }
 
-  req.num=num;
+  req.num=1;
   
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"predbufferclient: Call failed\n");
@@ -111,53 +108,37 @@ JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject 
 
   ref.Disconnect();
   
-  /*
+  DPS
+  int i;
   for (i=0;i<repl.num;i++) { 
-    repl.data[i].Print(stdout);
+    repl.data[i].Print(stderr);
   }
-  */
-  
-  // Display 10 values data on the C++ side
-  printf("\nC++ data  ");
-  for (i=0;i<3;i++) {
-    printf("-%d-: %g  ",i+1,repl.data[0].preds[i]);
-  }
-  printf("\n");
-  
-  // Construct jdouble arrays in which to place the data
-  jdouble retvalues1[180];
-  jdouble retvalues2[180];
-  
-  // Fill the array with the data from the system
-  for (i=0;i<180;i++) {
-    retvalues1[i] = (jdouble)repl.data[0].preds[i];
-    retvalues2[i] = (jdouble)repl.data[0].errs[i];
-  }
+  DPE
+
   
   // Trasfer data from the jdouble arrays to the jdoubleArrays
-  env->SetDoubleArrayRegion(jdArr1,0,180,retvalues1);
-  env->SetDoubleArrayRegion(jdArr2,0,180,retvalues2);
+  env->SetDoubleArrayRegion(jdArr1,0,repl.data[0].numsteps,repl.data[0].preds);
+  env->SetDoubleArrayRegion(jdArr2,0,repl.data[0].numsteps,repl.data[0].errs);
 
   return;
 }
 
 JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobject obj, jdoubleArray jdArr, jstring host) {
     
-  EndPoint ep;  
-  int i;       // Counter
-  int num=1;   // I set this to return 1, normally is an argument
-  char hostName[128] = ""; // The host name and path
-  jboolean* hostBool;      // Necessary for GetStringUTFChars, not sure why
   
-  // Acquire host name from input argument and build the path
-  const char* str = env->GetStringUTFChars(host, hostBool);
-  strcat(hostName, str);
-  printf("\n%s",hostName);
-  env->ReleaseStringUTFChars(host, str);
-  if (ep.Parse(hostName) || ep.atype!=EndPoint::EP_SOURCE ) {
-    fprintf(stderr,"loadbufferclient: Failed to parse my input\n");
+  DPS fprintf(stderr,"Hi, in callMeasureBufferClient\n"); DPE
+  // Acquire endpoint string
+  const char* endpointstr = env->GetStringUTFChars(host, 0);
+  DPS fprintf(stderr,"EndPoint: %s\n",endpointstr); DPE
+
+  EndPoint ep;  
+
+  if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
+    fprintf(stderr,"Invalid Endpoint\n");
     exit(-1);
   }
+
+  env->ReleaseStringUTFChars(host, endpointstr);
 
   Reference<BufferDataRequest,BufferDataReply<Measurement> > ref;
 
@@ -169,32 +150,24 @@ JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobje
     exit(-1);
   }
 
-  req.num=num;
+  req.num=1;
 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"measurebufferclient: Call failed\n");
-  } else {
-    for (i=0;i<repl.num;i++) { 
-      repl.data[i].Print(stderr);
-    }
-  }
+    exit(-1);
+  } 
 
   ref.Disconnect();
 
-  // Display data on the C++ side
-  int valCount = repl.data[0].serlen;
-  printf("Measurement of length: %i", valCount);
-
-  // Construct a jdouble array in which to place the data
-  jdouble retvalues[valCount];
-
-  // Fill the array with the data from the system
-  for (i=0;i<valCount;i++) {
-      retvalues[i] = (jdouble)repl.data[0].series[i];
+  DPS
+  int i;
+  for (i=0;i<repl.num;i++) { 
+    repl.data[i].Print(stderr);
   }
+  DPE
 
   // Trasfer data from the jdouble array to the jdoubleArray
-  env->SetDoubleArrayRegion(jdArr,0,valCount,retvalues);
-  
+  env->SetDoubleArrayRegion(jdArr,0,repl.data[0].serlen,repl.data[0].series);
+
   return;
 }

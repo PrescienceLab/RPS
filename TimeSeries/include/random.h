@@ -54,7 +54,10 @@ inline double NormalRandom(double mean, double sdev)
 
   return mean + sdev*((sum-((double)n)/2.0)/sqrt(((double)n)/12.0));
 }
-  
 
+inline double ExpRandom(double mean)
+{
+  return -mean*log(UniformRandom());
+}
 
 #endif

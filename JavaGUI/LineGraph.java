@@ -170,8 +170,9 @@ public class LineGraph extends JPanel
 	    callPredBufferClient(predictionLineVals, predictionLineErrors, path2);
 	}
 
-	System.out.println("Java data -1-: " + dArr[0] + " -2-: " + dArr[1] + " -3-: " + dArr[2]);  // Displays the measurement data acquired
-	
+	//System.out.println("Java data -1-: " + dArr[0] + " -2-: " + dArr[1] + " -3-: " + dArr[2]);  // Displays the measurement data acquired
+
+	System.out.println("valsCount="+valsCount);
 	standardLineVals[valsCount]=(double)dArr[0];
 	
 	valsCount = valsCount + 1; 
@@ -404,13 +405,13 @@ public class LineGraph extends JPanel
     // Main is only used for the command line version
     public static void main(String[] args) {
 
-	if ((args.length == 0) || (args.length > 3)) {
-	    System.out.println("Usage: LineGraph <standard path> <prediction path>");
+	if ((args.length == 0) || (args.length > 4)) {
+	    System.out.println("Usage: LineGraph loadbuffer predictionbuffer [callrateinms]");
 	} else if (args.length == 1) {
-	    System.out.println("Standard"); 
+	    //System.out.println("Standard"); 
 	    LineGraph lg = new LineGraph(args[0]);
 	} else if (args.length == 2) {
-	    System.out.println("Prediction");
+	    //System.out.println("Prediction");
 	    LineGraph lg = new LineGraph(args[0], args[1]);
 	} else {
 	    System.out.println("Unknown Error");
