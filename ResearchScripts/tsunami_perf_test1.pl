@@ -37,7 +37,7 @@ system "kill_matching.pl loadserver";
 system "kill_matching.pl measureclient";
 system "kill_matching.pl vmstat";
 
-for ($type=0; $type<1; $type++) {
+for ($type=0; $type<4; $type++) {
 
   # start up the vmstat monitor
   print STDERR "Start vmstat monitor\n";
@@ -71,7 +71,7 @@ for ($type=0; $type<1; $type++) {
     system "echo \"perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null";
 
-    sleep(240);
+    sleep(400);
     system "kill_matching.pl clean_vmstat";
     system "kill_matching.pl clean_loadserver";
     system "kill_matching.pl measureclient";
@@ -102,7 +102,7 @@ for ($type=0; $type<1; $type++) {
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_srwt1 $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null\"";
     system "perf_srwt1 $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null";
-    sleep(240);
+    sleep(400);
     system "kill_matching.pl clean_vmstat";
     system "kill_matching.pl clean_loadserver";
     system "kill_matching.pl measureclient";
@@ -131,7 +131,7 @@ for ($type=0; $type<1; $type++) {
     system "echo \"perf_dft1 $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_dft1 $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
 
-    sleep(240);
+    sleep(400);
     system "kill_matching.pl clean_vmstat";
     system "kill_matching.pl clean_loadserver";
     system "kill_matching.pl measureclient";
@@ -160,7 +160,7 @@ for ($type=0; $type<1; $type++) {
     system "echo \"perf_drt1 $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_drt1 $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
 
-    sleep(240);
+    sleep(400);
     system "kill_matching.pl clean_vmstat";
     system "kill_matching.pl clean_loadserver";
     system "kill_matching.pl measureclient";
@@ -181,3 +181,6 @@ system "kill_matching.pl load2measure";
 system "kill_matching.pl loadserver";
 system "kill_matching.pl measureclient";
 system "kill_matching.pl vmstat";
+
+system "rm $OUTDIR/vmstat.out";
+system "rm $OUTDIR/loadmonitor.out";
