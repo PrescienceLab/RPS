@@ -8,6 +8,7 @@
 
 #include "coefficients.h"
 #include "filter.h"
+#include "sampleblock.h"
 #include "downsample.h"
 #include "upsample.h"
 #include "waveletinfo.h"
@@ -93,10 +94,9 @@ protected:
   DownSample<OUTSAMPLE, INSAMPLE> downsampler_h;
 
 public:
-  ForwardWaveletStage(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD);
+  ForwardWaveletStage(WaveletType wavetype=DAUB2);
   ForwardWaveletStage(const ForwardWaveletStage &rhs);
   ForwardWaveletStage(WaveletType wavetype,
-		      StageType   stagetype,
 		      unsigned    rate_l,
 		      unsigned    rate_h,
 		      int         outlevel_l,
@@ -152,10 +152,9 @@ protected:
   UpSample<OUTSAMPLE, INSAMPLE> upsampler_h;
 
 public:
-  ReverseWaveletStage(WaveletType wavetype=DAUB2, StageType stagetype=REVERSE);
+  ReverseWaveletStage(WaveletType wavetype=DAUB2);
   ReverseWaveletStage(const ReverseWaveletStage &rhs);
   ReverseWaveletStage(WaveletType wavetype,
-		      StageType   stagetype,
 		      unsigned    rate_l,
 		      unsigned    rate_h);
   virtual ~ReverseWaveletStage();
@@ -404,10 +403,9 @@ ostream & WaveletStageHelper<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
  * Member functions for the ForwardWaveletStage Class
  *
  *******************************************************************************/
-
 template <class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
-(WaveletType wavetype, StageType stagetype) : stagehelp(wavetype, stagetype), 
+(WaveletType wavetype=DAUB2) : stagehelp(wavetype, FORWARD), 
   rate_l(2), rate_h(2), outlevel_l(-1), outlevel_h(-1), 
   downsampler_l(rate_l), downsampler_h(rate_h)
 {
@@ -423,8 +421,8 @@ ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
 
 template <class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
-(WaveletType wavetype, StageType stagetype, unsigned rate_l, unsigned rate_h, 
- int outlevel_l, int outlevel_h) : stagehelp(wavetype, stagetype), rate_l(rate_l),
+(WaveletType wavetype, unsigned rate_l, unsigned rate_h, 
+ int outlevel_l, int outlevel_h) : stagehelp(wavetype, FORWARD), rate_l(rate_l),
   rate_h(rate_h), outlevel_l(outlevel_l), outlevel_h(outlevel_h),
   downsampler_l(rate_l), downsampler_h(rate_h)
 {
@@ -580,7 +578,7 @@ ostream & ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
  *******************************************************************************/
 template <class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
-(WaveletType wavetype, StageType stagetype) : stagehelp(wavetype, stagetype), 
+(WaveletType wavetype=DAUB2) : stagehelp(wavetype, REVERSE), 
   rate_l(2), rate_h(2), upsampler_l(rate_l), upsampler_h(rate_h)
 {
 }
@@ -594,8 +592,8 @@ ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
 
 template <class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
-(WaveletType wavetype, StageType stagetype, unsigned rate_l, unsigned rate_h) : 
-  stagehelp(wavetype, stagetype), rate_l(rate_l), rate_h(rate_h), 
+(WaveletType wavetype, unsigned rate_l, unsigned rate_h) : 
+  stagehelp(wavetype, REVERSE), rate_l(rate_l), rate_h(rate_h), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
 }
