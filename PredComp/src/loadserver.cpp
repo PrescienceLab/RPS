@@ -12,9 +12,18 @@ extern "C" int usleep(int);  // FREAKS
 #endif
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: loadserver period_us [ctrlnetspace] [targetnetspec]+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Measure the load of a host\n\n"
+	  "usage: %s period_usec ctrl target+\n\n"
+	  "period_usec     = period in usec for measurements\n"
+	  "ctrl            = server endpoint for control\n"
+	  "target+         = one or more target or connect endpoints\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -136,7 +145,7 @@ int main(int argc, char *argv[])
   int i;
 
   if (argc<4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

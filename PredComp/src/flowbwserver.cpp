@@ -7,10 +7,22 @@
 #include "PredComp.h"
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: flowbwserver period_us source dest [ctrlnetspace] [targetnetspec]+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Measure the bandwidth of a flow between two hosts\n\n"
+	  "usage: %s period_usec fromhost tohost ctrl target+\n\n"
+	  "period_usec     = period in usec for measurements\n"
+	  "fromhost,tohost = the path to measure\n"
+	  "ctrl            = server endpoint for control\n"
+	  "target+         = one or more target or connect endpoints\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
+
 
 
 //extern "C" int usleep(unsigned); // Freaks
@@ -101,7 +113,7 @@ int main(int argc, char *argv[])
   int i;
 
   if (argc<6) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

@@ -36,10 +36,20 @@ typedef GenericSerializeableInputComputeOutputMirror<
             Measurement > Load2Measure;
 
 
-void usage() 
+void usage(const char *n)
 {
-  fprintf(stderr,"load2measure avgno sourcenetspec netspec+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Convert load measurements to generic measurements\n\n"
+	  "usage: %s avgno source target+\n\n"
+	  "avgno           = which average to use (0,1,2, or 99(unsmoothed)\n"
+	  "source          = source endpoint\n"
+	  "target          = one or more target or connect endpoints\n"
+	  "%s",n,b);
+  delete [] b;
 }
+
 
 
 int main(int argc, char *argv[]) 
@@ -48,7 +58,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

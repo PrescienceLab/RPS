@@ -21,8 +21,10 @@ struct PredServerCoreCommand : public SerializeableInfo {
   int GetMaxPackedSize() const { return 4; };
   int Pack(Buffer &buf) const { buf.Pack(cmd); return 0; }
   int Unpack(Buffer &buf) { buf.Unpack(cmd); return 0; }
+
+  ostream & operator<<(ostream &os) const { return os <<"PredServerCoreCommand(cmd="<<cmd<<")"; }
 };
 
-
+inline ostream &operator<<(ostream &os, const PredServerCoreCommand &rhs) { return rhs.operator<<(os);}
 
 #endif

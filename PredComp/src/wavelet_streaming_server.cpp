@@ -58,9 +58,18 @@ public:
 typedef Mirror<StreamingWaveletServerMirrorInputHandler,GenericMirrorNewConnectionHandler,NullHandler,NullHandler> WaveletServerMirror;
 
 
-void usage() 
+void usage(const char *n)
 {
-  fprintf(stderr,"wavelet_streaming_server wavelettype maxlevels sourcenetspec netspec+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Streaming Wavelet Transform Server\n\n"
+	  "usage: %s wavelettype maxlevels source target+\n\n"
+	  "wavelettype     = wavelet type to use\n"
+	  "maxlevels       = maximum number of levels\n"
+	  "source          = source endpoint for measurements\n"
+	  "target+         = one or more target or connect endpoints\n\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -70,7 +79,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<5) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
   

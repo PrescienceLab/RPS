@@ -9,6 +9,7 @@
 #include "TimeSeries.h"
 #include "Mirror.h"
 #include "RPSInterface.h"
+#include "banner.h"
 
 #if defined(WIN32) && !defined(__CYGWIN__)
 #include <windows.h>

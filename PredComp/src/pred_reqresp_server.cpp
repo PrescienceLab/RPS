@@ -8,10 +8,18 @@
 
 #include "PredComp.h"
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: pred_reqresp_server [targetspec+ | connectspec+]\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Server for one-off predictions\n\n"
+	  "usage: %s server+\n\n"
+	  "server          = one or more server endpoints\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
 
 
 // Generic right now
@@ -88,7 +96,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<2) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

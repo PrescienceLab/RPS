@@ -3,19 +3,22 @@
 #include <errno.h>
 
 #include "PredComp.h"
+#include "Trace.h"
 
-void usage() 
+void usage(const char *n)
 {
-   fprintf(stderr,
-      "pred_reqresp_client netspec [inputfile] [numahead] [conf/noconf]\n"
-      "                                                 MEAN\n"
-      "                                               | LAST\n"
-      "                                               | BM [p]\n"
-      "                                               | AR [p]\n"
-      "                                               | MA [q]\n"
-      "                                               | ARMA [p] [q]\n"
-      "                                               | ARIMA [p] [d] [q]\n"
-      "                                               | ARFIMA [p] [d] [q]\n");
+  char *b=GetRPSBanner();
+  char *m=GetAvailableModels();
+
+  fprintf(stdout, 
+	  "Client for one-off predictions\n\n"
+	  "usage: %s client file numahead conf|noconf MODEL\n\n"
+	  "client          = client endpoint for server\n"
+	  "file            = input datafile (one or two column)\n"
+	  "conf|noconf     = whether to show confidence intervals\n"
+	  "MODEL           = a model (see below)\n\n%s\n%s",n,m,b);
+  delete [] b;
+  delete [] m;
 }
 
 
@@ -23,10 +26,7 @@ int main(int argc, char *argv[])
 {
    char *infile;
    int conf;
-   int i;
 
-   FILE *inp;
-   double junk;
    const int first_model=5;
 
    PredictionRequest req;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
 
    if (argc<6) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 
@@ -59,31 +59,20 @@ int main(int argc, char *argv[])
 
    ModelTemplate *mt = ParseModel(argc-first_model,&(argv[first_model]));
    if (mt==0) { 
-     usage();
+     usage(argv[0]);
      exit(-1);
    }
 
    req.modelinfo = ModelInfo(*mt);
 
-   inp = fopen(infile,"r");
-   if (inp==0) {
-     fprintf(stderr,"pred_reqresp_client: %s not found.\n",infile);
-     exit(-1);
-   }
-   
-   int numsamples=0;
-   while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
-    ++numsamples;
-   }
-   rewind(inp);
+   double *temp;
+
+   int numsamples=LoadGenericAsciiTraceFile(infile,&temp);
 
    req.Resize(numsamples);
+   memcpy(req.series,temp,numsamples*sizeof(double));
+   delete [] temp;
 
-   for (i=0;i<numsamples;i++) { 
-     fscanf(inp,"%lf %lf\n",&junk,&(req.series[i]));
-   }
-
-   fclose(inp);
 
    double inputvar=Variance(req.series,req.serlen);
    double inputmean=Mean(req.series,req.serlen);

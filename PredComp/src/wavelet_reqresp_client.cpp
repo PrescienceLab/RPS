@@ -4,11 +4,20 @@
 
 #include "PredComp.h"
 
-void usage() 
+void usage(const char *n)
 {
-   fprintf(stderr,
-      "wavelet_reqresp_client netspec wavelettype inputfile\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Client for one-off wavelet transforms\n\n"
+	  "usage: %s client wavelettype inputfile\n\n"
+	  "client          = client endpoint for server\n"
+	  "wavelettype     = wavelet type to use\n"
+	  "inputfile       = input datafile (one or two column)\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
 
 
 int main(int argc, char *argv[])
@@ -22,7 +31,7 @@ int main(int argc, char *argv[])
 
 
    if (argc!=4) {
-      usage();
+      usage(argv[0]);
       exit(-1);
    }
 

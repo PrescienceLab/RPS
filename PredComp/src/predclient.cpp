@@ -6,9 +6,16 @@
 
 #define PRINT 1
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: predclient netspec\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Get predictons as a stream\n\n"
+	  "usage: %s source\n\n"
+	  "source            = source endpoint\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -18,7 +25,7 @@ int main(int argc, char *argv[])
   PredictionResponse pred;
 
   if (argc!=2) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

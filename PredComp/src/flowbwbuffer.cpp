@@ -2,9 +2,19 @@
 #include "PredComp.h"
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: flowbwbuffer depth [sourcenetspec] [servernetspec] ...\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Buffer flow bandwidth measurements\n\n"
+	  "usage: %s depth source server target*\n\n"
+	  "depth           = number to buffer\n"
+	  "source          = source endpoint\n"
+	  "server          = server endpoint (for requests)\n"
+	  "target*         = zero or more target or connect endpoints\n\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -17,7 +27,7 @@ int main(int argc, char *argv[])
   int i;
 
   if (argc<4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

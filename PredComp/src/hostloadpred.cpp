@@ -13,10 +13,28 @@ extern "C" int usleep(int);  // FREAKS
 
 #define MEASURE_RATE 0
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: hostloadpred [ctrlnetspace] [connectnetspec] period_us numfit numpred mintestsamples maxtestsamples maxabserr maxerrmissest [ModelParms]\n");
+  char *b=GetRPSBanner();
+  char *m=GetAvailableModels();
+
+  fprintf(stdout, 
+	  "All-in-one host load predictor and evaluator\n\n"
+	  "usage: %s ctrl connect period_us numfit numpred mintestsamples maxtestsamples maxmsqerr maxerrmissest MODEL\n\n"
+	  "ctrl            = server endpoint for rate control\n"
+	  "connect         = connect or target endpoint for predictions\n"
+	  "period_us       = period at which to run measurement/prediction\n"
+	  "numfit          = number of samples to fit the model to\n"
+	  "numpred         = number of steps ahead to predict\n"
+	  "mintestsamples  = minimum samples before evaluation\n"
+	  "maxtestsamples  = maximum samples before refit is forced\n"
+	  "maxmsqerr       = maximum allowed msqerr for +1 predictions\n"
+	  "maxerrmisest    = maximum percentage error for predicted +1 msqerr\n"
+	  "MODEL           = a model (see below)\n\n%s\n%s",n,m,b);
+  delete [] b;
+  delete [] m;
 }
+
 
 class HostLoadPred : public LocalSource {
 private:
@@ -284,7 +302,7 @@ int main(int argc, char *argv[])
   int i;
 
   if (argc<11) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

@@ -4,9 +4,16 @@
 
 #include "PredComp.h"
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: flowbwclient netspec\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Get flow bandwidth measurements as a stream\n\n"
+	  "usage: %s source\n\n"
+	  "source            = source endpoint\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 #define PRINT 1
@@ -16,7 +23,7 @@ int main(int argc, char *argv[])
   FlowBWMeasurement measure;
 
   if (argc!=2) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

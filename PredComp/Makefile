@@ -12,7 +12,8 @@ INCDIR = $(ROOT)/include
 CFLAGS = -I$(INCDIR) \
          $(GETLOADAVG_CFLAGS) \
          $(GETFLOWBW_CFLAGS) \
-         -I$(SENSORS_INC_DIR)\
+         $(SENSORS_CFLAGS)\
+	 $(TRACE_CFLAGS) \
          $(TIMESERIES_CFLAGS) \
          $(WAVELETS_CFLAGS) \
          $(FRACDIFF_CFLAGS) \
@@ -33,6 +34,7 @@ endif
 
 LD1FLAGS+=  $(GETLOADAVG_LDFLAGS) \
             $(GETFLOWBW_LDFLAGS)\
+	    $(TRACE_LDFLAGS) \
             $(REMOS_MODELER_LDFLAGS) \
             $(LISTPACK_LDFLAGS)
 LD2FLAGS =  $(RPSINT_LDFLAGS) \
@@ -69,8 +71,7 @@ EXECLIST = loadclient 				\
         predlatclient                           \
         loadlatclient                           \
         loadreconfig                            \
-        fileloadserver                          \
-        memperf                                 \
+	fileloadserver                          \
         flowbwclient                            \
         flowbwbuffer                            \
         flowbwbufferclient                      \
@@ -91,11 +92,6 @@ endif
 
 ifeq ($(HAVE_GETFLOWBW),YES)
    EXECLIST += flowbwserver
-endif
-
-
-ifeq ($(HAVE_EXPAT),YES)
-   EXECLIST += lmxmltest
 endif
 
 

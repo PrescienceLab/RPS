@@ -31,10 +31,27 @@ PredictionReconfigurationRequest   curconfig;
 PredictionReconfigurationResponse  curconfigresp;
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: predserver sourceflownetspec sourcebuffernetspec reconfigserverspec targetspecs\n");
+  char *b=GetRPSBanner();
+  char *m=GetAvailableModels();
+
+  fprintf(stdout, 
+	  "Streaming Prediction Server\n\n"
+	  "usage: %s source buffer ctrl target+\n\n"
+	  "source          = source endpoint for measurements\n"
+	  "buffer          = client endpoint for measurements\n"
+	  "ctrl            = client endpoint for control\n"
+	  "target+         = one or more target or connect endpoints\n"
+	  "\nBy default, an AR(16) model is fit to the first\n"
+	  "300 samples and is used to do 1..30 step ahead predictions\n"
+	  "Other models (below) can be chosen with predreconfig\n\n"
+	  "%s\n%s",n,m,b);
+  delete [] b;
+  delete [] m;
 }
+
+
 
 
 #if defined(WIN32) && !defined(__CYGWIN__)
@@ -240,7 +257,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

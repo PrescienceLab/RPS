@@ -69,10 +69,21 @@ class TextHandler : public MirrorHandler {
 typedef Mirror<TextHandler,GenericMirrorNewConnectionHandler,NullHandler,NullHandler> Text2Measure;
 
 
-void usage() 
+void usage(const char *n)
 {
-  fprintf(stderr,"text2measure period_usec textsource netspec+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Convert text measurements to generic measurements\n\n"
+	  "usage: %s period_usec textsource target+\n\n"
+	  "period_usec     = period to stamp outgoing measurements\n"
+	  "textsource      = source endpoint for text\n"
+	  "target+         = one or more target or connect endpoints\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
+
 
 
 int main(int argc, char *argv[]) 
@@ -81,7 +92,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

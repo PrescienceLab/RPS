@@ -1,10 +1,18 @@
 #include "PredComp.h"
 
-
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: loadreconfig controlspec period_usec\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Reconfigure a loadserver\n\n"
+	  "usage: %s client period_usec\n\n"
+	  "client          = client endpoint\n"
+	  "period_usec     = period in usec for measurements\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
 
 
 #define DEFAULT_PERIOD 1000000
@@ -18,7 +26,7 @@ int main(int argc, char *argv[])
             LoadMeasurementConfigurationReply>  ref;
 
   if (argc<3) { 
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
 

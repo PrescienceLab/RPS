@@ -20,9 +20,17 @@ typedef GenericSerializeableInputComputeOutputMirror<
             Measurement > FlowBW2Measure;
 
 
-void usage() 
+void usage(const char *n)
 {
-  fprintf(stderr,"flowbw2measure sourcenetspec netspec+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Convert flow bandwidth measurements to generic measurements\n\n"
+	  "usage: %s source target+\n\n"
+	  "source          = source endpoint\n"
+	  "target          = one or more target or connect endpoints\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -32,7 +40,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<3) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

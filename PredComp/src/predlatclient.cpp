@@ -6,9 +6,19 @@
 #include "PredComp.h"
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: predlatclient netspec numsamples stats|dump\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Get predictions as a stream to measure latencies\n\n"
+	  "usage: %s source numsamples stats|dump\n\n"
+	  "source            = source endpoint\n"
+	  "numsamples        = number of values to acquire\n"
+	  "stats             = print latency stats\n"
+	  "dump              = print latency measurements\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -22,7 +32,7 @@ int main(int argc, char *argv[])
  
 
   if (argc!=4) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

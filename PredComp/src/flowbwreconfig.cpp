@@ -1,9 +1,19 @@
 #include "PredComp.h"
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: flowbwreconfig controlspec period_usec fromhost tohost\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Reconfigure a flowbwserver\n\n"
+	  "usage: %s client period_usec fromhost tohost\n\n"
+	  "client          = client endpoint\n"
+	  "period_usec     = period in usec for measurements\n"
+	  "fromhost,tohost = the path to measure\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
 
 
 #define DEFAULT_PERIOD 1000000
@@ -17,7 +27,7 @@ int main(int argc, char *argv[])
             FlowBWMeasurementConfigurationReply>  ref;
 
   if (argc<5) { 
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
 

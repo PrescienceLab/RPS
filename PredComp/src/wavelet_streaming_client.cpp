@@ -4,10 +4,18 @@
 
 #include "PredComp.h"
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: wavelet_streaming_client netspec\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Get signal as a wavelet-domain stream\n\n"
+	  "usage: %s source\n\n"
+	  "source            = source endpoint\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
 
 
 
@@ -16,7 +24,7 @@ int main(int argc, char *argv[])
   WaveletIndividualSample s;
 
   if (argc!=2) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 

@@ -1,10 +1,20 @@
 #include "PredComp.h"
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: predreconfig controlspec numfit numpred modelclass modeldata*\n");
-}
+  char *b=GetRPSBanner();
+  char *m=GetAvailableModels();
 
+  fprintf(stdout, 
+	  "Reconfigure a running predserver and force it to refit\n\n"
+	  "usage: %s ctrl numfit numpred MODEL\n\n"
+	  "ctrl            = client endpoint for predserver's config\n"
+	  "numfit          = number of samples to fit the model to\n"
+	  "numpred         = number of steps ahead to predict\n"
+	  "MODEL           = a model (see below)\n\n%s\n%s",n,m,b);
+  delete [] b;
+  delete [] m;
+}
 
 #define DEFAULT_PERIOD 1000000
 
@@ -17,7 +27,7 @@ int main(int argc, char *argv[])
   int first_model=4;
 
   if (argc<5) { 
-    usage();
+    usage(argv[0]);
     exit(-1);
   }
 
@@ -31,7 +41,7 @@ int main(int argc, char *argv[])
   
   ModelTemplate *mt = ParseModel(argc-first_model,&(argv[first_model]));
   if (mt==0) { 
-    usage();
+    usage(argv[0]);
     return 0;
   }
   mi  =  ModelInfo(*mt);

@@ -6,14 +6,28 @@
 
 #include "PredComp.h"
 
+
 #if defined(__osf__)
 extern "C" int usleep(int);  // FREAKS
 #endif
 
-void usage()
+
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: loadfileserver period_us filename [ctrlnetspace] [targetnetspec]+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Serve a load trace file as LoadMeasurments\n\n"
+	  "usage: %s period_us filename ctrl target+\n\n"
+	  "period_us       = period in microseconds\n"
+	  "filename        = filename\n"
+	  "ctrl            = control endpoint\n"
+	  "target+         = one or more target or connect endpoints\n\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
+
+
 
 
 
@@ -70,7 +84,7 @@ private:
   int period_usec;
   double prev;
 public:
-  LoadSource(int period_usec, char *fn) { 
+  FileLoadSource(int period_usec, char *fn) { 
     this->period_usec=period_usec; 
     prev=0.0;
     double *junk;
@@ -78,6 +92,7 @@ public:
     delete [] junk;
     cur=0;
   }
+  virtual ~FileLoadSource() { delete [] vals; }
 
   virtual void GetData(Buffer &buf) {
     LoadMeasurement measure;
@@ -92,7 +107,7 @@ public:
     }
     
     measure.avgs[0] = measure.avgs[1] = measure.avgs[2] = vals[cur];
-    cur++;
+    cur = (cur+1) % numsamples;
 
     measure.period_usec=period_usec;
     LoadMeasurement::SetSmoothingType(measure);
@@ -138,6 +153,7 @@ typedef FilterWithControl<LoadMeasurement,
                           RateControl,
                           LoadMeasurementConfigurationReply> LoadServer;
 
+char *fn;
 FileLoadSource *curloadsource;
 LoadServer *server;
 
@@ -149,7 +165,7 @@ public:
     
     server->DeleteLocalSource(curloadsource);
     delete curloadsource;
-    curloadsource = new LoadSource(req.period_usec);
+    curloadsource = new FileLoadSource(req.period_usec,fn);
     server->AddLocalSource(curloadsource);
     repl.reqtimestamp=req.timestamp;
     repl.changetimestamp=TimeStamp(0);
@@ -171,12 +187,12 @@ int main(int argc, char *argv[])
   int i;
 
   if (argc<5) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 
   unsigned period_usec=atoi(argv[1]);
-  char *fn = argv[2];
+  fn = argv[2];
 
   curloadsource = new FileLoadSource(period_usec,fn);
 
@@ -192,7 +208,8 @@ int main(int argc, char *argv[])
     }
     server->AddEndPoint(*ep);
   }
-  fprintf(stderr,"loadserver running.\n");
+  fprintf(stderr,"fileloadserver running.\n");
   server->Run();
+  return 0;
 }
 

@@ -49,10 +49,20 @@ public:
 typedef Mirror<SelectionMirrorInputHandler,GenericMirrorNewConnectionHandler,NullHandler,NullHandler> SelectionMirror;
 
 
-void usage() 
+void usage(const char *n)
 {
-  fprintf(stderr,"wavelet_streaming_selection levellow levelhigh sourcenetspec netspec+\n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Streaming Wavelet Transform Selector\n\n"
+	  "usage: %s levellow levelhigh source target+\n\n"
+	  "levellow        = lowest level to let pass\n"
+	  "levelhigh       = highest level to let pass\n"
+	  "source          = source endpoint for measurements\n"
+	  "target+         = one or more target or connect endpoints\n\n%s",n,b);
+  delete [] b;
 }
+
 
 
 int main(int argc, char *argv[]) 
@@ -61,7 +71,7 @@ int main(int argc, char *argv[])
   EndPoint *ep;
 
   if (argc<5) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
   

@@ -3,9 +3,17 @@
 #include "PredComp.h"
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: measurebufferclient numitems [sourcenetspec] \n");
+  char *b=GetRPSBanner();
+
+  fprintf(stdout, 
+	  "Get a generic measurement from a buffer\n\n"
+	  "usage: %s num client\n\n"
+	  "num             = number of values to get\n"
+	  "client          = client endpoint\n"
+	  "\n%s",n,b);
+  delete [] b;
 }
 
 
@@ -16,7 +24,7 @@ int main(int argc, char *argv[])
   int i;
 
   if (argc!=3) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 
