@@ -4,20 +4,18 @@
 #
 # Arguments:
 #
-#  inputfile -> A file consisting of time-series samples.  This should be quite
-#               a big number of samples (~1million)
+#  inputfile     -> A file consisting of time-series samples.  This should be quite
+#                   a big number of samples (~1million)
 #  initsize      -> Data size that should be transformed into sfwt and dft
 #  initblocksize -> The initial blocksize used for discrete tests
-#  numtests  -> The number of tests to run, which will be averaged finally.
 
 $usage = "measure_tsunami_system_perf.pl inputfile initsize initblocksize numtests\n";
 
-$#ARGV==3 or die $usage;
+$#ARGV==2 or die $usage;
 
 $file = shift;;
 $initsize = shift;
 $initblocksize =shift;
-$numtests = shift;
 
 $maxhz=1024;
 
@@ -61,8 +59,8 @@ if (1) {
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null\"";
-    #system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null";
+    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null\"";
+    #system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null";
     $datasize*=2;
   }
 
@@ -75,8 +73,8 @@ if (1) {
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $numtests $FLAT stdout > /dev/null\"";
-    #system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $numtests $FLAT stdout > /dev/null";
+    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $FLAT stdout > /dev/null\"";
+    #system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
@@ -89,8 +87,8 @@ if (1) {
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null\"";
-    #system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null";
+    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null\"";
+    #system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null";
     $datasize*=2;
   }
 
@@ -100,11 +98,12 @@ if (1) {
   print STDERR "Sweep Hz for performance of srwt, block\n";
   $datasize = $initsize;
   $blk = $initblocksize;
+  $numblocks = $datasize / $blk;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $usec $numtests $FLAT stdout > /dev/null\"";
-    #system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $usec $numtests $FLAT stdout > /dev/null";
+    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks $usec $FLAT stdout > /dev/null\"";
+    #system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
@@ -118,8 +117,8 @@ if (1) {
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $numtests $FLAT stdout > /dev/null\"";
-    #system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $numtests $FLAT stdout > /dev/null";
+    system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
+    #system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
@@ -133,8 +132,8 @@ if (1) {
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $numtests $FLAT stdout > /dev/null\"";
-    #system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $numtests $FLAT stdout > /dev/null";
+    system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
+    #system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
@@ -159,7 +158,7 @@ if (0) {
 #  }
 }
 
-sleep(60);
+sleep(2);
 
 system "kill_matching.pl clean_vmstat";
 system "kill_matching.pl clean_loadserver";
