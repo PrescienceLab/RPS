@@ -1,12 +1,3 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#include <sys/wait.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -14,20 +5,8 @@
 #include <signal.h>
 #include <math.h>
 
-
-
-#include "Mirror.h"
-#include "EndPoint.h"
-#include "Measurement.h"
-#include "PredictionRequestResponse.h"
-#include "Buffer.h"
-#include "Reference.h"
+#include "PredComp.h"
 #include "predserver_core.h"
-
-#include "pdqparamsets.h"
-
-#include "glarp.h"
-#include "debug.h"
 
 #if defined(__osf__)
 extern "C" int usleep(int);  // FREAKS

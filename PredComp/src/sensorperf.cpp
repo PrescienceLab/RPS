@@ -4,11 +4,7 @@
 #include <sys/time.h>
 #include <errno.h>
 
-#include "TimeStamp.h"
-
-#include "getloadavg.h"
-
-#include "tools.h"
+#include "PredComp.h"
 
 
 void loadavgwrapper()
@@ -53,12 +49,12 @@ int main()
   }
 
   fprintf(stdout,"%s:\n",name);
-  fprintf(stdout," Rate              : %lf /s \n",rate);
-  fprintf(stdout," Mean Latency      : %lf ms\n",Mean(lat,NUM));
-  fprintf(stdout," Std  Latency      : %lf ms\n",StandardDeviation(lat,NUM));
-  fprintf(stdout," Min  Latency      : %lf ms\n",Min(lat,NUM));
-  fprintf(stdout," Med  Latency      : %lf ms\n",Median(lat,NUM));
-  fprintf(stdout," Max  Latency      : %lf ms\n",Max(lat,NUM));
+  fprintf(stdout," Rate              : %f /s \n",rate);
+  fprintf(stdout," Mean Latency      : %f ms\n",Mean(lat,NUM));
+  fprintf(stdout," Std  Latency      : %f ms\n",StandardDeviation(lat,NUM));
+  fprintf(stdout," Min  Latency      : %f ms\n",Min(lat,NUM));
+  fprintf(stdout," Med  Latency      : %f ms\n",Median(lat,NUM));
+  fprintf(stdout," Max  Latency      : %f ms\n",Max(lat,NUM));
   
 }
 

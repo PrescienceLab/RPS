@@ -4,18 +4,9 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <math.h>
-//#include <stropts.h>
 #include <sys/select.h>
 
-#include "socks.h"
-#include "LoadMeasurement.h"
-#include "Reference.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-
-#include "tools.h"
-
-#include "glarp.h"
+#include "PredComp.h"
 
 
 void usage()
@@ -89,15 +80,15 @@ int main(int argc, char *argv[])
     double stdpredsize = StandardDeviation(siz,numsamples);
 
     printf("numsamples:    %d\n"
-           "rate:          %lf Hz\n"
-	   "mean latency:  %lf msec\n"
-	   "mean 95%% int:  [ %lf , %lf ] msec\n"
-	   "stddev:        %lf msec\n"
-	   "min:           %lf msec\n"
-	   "median:        %lf msec\n"
-	   "max:           %lf msec\n"
-           "predmeansize   %lf bytes\n"
-           "predstdsize    %lf bytes\n",
+           "rate:          %f Hz\n"
+	   "mean latency:  %f msec\n"
+	   "mean 95%% int:  [ %f , %f ] msec\n"
+	   "stddev:        %f msec\n"
+	   "min:           %f msec\n"
+	   "median:        %f msec\n"
+	   "max:           %f msec\n"
+           "predmeansize   %f bytes\n"
+           "predstdsize    %f bytes\n",
 	   numsamples,
 	   rate,
 	   mean,
@@ -111,7 +102,7 @@ int main(int argc, char *argv[])
            stdpredsize);
   } else {
     for (i=0;i<numsamples;i++) {
-      printf("%lf\n",lat[i]);
+      printf("%f\n",lat[i]);
     }
   }
   

@@ -1,15 +1,4 @@
-#include "socks.h"
-#include "LoadMeasurement.h"
-#include "Reference.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-#include "fit.h"
-
-#include "glarp.h"
-
-#ifdef WIN32
-#define strcasecmp _stricmp
-#endif
+#include "PredComp.h"
 
 void usage()
 {

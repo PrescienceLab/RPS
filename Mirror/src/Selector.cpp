@@ -1,10 +1,6 @@
-#ifdef WIN32
-#include <windows.h>
-#include <io.h>
-#else
-#include <sys/time.h>
-#include <unistd.h>	 
-#endif
+#include "socks.h"
+
+
 #include <errno.h>
 #include <iostream.h>
 #include <stdio.h>
@@ -156,7 +152,7 @@ int Selector::Run()
   TimeValue waittime, curtime,temp;
   struct timeval tv;
   
-#ifndef WIN32  
+#if !defined(WIN32) || defined(__CYGWIN__)
   rc=IgnoreSignal(SIGPIPE);
 #endif
   //rc = SetSignalHandler(SIGPIPE,&JammedIgnore);
@@ -261,7 +257,7 @@ int Selector::Run()
 		h->SetLast(curtime);
 	      } else {
 		// delete it
-		close(h->GetFD());
+		CLOSE(h->GetFD());
 		RemoveHandler(h);
 	      }	
 	    }	
@@ -302,7 +298,7 @@ int Selector::Run()
     running=true;
 
   }
-#ifndef WIN32
+#if !defined(WIN32) || defined(__CYGWIN__)
   ListenToSignal(SIGPIPE);
 #endif
   return 0;

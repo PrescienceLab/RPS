@@ -1,5 +1,5 @@
 #include "debug.h"
-#ifndef WIN32
+#if !defined(WIN32) || defined(__CYGWIN__)
 #include <unistd.h>
 #endif
 #include <stdlib.h>
@@ -10,7 +10,7 @@
 #define BREAK_SCRIPT_NAME "_____I_HATE_THE_WORLD_____"
 #define BREAK_SIGNAL SIGUSR1
 
-#ifndef WIN32
+#if !defined(WIN32) || defined(__CYGWIN__)
 //#define USE_XTERM   // This works
 //#define USE_DDD     // This is currently broken
 #define USE_XEMACS_GDB 
@@ -79,7 +79,6 @@ void AttachDebuggerHere(char *execname=0)
 void AttachDebuggerHere(char *execname)
 {
   char s[1000];
-  FILE *fd;
   execname = execname==0 ? GetExecName() : execname;
   //signal(SIGUSR2,&AttacheDebuggerHereSigHandler);
   sprintf(s, "( EXEC=`which %s`; gnudoit \"(progn (gdb \\\"$EXEC\\\") (gdb-call \\\"attach %d\\\") (gdb-call \\\"break BreakHere\\\") (gdb-call \\\"continue\\\") )\") ; sleep 10", execname, getpid());

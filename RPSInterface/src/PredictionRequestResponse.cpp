@@ -156,7 +156,7 @@ void PredictionRequest::Print(FILE *out) const
   int i;
   
   for (i=0;i<serlen;i++) {
-    fprintf(out,"%u\t%lf\n",
+    fprintf(out,"%u\t%f\n",
 	    i, series[i]);
   }
 }

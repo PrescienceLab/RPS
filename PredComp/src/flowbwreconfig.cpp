@@ -1,13 +1,4 @@
-#include "socks.h"
-#include "FlowBWMeasurement.h"
-#include "Reference.h"
-#include "EndPoint.h"
-#include "socks.h"
-#include "glarp.h"
-
-#ifdef WIN32
-#define strcasecmp _stricmp
-#endif
+#include "PredComp.h"
 
 void usage()
 {

@@ -1,8 +1,3 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <arpa/inet.h>
-#endif
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
@@ -11,7 +6,7 @@
 #include "socks.h"
 
 FlowBWMeasurement::FlowBWMeasurement() : 
-  fromip(0), toip(0), period_usec(DEFAULT_PERIOD_USEC), bw(0), timestamp(0)
+  fromip(0), toip(0), timestamp(0), period_usec(DEFAULT_PERIOD_USEC), bw(0)
 {
 }
   
@@ -85,7 +80,7 @@ void FlowBWMeasurement::Print(FILE *out)
 
 
 FlowBWMeasurementConfigurationRequest::FlowBWMeasurementConfigurationRequest() :
-  timestamp(0), period_usec(DEFAULT_PERIOD_USEC), fromip(0), toip(0)
+  timestamp(0),  fromip(0), toip(0), period_usec(DEFAULT_PERIOD_USEC)
 {
 }
 
@@ -138,15 +133,15 @@ void FlowBWMeasurementConfigurationRequest::Print(FILE *out) {
   IPToHostname(fromip,fromhost,1024);
   IPToHostname(toip,tohost,1024);
 
-  fprintf(out,"FlowBWMeasurementConfigurationRequest timetamp=%lf period=%d usec from=%s to=%s\n",
+  fprintf(out,"FlowBWMeasurementConfigurationRequest timetamp=%f period=%d usec from=%s to=%s\n",
 	  (double)timestamp, period_usec,fromhost,tohost);
 }
 	  
 
 
 FlowBWMeasurementConfigurationReply::FlowBWMeasurementConfigurationReply() :
-  reqtimestamp(0), changetimestamp(0),period_usec(DEFAULT_PERIOD_USEC),
-  fromip(0), toip(0)
+  reqtimestamp(0), changetimestamp(0),
+  fromip(0), toip(0), period_usec(DEFAULT_PERIOD_USEC)
 {
 }
 
@@ -205,7 +200,7 @@ void FlowBWMeasurementConfigurationReply::Print(FILE *out) {
   IPToHostname(fromip,fromhost,1024);
   IPToHostname(toip,tohost,1024);
 
-  fprintf(out,"FlowBWMeasurementConfigurationReply reqtimestamp=%lf changetimestamp=%lf period=%d usec from=%s to=%s\n",
-	  (double)reqtimestamp,(double)changetimestamp, period_usec);
+  fprintf(out,"FlowBWMeasurementConfigurationReply reqtimestamp=%f changetimestamp=%f period=%d usec from=%s to=%s\n",
+	  (double)reqtimestamp,(double)changetimestamp, period_usec, fromhost, tohost);
 }
 	  

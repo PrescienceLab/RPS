@@ -1,10 +1,6 @@
 #include <stdlib.h>
-#include "Mirror.h"
-#include "Measurement.h"
-#include "LoadMeasurement.h"
-#include "PredictionRequestResponse.h"
-#include "glarp.h"
 
+#include "PredComp.h"
 
 unsigned whichavg;
 

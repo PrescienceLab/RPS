@@ -1,23 +1,4 @@
-#include <math.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <errno.h>
-//#include <stropts.h>
-#include <sys/select.h>
-
-#include "socks.h"
-#include "LoadMeasurement.h"
-#include "Reference.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-#include "Measurement.h"
-
-#include "evaluate_core.h"
-#include "fit.h"
-
-#include "glarp.h"
+#include "Predcomp.h"
 
 
 void usage()
@@ -125,7 +106,7 @@ int main(int argc, char *argv[])
 
     while (measure.timestamp!=pred.datatimestamp) { 
       while (measure.timestamp<pred.datatimestamp) { 
-	fprintf(stderr,"syncwait... measure:%lf vs pred:%lf\n",
+	fprintf(stderr,"syncwait... measure:%f vs pred:%f\n",
 		(double)(measure.timestamp), (double)(pred.datatimestamp));
 	measuresource.GetNextItem(measure);
 	if (measure.tag!=pred.tag) {
@@ -134,7 +115,7 @@ int main(int argc, char *argv[])
 	}
       } 
       while (measure.timestamp>pred.datatimestamp) {
-	fprintf(stderr,"syncwait... measure:%lf vs pred:%lf\n",
+	fprintf(stderr,"syncwait... measure:%f vs pred:%f\n",
 		(double)(measure.timestamp), (double)(pred.datatimestamp));
 	predsource.GetNextItem(pred);
 	if (measure.tag!=pred.tag) {
@@ -156,7 +137,7 @@ int main(int argc, char *argv[])
     curnumsamples++;
 
     double error = eval->GetCurrentPlusOneMeanSquareError();
-    //fprintf(stdout,"%d\t%lf\t%lf\n",curnumsamples,pred.errs[0],error);
+    //fprintf(stdout,"%d\t%f\t%f\n",curnumsamples,pred.errs[0],error);
     if (curnumsamples>maxtestsamples) {
       // Too many samples, drain it and restart
       eval->Drain();
@@ -170,7 +151,7 @@ int main(int argc, char *argv[])
       
     if (curnumsamples>mintestsamples) { 
       if (error>maxabserr) { 
-	fprintf(stderr,"Measured error (%lf) exceeds maximum (%lf) - forcing model reconfig\n",
+	fprintf(stderr,"Measured error (%f) exceeds maximum (%f) - forcing model reconfig\n",
 		error,maxabserr);
 	CHK_DEL(eval);
 	eval=0;
@@ -178,7 +159,7 @@ int main(int argc, char *argv[])
       }
       double relerrmissest = 100.0*fabs(error-pred.errs[0])/(MAX(0.00001,pred.errs[0]));
       if (relerrmissest>maxerrmissest && error>pred.errs[0]) { 
-	fprintf(stderr,"Predictor miss-estimates error by %lf%% (est=%lf,meas=%lf) which exceeds maximum of %lf%% - forcing model reconfig\n",
+	fprintf(stderr,"Predictor miss-estimates error by %f%% (est=%f,meas=%f) which exceeds maximum of %f%% - forcing model reconfig\n",
 		relerrmissest, pred.errs[0], error,maxerrmissest);
 	CHK_DEL(eval);
 	eval=0;

@@ -5,23 +5,8 @@
 #include <string.h>
 #include <signal.h>
 
-#include "PredictionRequestResponse.h"
-#include "Measurement.h"
+#include "PredComp.h"
 #include "predserver_core.h"
-#include "socks.h"
-
-#include "debug.h"
-
-#include "ar.h"
-#include "ma.h"
-#include "arma.h"
-#include "arima.h"
-#include "arfima.h"
-#include "bestmean.h"
-#include "tools.h"
-#include "random.h"
-#include "fit.h"
-
 
 #define DEBUG 0
 

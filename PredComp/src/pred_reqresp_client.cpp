@@ -1,26 +1,8 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <stropts.h>
 
-#include "socks.h"
-#include "EndPoint.h"
-#include "Reference.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-
-#include "glarp.h"
-
-#include "tools.h"
-
-#include "fit.h"
+#include "PredComp.h"
 
 void usage() 
 {

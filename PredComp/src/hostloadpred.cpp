@@ -1,48 +1,11 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <stropts.h>
 #include <signal.h>
-
 #include <math.h>
 
-#include "getloadavg.h"
 
-#include "none.h"
-#include "mean.h"
-#include "bestmean.h"
-#include "last.h"
-#include "ar.h"
-#include "ma.h"
-#include "arma.h"
-#include "arima.h"
-#include "arfima.h"
-
-
-#include "tools.h"
-#include "random.h"
-#include "fit.h"
-#include "evaluate_core.h"
-
-#include "PredictionRequestResponse.h"
-
-#include "LoadMeasurement.h"
-
-#include "Mirror.h"
-
-#include "EndPoint.h"
-
-#include "glarp.h"
-
-#include "debug.h"
+#include "PredComp.h"
 
 #if defined(__osf__)
 extern "C" int usleep(int);  // FREAKS
@@ -208,7 +171,7 @@ public:
     
     if (curevalnumsamples>mintestsamples) { 
       if (error>maxabserr) { 
-	fprintf(stderr,"Measured error (%lf) exceeds maximum (%lf) - forcing model reconfig\n",
+	fprintf(stderr,"Measured error (%f) exceeds maximum (%f) - forcing model reconfig\n",
 		error,maxabserr);
 	CHK_DEL(eval);
 	eval=0;
@@ -216,7 +179,7 @@ public:
       }
       double relerrmissest = 100.0*fabs(error-pr.errs[0])/(MAX(0.00001,pr.errs[0]));
       if (relerrmissest>maxerrmissest && error>pr.errs[0]) { 
-	fprintf(stderr,"Predictor miss-estimates error by %lf%% (est=%lf,meas=%lf) which exceeds maximum of %lf%% - forcing model reconfig\n",
+	fprintf(stderr,"Predictor miss-estimates error by %f%% (est=%f,meas=%f) which exceeds maximum of %f%% - forcing model reconfig\n",
 		relerrmissest, pr.errs[0], error,maxerrmissest);
 	CHK_DEL(eval);
 	eval=0;
@@ -241,7 +204,7 @@ private:
   int numsamples;
   TimeStamp begin;
 public:
-  HostLoadPredSink() { numsamples==0; }
+  HostLoadPredSink() { numsamples=0; }
   void ProcessData(Buffer &buf) {
 #if MEASURE_RATE
     //fprintf(stderr, "Sample %d\n",numsamples);
@@ -251,7 +214,7 @@ public:
     if (numsamples==MAXNUMSAMPLES) { 
       TimeStamp end(0);
       double rate = MAXNUMSAMPLES/((double)end-(double)begin);
-      fprintf(stderr,"prediction rate is %lf Hz (%d samples)\n",
+      fprintf(stderr,"prediction rate is %f Hz (%d samples)\n",
 	      rate, MAXNUMSAMPLES);
       exit(0);
     }

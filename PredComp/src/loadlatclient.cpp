@@ -1,24 +1,9 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#endif
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <stropts.h>
 
-#include "socks.h"
-#include "LoadMeasurement.h"
-#include "Reference.h"
-#include "EndPoint.h"
-
-#include "glarp.h"
-
-#include "tools.h"
+#include "PredComp.h"
 
 void usage()
 {
@@ -67,7 +52,7 @@ int main(int argc, char *argv[])
     } else {
        now = TimeStamp(0);
        lat[i] = (double)(now) - (double)(measure.timestamp) ; 
-       //    fprintf(stderr,"%lf\t%lf\n",(double)(now),(double)(measure.timestamp));
+       //    fprintf(stderr,"%f\t%f\n",(double)(now),(double)(measure.timestamp));
     }
   }
 
@@ -85,13 +70,13 @@ int main(int argc, char *argv[])
     double max = 1000.0*Max(lat,numsamples);
 
     printf("numsamples:    %d\n"
-           "rate:          %lf Hz\n"
-	   "mean latency:  %lf msec\n"
-	   "mean 95%% int:  [ %lf , %lf ] msec\n"
-	   "stddev:        %lf msec\n"
-	   "min:           %lf msec\n"
-	   "median:        %lf msec\n"
-	   "max:           %lf msec\n"
+           "rate:          %f Hz\n"
+	   "mean latency:  %f msec\n"
+	   "mean 95%% int:  [ %f , %f ] msec\n"
+	   "stddev:        %f msec\n"
+	   "min:           %f msec\n"
+	   "median:        %f msec\n"
+	   "max:           %f msec\n"
            "sizeofloadmes  %d bytes\n",
 	   numsamples,
 	   rate,
@@ -105,7 +90,7 @@ int main(int argc, char *argv[])
 	   measure.GetPackedSize());
   } else {
     for (i=0;i<numsamples;i++) {
-      printf("%lf\n",lat[i]);
+      printf("%f\n",lat[i]);
     }
   }
   

@@ -8,34 +8,50 @@ BINDIR = $(ROOT)/bin/$(ARCH)/$(OS)
 SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
-LIBNAME = RPSint
+LIBNAME = RTA
 
 LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
-CFLAGS = -I$(INCDIR) $(TIMESERIES_CFLAGS) $(MIRROR_CFLAGS)
 
-ifeq ($(OPTIMIZE),YES)
-  CFLAGS +=  -O
-  LD1FLAGS = -O 
+ifeq ($(OPTIMIZE),YES) 
+  CFLAGS = -O
+  LD1FLAGS = -O
 else
-  CFLAGS += -g -gstabs+ -ggdb
+  CFLAGS = -g -gstabs+ -ggdb
   LD1FLAGS = -g  -gstabs+ -ggdb 
 endif
 
-LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME) \
-            $(MIRROR_LDFLAGS) \
-LD2FLAGS =  
+CFLAGS += -I$(INCDIR) \
+          $(GETLOADAVG_CFLAGS) \
+          $(TIMESERIES_CFLAGS) \
+          $(RPSINT_CFLAGS) \
+          $(MIRROR_CFLAGS) \
+          $(SPIN_CFLAGS)
 
-EXECLIST = 
+LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
+           $(RPSINT_LDFLAGS) \
+           $(MIRROR_LDFLAGS) \
+           $(GETLOADAVG_LDFLAGS) \
+           $(SPIN_LDFLAGS) \
+           $(TIMESERIES_LDFLAGS) \
+           $(FRACDIFF_LDFLAGS) \
+           $(RECIPES_LDGLAGS) \
+          -lm 
+
+ifeq ($(OS),SOLARIS)
+  LD3FLAGS = -lsocket -lkvm -lelf
+else
+  LD3FLAGS = 
+endif
+
+EXECLIST = find_tau         \
+           rta_play         \
+           test_pred        \
+           test_pred_vartau
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
-LIBOBJSLIST = FlowBWMeasurement.o    \
-              LoadMeasurement.o      \
-              Measurement.o          \
-              ModelInfo.o            \
-              PredictionRequestResponse.o \
-              TimeStamp.o
+LIBOBJSLIST = EstimateExecTime.o 
 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))

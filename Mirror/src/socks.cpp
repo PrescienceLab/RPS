@@ -7,7 +7,7 @@
 #include <sys/filio.h>
 #endif
 
-#if defined(__sparc__) || defined(WIN32)
+#if defined(__sparc__) || (defined(WIN32) && !defined(__CYGWIN__))
 #define SOCKOPT_TYPE char*
 #else
 #define SOCKOPT_TYPE void*
@@ -17,17 +17,6 @@
 #define SOCKOPT_LEN_TYPE unsigned
 #else
 #define SOCKOPT_LEN_TYPE int
-#endif
-
-#ifdef WIN32
-#include <io.h>
-#define WRITE(fd,buf,len) send(fd,buf,len,0)
-#define READ(fd,buf,len) recv(fd,buf,len,0)
-#define ioctl(x,y,z) ioctlsocket((SOCKET)x,(long)y,(unsigned long *)z)
-#else
-#define closesocket(x) close(x)
-#define WRITE(fd,buf,len) write(fd,buf,len)
-#define READ(fd,buf,len) read(fd,buf,len)
 #endif
 
 
@@ -125,13 +114,13 @@ unsigned GetMyIPAddress()
     int fd = CreateAndSetupTcpSocket();
     if (fd) {
       if (ConnectToHost(fd,WELL_KNOWN_HOST,WELL_KNOWN_PORT)) {
-	closesocket(fd);
+	CLOSE(fd);
 	return adx;
       }
       struct sockaddr_in glarpy_sa;
       SOCKOPT_LEN_TYPE len = sizeof(glarpy_sa);
       if (getsockname(fd,(struct sockaddr*)&glarpy_sa,&len)) {
-	closesocket(fd);
+	CLOSE(fd);
 	return adx;
       }
       assert(glarpy_sa.sin_family == AF_INET);
@@ -196,7 +185,7 @@ int CreateAndSetupUdpSocket(int bufsize,bool nonblocking)
 
   if (setsockopt(mysocket,SOL_SOCKET,SO_SNDBUF,
                 (const char*) &val, sizeof(val))<0) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
   }
 
@@ -204,14 +193,14 @@ int CreateAndSetupUdpSocket(int bufsize,bool nonblocking)
 
   if (setsockopt(mysocket,SOL_SOCKET,SO_RCVBUF,
                  (const char*)&val, sizeof(val))<0) {
-    closesocket(mysocket);
+    CLOSE(mysocket);
     return -1;
   }
 
   if (nonblocking) {
     val=1;
     if (ioctl(mysocket,FIONBIO,&val)) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
     }
   }
@@ -239,7 +228,7 @@ int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
   if (nodelay) {
     val=1;
     if (setsockopt(mysocket,IPPROTO_TCP,TCP_NODELAY,(const char *)&val,sizeof(int))) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
     }
   }
@@ -248,7 +237,7 @@ int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
 
   if (setsockopt(mysocket,SOL_SOCKET,SO_SNDBUF,
                 (const char*) &val, sizeof(val))<0) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
   }
 
@@ -256,14 +245,14 @@ int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
 
   if (setsockopt(mysocket,SOL_SOCKET,SO_RCVBUF,
                  (const char*)&val, sizeof(val))<0) {
-    closesocket(mysocket);
+    CLOSE(mysocket);
     return -1;
   }
 
   if (nonblocking) {
     val=1;
     if (ioctl(mysocket,FIONBIO,&val)) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
     }
   }
@@ -292,7 +281,7 @@ int CreateAndSetupUnixDomainSocket(int bufsize, bool nonblocking)
 
   if (setsockopt(mysocket,SOL_SOCKET,SO_SNDBUF,
                 (const char*) &val, sizeof(val))<0) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
   }
 
@@ -300,14 +289,14 @@ int CreateAndSetupUnixDomainSocket(int bufsize, bool nonblocking)
 
   if (setsockopt(mysocket,SOL_SOCKET,SO_RCVBUF,
                  (const char*)&val, sizeof(val))<0) {
-    closesocket(mysocket);
+    CLOSE(mysocket);
     return -1;
   }
 
   if (nonblocking) {
     val=1;
     if (ioctl(mysocket,FIONBIO,&val)) {
-      closesocket(mysocket);
+      CLOSE(mysocket);
       return -1;
     }
   }
@@ -352,6 +341,9 @@ int BindSocket(int mysocket, char *host_or_ip, int myport)
 
 int BindSocket(int mysocket, char *pathname)
 {
+#if defined(WIN32) && !defined(__CYGWIN__)
+  return -1;
+#else 
   struct sockaddr_un my_sa;
   int len;
 
@@ -364,6 +356,7 @@ int BindSocket(int mysocket, char *pathname)
     return -1;
   }
   return 0;
+#endif
 }  
 
 
@@ -394,6 +387,9 @@ int ConnectToHost(int mysocket, char *host, int port)
 
 int ConnectToPath(int mysocket, char *pathname)
 {
+#if defined(WIN32) && !defined(__CYGWIN__)
+  return -1;
+#else 
   struct sockaddr_un my_sa;
   int len;
 
@@ -406,6 +402,7 @@ int ConnectToPath(int mysocket, char *pathname)
     return -1;
   }
   return 0;
+#endif
 }
   
 
@@ -597,7 +594,7 @@ int Receive(const int fd, char *buf, const int len, bool recvall)
 
 int SetSignalHandler(int signum, void (*handler)(int), bool oneshot)
 {
-#ifdef WIN32
+#if defined(WIN32) // cygwin does not appear to have sigaction, so...
   signal(signum,handler);  //notice that this is oneshot
   return 0;
 #else
@@ -637,7 +634,7 @@ int ListenToSignal(int signum)
   return SetSignalHandler(signum,SIG_DFL);
 }
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 class SockInit {
 public:
   SockInit() { 

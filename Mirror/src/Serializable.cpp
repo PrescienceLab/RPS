@@ -13,7 +13,7 @@
 #include "debug.h"
 
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 int SerializeableInfo::BOUNDARY=0xdeadbeef;
 #endif
 

@@ -1,8 +1,3 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <arpa/inet.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -127,12 +122,12 @@ const char *xml_hostload_template =
 "      <Hostname>%s</Hostname>\n"
 "      <Period>%d</Period>\n"
 "      <SmoothingType>%d</SmoothingType>\n"
-"      <TimeStamp>%lf</TimeStamp>\n"
+"      <TimeStamp>%f</TimeStamp>\n"
 "      <Averages>\n"
-"         <Average Number=\"%d\">%lf</Average>\n"
-"         <Average Number=\"%d\">%lf</Average>\n"
-"         <Average Number=\"%d\">%lf</Average>\n"
-"         <Average Number=\"%d\">%lf</Average>\n"
+"         <Average Number=\"%d\">%f</Average>\n"
+"         <Average Number=\"%d\">%f</Average>\n"
+"         <Average Number=\"%d\">%f</Average>\n"
+"         <Average Number=\"%d\">%f</Average>\n"
 "      </Averages>\n"
 "   </HostLoadInfo>\n"
 "</HostLoadList>\n";
@@ -421,7 +416,7 @@ int LoadMeasurementConfigurationRequest::Unpack(Buffer &buf) {
 }
 
 void LoadMeasurementConfigurationRequest::Print(FILE *out) {
-  fprintf(out,"LoadMeasurementConfigurationRequest timetamp=%lf period=%d usec\n",
+  fprintf(out,"LoadMeasurementConfigurationRequest timetamp=%f period=%d usec\n",
 	  (double)timestamp, period_usec);
 }
 	  
@@ -448,6 +443,7 @@ LoadMeasurementConfigurationReply & LoadMeasurementConfigurationReply::operator 
   reqtimestamp=right.reqtimestamp;
   changetimestamp=right.changetimestamp;
   period_usec=right.period_usec;
+  return *this;
 }
 
 int LoadMeasurementConfigurationReply::GetPackedSize() const {
@@ -473,7 +469,7 @@ int LoadMeasurementConfigurationReply::Unpack(Buffer &buf) {
 }
 
 void LoadMeasurementConfigurationReply::Print(FILE *out) {
-  fprintf(out,"LoadMeasurementConfigurationReply reqtimestamp=%lf changetimestamp=%lf period=%d usec\n",
+  fprintf(out,"LoadMeasurementConfigurationReply reqtimestamp=%f changetimestamp=%f period=%d usec\n",
 	  (double)reqtimestamp,(double)changetimestamp, period_usec);
 }
 	  

@@ -1,10 +1,6 @@
 #include <stdlib.h>
-#include "Buffer.h"
-#include "EndPoint.h"
-#include "Reference.h"
-#include "Measurement.h"
-#include "PredictionRequestResponse.h"
-#include "glarp.h"
+
+#include "PredComp.h"
 
 
 void usage()

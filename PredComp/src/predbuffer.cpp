@@ -1,8 +1,5 @@
 #include <stdlib.h>
-#include "Buffer.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-#include "glarp.h"
+#include "PredComp.h"
 
 void usage()
 {

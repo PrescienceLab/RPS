@@ -3,16 +3,9 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <errno.h>
-//#include <stropts.h>
 #include <sys/select.h>
 
-#include "socks.h"
-#include "LoadMeasurement.h"
-#include "Reference.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-
-#include "glarp.h"
+#include "PredComp.h"
 
 #define PRINT 1
 

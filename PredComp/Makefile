@@ -9,13 +9,10 @@ BINDIR = $(ROOT)/bin/$(ARCH)/$(OS)
 SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
-
-CC     = c++
-LD     = c++ 
-
 CFLAGS = -I$(INCDIR) \
          $(GETLOADAVG_CFLAGS) \
          $(GETFLOWBW_CFLAGS) \
+         -I$(SENSORS_INC_DIR)\
          $(TIMESERIES_CFLAGS) \
          $(FRACDIFF_CFLAGS) \
          $(RECIPES_CFLAGS) \
@@ -43,6 +40,7 @@ LD2FLAGS =  $(RPSINT_LDFLAGS) \
             $(RECIPES_LDFLAGS) \
             $(MIRROR_LDFLAGS) \
             $(EXPAT_LDFLAGS) \
+            $(PREDCOMP_LDFLAGS) \
             -lm
 ifeq ($(OS),SOLARIS)
   LD3FLAGS = -lsocket -lkvm -lelf

@@ -14,10 +14,6 @@ LIBNAME = mirror
 
 LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
-
-CC     = c++
-LD     = ar
-
 CFLAGS = -I$(INCDIR)
 
 ifeq ($(OPTIMIZE),YES)

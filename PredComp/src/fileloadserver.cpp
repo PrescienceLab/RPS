@@ -1,33 +1,10 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
-//#include <stropts.h>
 #include <signal.h>
-
 #include <math.h>
 
-#include "getloadavg.h"
-
-
-
-
-#include "LoadMeasurement.h"
-
-#include "Mirror.h"
-
-#include "EndPoint.h"
-
-#include "glarp.h"
-
-#include "debug.h"
+#include "PredComp.h"
 
 
 #if defined(__osf__)

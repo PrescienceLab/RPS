@@ -1,9 +1,5 @@
 #include <stdlib.h>
-#include "Mirror.h"
-#include "Measurement.h"
-#include "FlowBWMeasurement.h"
-#include "PredictionRequestResponse.h"
-#include "glarp.h"
+#include "PredComp.h"
 
 
 class FlowBWMeasurement2Measurement {

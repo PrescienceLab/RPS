@@ -1,11 +1,3 @@
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/select.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -13,21 +5,8 @@
 #include <assert.h>
 #include <math.h>
 
-#include "fit.h"
-#include "bestmean.h"
-#include "ar.h"
-#include "ma.h"
-#include "arma.h"
-#include "arima.h"
-#include "arfima.h"
-#include "tools.h"
 
-#include "Mirror.h"
-#include "glarp.h"
-#include "debug.h"
-#include "EndPoint.h"
-#include "PredictionRequestResponse.h"
-
+#include "PredComp.h"
 
 void usage()
 {
@@ -51,8 +30,6 @@ public:
 
     Model *model;
     Predictor *predictor;
-    int p, di, q;
-    double d;
     
     model = FitThis(req.series,req.serlen,req.modelinfo);
 

@@ -8,7 +8,7 @@
 
 #include "junk.h"
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 #define strcasecmp _stricmp
 #endif
 

@@ -1,17 +1,11 @@
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
 #include <errno.h>
 #include <sys/select.h>
 
-#include "socks.h"
-#include "Measurement.h"
-#include "PredictionRequestResponse.h"
-#include "Reference.h"
-#include "EndPoint.h"
 
-#include "glarp.h"
+#include "PredComp.h"
 
 #define PRINT 1
 

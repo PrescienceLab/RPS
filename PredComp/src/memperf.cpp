@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
-#include "TimeStamp.h"
+
+#include "PredComp.h"
 
 
 #define NUMBYTES (16*1048576)
@@ -51,9 +52,9 @@ int main()
   bcopy(from,to,NUMBYTES);
   TimeStamp stopbcopy(0);
 
-  fprintf(stdout,"loop:    %lf bytes/sec\n"
-                 "memcpy:  %lf bytes/sec\n"
-	         "bcpy:    %lf bytes/sec\n",
+  fprintf(stdout,"loop:    %f bytes/sec\n"
+                 "memcpy:  %f bytes/sec\n"
+	         "bcpy:    %f bytes/sec\n",
 	  NUMBYTES/((double)stoploop-(double)startloop),
 	  NUMBYTES/((double)stopmemcpy-(double)startmemcpy),
 	  NUMBYTES/((double)stopbcopy-(double)startbcopy));
