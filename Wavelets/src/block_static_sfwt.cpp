@@ -147,10 +147,10 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    OutputWaveletCoefsNonFlat(outstr, forwardoutput, numlevels);
-  } else {
-    OutputWaveletCoefsFlat(outstr, forwardoutput, numlevels);
+    OutputLevelMetaData(outstr, forwardoutput, numlevels);
   }
-  
+
+  OutputWaveletCoefs(outstr, forwardoutput);
+
   return 0;
 }

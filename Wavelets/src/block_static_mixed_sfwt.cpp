@@ -75,7 +75,6 @@ int main(int argc, char *argv[])
     cerr << "block_static_mixed_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
-  unsigned numlevels = numstages + 1;
 
   ifstream specfile;
   specfile.open(argv[4]);
@@ -127,21 +126,19 @@ int main(int argc, char *argv[])
   vector<WaveletOutputSampleBlock<wosd> > detailout;
 
   sfwt.StreamingMixedBlockOperation(approxout, detailout, inputblock, sigspec);
-  numlevels -= 1;
 
   // Approximations
   if (!flat) {
     *outstr.tie() << "APPROXIMATIONS" << endl;
     *outstr.tie() << "--------------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, approxout, numlevels);
+    OutputLevelMetaData(outstr, approxout, numstages);
 
     *outstr.tie() << endl << "DETAILS" << endl;
     *outstr.tie() << "-------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, detailout, numlevels);
-  } else { //flat
-    OutputMRACoefsFlat(outstr, approxout, 'A', numlevels);
-    OutputMRACoefsFlat(outstr, detailout, 'D', numlevels);
+    OutputLevelMetaData(outstr, detailout, numstages);
   }
+
+  OutputMRACoefs(outstr, approxout, detailout);
   
   return 0;
 }

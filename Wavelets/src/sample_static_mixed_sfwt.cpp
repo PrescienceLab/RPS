@@ -127,46 +127,14 @@ int main(int argc, char *argv[])
   vector<wosd> detailout;
 
   // Create vectors for the level outputs
-  vector<deque<wosd> *> approxlevels;
-  vector<deque<wosd> *> detaillevels;
-  deque<wosd>* pwos;
-  for (i=0; i<(unsigned)numstages; i++) {
-    pwos = new deque<wosd>();
-    approxlevels.push_back(pwos);
-
-    pwos = new deque<wosd>();
-    detaillevels.push_back(pwos);
-  }
+  vector<vector<wosd> > approxlevels;
+  vector<vector<wosd> > detaillevels;
 
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingMixedSampleOperation(approxout, detailout, samples[i], sigspec);
 
-    if (flat) {
-      *outstr.tie() << i << "\t" << "A\t" << approxout.size() << "\t";
-    }
-
-    for (unsigned j=0; j<approxout.size(); j++) {
-      int samplelevel = approxout[j].GetSampleLevel();
-      approxlevels[samplelevel]->push_front(approxout[j]);
-      if (flat) {
-	*outstr.tie() << samplelevel << " " << approxout[j].GetSampleValue() << "\t";
-      }
-    }
-
-    if (flat) {
-      *outstr.tie() << endl << i << "\t" << "D\t" << detailout.size() << "\t";
-    }
-
-    for (unsigned j=0; j<detailout.size(); j++) {
-      int samplelevel = detailout[j].GetSampleLevel();
-      detaillevels[samplelevel]->push_front(detailout[j]);
-      if (flat) {
-	*outstr.tie() << samplelevel << " " << detailout[j].GetSampleValue() << "\t";
-      }
-    }
-    if (flat) {
-      *outstr.tie() << endl;
-    }
+    approxlevels.push_back(approxout);
+    detaillevels.push_back(detailout);
 
     detailout.clear();
     approxout.clear();
@@ -176,19 +144,14 @@ int main(int argc, char *argv[])
   if (!flat) {
     *outstr.tie() << "APPROXIMATIONS" << endl;
     *outstr.tie() << "--------------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, approxlevels, numstages);
+    OutputLevelMetaData(outstr, approxlevels, numstages);
 
     *outstr.tie() << endl << "DETAILS" << endl;
     *outstr.tie() << "-------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, detaillevels, numstages);
+    OutputLevelMetaData(outstr, detaillevels, numstages);
   }
-  
-  for (i=0; i<(unsigned)numstages; i++) {
-    CHK_DEL(approxlevels[i]);
-    CHK_DEL(detaillevels[i]);
-  }
-  approxlevels.clear();
-  detaillevels.clear();
+
+  OutputMRACoefs(outstr, approxlevels, detaillevels);
 
   return 0;
 }
