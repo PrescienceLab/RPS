@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     }
 #if PRINT
     measure.Print();
+    fflush(stdout);
 #endif
   }
   source.Disconnect();

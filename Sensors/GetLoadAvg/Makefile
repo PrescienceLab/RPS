@@ -71,7 +71,7 @@ else
 endif
 
 
-$(EXECS):$(BINDIR)/%:$(OBJDIR)/%.o 
+$(EXECS):$(BINDIR)/%:$(OBJDIR)/%.o $(LIB)
 	$(MakeExeAction)
 
 
