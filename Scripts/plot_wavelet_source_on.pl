@@ -9,7 +9,7 @@ $usage = "Plot wavelet-transformed measurements using gnuplot\n\n".
 "        [--rate=Hz]  [--numcoeffs=num] host\n".RPSBanner();
 
 
-$waveletport=$ENV{"WAVELETBUFFERPORT"};
+$waveletbufferport=$ENV{"WAVELETBUFFERPORT"};
 $numcoeffs=1024;
 $rate=-1;
 
@@ -31,7 +31,7 @@ $SIG{INT} = sub { system "rm -f $mfile"; exit(0)} ;
 do { 
   $first=0;
 
-  $CMD = "get_wavelet_measurements_on.pl --waveletbufferport=$waveletport --num=$numcoeffs $host |";
+  $CMD = "get_wavelet_measurements_on.pl --waveletbufferport=$waveletbufferport --num=$numcoeffs $host |";
   
   open(IN,"$CMD");
   $min=99999999999999999999999999;
@@ -86,7 +86,7 @@ do {
   close(OUT);
 
 
-  $cmds="set title \"Wavelet Coeffients on  $host:$waveletport\\nlevels=$levels num=$numcoeffs\"\n";
+  $cmds="set title \"Wavelet Coeffients on  $host:$waveletbufferport\\nlevels=$levels num=$numcoeffs\"\n";
   $cmds.="set xlabel 'Index'\nset ylabel 'Value'\n";
   $cmds.="plot ";
 

@@ -9,6 +9,10 @@ export PERLLIB=${RPS_DIR}/Scripts:${PERLLIB}
 
 export RPS_NEWSTYLEOUTPUT=yes
 
+export RPS_MINLOGLEVEL=100000
+
+#export RPS_LOG=somefile
+
 source $RPS_DIR/build/setup_default_ports
 
 

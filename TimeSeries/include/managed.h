@@ -197,7 +197,7 @@ class ManagedPredictor : public Predictor {
   int ComputeVariances(const int maxahead, double *vars, 
 		       const enum VarianceType vtype=POINT_VARIANCES) const {
     if (curpred) { 
-      return curpred->ComputeVariances(maxahead,vars,POINT_VARIANCES);
+      return curpred->ComputeVariances(maxahead,vars,vtype);
     } else {
       int top= (vtype==CO_VARIANCES) ? maxahead*maxahead : maxahead;
       for (int i=0;i<top;i++) { 

@@ -41,9 +41,9 @@ if (!($buffer_port =~/n|N/)) {
   $cmd .= " | wavelet_buffer $numitems source:stdio:stdin server:tcp:$buffer_port ";
 }
 
-print "Executing: ($cmd) &\n";
+print "Executing: ($cmd) \n";
 
-system "($cmd)&";
+system "($cmd)";
 
 
 
