@@ -15,8 +15,8 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 CFLAGS = -I$(INCDIR)
 
 ifeq ($(OPTIMIZE),YES)
-  CFLAGS +=  -O
-  LD1FLAGS = -O 
+  CFLAGS +=  -O2
+  LD1FLAGS = -O2
 else
   CFLAGS += -g -gstabs+ -ggdb
   LD1FLAGS = -g  -gstabs+ -ggdb 

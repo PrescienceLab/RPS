@@ -162,8 +162,8 @@ int main(int argc, char *argv[])
 	usleep(sleeptime_us);
       }
       rdwt.DiscreteWaveletTransformOperation(reconst, waveletcoefblocks[i]);
-      finaloutput.AppendBlockBack(reconst);
-      reconst.ClearBlock();
+      //      finaloutput.AppendBlockBack(reconst);
+      //      reconst.ClearBlock();
     }
     GetRusage(sysend, usrend);
 
