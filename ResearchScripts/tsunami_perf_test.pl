@@ -49,7 +49,7 @@ print STDERR "Start loadserver monitor\n";
 system "clean_loadserver.pl 1000000 10000 > $OUTDIR/loadmonitor.out &";
 
 # capture combined behavior
-sleep(20);
+sleep(30);
 
 if (1) {
 
@@ -68,9 +68,12 @@ if (1) {
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null\"";
     system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null";
-    $datasize *= 8;
+    $datasize *= 4;
   }
 }
+
+sleep(240);
+
 
 # Performance tests
 if (0) {
@@ -210,8 +213,6 @@ if (0) {
     system "lat_perf_drt $file DAUB10 TRANSFORM $blocksize $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.drt.DAUB10.t.max.out";
 #  }
 }
-
-sleep(20);
 
 system "kill_matching.pl clean_vmstat";
 system "kill_matching.pl clean_loadserver";
