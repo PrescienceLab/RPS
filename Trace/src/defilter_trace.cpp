@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#ifndef WIN32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#endif
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>

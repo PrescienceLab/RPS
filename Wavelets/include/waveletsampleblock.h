@@ -35,7 +35,12 @@ public:
   virtual ~WaveletOutputSampleBlock();
 
   WaveletOutputSampleBlock & operator=(const WaveletOutputSampleBlock &rhs);
+#if defined(WIN32) && !defined(__CYGWIN__)
+  virtual SampleBlock<SAMPLETYPE>  * clone() const;
+#else
   virtual WaveletOutputSampleBlock* clone() const;
+#endif
+
   inline void SetBlockLevel(const int level);
   inline int GetBlockLevel() const;
 
@@ -72,7 +77,11 @@ public:
   DiscreteWaveletOutputSampleBlock(const DiscreteWaveletOutputSampleBlock &rhs);
   virtual ~DiscreteWaveletOutputSampleBlock();
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+  virtual SampleBlock<SAMPLETYPE> * clone() const;
+#else
   virtual DiscreteWaveletOutputSampleBlock* clone() const;
+#endif
 
   inline int GetLowestLevel() const;
   inline void SetLowestLevel(const int lowest_level);
@@ -123,7 +132,12 @@ operator=(const WaveletOutputSampleBlock &rhs)
 }
 
 template <class SAMPLETYPE>
-WaveletOutputSampleBlock<SAMPLETYPE>* WaveletOutputSampleBlock<SAMPLETYPE>::
+#if defined(WIN32) && !defined(__CYGWIN__)
+SampleBlock<SAMPLETYPE> *
+#else
+WaveletOutputSampleBlock<SAMPLETYPE>* 
+#endif
+WaveletOutputSampleBlock<SAMPLETYPE>::
 clone() const
 {
   return new WaveletOutputSampleBlock<SAMPLETYPE>(*this);
@@ -268,7 +282,11 @@ DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
 }
 
 template <class SAMPLETYPE>
+#if defined(WIN32) && !defined(__CYGWIN__)
+SampleBlock<SAMPLETYPE> *
+#else
 DiscreteWaveletOutputSampleBlock<SAMPLETYPE>* 
+#endif
 DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
 clone() const
 {

@@ -11,7 +11,11 @@ public:
   WaveletInputSample(const WaveletInputSample &rhs);
   virtual ~WaveletInputSample();
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+  virtual Sample<SAMPLETYPE> & operator=
+#else
   virtual WaveletInputSample<SAMPLETYPE> & operator=
+#endif
     (const Sample<SAMPLETYPE> &rhs);
 };
 
@@ -30,7 +34,11 @@ public:
 		      const unsigned index);
   virtual ~WaveletOutputSample();
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+  virtual Sample<SAMPLETYPE> & operator=(const Sample<SAMPLETYPE> &rhs);
+#else
   virtual WaveletOutputSample & operator=(const Sample<SAMPLETYPE> &rhs);
+#endif
   WaveletOutputSample & operator=(const WaveletOutputSample &rhs);
 
   inline void SetSampleLevel(const int level);
@@ -71,7 +79,11 @@ WaveletInputSample<SAMPLETYPE>::
 {}
 
 template <class SAMPLETYPE>
+#if defined(WIN32) && !defined(__CYGWIN__)
+Sample<SAMPLETYPE> & WaveletInputSample<SAMPLETYPE>::
+#else
 WaveletInputSample<SAMPLETYPE> & WaveletInputSample<SAMPLETYPE>::
+#endif
 operator=(const Sample<SAMPLETYPE> &rhs)
 {
   if (&rhs != this) {
@@ -124,7 +136,12 @@ WaveletOutputSample<SAMPLETYPE>::
 }
 
 template <class SAMPLETYPE>
-WaveletOutputSample<SAMPLETYPE> & WaveletOutputSample<SAMPLETYPE>::
+#if defined(WIN32) && !defined(__CYGWIN__)
+Sample<SAMPLETYPE> &
+#else
+WaveletOutputSample<SAMPLETYPE> & 
+#endif
+WaveletOutputSample<SAMPLETYPE>::
 operator=(const Sample<SAMPLETYPE> &rhs)
 {
   if (&rhs != this) {

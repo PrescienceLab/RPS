@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
     *outstr << "-----\t-----\n" << endl << endl;
   }
 
-  for (unsigned i=0; i<finaloutput.GetBlockSize(); i++) {
+  for (i=0; i<finaloutput.GetBlockSize(); i++) {
     *outstr << i << "\t" << finaloutput[i].GetSampleValue() << endl;
   }
   *outstr << endl;

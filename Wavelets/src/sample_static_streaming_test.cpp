@@ -116,7 +116,8 @@ int main(int argc, char *argv[])
   vector<wisd> finaloutput;
   vector<wisd> outsamp;
 
-  for (unsigned i=0; i<samples.size(); i++) {
+  unsigned i;
+  for (i=0; i<samples.size(); i++) {
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
     if (srwt.StreamingTransformSampleOperation(outsamp, delaysamples)) {
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
     delaysamples.clear();
   }
 
-  for (unsigned i=0; i<MIN(finaloutput.size(), samples.size()); i++) {
+  for (i=0; i<MIN(finaloutput.size(), samples.size()); i++) {
     *outstr << i << "\t" << samples[i].GetSampleValue() << "\t"
 		  << finaloutput[i].GetSampleValue() << endl;
   }
@@ -139,7 +140,7 @@ int main(int argc, char *argv[])
   // Calculate the error between input and output
   double error=0;
   unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-  unsigned i=0;
+  i=0;
   for (unsigned j=sampledelay; j<MIN(finaloutput.size(), samples.size()); i++, j++) {
     error += samples[i].GetSampleValue() - finaloutput[j].GetSampleValue();
   }

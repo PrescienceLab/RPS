@@ -103,12 +103,13 @@ int main(int argc, char *argv[])
 
   // Find the number of stages represented in the signal specification
   unsigned numstages=0;
-  for (unsigned i=0; i<sigspec.approximations.size(); i++) {
+  unsigned i;
+  for (i=0; i<sigspec.approximations.size(); i++) {
     if ((unsigned)sigspec.approximations[i] > numstages) {
       numstages = sigspec.approximations[i];
     }
   }
-  for (unsigned i=0; i<sigspec.details.size(); i++) {
+  for (i=0; i<sigspec.details.size(); i++) {
     if ((unsigned)sigspec.details[i] > numstages) {
       numstages = sigspec.details[i];
     }
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
   // Create output buffers
   vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
-  for (unsigned i=0; i<numstages+1; i++) {
+  for (i=0; i<numstages+1; i++) {
     approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
     detailcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
   }
@@ -155,7 +156,7 @@ int main(int argc, char *argv[])
     *outstr << "-----\t-----\n" << endl << endl;
   }
 
-  for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
+  for (i=0; i<reconst.GetBlockSize(); i++) {
     *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
   *outstr << endl;

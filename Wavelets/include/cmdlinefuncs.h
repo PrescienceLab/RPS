@@ -5,9 +5,11 @@
 #include <iostream>
 #include <fstream>
 
+#if !defined(WIN32) || defined(__CYGWIN__)
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
+#endif
 
 #include "waveletinfo.h"
 #include "transforms.h"
@@ -87,6 +89,13 @@ void OutputLevelMetaData(ostream &os,
 
 // Performance routines
 void GetRusage(double &systime, double &usrtime);
+
+#if defined(WIN32) && !defined(__CYGWIN__)
+struct timeval {
+	int tv_sec;
+	int tv_usec;
+};
+#endif
 
 double GetTimeDuration(const timeval &stime, const timeval &etime);
 

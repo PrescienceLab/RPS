@@ -93,7 +93,11 @@ public:
   InputSample(const InputSample &rhs) : Sample<SAMPLETYPE>(rhs) {};
   virtual ~InputSample() {};
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+  virtual Sample<SAMPLETYPE> & operator=(const Sample<SAMPLETYPE> &rhs) {
+#else
   virtual InputSample<SAMPLETYPE> & operator=(const Sample<SAMPLETYPE> &rhs) {
+#endif
     if (&rhs != this) {
       this->Sample<SAMPLETYPE>::operator=(rhs);
     }

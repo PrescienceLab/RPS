@@ -59,6 +59,9 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -107,6 +110,9 @@ Package=<5>
 
 Package=<4>
 {{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -119,6 +125,228 @@ Package=<5>
 
 Package=<4>
 {{{
+}}}
+
+###############################################################################
+
+Project: "Wavelets"=".\Wavelets\Wavelets.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "alpha_to_ascii"=".\Trace\alpha_to_ascii.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "alpha_to_network"=".\Trace\alpha_to_network.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ascii_to_generic_ascii"=".\Trace\ascii_to_generic_ascii.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ascii_to_network"=".\Trace\ascii_to_network.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_dynamic_mixed_sfwt"=".\Wavelets\block_dynamic_mixed_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_dynamic_mixed_srwt"=".\Wavelets\block_dynamic_mixed_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_dynamic_sfwt"=".\Wavelets\block_dynamic_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_dynamic_srwt"=".\Wavelets\block_dynamic_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_dynamic_streaming_test"=".\Wavelets\block_dynamic_streaming_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_static_mixed_sfwt"=".\Wavelets\block_static_mixed_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_static_mixed_srwt"=".\Wavelets\block_static_mixed_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_static_sfwt"=".\Wavelets\block_static_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_static_srwt"=".\Wavelets\block_static_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "block_static_streaming_test"=".\Wavelets\block_static_streaming_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -136,6 +364,141 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "defilter_trace"=".\Trace\defilter_trace.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_forward_mixed"=".\Wavelets\discrete_forward_mixed.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_forward_transform"=".\Wavelets\discrete_forward_transform.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_forward_transform_blocks"=".\Wavelets\discrete_forward_transform_blocks.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_reverse_mixed"=".\Wavelets\discrete_reverse_mixed.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_reverse_transform"=".\Wavelets\discrete_reverse_transform.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_reverse_transform_blocks"=".\Wavelets\discrete_reverse_transform_blocks.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_reverse_zerofill_transform"=".\Wavelets\discrete_reverse_zerofill_transform.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "discrete_transform_test"=".\Wavelets\discrete_transform_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
     End Project Dependency
 }}}
 
@@ -369,6 +732,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "generic_ascii_to_ascii"=".\Trace\generic_ascii_to_ascii.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "gfnn"=".\TimeSeries\gfnn.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -379,6 +757,9 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -394,6 +775,9 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -609,6 +993,27 @@ Package=<4>
 
 ###############################################################################
 
+Project: "managed_predserver"=".\PredComp\managed_predserver.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "measurebuffer"=".\PredComp\measurebuffer.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -699,36 +1104,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "memperf"=".\PredComp\memperf.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name GetFlowBW
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name GetLoadAvg
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name Mirror
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name RemosInterface
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name RPSInterface
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name TimeSeries
-    End Project Dependency
-}}}
-
-###############################################################################
-
 Project: "mi"=".\TimeSeries\mi.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -739,6 +1114,57 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "network_to_alpha"=".\Trace\network_to_alpha.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "network_to_ascii"=".\Trace\network_to_ascii.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "polycalc"=".\TimeSeries\polycalc.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -769,6 +1195,9 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -1014,7 +1443,187 @@ Package=<4>
 
 ###############################################################################
 
-Project: "test_generic"=".\TimeSeries\test_generic.dsp" - Package Owner=<4>
+Project: "sample_dynamic_mixed_sfwt"=".\Wavelets\sample_dynamic_mixed_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_dynamic_mixed_srwt"=".\Wavelets\sample_dynamic_mixed_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_dynamic_sfwt"=".\Wavelets\sample_dynamic_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_dynamic_srwt"=".\Wavelets\sample_dynamic_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_dynamic_streaming_test"=".\Wavelets\sample_dynamic_streaming_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_static_mixed_sfwt"=".\Wavelets\sample_static_mixed_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_static_mixed_srwt"=".\Wavelets\sample_static_mixed_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_static_sfwt"=".\Wavelets\sample_static_sfwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_static_srwt"=".\Wavelets\sample_static_srwt.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "sample_static_streaming_test"=".\Wavelets\sample_static_streaming_test.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "select_from_binary_trace_file"=".\Trace\select_from_binary_trace_file.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "setup_wavelet_delay"=".\Wavelets\setup_wavelet_delay.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Wavelets
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_fit"=".\TimeSeries\test_fit.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -1024,6 +1633,9 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -1054,6 +1666,24 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name GetLoadAvg
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_project"=".\TimeSeries\test_project.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -1148,6 +1778,147 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name Trace
     End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_buffer"=".\PredComp\wavelet_buffer.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_bufferclient"=".\PredComp\wavelet_bufferclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_interval_query"=".\PredComp\wavelet_interval_query.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_predict"=".\PredComp\wavelet_predict.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_predserver"=".\PredComp\wavelet_predserver.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_reqresp_client"=".\PredComp\wavelet_reqresp_client.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "wavelet_reqresp_server"=".\PredComp\wavelet_reqresp_server.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################

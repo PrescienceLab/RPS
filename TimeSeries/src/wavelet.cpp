@@ -349,8 +349,9 @@ double WaveletPredictor::Step(const double obs)
   vector <WISD> finalout;
 
   xform->StreamingTransformSampleOperation(output,WISD(obs,curindex++));
-
-  for (unsigned i=0;i<output.size();i++) { 
+  
+  unsigned i;
+  for (i=0;i<output.size();i++) { 
     int level = output[i].GetSampleLevel();
     double value = output[i].GetSampleValue();
     int index = output[i].GetSampleIndex();
@@ -359,17 +360,18 @@ double WaveletPredictor::Step(const double obs)
     if (levelop[level].ahead<=0) { 
       outval=levelop[level].delay->PopPush(value);
     } else {
-      double preds[levelop[level].ahead];
+      double *preds = new double[levelop[level].ahead];
       levelop[level].pred->Step(value);
       levelop[level].pred->Predict(levelop[level].ahead,preds);
       outval=preds[levelop[level].ahead-1];
+	  delete [] preds;
     }
     predoutput.push_back(WOSD(outval,level,index+levelop[level].ahead));
   }
   
   xformrev->StreamingTransformSampleOperation(finalout,predoutput);
 
-  for (unsigned i=0; i< finalout.size(); i++ ) {
+  for (i=0; i< finalout.size(); i++ ) {
     nextval=finalout[i].GetSampleValue();
     cerr << "i="<<i<<" => "<<nextval;
   }

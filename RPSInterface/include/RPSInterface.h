@@ -7,7 +7,5 @@
 #include "ModelInfo.h"
 #include "PredictionRequestResponse.h"
 #include "TimeStamp.h"
-#ifdef HAVE_WAVELETS
 #include "WaveletInterface.h"
-#endif
 #endif

@@ -120,8 +120,9 @@ int main(int argc, char *argv[])
   sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
   dlyblk.StreamingBlockOperation(delayoutput, forwardoutput);
   srwt.StreamingTransformBlockOperation(reconst, delayoutput);
+  unsigned i;
 
-  for (unsigned i=0; i<MIN(inputblock.GetBlockSize(), reconst.GetBlockSize()); i++) {
+  for (i=0; i<MIN(inputblock.GetBlockSize(), reconst.GetBlockSize()); i++) {
     *outstr << i << "\t" << inputblock[i].GetSampleValue() << "\t"
 	    << reconst[i].GetSampleValue() << endl;
   }
@@ -130,7 +131,7 @@ int main(int argc, char *argv[])
   // Calculate the error between input and output
   double error=0;
   unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-  unsigned i=0;
+  i=0;
   for (unsigned j=sampledelay; j<MIN(reconst.GetBlockSize(), inputblock.GetBlockSize()); i++, j++) {
     error += inputblock[i].GetSampleValue() - reconst[j].GetSampleValue();
   }

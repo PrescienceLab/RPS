@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   l=atoi(argv[2]);
   k=atoi(argv[3]);
 
-  int d[l];
+  int *d = new int[l];
 
   int bsyk=((pow2(l-1)-1)*(n-1))%pow2(l-1);
   int last=bsyk;
@@ -62,9 +62,9 @@ int main(int argc, char *argv[])
 
   k=bsyk;
 
-
+  int i;
   /* sanity check to see if k'=k will work */
-  for (int i=0;i<l;i++) { 
+  for (i=0;i<l;i++) { 
     int t,b;
     t=k-(pow2(i)-1)*(n-1);
     b=pow2(i);
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     d[i] = t/b;
   }
 
-  for (int i=0;i<l;i++) { 
+  for (i=0;i<l;i++) { 
     fprintf(stdout,"d[%d]=%d ",i,d[i]);
     fprintf(stdout,"(2^%d-1)*(%d-1)+d[%d]*2^%d = %d (should =%d)\n",
 	    i,n,i,i,(pow2(i)-1)*(n-1)+d[i]*pow2(i),k);

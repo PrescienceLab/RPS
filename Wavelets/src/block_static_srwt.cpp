@@ -106,7 +106,8 @@ int main(int argc, char *argv[])
   }
 
   vector<WaveletOutputSampleBlock<wosd> > waveletcoefs;
-  for (unsigned i=0; i<numlevels; i++) {
+  unsigned i;
+  for (i=0; i<numlevels; i++) {
     waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
   }
 
@@ -143,7 +144,7 @@ int main(int argc, char *argv[])
     *outstr << "-----\t-----\n" << endl << endl;
   }
 
-  for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
+  for (i=0; i<reconst.GetBlockSize(); i++) {
     *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
   *outstr << endl;

@@ -40,4 +40,5 @@ int main(int argc, char *argv[])
 
   delete [] timestamps;
   delete [] vals;
+  return 0;
 }

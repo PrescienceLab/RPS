@@ -13,6 +13,12 @@
 #include "waveletsampleblock.h"
 #include "util.h"
 
+
+#if defined(WIN32) && !defined(__CYGWIN__)
+#pragma warning( disable: 4786)  //stop msvc from spewing crap about long template instaniations
+#endif
+
+
 const unsigned BITS_PER_BYTE=8;
 
 struct SignalSpec {
@@ -2138,7 +2144,7 @@ ChangeAllWaveletTypes(const WaveletType wavetype)
   case DAUB14:
   case DAUB16:
   case DAUB18:
-  case DAUB20:
+  case DAUB20:{
     first_stage->ChangeWaveletType(wavetype);
     ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> *pfws;
     for (unsigned i=0; i<stages.size(); i++) {
@@ -2146,6 +2152,7 @@ ChangeAllWaveletTypes(const WaveletType wavetype)
       pfws->ChangeWaveletType(wavetype);
     }
     result = true;
+			  }
     break;
   default:
     break;
@@ -2331,7 +2338,7 @@ ChangeAllWaveletTypes(const WaveletType wavetype)
   case DAUB14:
   case DAUB16:
   case DAUB18:
-  case DAUB20:
+  case DAUB20: {
     last_stage->ChangeWaveletType(wavetype);
     ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE> *prws;
     for (unsigned i=0; i<stages.size(); i++) {
@@ -2339,6 +2346,7 @@ ChangeAllWaveletTypes(const WaveletType wavetype)
       prws->ChangeWaveletType(wavetype);
     }
     result = true;
+			   }
     break;
   default:
     break;
@@ -2922,7 +2930,8 @@ DiscreteWaveletMixedOperation
   // Place approximations and details into the dwosb block
   deque<INSAMPLE> samps;
   const unsigned HIGH_APPROX_BLKSIZE=1;
-  for (unsigned i=0; i<approxblock.size(); i++) {
+  unsigned i;
+  for (i=0; i<approxblock.size(); i++) {
     if (approxblock[i].GetBlockSize() == HIGH_APPROX_BLKSIZE) {
       int level=approxblock[i].GetBlockLevel();
       approxblock[i].GetSamples(samps);
@@ -2931,7 +2940,7 @@ DiscreteWaveletMixedOperation
   }
 
   samps.clear();
-  for (unsigned i=0; i<detailblock.size(); i++, samps.clear()) {
+  for (i=0; i<detailblock.size(); i++, samps.clear()) {
     if (detailblock[i].GetBlockSize()) {
       int level=detailblock[i].GetBlockLevel();
       detailblock[i].GetSamples(samps);

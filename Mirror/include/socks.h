@@ -2,8 +2,10 @@
 #define _socks
 
 #if defined(WIN32) && !defined(__CYGWIN__)
+extern "C" {
 #include <windows.h>
 #include <winsock.h>
+}
 #else
 extern "C" {
 #include <sys/types.h>

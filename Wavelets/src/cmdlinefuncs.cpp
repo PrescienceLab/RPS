@@ -1,5 +1,9 @@
 #include "cmdlinefuncs.h"
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define strcasecmp stricmp
+#endif
+
 WaveletType GetWaveletType(const char *x, const char *filename)
 {
    if (!strcasecmp(x,"DAUB2")) {
@@ -152,13 +156,14 @@ void OutputWaveletCoefsNonFlat(ostream &os,
 
     // Find number of samples for this line
     unsigned numsamples=0;
-    for (unsigned j=0; j<numlevels; j++) {
+	unsigned j;
+    for (j=0; j<numlevels; j++) {
       if (!fwdout[j].Empty()) {
 	numsamples++;
       }
     }
 
-    for (unsigned j=0; j<numsamples; j++) {
+    for (j=0; j<numsamples; j++) {
       if (!fwdout[j].Empty()) {
 	wosd wos;
 	wos = fwdout[j].Front();
@@ -181,7 +186,8 @@ void OutputWaveletCoefsFlat(ostream &os,
 
     // Find number of samples for this line
     unsigned numsamples=0;
-    for (unsigned j=0; j<numlevels; j++) {
+	unsigned j;
+    for (j=0; j<numlevels; j++) {
       if (!fwdout[j].Empty()) {
 	numsamples++;
       }
@@ -189,7 +195,7 @@ void OutputWaveletCoefsFlat(ostream &os,
 
     os << numsamples << "\t";
 
-    for (unsigned j=0; j<numsamples; j++) {
+    for (j=0; j<numsamples; j++) {
       if (!fwdout[j].Empty()) {
 	wosd wos;
 	wos = fwdout[j].Front();
@@ -221,7 +227,8 @@ void OutputMRACoefsFlat(ostream &os,
 
     // Find number of samples for this line
     unsigned numsamples=0;
-    for (unsigned j=0; j<mraout.size(); j++) {
+	unsigned j;
+    for (j=0; j<mraout.size(); j++) {
       if (!mraout[j].Empty()) {
 	numsamples++;
       }
@@ -229,7 +236,7 @@ void OutputMRACoefsFlat(ostream &os,
 
     os << ch << " " << numsamples << "\t";
 
-    for (unsigned j=0; j<numsamples; j++) {
+    for (j=0; j<numsamples; j++) {
       if (!mraout[j].Empty()) {
 	wosd wos;
 	wos = mraout[j].Front();
@@ -650,6 +657,10 @@ void OutputLevelMetaData(ostream &os,
 
 void GetRusage(double &systime, double &usrtime)
 {
+#if defined(WIN32) && !defined(__CYGWIN__)
+	systime=0;
+	usrtime=0;
+#else 
   struct rusage x;
 
   if (getrusage(RUSAGE_SELF,&x)) {
@@ -659,6 +670,7 @@ void GetRusage(double &systime, double &usrtime)
 
   systime=x.ru_stime.tv_sec + x.ru_stime.tv_usec/1.0e6;
   usrtime=x.ru_utime.tv_sec + x.ru_utime.tv_usec/1.0e6;
+#endif
 }
 
 double GetTimeDuration(const timeval &stime, const timeval &etime)

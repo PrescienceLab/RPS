@@ -129,7 +129,8 @@ int main(int argc, char *argv[])
   vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
   vector<WaveletOutputSampleBlock<wosd> > wavecoefs;
-  for (unsigned i=0; i<optim_stages; i++) {
+  unsigned i;
+  for (i=0; i<optim_stages; i++) {
     approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
     detailcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
     wavecoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
@@ -144,7 +145,7 @@ int main(int argc, char *argv[])
   fp.ParseMRACoefsBlock(optim_spec, approxcoefs, detailcoefs, *is);
 
   // Transform the coefficients into wavecoefs and change level of approx
-  for (unsigned i=0; i<optim_stages; i++) {
+  for (i=0; i<optim_stages; i++) {
     if (approxcoefs[i].GetBlockSize() > 0) {
       approxcoefs[i].SetBlockLevel( approxcoefs[i].GetBlockLevel()+1);
       wavecoefs[approxcoefs[i].GetBlockLevel()] = approxcoefs[i];
@@ -180,7 +181,7 @@ int main(int argc, char *argv[])
     *outstr << "-----\t-----\n" << endl << endl;
   }
 
-  for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
+  for (i=0; i<reconst.GetBlockSize(); i++) {
     *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
   *outstr << endl;

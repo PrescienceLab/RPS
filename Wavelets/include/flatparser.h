@@ -73,4 +73,13 @@ public:
 			  istream &in);
 };
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define strcasecmp stricmp
+#endif
+
+
+#if defined(WIN32) && !defined(__CYGWIN__)
+#pragma warning( disable: 4786)  //stop msvc from spewing crap about long template instaniations
+#endif
+
 #endif

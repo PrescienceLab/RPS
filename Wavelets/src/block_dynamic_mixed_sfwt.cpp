@@ -196,10 +196,11 @@ int main(int argc, char *argv[])
     detaillevels.push_back(detailout);
 
     // Update counts
-    for (unsigned j=0; j<approxout.size(); j++) {
+	unsigned j;
+    for (j=0; j<approxout.size(); j++) {
       a_levelsize[j] += approxout[j].GetBlockSize();
     }
-    for (unsigned j=0; j<detailout.size(); j++) {
+    for (j=0; j<detailout.size(); j++) {
       d_levelsize[j] += detailout[j].GetBlockSize();
     }
     approxout.clear();
