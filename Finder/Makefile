@@ -52,15 +52,9 @@ $(LIBFILE) : $(LIBOBJS)
 	ar ruv $(LIBFILE) $(LIBOBJS)
 	ranlib $(LIBFILE)
 
-ifeq ($(OS),FREEBSD)
-  define MakeExeAction
-    $(LD) $(LD1FLAGS) $<  $(LD2FLAGS) $(LD3FLAGS) -o $(BINDIR)/$(@F)
-  endef
-else
   define MakeExeAction
     $(LD) $<  $(LD1FLAGS) $(LD2FLAGS) $(LD3FLAGS) -o $(BINDIR)/$(@F)
   endef
-endif
 
 
 $(EXECS):$(BINDIR)/%:$(OBJDIR)/%.o $(LIBFILE)
