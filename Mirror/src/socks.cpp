@@ -98,8 +98,8 @@ unsigned ToIPAddress(char *hostname)
 }
 
 
-#define WELL_KNOWN_HOST "www.cs.northwestern.edu"
-#define WELL_KNOWN_PORT 23
+#define WELL_KNOWN_HOST "www.cnn.com"
+#define WELL_KNOWN_PORT 80
 
 unsigned GetMyIPAddress()
 {
@@ -229,7 +229,7 @@ int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
     val=1;
     if (setsockopt(mysocket,IPPROTO_TCP,TCP_NODELAY,(const char *)&val,sizeof(int))) {
       CLOSE(mysocket);
-      return -1;
+   return -1;
     }
   }
 
@@ -331,7 +331,7 @@ int BindSocket(int mysocket, unsigned adx, int myport)
 
 int BindSocket(int mysocket, int myport)
 {
-  return BindSocket(mysocket,INADDR_ANY,myport);
+  return BindSocket(mysocket,(unsigned) INADDR_ANY,myport);
 }  
 
 int BindSocket(int mysocket, char *host_or_ip, int myport)
