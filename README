@@ -1,14 +1,16 @@
 To build:
 
-1. edit setup_env as appropriate
-2. source setup_env
+0. export RPS_DIR=your rps directory
+1. edit setup_rps_env as appropriate
+2. source setup_rps_env
 3. edit Makefile.conf as appropriate
 4. make clean depend all
 
 To run:
 
-1. edit setup_env as appropriate
-2. source setup_env
+0. export RPS_DIR=your rps directory
+1. edit setup_rps_env as appropriate
+2. source setup_rps_env
 3. start_hostloadmeasure.pl
 4. start_hostloadpred.pl
 5. use loadbufferclient and predbufferclient 
