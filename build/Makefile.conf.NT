@@ -1,0 +1,351 @@
+####################################################################################
+#
+# General Configuration Options
+#
+####################################################################################
+
+# The directory in which we are installed
+RPS_DIR  = /home/pdinda/RPS-development
+
+# which tools to use to build
+CC      = c++
+F77     = g77
+AR      = ar
+RANLIB  = ranlib
+LD      = c++
+JAVA    = java
+JAVAH   = javah
+
+# Whether to compile and optimized version: YES, NO
+OPTIMIZE = NO
+
+# Whether to include debug symbols: YES, NO
+DEBUG    = YES
+
+# Architecture of this machine: ALPHA, SUN, I386
+ARCH     = I386
+
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
+OS       = LINUX
+
+
+####################################################################################
+#
+# Options that determine what gets built
+#
+####################################################################################
+
+# Whether to build the GetLoadAvg Library
+HAVE_GETLOADAVG = YES
+
+# Whether to build the GetFlowBW Library
+HAVE_GETFLOWBW = YES
+
+# Whether to build the Time Series Prediction Library (TS)
+HAVE_TIMESERIES = YES
+
+# Whether to build the FracDiff library (used to implement ARFIMA models)
+# Notice that you need a fortran 77 compiles (f77) to build this
+HAVE_FRACDIFF = YES
+
+# Whether to build the Mirror template library and tools
+HAVE_MIRROR = YES
+
+# Whether to build the RPS interface library
+HAVE_RPSINT = YES
+
+# Whether to build the Remos interface library
+HAVE_REMOSINT = YES
+
+
+# This provides the various prediction components listed in the tech report
+#
+HAVE_PREDCOMP = YES
+
+# This provides the java GUI
+#
+HAVE_JAVAGUI = YES
+
+# Whether to build the Spin library and tools
+# This provides components for constructing scheduling experiments,
+# including a cycle server, scheduling tools, load playback tool, etc.
+HAVE_SPIN = YES
+
+
+
+
+####################################################################################
+#
+# Configuration Options for the GetLoadAvg library
+#
+####################################################################################
+
+# Whether the GetLoadAvg library should use uptime: YES, NO
+# If you set USE_UPTIME to YES, then load will be collected by running the
+# /usr/bin/uptime tool.  This is considerably higher overhead than the 
+# direct kernel symbol lookups or linux's /proc, or dux's registry.
+# however, it means you can measure load on any machine without 
+# special permissions.
+USE_UPTIME = NO
+
+####################################################################################
+#
+# Configuration Options for the GetFlowBW library
+#
+####################################################################################
+
+#
+# To build and use the GetFlowBW library, you need REMOS built and installed
+#
+HAVE_REMOS = YES
+REMOS_DIR = /home/Remos/Remos
+
+####################################################################################
+#
+# Configuration Options for the Time Series Prediction Library (TS)
+#
+####################################################################################
+
+#
+# The Numerical Recipes library is needed for MA, ARMA, and ARIMA models
+# If you set this to NO, then these modellers will return null
+#
+# Notice that we expect to find the numerical recipes includes in 
+# $(RECIPES_DIR)/include  and the library in $(RECIPES_DIR)/lib/$(ARCH)/$(OS)
+# This is slightly different from where the recipes build process leaves 
+# things
+#
+HAVE_NUMERICAL_RECIPES = YES
+RECIPES_DIR = /home/RPS/recipes_c-ansi
+
+#
+# PVM is required to build the parallel cross validation system
+# It is normal for a make depend to complain about missing pvm includes
+# if this is set to NO, even if you aren't building the crossval* stuff
+#
+# if you are in doubt, say NO
+#
+HAVE_PVM = NO
+PVM_DIR  = /killdeer/usr3/pdinda/pvm
+PVM_ARCH = I386
+
+####################################################################################
+#
+# Configuration Options for the FracDiff Library 
+#
+####################################################################################
+#
+# Currently none
+#
+#
+
+####################################################################################
+#
+# Configuration Options for the Mirror Template Library and tools
+#
+####################################################################################
+
+# For some data types, we can serialize/unserialize to/from xml if you have expat
+#
+HAVE_EXPAT     = NO
+EXPAT_DIR      = /afs/cs/project/cmcl-pdinda-3/XML/EXPAT
+
+####################################################################################
+#
+# Configuration Options for the RPS interface library
+#
+####################################################################################
+#
+# Currently none
+
+
+####################################################################################
+#
+# Configuration Options for the prediction components
+#
+####################################################################################
+#
+# Currently none
+
+####################################################################################
+#
+# Configuration Options for the prediction components
+#
+####################################################################################
+#
+# Currently none
+
+####################################################################################
+#
+# Configuration Options for the Java GUI
+#
+####################################################################################
+JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
+
+
+
+####################################################################################
+#
+# Configuration Options for the Spin Library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+
+# These should figure themselves out
+#
+#
+SENSORS_DIR       = $(RPS_DIR)/Sensors
+TS_DIR            = $(RPS_DIR)/TimeSeries
+MIRROR_DIR        = $(RPS_DIR)/Mirror
+RPSINT_DIR        = $(RPS_DIR)/RPSInterface
+REMOSINT_DIR      = $(RPS_DIR)/RemosInterface
+PREDCOMP_DIR      = $(RPS_DIR)/PredComp
+JAVAGUI_DIR       = $(RPS_DIR)/JavaGUI
+SPIN_DIR          = $(RPS_DIR)/Spin
+
+
+FRACDIFF_DIR      = $(TS_DIR)/FracDiff
+GETLOADAVG_DIR    = $(SENSORS_DIR)/GetLoadAvg
+GETFLOWBW_DIR     = $(SENSORS_DIR)/GetFlowBW
+
+
+
+#
+#
+# Nothing below here needs to be changed
+#
+#
+
+GETLOADAVG_LIB_DIR = $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS)
+GETLOADAVG_INC_DIR = $(GETLOADAVG_DIR)/include
+
+GETFLOWBW_LIB_DIR = $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS)
+GETFLOWBW_INC_DIR = $(GETFLOWBW_DIR)/include
+
+TS_LIB_DIR = $(TS_DIR)/lib/$(ARCH)/$(OS)
+TS_INC_DIR = $(TS_DIR)/include
+
+FRACDIFF_LIB_DIR = $(TS_DIR)/FracDiff/lib/$(ARCH)/$(OS)
+FRACDIFF_INC_DIR = $(TS_DIR)/FracDiff/include
+
+RECIPES_INC_DIR = $(RECIPES_DIR)/include
+RECIPES_LIB_DIR = $(RECIPES_DIR)/lib/$(ARCH)/$(OS)
+
+MIRROR_INC_DIR = $(MIRROR_DIR)/include
+MIRROR_LIB_DIR = $(MIRROR_DIR)/lib/$(ARCH)/$(OS)
+
+RPSINT_INC_DIR = $(RPSINT_DIR)/include
+RPSINT_LIB_DIR = $(RPSINT_DIR)/lib/$(ARCH)/$(OS)
+
+PREDCOMP_INC_DIR = $(PREDCOMP_DIR)/include
+PREDCOMP_LIB_DIR = $(PREDCOMP_DIR)/lib/$(ARCH)/$(OS)
+
+JAVAGUI_INC_DIR = $(JAVAGUI_DIR)
+JAVAGUI_LIB_DIR = $(JAVAGUI_DIR)
+
+REMOS_MODELER_DIR=$(REMOS_DIR)/modeler
+REMOS_MODELER_INC_DIR = $(REMOS_MODELER_DIR)/include
+REMOS_MODELER_LIB_DIR = $(REMOS_MODELER_DIR)/lib/$(ARCH)/$(OS)
+
+LISTPACK_DIR=$(REMOS_DIR)/listpack
+LISTPACK_INC_DIR = $(LISTPACK_DIR)/include
+LISTPACK_LIB_DIR = $(LISTPACK_DIR)/lib/$(ARCH)/$(OS)
+
+EXPAT_INC_DIR = $(EXPAT_DIR)/include
+EXPAT_LIB_DIR = $(EXPAT_DIR)/lib
+
+
+ifeq ($(HAVE_GETLOADAVG),YES) 
+   GETLOADAVG_LDFLAGS = -L$(GETLOADAVG_LIB_DIR) -lgetloadavg
+   GETLOADAVG_CFLAGS  = -DHAVE_GETLOADAVG -I$(GETLOADAVG_INC_DIR)
+else
+   GETLOADAVG_LDFLAGS =
+   GETLOADAVG_CFLAGS  =
+endif
+
+ifeq ($(HAVE_GETFLOWBW),YES) 
+   GETFLOWBW_LDFLAGS = -L$(GETFLOWBW_LIB_DIR) -lgetflowbw
+   GETFLOWBW_CFLAGS = -DHAVE_GETFLOWBW -I$(GETFLOWBW_INC_DIR)
+else
+   GETFLOWBW_LDFLAGS = 
+   GETFLOWBW_CFLAGS = 
+endif
+
+ifeq ($(HAVE_TIMESERIES),YES) 
+   TIMESERIES_LDFLAGS = -L$(TS_LIB_DIR) -ltimeseries
+   TIMESERIES_CFLAGS = -DHAVE_TIMESERIES -I$(TS_INC_DIR)
+else
+   TIMESERIES_LDFLAGS = 
+   TIMESERIES_CFLAGS = 
+endif
+
+
+ifeq ($(HAVE_FRACDIFF),YES) 
+   FRACDIFF_LDFLAGS = -L$(FRACDIFF_LIB_DIR) -lfd -lg2c
+   FRACDIFF_CFLAGS  = -DHAVE_FRACDIFF
+else
+   FRACDIFF_LDFLAGS = 
+   FRACDIFF_CFLAGS  = 
+endif
+
+ifeq ($(HAVE_NUMERICAL_RECIPES),YES) 
+   RECIPES_LDFLAGS   = -L$(RECIPES_LIB_DIR) -lrecipes_c
+   RECIPES_CFLAGS = -DHAVE_RECIPES -I$(RECIPES_INC_DIR)
+else
+   RECIPES_LDFLAGS = 
+   RECIPES_CFLAGS = 
+endif
+
+ifeq ($(HAVE_MIRROR),YES) 
+   MIRROR_LDFLAGS = -L$(MIRROR_LIB_DIR) -lmirror
+   MIRROR_CFLAGS = -DHAVE_MIRROR -I$(MIRROR_INC_DIR)
+else
+   MIRROR_LDFLAGS = 
+   MIRROR_CFLAGS = 
+endif
+
+ifeq ($(HAVE_RPSINT),YES) 
+   RPSINT_LDFLAGS = -L$(RPSINT_LIB_DIR) -lRPSint
+   RPSINT_CFLAGS = -DHAVE_RPSINT -I$(RPSINT_INC_DIR)
+else
+   RPSINT_LDFLAGS = 
+   RPSINT_CFLAGS = 
+endif
+
+ifeq ($(HAVE_REMOS),YES) 
+   REMOS_MODELER_LDFLAGS   = -L$(REMOS_MODELER_LIB_DIR) -lremos
+   REMOS_MODELER_CFLAGS = -DHAVE_REMOS_MODELER -I$(REMOS_MODELER_INC_DIR)
+else
+   REMOS_MODELER_LDFLAGS = 
+   REMOS_MODELER_CFLAGS = 
+endif
+
+ifeq ($(HAVE_PREDCOMP),YES) 
+   PREDCOMP_LDFLAGS = 
+   PREDCOMP_CFLAGS = -DHAVE_PREDCOMP -I$(PREDCOMP_INC_DIR)
+else
+   RPSINT_LDFLAGS = 
+   RPSINT_CFLAGS = 
+endif
+
+ifeq ($(HAVE_LISTPACK),YES) 
+   LISTPACK_LDFLAGS   = -L$(LISTPACK_LIB_DIR) -llist
+   LISTPACK_CFLAGS = -DHAVE_LISTPACK -I$(LISTPACK_INC_DIR)
+else
+   LISTPACK_LDFLAGS = 
+   LISTPACK_CFLAGS = 
+endif
+
+ifeq ($(HAVE_EXPAT),YES) 
+   EXPAT_LDFLAGS   = -L$(EXPAT_LIB_DIR) -lexpat
+   EXPAT_CFLAGS = -DHAVE_EXPAT -I$(EXPAT_INC_DIR)
+else
+   LISTPACK_LDFLAGS = 
+   LISTPACK_CFLAGS = 
+endif
+
+
+CC += -D$(ARCH) -D$(OS)
