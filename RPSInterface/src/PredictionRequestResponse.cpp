@@ -4,7 +4,6 @@
 #include "Serializable.h"
 #include "ModelInfo.h"
 #include "TimeStamp.h"
-#include "junk.h"
 #include "random.h"
 
 #include "PredictionRequestResponse.h"

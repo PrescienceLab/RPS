@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "Measurement.h"
-#include "junk.h"
 
 Measurement::Measurement(int len) 
 {
@@ -61,7 +60,7 @@ int Measurement::Resize(int len, bool copy)
     newser = 0;
   }
   if (series && copy) {
-    memcpy(newser,series,sizeof(double)*MIN(len,serlen));
+    memcpy(newser,series,sizeof(double)*MIN((const int &)len,(const int &)serlen));
   }
   if (series) {
     delete [] series;

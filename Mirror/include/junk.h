@@ -24,8 +24,10 @@ void SWAP(T& left, T&right)
    right=temp;
 };
 
+#ifndef MINMAX
+#define MINMAX
 template <class T> 
-T  MIN (T left, T right) 
+inline T  MIN (T left, T right) 
 {
   if (left<right) { 
     return left;
@@ -35,7 +37,7 @@ T  MIN (T left, T right)
 };
 
 template <class T> 
-T  MAX (T left, T right) 
+inline T  MAX (T left, T right) 
 {
   if (left>right) { 
     return left;
@@ -43,6 +45,6 @@ T  MAX (T left, T right)
     return right;
   }
 };
-
+#endif
 
 #endif

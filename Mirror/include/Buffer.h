@@ -5,7 +5,6 @@
 #include "Queues.h"
 #include "TimeStamp.h"
 
-#include "junk.h"
 
 // Buffer a stream of data records and handle requests for some number of records
 

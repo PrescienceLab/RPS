@@ -21,6 +21,8 @@
 #endif
 #endif
 
+#ifndef MINMAX
+#define MINMAX
 template <typename T>
 inline T MAX(const T &lhs, const T &rhs)
 {
@@ -32,6 +34,7 @@ inline T MIN(const T &lhs, const T &rhs)
 {
   return (lhs<rhs) ? lhs : rhs;
 };
+#endif
 
 #define DEBUG 0
 

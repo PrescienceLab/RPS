@@ -24,16 +24,19 @@ using namespace std;
 //#include "ioutil.h"
 // Avoid using this -PAD
 
+#ifndef MINMAX
+#define MINMAX
 template <typename T>
-T MAX(const T &lhs, const T &rhs)
+inline T MAX(const T &lhs, const T &rhs)
 {
   return (lhs>rhs) ? lhs : rhs;
 };
 
 template <typename T>
-T MIN(const T &lhs, const T &rhs)
+inline T MIN(const T &lhs, const T &rhs)
 {
   return (lhs<rhs) ? lhs : rhs;
 };
+#endif
 
 #endif
