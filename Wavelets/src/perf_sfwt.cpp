@@ -151,17 +151,6 @@ int main(int argc, char *argv[])
   fp.ParseTimeDomain(samples, *is);
   infile.close();
 
-  // Block mode input
-  WaveletInputSampleBlock<wisd> inputblock(samples);
-  vector<WaveletInputSampleBlock<wisd> > blocks;
-  unsigned numblocks = samples.size() / blocksize;
-  for (i=0; i<numblocks; i++) {
-    deque<wisd> dwisd;
-    inputblock.GetSamples(dwisd, i*blocksize, i*blocksize+blocksize);
-    blocks.push_back(WaveletInputSampleBlock<wisd>(dwisd));
-    dwisd.clear();
-  }
-
   // Instantiate a static forward wavelet transform
   StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
 
@@ -205,6 +194,18 @@ int main(int argc, char *argv[])
       break;
     }
   } else { // block modes
+
+    // Block mode input
+    WaveletInputSampleBlock<wisd> inputblock(samples);
+    vector<WaveletInputSampleBlock<wisd> > blocks;
+    unsigned numblocks = samples.size() / blocksize;
+    for (i=0; i<numblocks; i++) {
+      deque<wisd> dwisd;
+      inputblock.GetSamples(dwisd, i*blocksize, i*blocksize+blocksize);
+      blocks.push_back(WaveletInputSampleBlock<wisd>(dwisd));
+      dwisd.clear();
+    }
+
     switch(tt) {
     case APPROX: {
       for (i=0; i<blocks.size(); i++) {
