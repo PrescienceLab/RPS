@@ -107,22 +107,11 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
   int *delay = new int[numstages+1];
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
   DelayBlock<wosd> dlyblk(numstages+1, 0, delay);
-
-  if (!flat) {
-    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
-  }
 
   // Instantiate a static reverse wavelet transform
   StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
@@ -143,6 +132,14 @@ int main(int argc, char *argv[])
       waveletcoefs.clear();
       currentoutput.clear();
     }
+  }
+
+  if (!flat) {
+    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
+    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
+    *outstr.tie() << endl;
+    *outstr.tie() << "Index\tValue\n" << endl;
+    *outstr.tie() << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.size(); i++) {

@@ -113,8 +113,6 @@ int main(int argc, char *argv[])
   specfile.close();
 
   unsigned i;
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
 
   // Read the data from file into an input vector
   vector<wisd> samples;
@@ -178,79 +176,13 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "The size of each approximation level:" << endl;
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "\tLevel " << i << " size = " << approxlevels[i]->size() << endl;
-    }
-    *outstr.tie() << endl;
+    *outstr.tie() << "APPROXIMATIONS" << endl;
+    *outstr.tie() << "--------------" << endl;
+    OutputWaveletCoefsNonFlat(outstr, approxlevels, numlevels);
 
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-
-    unsigned loopsize=0;
-    for (i=0; i<numlevels; i++) {
-      if (approxlevels[i]->size() > loopsize) {
-	loopsize = approxlevels[i]->size();
-      }
-    }
-
-    for (i=0; i<loopsize; i++) {
-      *outstr.tie() << i << "\t";
-
-      for (unsigned j=0; j<numlevels; j++) {
-	if (!approxlevels[j]->empty()) {
-	  wosd wos;
-	  wos = approxlevels[j]->back();
-	  *outstr.tie() << wos.GetSampleLevel() << " " << wos.GetSampleValue() << "\t";
-	  approxlevels[j]->pop_back();
-	}
-      }
-      *outstr.tie() << endl;
-    }
-
-    *outstr.tie() << endl << "The size of each detail level:" << endl;
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "\tLevel " << i << " size = " << detaillevels[i]->size() << endl;
-    }
-    *outstr.tie() << endl;
-
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-
-    loopsize=0;
-    for (i=0; i<numlevels; i++) {
-      if (detaillevels[i]->size() > loopsize) {
-	loopsize = detaillevels[i]->size();
-      }
-    }
-
-    for (i=0; i<loopsize; i++) {
-      *outstr.tie() << i << "\t";
-
-      for (unsigned j=0; j<numlevels; j++) {
-	if (!detaillevels[j]->empty()) {
-	  wosd wos;
-	  wos = detaillevels[j]->back();
-	  *outstr.tie() << wos.GetSampleLevel() << " " << wos.GetSampleValue() << "\t";
-	  detaillevels[j]->pop_back();
-	}
-      }
-      *outstr.tie() << endl;
-    }
+    *outstr.tie() << endl << "DETAILS" << endl;
+    *outstr.tie() << "-------" << endl;
+    OutputWaveletCoefsNonFlat(outstr, detaillevels, numlevels);
   }
   
   for (i=0; i<numlevels; i++) {

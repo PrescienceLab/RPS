@@ -11,13 +11,14 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " sample_static_mixed_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << " sample_dynamic_mixed_sfwt [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [output-file] [specification-file]\n";
   cerr << "  [flat]\n\n";
   cerr << "--------------------------------------------------------------\n";
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "sample_static_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "sample_dynamic_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "sample_static_mixed_sfwt: Number of stages must be positive.\n";
+    cerr << "sample_dynamic_mixed_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
   unsigned numlevels = numstages + 1;
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[4]);
     if (!outfile) {
-      cerr << "sample_static_mixed_sfwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "sample_dynamic_mixed_sfwt: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
@@ -95,7 +96,7 @@ int main(int argc, char *argv[])
   ifstream specfile;
   specfile.open(argv[5]);
   if (!specfile) {
-    cerr << "sample_static_mixed_sfwt: Cannot open specification file " << argv[5] << ".\n";
+    cerr << "sample_dynamic_mixed_sfwt: Cannot open specification file " << argv[5] << ".\n";
     exit(-1);
   }
 
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[6][0])=='N') {
     flat = false;
   } else if (toupper(argv[6][0])!='F') {
-    cerr << "sample_static_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "sample_dynamic_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -112,11 +113,10 @@ int main(int argc, char *argv[])
   specfile.close();
 
   unsigned i;
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
 
   // Read the data from file into an input vector
   vector<wisd> samples;
+
   double sample;
   unsigned index=0;
   while (cin >> sample) {

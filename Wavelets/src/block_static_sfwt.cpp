@@ -113,10 +113,6 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  unsigned i;
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   deque<wisd> samples;
   FlatParser fp;
   fp.ParseTimeDomain(samples, cin);
@@ -151,56 +147,9 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "The size of each level:" << endl;
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "\tLevel " << i << " size = " 
-		    << forwardoutput[i].GetBlockSize() << endl;
-    }
-    *outstr.tie() << endl;
-
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-  }
-
-
-  unsigned loopsize = forwardoutput[0].GetBlockSize();
-  for (i=0; i<loopsize; i++) {
-    *outstr.tie() << i << "\t";
-
-
-    // Find number of samples for this line
-    unsigned numsamples=0;
-    for (unsigned j=0; j<numlevels; j++) {
-      if (!forwardoutput[j].Empty()) {
-	numsamples++;
-      }
-    }
-
-    if (flat) {
-      *outstr.tie() << numsamples << "\t";
-    }
-
-    for (unsigned j=0; j<numsamples; j++) {
-      if (!forwardoutput[j].Empty()) {
-	wosd wos;
-	wos = forwardoutput[j].Front();
-
-	if (flat) {
-	  *outstr.tie() << wos.GetSampleLevel() << " ";
-	}
-
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	forwardoutput[j].PopSampleFront();
-      }
-    }
-    *outstr.tie() << endl;
+    OutputWaveletCoefsNonFlat(outstr, forwardoutput, numlevels);
+  } else {
+    OutputWaveletCoefsFlat(outstr, forwardoutput, numlevels);
   }
   
   return 0;

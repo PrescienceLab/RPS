@@ -10,6 +10,7 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
@@ -149,14 +150,8 @@ int main(int argc, char *argv[])
 
   // Read the data from file into an input vector
   vector<wisd> samples;
-  double sample;
-  unsigned index=0;
-  while (cin >> sample) {
-    wisd wavesample;
-    wavesample.SetSampleValue(sample);
-    wavesample.SetSampleIndex(index++);
-    samples.push_back(wavesample);
-  }
+  FlatParser fp;
+  fp.ParseTimeDomain(samples, cin);
   infile.close();
 
   // Instantiate a dynamic forward wavelet transform
@@ -229,36 +224,7 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "The size of each level:" << endl;
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "\tLevel " << i << " size = " << levels[i]->size() << endl;
-    }
-    *outstr.tie() << endl;
-    
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-
-    unsigned loopsize = levels[0]->size();
-    for (i=0; i<loopsize; i++) {
-      *outstr.tie() << i << "\t";
-
-      for (unsigned j=0; j<numlevels; j++) {
-	if (!levels[j]->empty()) {
-	  wosd wos;
-	  wos = levels[j]->back();
-	  *outstr.tie() << wos.GetSampleValue() << "\t";
-	  levels[j]->pop_back();
-	}
-      }
-      *outstr.tie() << endl;
-    }
+    OutputWaveletCoefsNonFlat(outstr, levels, numlevels);
   }
   
   for (i=0; i<numlevels; i++) {

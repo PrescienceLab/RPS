@@ -114,8 +114,6 @@ int main(int argc, char *argv[])
   }
 
   unsigned i;
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
 
   // Get the samples from stream
   vector<wisd> samples;
@@ -136,117 +134,49 @@ int main(int argc, char *argv[])
     levels.push_back(pwos);
   }
 
-  switch(tt) {
-  case APPROX: {
-    for (i=0; i<samples.size(); i++) {
+  for (i=0; i<samples.size(); i++) {
+    switch(tt) {
+    case APPROX: {
       sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
-
-      if (flat) {
-	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
-      }
-
-      for (unsigned j=0; j<outsamples.size(); j++) {
-	int samplelevel = outsamples[j].GetSampleLevel();
-	levels[samplelevel]->push_front(outsamples[j]);
-	if (flat) {
-	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-	}
-      }
-      if (flat) {
-	*outstr.tie() << endl;
-      }
-
-      outsamples.clear();
+      break;
     }
-    numlevels -= 1;
-  }
-  break;
-
-  case DETAIL: {
-    for (i=0; i<samples.size(); i++) {
+    case DETAIL: {
       sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
-
-      if (flat) {
-	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
-      }
-
-      for (unsigned j=0; j<outsamples.size(); j++) {
-	int samplelevel = outsamples[j].GetSampleLevel();
-	levels[samplelevel]->push_front(outsamples[j]);
-	if (flat) {
-	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-	}
-      }
-      if (flat) {
-	*outstr.tie() << endl;
-      }
-
-      outsamples.clear();
+      break;
     }
-    numlevels -= 1;
-  }
-  break;
-
-  case TRANSFORM: {
-    for (i=0; i<samples.size(); i++) {
+    case TRANSFORM: {
       sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-
-      if (flat) {
-	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
-      }
-
-      for (unsigned j=0; j<outsamples.size(); j++) {
-	int samplelevel = outsamples[j].GetSampleLevel();
-	levels[samplelevel]->push_front(outsamples[j]);
-	if (flat) {
-	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-	}
-      }
-      if (flat) {
-	*outstr.tie() << endl;
-      }
-
-      outsamples.clear();
+      break;
     }
-  }
-  break;
+    default:
+      break;
+    }
 
-  default:
-    break;
+    if (flat) {
+      *outstr.tie() << i << "\t" << outsamples.size() << "\t";
+    }
+
+    for (unsigned j=0; j<outsamples.size(); j++) {
+      int samplelevel = outsamples[j].GetSampleLevel();
+      levels[samplelevel]->push_front(outsamples[j]);
+      if (flat) {
+	*outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
+      }
+    }
+    if (flat) {
+      *outstr.tie() << endl;
+    }
+
+    outsamples.clear();
+  }
+
+  if (tt==APPROX || tt==DETAIL) {
+    numlevels--;
   }
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "The size of each level:" << endl;
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "\tLevel " << i << " size = " << levels[i]->size() << endl;
-    }
-    *outstr.tie() << endl;
-
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-
-    unsigned loopsize = levels[0]->size();
-    for (i=0; i<loopsize; i++) {
-      *outstr.tie() << i << "\t";
-
-      for (unsigned j=0; j<numlevels; j++) {
-	if (!levels[j]->empty()) {
-	  wosd wos;
-	  wos = levels[j]->back();
-	  *outstr.tie() << wos.GetSampleValue() << "\t";
-	  levels[j]->pop_back();
-	}
-      }
-      *outstr.tie() << endl;
-    }
+    OutputWaveletCoefsNonFlat(outstr, levels, numlevels);
   }
   
   for (i=0; i<numlevels; i++) {

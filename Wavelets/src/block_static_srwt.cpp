@@ -108,9 +108,6 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   vector<WaveletOutputSampleBlock<wosd> > waveletcoefs;
   for (unsigned i=0; i<numlevels; i++) {
     waveletcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );

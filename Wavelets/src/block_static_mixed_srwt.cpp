@@ -112,9 +112,6 @@ int main(int argc, char *argv[])
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
 
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
   for (unsigned i=0; i<(unsigned)numstages; i++) {

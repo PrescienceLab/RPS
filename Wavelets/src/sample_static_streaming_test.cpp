@@ -10,6 +10,7 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
@@ -91,19 +92,10 @@ int main(int argc, char *argv[])
     outstr.tie(&outfile);
   }
 
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   // Read the data from file into an input vector
   vector<wisd> samples;
-  double sample;
-  unsigned index=0;
-  while (cin >> sample) {
-    wisd wavesample;
-    wavesample.SetSampleValue(sample);
-    wavesample.SetSampleIndex(index++);
-    samples.push_back(wavesample);
-  }
+  FlatParser fp;
+  fp.ParseTimeDomain(samples, cin);
   infile.close();
 
   // Instantiate a static forward wavelet transform

@@ -111,10 +111,6 @@ int main(int argc, char *argv[])
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
 
-  unsigned i;
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   // Read the data from file into an input vector
   deque<wisd> samples;
   FlatParser fp;
@@ -135,118 +131,16 @@ int main(int argc, char *argv[])
 
   // Approximations
   if (!flat) {
-    *outstr.tie() << "The size of each approximation level:" << endl;
-    for (i=0; i<approxout.size(); i++) {
-      *outstr.tie() << "\tLevel " << approxout[i].GetBlockLevel() << " size = " 
-		    << approxout[i].GetBlockSize() << endl;
-    }
-    *outstr.tie() << endl;
+    *outstr.tie() << "APPROXIMATIONS" << endl;
+    *outstr.tie() << "--------------" << endl;
+    OutputWaveletCoefsNonFlat(outstr, approxout, numlevels);
 
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-  }
-
-  unsigned loopsize=0;
-  for (i=0; i<approxout.size(); i++) {
-    if (approxout[i].GetBlockSize() > loopsize) {
-      loopsize = approxout[i].GetBlockSize();
-    }
-  }
-
-  for (i=0; i<loopsize; i++) {
-    *outstr.tie() << i << "\t";
-
-    // Find number of samples for this line
-    unsigned numsamples=0;
-    for (unsigned j=0; j<approxout.size(); j++) {
-      if (!approxout[j].Empty()) {
-	numsamples++;
-      }
-    }
-
-    if (flat) {
-      *outstr.tie() << "A " << numsamples << "\t";
-    }
-
-    for (unsigned j=0; j<numsamples; j++) {
-      if (!approxout[j].Empty()) {
-	wosd wos;
-	wos = approxout[j].Front();
-
-	if (flat) {
-	  *outstr.tie() << wos.GetSampleLevel() << " ";
-	}
-
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	approxout[j].PopSampleFront();
-      }
-    }
-    *outstr.tie() << endl;
-  }
-
-  // Details
-  if (!flat) {
-    *outstr.tie() << endl << "The size of each detail level:" << endl;
-    for (i=0; i<detailout.size(); i++) {
-      *outstr.tie() << "\tLevel " << detailout[i].GetBlockLevel() << " size = " 
-		    << detailout[i].GetBlockSize() << endl;
-    }
-    *outstr.tie() << endl;
-
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-  }
-
-  loopsize=0;
-  for (i=0; i<detailout.size(); i++) {
-    if (detailout[i].GetBlockSize() > loopsize) {
-      loopsize = detailout[i].GetBlockSize();
-    }
-  }
-
-  for (i=0; i<loopsize; i++) {
-    *outstr.tie() << i << "\t";
-
-    // Find number of samples for this line
-    unsigned numsamples=0;
-    for (unsigned j=0; j<detailout.size(); j++) {
-      if (!detailout[j].Empty()) {
-	numsamples++;
-      }
-    }
-
-    if (flat) {
-      *outstr.tie() << "D " << numsamples << "\t";
-    }
-
-    for (unsigned j=0; j<numsamples; j++) {
-      if (!detailout[j].Empty()) {
-	wosd wos;
-	wos = detailout[j].Front();
-
-	if (flat) {
-	  *outstr.tie() << wos.GetSampleLevel() << " ";
-	}
-
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	detailout[j].PopSampleFront();
-      }
-    }
-    *outstr.tie() << endl;
+    *outstr.tie() << endl << "DETAILS" << endl;
+    *outstr.tie() << "-------" << endl;
+    OutputWaveletCoefsNonFlat(outstr, detailout, numlevels);
+  } else { //flat
+    OutputMRACoefsFlat(outstr, approxout, 'A', numlevels);
+    OutputMRACoefsFlat(outstr, detailout, 'D', numlevels);
   }
   
   return 0;
