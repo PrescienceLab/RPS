@@ -9,15 +9,18 @@
 void usage() 
 {
    fprintf(stderr,
-      "test_generic [inputfile] [numahead] [conf/noconf] [REFIT interval]\n"
+      "test_generic inputfile numahead conf/noconf\n"
+      "             [REFIT refitinterval | AWAIT awaitinterval |\n"
+      "              MANAGED awaitinterval refitinterval mintestinterval \n"
+      "                      errorlimit variancelimit\n"
       "                                                 MEAN\n"
       "                                               | LAST\n"
-      "                                               | BESTMEAN [p]\n"
-      "                                               | AR [p]\n"
-      "                                               | MA [q]\n"
-      "                                               | ARMA [p] [q]\n"
-      "                                               | ARIMA [p] [d] [q]\n"
-      "                                               | ARFIMA [p] [d] [q]\n");
+      "                                               | BESTMEAN p\n"
+      "                                               | AR p\n"
+      "                                               | MA q\n"
+      "                                               | ARMA p q\n"
+      "                                               | ARIMA p d q\n"
+      "                                               | ARFIMA p d q\n");
 }
 
 

@@ -380,7 +380,6 @@ Model *ARFIMAModeler::Fit(double *sequence, int len, int p, double d, int q)
   
   model->SetVariance(model->EstimateVariance(sequence,len));
 
-normout:
   CHK_DEL_MAT(x);
   CHK_DEL_MAT(ar);
   CHK_DEL_MAT(ma);

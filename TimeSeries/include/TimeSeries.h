@@ -14,6 +14,7 @@
 #include "arfima.h"
 #include "refit.h"
 #include "await.h"
+#include "managed.h"
 
 #include "etathetapred.h"
 

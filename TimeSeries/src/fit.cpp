@@ -24,6 +24,7 @@
 #include "last.h"
 #include "refit.h"
 #include "await.h"
+#include "managed.h"
 #include "fit.h"
 
 #include "pdqparamsets.h"
@@ -70,6 +71,9 @@ int ModelTemplate::_GetPackedSize() const
   case AwaitingPDQ:
     return 4+4+4*4;
     break;
+  case ManagedPDQ:
+    return 4+4+6*4+2*8;
+    break;
   // Add other types here
   default:
     assert(0);
@@ -80,13 +84,56 @@ int ModelTemplate::_GetPackedSize() const
 
 int ModelTemplate::_GetMaxPackedSize() const 
 {
-  return 4+4+4*4;
+  return 4+4+6*4+2*8;
+}
+
+#if !defined(IEEE_DOUBLE_LSB) && !defined(IEEE_DOUBLE_MSB)
+#if defined (__alpha) || defined (__alpha__)
+#define IEEE_DOUBLE_LSB
+#elif defined(sun) || defined(sparc)
+#define IEEE_DOUBLE_MSB
+#elif defined(__i386__) || defined(i386) || defined(__i386) || defined(I386)
+#define IEEE_DOUBLE_LSB
+#else
+#error Can not determine IEEE double byte order
+#endif
+#endif
+
+inline static void Swap(const char *in, char *out, int num)
+{
+  int i;
+  for (i=0;i<num;i++) {
+    out[i] = in[num-i-1];
+  }
+}
+
+inline static void htond(const double x, char out[8])
+{
+  double x2=x;
+  char *in = (char *) &x2;
+#ifdef IEEE_DOUBLE_LSB
+  Swap(in,out,8);
+#else
+  memcpy(out,in,8);
+#endif
+}
+
+
+inline static void ntohd(const char in[8], double *x)
+{
+  char *out=(char*)x;
+#ifdef IEEE_DOUBLE_LSB
+  Swap(in,out,8);
+#else
+  memcpy(out,in,8);
+#endif
 }
 
 int ModelTemplate::_Pack(ByteStream &bs) const
 {
-  int bi[6];
-  int p,d,q,r;
+  int bi[20];
+  int p,d,q,r,a,m;
+  double errlimit, varlimit;
 
   bi[0]=htonl((int)mt);
 
@@ -112,12 +159,29 @@ int ModelTemplate::_Pack(ByteStream &bs) const
     return 6*4==bs.Put((char*)bi,6*4);
   case AwaitingPDQ:
     ((AwaitingPDQParameterSet *)ps)->Get(p,d,q);
-    ((AwaitingPDQParameterSet *)ps)->GetAwait(r);
+    ((AwaitingPDQParameterSet *)ps)->GetAwait(a);
     bi[2]=htonl(p);
     bi[3]=htonl(d);
     bi[4]=htonl(q);
-    bi[5]=htonl(r);
+    bi[5]=htonl(a);
     return 6*4==bs.Put((char*)bi,6*4);
+    break;
+  case ManagedPDQ:
+    ((ManagedPDQParameterSet *)ps)->Get(p,d,q);
+    ((ManagedPDQParameterSet *)ps)->GetAwait(a);
+    ((ManagedPDQParameterSet *)ps)->GetRefit(r);
+    ((ManagedPDQParameterSet *)ps)->GetMinTest(m);
+    ((ManagedPDQParameterSet *)ps)->GetErrorLimit(errlimit);
+    ((ManagedPDQParameterSet *)ps)->GetVarLimit(varlimit);
+    bi[2]=htonl(p);
+    bi[3]=htonl(d);
+    bi[4]=htonl(q);
+    bi[5]=htonl(a);
+    bi[6]=htonl(r);
+    bi[7]=htonl(m);
+    htond(errlimit,(char *) &(bi[8]));
+    htond(varlimit,(char *) &(bi[10]));
+    return 12*4==bs.Put((char*)bi,12*4);
     break;
   // Add other types here
   default:
@@ -130,8 +194,9 @@ int ModelTemplate::_Pack(ByteStream &bs) const
 
 int ModelTemplate::_Unpack(ByteStream &bs)
 {
-  int bi[6];
-  int p,d,q,r;
+  int bi[20];
+  int p,d,q,r,a,m;
+  double errlimit, varlimit;
 
   CHK_DEL(ps);
 
@@ -163,6 +228,18 @@ int ModelTemplate::_Unpack(ByteStream &bs)
     q=ntohl(bi[4]);
     r=ntohl(bi[5]);
     ps = new AwaitingPDQParameterSet(p,d,q,r);
+    break;
+  case ManagedPDQ:
+    bs.Get((char*)&(bi[2]),12*4);
+    p=ntohl(bi[2]);
+    d=ntohl(bi[3]);
+    q=ntohl(bi[4]);
+    a=ntohl(bi[5]);
+    r=htonl(bi[6]);
+    m=ntohl(bi[7]);
+    ntohd((const char*)&(bi[8]),&errlimit);
+    ntohd((const char*)&(bi[10]),&varlimit);
+    ps = new ManagedPDQParameterSet(p,d,q,a,r,m,errlimit,varlimit);
     break;
   // Add other types here
   default:
@@ -319,6 +396,64 @@ Model *FitThis(ModelType mclass,
 }
 
 
+Model *FitThis(ModelType mclass,
+	       const ManagedPDQParameterSet &params)
+{
+  int await;
+  int refit;
+  int mintest;
+  double errlimit;
+  double varlimit;
+
+  params.GetAwait(await);
+  params.GetRefit(refit);
+  params.GetMinTest(mintest);
+  params.GetErrorLimit(errlimit);
+  params.GetVarLimit(varlimit);
+
+   switch (mclass) {
+   case AR:
+     return ManagedModeler<ARModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case MA:
+     return ManagedModeler<MAModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case ARMA:
+     return ManagedModeler<ARMAModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case ARIMA:
+     return ManagedModeler<ARIMAModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case ARFIMA:
+     return ManagedModeler<ARFIMAModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case BESTMEAN:
+     return ManagedModeler<BestMeanModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case MEAN:
+     return ManagedModeler<MeanModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case LAST:
+     return ManagedModeler<LastModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+   case NONE:
+     return ManagedModeler<NoneModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   default:
+     return 0;
+     break;
+   }
+}
+
+
+Model *FitThis(ModelType mclass,
+	       int p, double d, int q, 
+	       int await, int refit, int mintest,
+	       double errlimit, double varlimit)
+{
+  ManagedPDQParameterSet ps(p,(int)d,q,await,refit,mintest,errlimit,varlimit);
+  return FitThis(mclass,ps);
+}
+
 Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt)
 {
 
@@ -328,6 +463,8 @@ Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt)
     return FitThis(mt.mt,seq,numsamples,*((RefittingPDQParameterSet*)(mt.ps)));
   } else if (mt.ps->GetType()==AwaitingPDQ) {
     return FitThis(mt.mt,*((AwaitingPDQParameterSet*)(mt.ps)));
+  } else if (mt.ps->GetType()==ManagedPDQ) {
+    return FitThis(mt.mt,*((ManagedPDQParameterSet*)(mt.ps)));
   } else {
     return 0;
   }
@@ -340,8 +477,12 @@ ModelTemplate *ParseModel(int argc, char *argv[])
   int q=0;
   bool refitting=false;
   bool awaiting=false;
+  bool managed=false;
   int refitinterval=0;
   int await=0;
+  int mintest=0;
+  double errlimit;
+  double varlimit;
   int first_model;
   ModelType mclass;
 
@@ -358,22 +499,33 @@ ModelTemplate *ParseModel(int argc, char *argv[])
     }
     refitinterval = atoi(argv[1]);
     first_model=2;
-  } else {
-    if (!strcasecmp(argv[0],"AWAIT")) {
-      awaiting=true;
-      if (argc<2) { 
-	return 0;
-      }
-      await = atoi(argv[1]);
-      first_model=2;
-    } else {
-      refitting=false;
-      awaiting=false;
-      refitinterval=0;
-      await=0;
-      first_model=0;
+  } else if (!strcasecmp(argv[0],"AWAIT")) {
+    awaiting=true;
+    if (argc<2) { 
+      return 0;
     }
+    await = atoi(argv[1]);
+    first_model=2;
+  } else if (!strcasecmp(argv[0],"MANAGED")) {
+    managed=true;
+    if (argc<7) {
+      return 0;
+    } else {
+      await=atoi(argv[1]);
+      refitinterval=atoi(argv[2]);
+      mintest=atoi(argv[3]);
+      errlimit=atof(argv[4]);
+      varlimit=atof(argv[5]);
+      first_model=6;
+    }
+  } else {
+    refitting=false;
+    awaiting=false;
+    refitinterval=0;
+    await=0;
+    first_model=0;
   }
+
 
   if (!strcasecmp(argv[first_model],"BESTMEAN") ||
       !strcasecmp(argv[first_model],"BM") ) {
@@ -460,8 +612,11 @@ ModelTemplate *ParseModel(int argc, char *argv[])
    mt->mt = mclass;
    if (refitting) { 
      mt->ps = new RefittingPDQParameterSet(p,(int)d,q,refitinterval);
-   } if (awaiting) {
+   } else if (awaiting) {
      mt->ps = new AwaitingPDQParameterSet(p,(int)d,q,await);
+   } else if (managed) {
+     mt->ps = new ManagedPDQParameterSet(p,(int)d,q,await,refitinterval,
+					 mintest,errlimit,varlimit);
    } else {
      mt->ps = new PDQParameterSet(p,(int)d,q);
    }
@@ -527,10 +682,11 @@ ostream &ModelTemplate::Print(ostream &os) const
 
 char *ModelTemplate::GetName() const
 {
-  int p,d,q,r;
-
-  bool refit;
-  bool await;
+  int p,d,q,a,r,m;
+  double errlimit, varlimit;
+  bool refit=false;
+  bool await=false;
+  bool managed=false;
 
   char *name = new char [1024];
 
@@ -544,13 +700,23 @@ char *ModelTemplate::GetName() const
   } else if (ps->GetType()==AwaitingPDQ) { 
     await=true;
     ((AwaitingPDQParameterSet*)ps)->Get(p,d,q);
-    ((AwaitingPDQParameterSet*)ps)->GetAwait(r);
-  }
+    ((AwaitingPDQParameterSet*)ps)->GetAwait(a);
+  } else if (ps->GetType()==ManagedPDQ) { 
+    managed=true;
+    ((ManagedPDQParameterSet*)ps)->Get(p,d,q);
+    ((ManagedPDQParameterSet*)ps)->GetAwait(a);
+    ((ManagedPDQParameterSet*)ps)->GetRefit(r);
+    ((ManagedPDQParameterSet*)ps)->GetMinTest(m);
+    ((ManagedPDQParameterSet*)ps)->GetErrorLimit(errlimit);
+    ((ManagedPDQParameterSet*)ps)->GetVarLimit(varlimit);
+  } 
 
   if (refit) {
     sprintf(name,"REFIT %d ",r);
   } else if (await) {
-    sprintf(name,"AWAIT %d ",r);
+    sprintf(name,"AWAIT %d ",a);
+  } else if (managed) {
+    sprintf(name,"MANAGED %d %d %d %f %f",a,r,m,errlimit,varlimit);
   } else {
     name[0]=0;
   }

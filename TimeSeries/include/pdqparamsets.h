@@ -80,4 +80,66 @@ class AwaitingPDQParameterSet : public PDQParameterSet {
   }
 };
 
+class ManagedPDQParameterSet : public PDQParameterSet {
+ protected: 
+  int num_await;
+  int num_refit;
+  int min_num_test;
+  double errlimit;
+  double varlimit;
+ public:
+  ManagedPDQParameterSet(const int p,
+			 const int d,
+			 const int q,
+			 const int await,
+			 const int refit,
+			 const int mintest,
+			 const double errlim,
+			 const double varlim) :
+    PDQParameterSet(p,d,q), num_await(await),
+    num_refit(refit), min_num_test(mintest),
+    errlimit(errlim), varlimit(varlim) 
+    {}
+  void GetAwait(int &await) const { 
+    await=num_await;
+  }
+  void SetAwait(const int &await) { 
+    num_await=await;
+  }
+  void GetRefit(int &refit) const { 
+    refit=num_refit;
+  }
+  void SetRefit(const int &refit) { 
+    num_refit=refit;;
+  }
+  void GetMinTest(int &mintest) const { 
+    mintest=min_num_test;
+  }
+  void SetMinTest(const int &mintest) { 
+    min_num_test=mintest;
+  }
+  void GetErrorLimit(double &errlim) const { 
+    errlim=errlimit;
+  }
+  void SetErrorLimit(const double &errlim) { 
+    errlimit=errlim;
+  }
+  void GetVarLimit(double &varlim) const { 
+    varlim=varlimit;
+  }
+  void SetVarLimit(const double &varlim) { 
+    varlimit=varlim;
+  }
+  ParameterSet *Clone() const { 
+    return new ManagedPDQParameterSet(*this);
+  }
+  ParameterSetType GetType() const { 
+    return ManagedPDQ;
+  }
+  void Print(FILE *out=stdout) const {
+    fprintf(out,"ManagedPDQParameterSet(%d,%d,%d,%d,%d,%d,%f,%f)\n",p,d,q,
+	    num_await,num_refit,min_num_test,errlimit,varlimit);
+  }
+};
+
 #endif

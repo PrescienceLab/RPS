@@ -40,6 +40,15 @@ Model *FitThis(ModelType mclass,
 Model *FitThis(ModelType mclass,
 	       int p, double d, int q, int await);
 
+Model *FitThis(ModelType mclass,
+	       const ManagedPDQParameterSet &ps);
+
+Model *FitThis(ModelType mclass,
+	       int p, double d, int q, 
+	       int num_await, int num_refit,
+	       int min_num_test, double errlimit,
+	       double varlimit);
+
 
 
 class ByteStream {
