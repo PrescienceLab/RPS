@@ -5,7 +5,7 @@
 ####################################################################################
 
 # The directory in which we are installed
-RPS_DIR  = /home/pdinda/RPS-development
+RPS_DIR  = /home/pdinda/Codes/RPS-development
 
 # which tools to use to build
 CC      = c++
@@ -25,8 +25,8 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = I386
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
-OS       = LINUX
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, WIN32
+OS       = WIN32
 
 
 ####################################################################################
@@ -64,7 +64,7 @@ HAVE_PREDCOMP = YES
 
 # This provides the java GUI
 #
-HAVE_JAVAGUI = YES
+HAVE_JAVAGUI = NO
 
 # Whether to build the Spin library and tools
 # This provides components for constructing scheduling experiments,
@@ -86,7 +86,7 @@ HAVE_SPIN = YES
 # direct kernel symbol lookups or linux's /proc, or dux's registry.
 # however, it means you can measure load on any machine without 
 # special permissions.
-USE_UPTIME = NO
+USE_UPTIME = YES
 
 ####################################################################################
 #
@@ -97,7 +97,7 @@ USE_UPTIME = NO
 #
 # To build and use the GetFlowBW library, you need REMOS built and installed
 #
-HAVE_REMOS = YES
+HAVE_REMOS = NO
 REMOS_DIR = /home/Remos/Remos
 
 ####################################################################################
@@ -115,7 +115,7 @@ REMOS_DIR = /home/Remos/Remos
 # This is slightly different from where the recipes build process leaves 
 # things
 #
-HAVE_NUMERICAL_RECIPES = YES
+HAVE_NUMERICAL_RECIPES = NO
 RECIPES_DIR = /home/RPS/recipes_c-ansi
 
 #
