@@ -7,17 +7,75 @@
   <body>
     <h1>RPS One-off Predictions</h1>
 
-    <form method="POST" action="oneoffpred.pl">
+    <form enctype="multipart/form-data" method="POST" action="oneoffpred.pl">
       <table>
-	<tr> <td>Source File: </td> <td> <input type="file" name="inputfile"></td></tr>
-      <tr> <td> Model Spec: </td> <td><input type="text" name="model" value="AR 16"> </td> </tr>
-      <tr><td> Fit from: </td><td><input type="text" name="fitfirst" value="0"> </td></tr>
-	  <tr><td>Fit to: </td><td><input type="text" name="fitnum"></td></tr>
-	  
-      <tr><td>Predict over : </td><td><input type="text" name="testnum" value="1"></td></tr>
-      <tr><td>Number ahead: </td><td><input type="text" name="numahead" value="1"></td></tr>
-      <tr><td></td><td><input type="submit"></td></tr>
+	<tr><td>Source File: </td> <td> <input type="file" name="inputfile"></td></tr>
+	<tr><td>Fit From: </td><td><input type="text" name="fitfirst" value="0"> </td></tr>
+	<tr><td>Fit Number : </td><td><input type="text" name="fitnum"></td></tr>
+	<tr><td>Predict Number : </td><td><input type="text" name="testnum" value="1"></td></tr>
+	<tr><td>Number Ahead: </td><td><input type="text" name="numahead" value="1"></td></tr>
+	<tr><td>Model: </td> <td><input type="text" name="model" value="AR 16"> </td> </tr>
+	<tr><td></td><td><input type="submit"></td></tr>
       </table>
     </form>
+
+
+    Fit, predict, and evaluate example showing many features of TimeSeries
+
+    <p> The input file should be a one (value) or two column (timestamp value) ascii file
+      The model is fit from offset "Fit from" to "Fit from + Fit number -1 ".  Predictions are made from "Fit from +  Fit Number" to "Fit From + Fit Number + Predict Number - 1".  At each of these samples, "Number Ahead" predictions are made.  The model used is as follows:<p>
+
+<pre>
+A Model is in the form [optional modifier] [required underlying model]
+
+Optional Modifiers That Affect Predictors Produced From the Underlying Model
+----------------------------------------------------------------------------
+REFIT r
+ predictor will refit itself every r data elements
+AWAIT a
+ predictor will wait for a data elements before fitting
+MANAGED a r m e v
+ predictor will wait for a data elements before fitting
+ predictor will refit after r data elements
+ predictor will refit if, after m samples, the relative error of one-step
+  ahead predictions exceeds e (avg(abs(obs-pred)/abs(pred)) > e)
+ predictor will refit if, after m samples, the actual error variance of
+  one-step ahead predictions exceeds their predicted variance by 
+  a factor of v (variance(error)/predictedvariance > v)
+
+Underlying Models
+-----------------
+NONE
+ No model
+MEAN
+ Long-term mean
+LAST
+ Last value seen
+BM p | BESTMEAN p
+ Windowed average, window length chosen to minimize msqerr
+BMED p | BESTMEDIAN p
+ Windowed median, window length chosen to minimize msqerr
+AR p
+ Autoregressive model of order p
+MA q
+ Moving average model of order q
+ARMA p q
+ Autoregressive moving average model of order p+q
+ARIMA p d q
+ Autoregressive integrated moving average model of order p+q with
+  d-order difference
+ARFIMA p d q
+ Fractionally integrated ARIMA model of order p+q.  d is ignored and
+  and determined by the model fitting process
+</pre>
+
+<h2>RPS: Resource Prediction System Toolkit</h2>
+
+Copyright (c) 1999-2002 by Peter A. Dinda<br>
+Use subject to license.<br>
+<p>
+<a href="http://www.cs.northwestern.edu/~RPS">http://www.cs.northwestern.edu/~RPS</a><br>
+<a href="mailto:rps-help@cs.northwestern.edu">rps-help@cs.northwestern.edu</a><br>
+
   </body>
 </html>
