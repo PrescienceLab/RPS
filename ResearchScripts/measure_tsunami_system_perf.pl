@@ -41,20 +41,24 @@ print STDERR "Start vmstat monitor\n";
 system "clean_vmstat.pl > $OUTDIR/vmstat.out &";
 
 # capture quiescent behavior
-sleep(120);
+sleep(60);
 
 # start up a load monitor
 print STDERR "Start loadserver monitor\n";
 system "clean_loadserver.pl 1000000 10000 > $OUTDIR/loadmonitor.out &";
 
 # capture combined behavior
-sleep(120);
+sleep(60);
 
 # Performance tests
 if (1) {
 
+  #SAMPLE, PROCESSING, FORWARD THEN REVERSE
+
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of sfwt, sample\n";
+  system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout\" >> $OUTDIR/vmstat.out";
+  system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout\" >> $OUTDIR/loadmonitor.out";
   $datasize = $initsize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
@@ -64,7 +68,18 @@ if (1) {
     $datasize*=2;
   }
 
-  sleep(120);
+  sleep(10);
+
+  # now use my utilities to sweep the sleeprates
+  print STDERR "Sweep Hz for performance of srwt, sample\n";
+  $datasize = $initsize;
+  for ($hz=1;$hz<=$maxhz;$hz*=2) {
+    $usec = int(1000000/$hz);
+    print STDERR "$hz\t$usec\n";
+    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null\"";
+    system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null";
+    $datasize*=2;
+  }
 
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of sfwt, block\n";
@@ -80,17 +95,6 @@ if (1) {
   }
 
   sleep(120);
-
-  # now use my utilities to sweep the sleeprates
-  print STDERR "Sweep Hz for performance of srwt, sample\n";
-  $datasize = $initsize;
-  for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000/$hz);
-    print STDERR "$hz\t$usec\n";
-    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null\"";
-    system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null";
-    $datasize*=2;
-  }
 
   sleep(120);
 
