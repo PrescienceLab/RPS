@@ -27,11 +27,14 @@ struct SignalSpec {
 // Returns true if TRANSFORM, false if ZEROFILL
 bool StructureOptimizer(SignalSpec &optim, 
 			unsigned &stages,
+			const unsigned numstages,
+			const int low_level,
 			const SignalSpec &spec);
 
 void InvertSignalSpec(vector<int> &inversion,
 		      const vector<int> &spec,
-		      const unsigned numlevels);
+		      const unsigned numlevels,
+		      const int low_level);
 
 void FlattenSignalSpec(vector<int> &flatspec, const SignalSpec &spec);
 
@@ -220,8 +223,12 @@ protected:
   unsigned numlevels;
   int      lowest_inlvl;
   unsigned index;
-  bool     incoming_index_init;
-  unsigned incoming_index[MAX_STAGES+1];
+
+  // Zero fill vars
+  unsigned indices[MAX_STAGES+1];
+  unsigned sampletime;
+  bool     sync;
+  unsigned sync_level;
 
   vector<SampleBlock<INSAMPLE> *> insignals;
   vector<SampleBlock<INSAMPLE> *> intersignals;
@@ -250,6 +257,9 @@ protected:
 
   void AddBlockToIntersignals(const SampleBlock<INSAMPLE> &block,
 			      const unsigned level);
+
+  void AddZeroSamplesToInput(vector<INSAMPLE> &zeros,
+			     const vector<int> &zerolevels);
 
 public:
   StaticReverseWaveletTransform(const unsigned numstages=1,
@@ -280,9 +290,13 @@ public:
   inline unsigned GetIndexNumber() const;
   inline void SetIndexNumber(const unsigned index);
 
-  inline void SetIncomingIndexInit(const bool flag);
-  bool InitializeIncomingIndexStructure(const unsigned ref_index,
-					const int ref_level);
+  inline void ClearIncomingIndices();
+
+  inline unsigned GetSampleTime() const;
+  inline void SetSampleTime(const unsigned sampletime);
+
+  inline bool GetSyncStatus() const;
+  inline void SetSyncStatus(const bool sync);
 
   // This routine expects a range of sample levels upon which to reconstruct,
   //  range=[lowest_inlvl,lowest_inlvl+numlevels]
@@ -290,7 +304,12 @@ public:
 					 const vector<INSAMPLE> &in);
 
   // This routine performs a streaming transform, but zero fills missing samples
-  //  based on the zerolevels specification
+  //  based on the zerolevels specification.  Assumes that the first call to this
+  //  routine comes at a sampletime of sample % 2^numstages in order to synchronize
+  //  the zero filling.  This is also at a time when we should receive a sample from
+  //  each level.  Indices do not correspond to incoming indices.  The first call
+  //  will zero fill missing samples. Also assumes that this is called every sample
+  //  time so that it can keep track of its internal state.
   bool StreamingTransformZeroFillSampleOperation(vector<OUTSAMPLE> &out,
 						 const vector<INSAMPLE> &in,
 						 const vector<int> &zerolevels);
@@ -1116,10 +1135,13 @@ StaticReverseWaveletTransform(const unsigned numstages,
   this->numlevels = this->numstages+1;
   this->lowest_inlvl = lowest_inlvl;
   this->index = 0;
-  this->incoming_index_init = false;
+
   for (i=0; i<MAX_STAGES+1; i++) {
-    incoming_index[i]=0;
+    this->indices[i]=0;
   }
+  this->sampletime=0;
+  this->sync=false;
+  this->sync_level=0;
 
   for (i=0; i<numlevels; i++) {
     SampleBlock<INSAMPLE>* psbis = new SampleBlock<INSAMPLE>();
@@ -1143,17 +1165,16 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs) :
   numstages(rhs.numstages), numlevels(rhs.numlevels),
-  lowest_inlvl(rhs.lowest_inlvl), index(rhs.index),
-  incoming_index_init(rhs.incoming_index_init)
+  lowest_inlvl(rhs.lowest_inlvl), index(rhs.index), sampletime(rhs.sampletime),
+  sync(rhs.sync), sync_level(rhs.sync_level)
 {
   DEBUG_PRINT("StaticReverseWaveletTransform::StaticReverseWaveletTransform"
 	      <<"(const StaticReverseWaveletTransform &rhs)");
 
   unsigned i;
-  for (i=0; i<rhs.numlevels; i++) {
-    incoming_index[i] = rhs.incoming_index[i];
+  for (i=0; i<MAX_STAGES+1; i++) {
+    this->indices[i]=rhs.indices[i];
   }
-
   for (i=0; i<rhs.numlevels; i++) {
     SampleBlock<INSAMPLE>* psbis = new SampleBlock<INSAMPLE>(*rhs.insignals[i]);
     insignals.push_back(psbis);
@@ -1197,10 +1218,14 @@ StaticReverseWaveletTransform(const unsigned numstages,
   this->numlevels = this->numstages+1;
   this->lowest_inlvl = lowest_inlvl;
   this->index = 0;
-  this->incoming_index_init = false;
+
   for (i=0; i<MAX_STAGES+1; i++) {
-    incoming_index[i]=0;
+    this->indices[i]=0;
   }
+  this->sampletime = 0;
+  this->sync=false;
+  this->sync_level=0;
+
 
   for (i=0; i<numlevels; i++) {
     SampleBlock<INSAMPLE>* psbis = new SampleBlock<INSAMPLE>();
@@ -1291,10 +1316,13 @@ ChangeNumberStages(const unsigned numstages)
     this->numstages = numstages;
     this->numlevels = numstages+1;
     this->index = 0;
-    this->incoming_index_init = false;
+
     for (i=0; i<MAX_STAGES+1; i++) {
-      this->incoming_index[i] = 0;
+      this->indices[i]=0;
     }
+    this->sampletime=0;
+    this->sync=false;
+    this->sync_level=0;
 
     for (i=0; i<numlevels; i++) {
       SampleBlock<INSAMPLE>* psbis = new SampleBlock<INSAMPLE>();
@@ -1366,24 +1394,39 @@ SetIndexNumber(const unsigned index)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetIncomingIndexInit(const bool flag)
+ClearIncomingIndices()
 {
-  this->incoming_index_init=flag;
+  for (unsigned i=0; i<MAX_STAGES+1; i++) {
+    this->indices[i]=0;
+  }
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+unsigned StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+GetSampleTime() const
+{
+  return this->sampletime;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetSampleTime(const unsigned sampletime)
+{
+  this->sampletime=sampletime;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-InitializeIncomingIndexStructure(const unsigned ref_index, 
-				 const int ref_level)
+GetSyncStatus() const
 {
-  incoming_index_init=true;
-  unsigned nlevel = (unsigned) (ref_level - lowest_inlvl);
-  for (unsigned i=0; i<numlevels-1; i++) {
-    incoming_index[i] = (i < nlevel) ? ref_index << (nlevel-i) : 
-      ref_index >> (i-nlevel);
-  }
-  incoming_index[numlevels-1] = incoming_index[numlevels-2];
-  return incoming_index_init;
+  return this->sync;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+SetSyncStatus(const bool sync)
+{
+  this->sync=sync;
 }
 
 #define RUN_STAGE_SAMPLE_OPERATION(pstage, output, in_low, in_high) \
@@ -1404,12 +1447,6 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
     return false;
   }
 
-  // Incoming index structure initialized?
-  if (!incoming_index_init) {
-    InitializeIncomingIndexStructure(in[0].GetSampleIndex(),
-				     in[0].GetSampleLevel());
-  }
-
   // Clear the output vector to signal new output to the calling routine
   out.clear();
   vector<INSAMPLE> tempout;
@@ -1419,9 +1456,9 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
   unsigned samplelevel;
   for (i=0; i<in.size(); i++) {
     samplelevel = in[i].GetSampleLevel() - lowest_inlvl;
+
     if (samplelevel < numlevels) {
       insignals[samplelevel]->PushSampleFront(in[i]);
-      incoming_index[samplelevel] = in[i].GetSampleIndex();
     }
   }
 
@@ -1481,42 +1518,63 @@ StreamingTransformZeroFillSampleOperation(vector<OUTSAMPLE> &out,
 					  const vector<INSAMPLE> &in,
 					  const vector<int> &zerolevels)
 {
-  vector<INSAMPLE> newin(in);
-  if (newin.size() == 0) {
+  if (in.size() == 0) {
     return false;
   }
 
   unsigned i, j;
-  unsigned ref_index=newin[0].GetSampleIndex();
-  int ref_level = newin[0].GetSampleLevel();
-  unsigned sampletime = ref_index << ((unsigned)(ref_level-lowest_inlvl) == numlevels-1) ?
-    (ref_level - lowest_inlvl) : (ref_level - lowest_inlvl+1);
+  unsigned curr_sampletime;
 
-  // Incoming index structure initialized?
-  if (!incoming_index_init) {
-    InitializeIncomingIndexStructure(ref_index, ref_level);
-  }
+  out.clear();
+  vector<INSAMPLE> newin(in);
 
-  // Update the incoming indices based on sampletime value
-  for (i=0; i<numlevels; i++) {
-    if (sampletime == (incoming_index[i] + 1) << (i==numlevels-1) ? i : i+1) {
-      incoming_index[i]++;
+  // If unsynced, sync up and find the reference level
+  if (!this->sync) {
+    unsigned low_level;
+    this->sync_level=(unsigned)(newin[0].GetSampleLevel() - this->lowest_inlvl);
+
+    // Set the sync level to the lowest level in the input
+    for (i=1; i<newin.size(); i++) {
+      low_level=(unsigned)(newin[i].GetSampleLevel() - this->lowest_inlvl);
+      if (low_level < this->sync_level) {
+	this->sync_level=low_level;
+      }
     }
+    curr_sampletime=this->sampletime;
+    this->sync=true;
+  } else {  // In sync mode
+
+    // Estimate the current sampletime using the sync_level
+    curr_sampletime = this->sampletime + 
+      (2 << (this->sync_level==numlevels-1 ? this->sync_level-1 : this->sync_level));
   }
 
-  // Add missing samples to input
-  for (i=0; i<numlevels; i++) {
-    for (j=0; j<zerolevels.size(); j++) {
-      if ((i == (unsigned)(zerolevels[j] - lowest_inlvl)) && 
-	  (sampletime == (incoming_index[i] << (i==numlevels-1) ? i : i+1))) {
-	// Zero fill a sample
-	INSAMPLE zero(0.0,i+lowest_inlvl,incoming_index[i]);
-	newin.push_back(zero);
-	break;
+  // Run sample operations on sampletimes that are missing.  There must be an
+  //  optimization here, but this is easiest solution for now
+  vector<OUTSAMPLE> tempout;
+  vector<INSAMPLE> zero_samples;
+  for (; this->sampletime<curr_sampletime; this->sampletime++) {
+
+    // Add missing samples to input
+    AddZeroSamplesToInput(zero_samples, zerolevels);
+
+    if (StreamingTransformSampleOperation(tempout, zero_samples)) {
+      for (j=0; j<tempout.size(); j++) {
+	out.push_back(tempout[j]);
       }
     }
   }
-  return StreamingTransformSampleOperation(out,newin);
+
+  // Add missing samples to the samples that arrive with non-zero values
+  AddZeroSamplesToInput(newin, zerolevels);
+
+  if (StreamingTransformSampleOperation(tempout, newin)) {
+    for (j=0; j<tempout.size(); j++) {
+      out.push_back(tempout[j]);
+    }
+  }
+
+  return out.size();
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -1572,7 +1630,7 @@ StreamingMixedSampleOperation(vector<OUTSAMPLE> &out,
 
   // Build the zero sample specification based on !levels
   vector<int> zerolevels;
-  InvertSignalSpec(zerolevels, levels, this->numlevels);
+  InvertSignalSpec(zerolevels, levels, this->numlevels, this->lowest_inlvl);
 
   return StreamingTransformZeroFillSampleOperation(out,newin,zerolevels);
 }
@@ -1619,12 +1677,6 @@ StreamingTransformBlockOperation
     return 0;
   }
 
-  // Incoming index structure initialized?
-  if (!incoming_index_init) {
-    InitializeIncomingIndexStructure(inblock[0].GetBlockIndex(),
-				     inblock[0].GetBlockLevel());
-  }
-
   unsigned i;
   outblock.ClearBlock();
 
@@ -1633,9 +1685,9 @@ StreamingTransformBlockOperation
   // Sort the input vector into insignals
   for (i=0; i<inblock.size(); i++) {
     unsigned block_level = inblock[i].GetBlockLevel()-lowest_inlvl;
+
     if (block_level < numlevels) {
       AddBlockToInsignals(inblock[i], block_level);
-      incoming_index[block_level] += inblock[i].GetBlockSize();
     }
   }
 
@@ -1703,12 +1755,6 @@ StreamingTransformZeroFillBlockOperation
     return 0;
   }
 
-  // Incoming index structure initialized?
-  if (!incoming_index_init) {
-    InitializeIncomingIndexStructure(inblock[0].GetBlockIndex(),
-				     inblock[0].GetBlockLevel());
-  }
-
   unsigned i, j;
   vector<WaveletOutputSampleBlock<INSAMPLE> > newinblock(inblock);
 
@@ -1722,7 +1768,8 @@ StreamingTransformZeroFillBlockOperation
 	ref_blksize *= 2;
 	CREATE_ZERO_BLOCK(newinblock,
 			  ref_blksize,
-			  incoming_index[i],
+			  //incoming_index[i],
+			  sampletime,
 			  i+lowest_inlvl);
       }
     }
@@ -1736,7 +1783,8 @@ StreamingTransformZeroFillBlockOperation
       if ((ref_blksize) && ( (int)(i + lowest_inlvl) == zerolevels[j])) {
 	CREATE_ZERO_BLOCK(newinblock,
 			  ref_blksize,
-			  incoming_index[i],
+			  //incoming_index[i],
+			  sampletime,
 			  i+lowest_inlvl);
       }
     }
@@ -1799,7 +1847,7 @@ StreamingMixedBlockOperation
 
   // Build the zero sample specification based on !levels
   vector<int> zerolevels;
-  InvertSignalSpec(zerolevels, levels, this->numlevels);
+  InvertSignalSpec(zerolevels, levels, this->numlevels, this->lowest_inlvl);
 
   return StreamingTransformZeroFillBlockOperation(outblock,
 						  newinblock,
@@ -1912,6 +1960,26 @@ AddBlockToIntersignals(const SampleBlock<INSAMPLE> &block, const unsigned level)
 {
   AddRemainingBlockToIntersignals(block, 0, level);
 }
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+AddZeroSamplesToInput(vector<INSAMPLE> &zeros, const vector<int> &zerolevels)
+{
+  unsigned i, j;
+  for (i=0; i<this->numlevels; i++) {
+    for (j=0; j<zerolevels.size(); j++) {
+      if ( (i == (unsigned)(zerolevels[j] - this->lowest_inlvl)) && 
+	   ((this->sampletime % (2 << (i==this->numlevels-1 ? i-1 : i))) == 0)) {
+	// Zero fill a sample
+	INSAMPLE zero(0.0, i+this->lowest_inlvl, this->indices[i]);
+	zeros.push_back(zero);
+	this->indices[i]++;
+	break;
+      }
+    }
+  }
+}
+
 
 /********************************************************************************
  * 

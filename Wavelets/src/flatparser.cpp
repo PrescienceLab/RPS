@@ -80,46 +80,50 @@ bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
 				     vector<wosd> &dcoefs,
 				     istream &in)
 {
+  const unsigned MRA_COUNT=2;
   bool read=true;
   unsigned sampletime, numsamples;
   char mratype;
   int levelnum;
   double sampvalue;
-  if (in >> sampletime) {
-    in >> mratype >> numsamples;
-    for (unsigned i=0; i<numsamples; i++) {
-      in >> levelnum >> sampvalue;
 
-      if (mratype == 'A') {
-	if (LevelInSpec(spec.approximations, levelnum)) {
-	  if (a_indices.find(levelnum) == a_indices.end()) {
-	    a_indices[levelnum] = 0;
-	  } else {
-	    a_indices[levelnum] += 1;
+  for (unsigned i=0; i<MRA_COUNT; i++) {
+    if (in >> sampletime) {
+      in >> mratype >> numsamples;
+      for (unsigned j=0; j<numsamples; j++) {
+	in >> levelnum >> sampvalue;
+
+	if (mratype == 'A') {
+	  if (LevelInSpec(spec.approximations, levelnum)) {
+	    if (a_indices.find(levelnum) == a_indices.end()) {
+	      a_indices[levelnum] = 0;
+	    } else {
+	      a_indices[levelnum] += 1;
+	    }
+	    wosd sample(sampvalue, levelnum, indices[levelnum]);
+	    acoefs.push_back(sample);
 	  }
-	  wosd sample(sampvalue, levelnum, indices[levelnum]);
-	  acoefs.push_back(sample);
-	}
-      } else if (mratype == 'D') {
-	if (LevelInSpec(spec.details, levelnum)) {
-	  if (d_indices.find(levelnum) == d_indices.end()) {
-	    d_indices[levelnum] = 0;
-	  } else {
-	    d_indices[levelnum] += 1;
+	} else if (mratype == 'D') {
+	  if (LevelInSpec(spec.details, levelnum)) {
+	    if (d_indices.find(levelnum) == d_indices.end()) {
+	      d_indices[levelnum] = 0;
+	    } else {
+	      d_indices[levelnum] += 1;
+	    }
+	    wosd sample(sampvalue, levelnum, indices[levelnum]);
+	    dcoefs.push_back(sample);
 	  }
-	  wosd sample(sampvalue, levelnum, indices[levelnum]);
-	  dcoefs.push_back(sample);
+	} else {
+	  cerr << "Invalid MRA type.\n";
 	}
-      } else {
-	cerr << "Invalid MRA type.\n";
       }
+    } else {
+      read=false;
+      break;
     }
-  } else {
-    read=false;
   }
   return read;
 }
-
 
 bool FlatParser::ParseMRACoefsSample(vector<wosd> &acoefs,
 				     vector<wosd> &dcoefs,

@@ -116,13 +116,13 @@ int main(int argc, char *argv[])
   // Optimize the operations
   SignalSpec optim_spec;
   unsigned optim_stages;
-  bool transform=StructureOptimizer(optim_spec, optim_stages, sigspec);
+  bool transform=StructureOptimizer(optim_spec, optim_stages, numstages, 0, sigspec);
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[optim_stages];
-  CalculateWaveletDelayBlock(wtcoefnum, optim_stages, delay);
-  DelayBlock<wosd> dlyblk(optim_stages, 0, delay);
+  int *delay = new int[optim_stages+1];
+  CalculateWaveletDelayBlock(wtcoefnum, optim_stages+1, delay);
+  DelayBlock<wosd> dlyblk(optim_stages+1, 0, delay);
 
   // Instantiate a static reverse wavelet transform
   StaticReverseWaveletTransform<double, wisd, wosd> srwt(optim_stages,wt,2,2,0);
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
       vector<int> zerospec;
       vector<int> specs;
       FlattenSignalSpec(specs, optim_spec);
-      InvertSignalSpec(zerospec, specs, optim_stages+1);
+      InvertSignalSpec(zerospec, specs, optim_stages+1, 0);
       if (srwt.StreamingTransformZeroFillSampleOperation(currentoutput,
 							 dlysamples,
 							 zerospec)) {
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
   }
 
   if (!flat) {
-    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
+    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,optim_stages)-1;
     *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
     *outstr.tie() << endl;
     *outstr.tie() << "Index\tValue\n" << endl;

@@ -2,6 +2,8 @@
 
 bool StructureOptimizer(SignalSpec &optim,
 			unsigned &stages,
+			const unsigned numstages,
+			const int low_level,
 			const SignalSpec &spec)
 {
   bool transform=false;
@@ -15,24 +17,29 @@ bool StructureOptimizer(SignalSpec &optim,
 	approx_low = spec.approximations[i]; 
       }
     }
-    optim.approximations.push_back(approx_low);
+    if ((unsigned)(approx_low - low_level) < numstages) {
+      optim.approximations.push_back(approx_low);
+    }
 
     // Grab a set of remaining details
     for (i=0; i<spec.details.size(); i++) {
-      if (spec.details[i] <= approx_low) {
+      if (spec.details[i] <= approx_low &&
+	  (unsigned)(spec.details[i] - low_level) < numstages) {
 	optim.details.push_back(spec.details[i]);
       }
     }
   } else {
     // Details only
     for (i=0; i<spec.details.size(); i++) {
-      optim.details.push_back(spec.details[i]);
+      if ((unsigned)(spec.details[i] - low_level) < numstages) {
+	optim.details.push_back(spec.details[i]);
+      }
     }
   }
 
   // Determine if transform is option and number of levels
   if (optim.approximations.size()) {
-    if (optim.approximations[0]==(int)optim.details.size()+1) {
+    if (optim.approximations[0]+1==(int)optim.details.size()) {
       transform=true;
     }
     stages=optim.approximations[0]+1;
@@ -51,14 +58,15 @@ bool StructureOptimizer(SignalSpec &optim,
 
 void InvertSignalSpec(vector<int> &inversion,
 		      const vector<int> &spec,
-		      const unsigned numlevels)
+		      const unsigned numlevels,
+		      const int low_level)
 {
   unsigned i, j;
   bool in_levels;
   for (i=0; i<numlevels; i++) {
     in_levels = false;
     for (j=0; j<spec.size(); j++) {
-      if ((int)i == spec[j]) {
+      if (i == (unsigned)(spec[j]-low_level)) {
 	in_levels = true;
 	break;
       }
@@ -69,10 +77,11 @@ void InvertSignalSpec(vector<int> &inversion,
   }
 }
 
+// This routine only expects one approximation, and a set of details
 void FlattenSignalSpec(vector<int> &flatspec, const SignalSpec &spec)
 {
   if (spec.approximations.size()) {
-    flatspec.push_back(spec.approximations[0]);
+    flatspec.push_back(spec.approximations[0]+1);
   }
 
   unsigned size;
