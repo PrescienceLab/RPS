@@ -5,6 +5,10 @@
 #include <iostream>
 #include <fstream>
 
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+
 #include "waveletinfo.h"
 #include "transforms.h"
 
@@ -80,5 +84,8 @@ void OutputLevelMetaData(ostream &os,
 void OutputLevelMetaData(ostream &os,
 			 const DiscreteWaveletOutputSampleBlock<wosd> &dwosb,
 			 const TransformType tt);
+
+// Performance routines
+void GetRusage(double &systime, double &usrtime);
 
 #endif

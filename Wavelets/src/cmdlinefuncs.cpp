@@ -645,3 +645,18 @@ void OutputLevelMetaData(ostream &os,
   }
   os << endl;
 }
+
+// Performance
+
+void GetRusage(double &systime, double &usrtime)
+{
+  struct rusage x;
+
+  if (getrusage(RUSAGE_SELF,&x)) {
+    perror("getrusage");
+    exit(-1);
+  }
+
+  systime=x.ru_stime.tv_sec + x.ru_stime.tv_usec/1.0e6;
+  usrtime=x.ru_utime.tv_sec + x.ru_utime.tv_usec/1.0e6;
+}
