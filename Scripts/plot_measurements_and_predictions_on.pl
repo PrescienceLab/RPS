@@ -73,7 +73,7 @@ do {
     open(OUT,">$pfile");
     $line=<IN>;
     $line=~/.*F\((.*)Hz\).*M\((.*)secs\).*human-name=\'(.*)\'/;
-    $period=1.0/$1;
+    if ($1 !=0) { $period=1.0/$1; } else {$period=0.00001;}
     $timestart=$2;
     $model=$3;
     $i=0;

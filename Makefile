@@ -146,7 +146,7 @@ endif
 
 HSE_DEP = Sensors
 
-PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HPR_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP) $(HFIN_DEP) $(HRT_DEP)
+PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HPR_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP) $(HFIN_DEP) $(HRT_DEP) $(HWT_DEP)
 
 all:  $(PROJS) shared final_fixup
 
@@ -175,27 +175,33 @@ GetFlowBW: force
 	cp `find $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 	cp `find $(GETFLOWBW_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
+ifeq ($(ARCH),I386)
+
+
+ifeq ($(OS),WIN32)
 WatchTower: force
-ifeq ($(RPS_ARCH),I386)
-  ifeq ($(RPS_OS),WIN32)
 	cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(WATCHTOWER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
-  else
-    ifeq ($RPS_OS),CYGWIN)
+
+else
+
+ifeq ($(OS),CYGWIN)
+
+WatchTower: force
 	cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(WATCHTOWER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RP
-S_DIR)/bin/$(ARCH)/$(OS)
-    endif
-  endif
+	cp `find $(WATCHTOWER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+endif
+endif
 endif
 
 Proc: force
-ifeq ($(RPS_OS),LINUX)
+ifeq ($(OS),LINUX)
 	cd $(PROC_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(PROC_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 endif
 
-Sensors : $(HGLA_DEP) $(HGFB_DEP) $(HWT_DEP) force
+Sensors : $(HGLA_DEP) $(HGFB_DEP) $(HWT_DEP) $(HPR_DEP) force
 	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
 TimeSeries: $(HFD_DEP) $(HT_DEP) $(HWA_DEP) force
