@@ -5,12 +5,12 @@
 ####################################################################################
 
 # The directory in which we are installed
-RPS_DIR  = /home/pdinda/RPS-development
+RPS_DIR  = /home/pdinda/Codes/RPS-development
 
 # which tools to use to build
 CC      = c++
 F77     = g77
-AR      = ar 
+AR      = ar
 RANLIB  = ranlib
 LD      = c++
 JAVA    = java
@@ -25,8 +25,8 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = I386
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
-OS       = LINUX
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, WIN32
+OS       = WIN32
 
 
 ####################################################################################
@@ -64,7 +64,7 @@ HAVE_PREDCOMP = YES
 
 # This provides the java GUI
 #
-HAVE_JAVAGUI = YES
+HAVE_JAVAGUI = NO
 
 # Whether to build the Spin library and tools
 # This provides components for constructing scheduling experiments,
@@ -81,8 +81,6 @@ HAVE_RTA = YES
 # Whether to build the Real-time Scheduling Advisor and testing tools
 HAVE_RTSA = NO
 
-
-
 ####################################################################################
 #
 # Configuration Options for the GetLoadAvg library
@@ -95,7 +93,7 @@ HAVE_RTSA = NO
 # direct kernel symbol lookups or linux's /proc, or dux's registry.
 # however, it means you can measure load on any machine without 
 # special permissions.
-USE_UPTIME = NO
+USE_UPTIME = YES
 
 ####################################################################################
 #
@@ -106,7 +104,7 @@ USE_UPTIME = NO
 #
 # To build and use the GetFlowBW library, you need REMOS built and installed
 #
-HAVE_REMOS = YES
+HAVE_REMOS = NO
 REMOS_DIR = /home/Remos/Remos
 
 ####################################################################################
@@ -124,7 +122,7 @@ REMOS_DIR = /home/Remos/Remos
 # This is slightly different from where the recipes build process leaves 
 # things
 #
-HAVE_NUMERICAL_RECIPES = YES
+HAVE_NUMERICAL_RECIPES = NO
 RECIPES_DIR = /home/RPS/recipes_c-ansi
 
 #
@@ -202,6 +200,7 @@ JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
 # currently none
 #
 
+
 ####################################################################################
 #
 # Configuration Options for the Trace library and tools
@@ -257,6 +256,7 @@ GETFLOWBW_DIR     = $(SENSORS_DIR)/GetFlowBW
 # Nothing below here needs to be changed
 #
 #
+
 
 GETLOADAVG_LIB_DIR = $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS)
 GETLOADAVG_INC_DIR = $(GETLOADAVG_DIR)/include
@@ -377,10 +377,10 @@ else
 endif
 
 ifeq ($(HAVE_PREDCOMP),YES) 
-   PREDCOMP_LDFLAGS = 
+   PREDCOMP_LDFLAGS = -lwsock32
    PREDCOMP_CFLAGS = -DHAVE_PREDCOMP -I$(PREDCOMP_INC_DIR)
 else
-   PREDCOMP_LDFLAGS = 
+   PREDCOMP_LDFLAGS =
    PREDCOMP_CFLAGS = 
 endif
 
@@ -391,7 +391,6 @@ else
    SPIN_LDFLAGS =
    SPIN_CFLAGS =
 endif
-
 
 ifeq ($(HAVE_LISTPACK),YES) 
    LISTPACK_LDFLAGS   = -L$(LISTPACK_LIB_DIR) -llist

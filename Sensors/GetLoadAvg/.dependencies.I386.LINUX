@@ -1,2 +1,2 @@
-./obj/I386/LINUX/getloadavg.o: ./src/getloadavg.c include/getloadavg.h
-./obj/I386/LINUX/test.o: ./src/test.c include/getloadavg.h
+./obj/I386/LINUX/getloadavg.o: ./src/getloadavg.c include/GetLoadAvg.h
+./obj/I386/LINUX/test_getloadavg.o: ./src/test_getloadavg.c include/GetLoadAvg.h

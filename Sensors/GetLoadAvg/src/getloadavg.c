@@ -78,7 +78,7 @@ Boston, MA 02111-1307, USA.  */
 #endif
 
 /* added for ADE by lowekamp */
-#include "getloadavg.h"
+#include "GetLoadAvg.h"
 
 #include <sys/types.h>
 

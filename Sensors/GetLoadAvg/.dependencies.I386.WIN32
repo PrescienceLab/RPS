@@ -1,0 +1,2 @@
+./obj/I386/WIN32/getloadavg.o: ./src/getloadavg.c include/getloadavg.h
+./obj/I386/WIN32/test_getloadavg.o: ./src/test_getloadavg.c include/GetLoadAvg.h

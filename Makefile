@@ -185,7 +185,7 @@ clean:
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
-	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	#cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	rm -f `find $(RPS_DIR)/lib/$(ARCH)/$(OS) -type f`
 	rm -f `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f`
 
@@ -202,6 +202,6 @@ depend:
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
-	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	#cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 
 force: ;

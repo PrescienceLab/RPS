@@ -11,7 +11,7 @@
 
 #include "LoadTrace.h"
 #include "timing.h"
-#include "getloadavg.h"
+#include "GetLoadAvg.h"
 #include "apply.h"
 
 #ifndef MAX

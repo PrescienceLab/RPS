@@ -1,0 +1,35 @@
+RPS/shared/include
+   overall RPS include files
+
+
+TimeSeries:
+   remove include/min.h
+
+
+
+For each module,
+
+   include/module_name.h 
+
+is now "the" include for the module.
+
+
+
+CVS edits to do
+
+Global makefile
+
+GetLoadAvg
+   remove test.c, add test_getloadavg
+
+GetFlowBW
+   remove test.cpp, add test_getflowbw.cpp
+
+
+RPSInterface
+   remove Timers.h/Timers.cpp  (in Mirror)
+   remove maths.h - in mirror
+
+
+
+

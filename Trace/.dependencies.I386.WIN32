@@ -1,0 +1,13 @@
+./obj/I386/WIN32/LoadTrace.o: ./src/LoadTrace.cpp include/LoadTrace.h
+./obj/I386/WIN32/genload.o: ./src/genload.cpp include/LoadTrace.h \
+ /home/pdinda/Codes/RPS-development/Spin/include/timing.h \
+ /home/pdinda/Codes/RPS-development/Sensors/GetLoadAvg/include/getloadavg.h \
+ /home/pdinda/Codes/RPS-development/Spin/include/apply.h
+./obj/I386/WIN32/defilter_trace.o: ./src/defilter_trace.cpp include/LoadTrace.h
+./obj/I386/WIN32/select_from_binary_trace_file.o: \
+ ./src/select_from_binary_trace_file.cpp include/LoadTrace.h
+./obj/I386/WIN32/alpha_to_network.o: ./src/alpha_to_network.cpp include/LoadTrace.h
+./obj/I386/WIN32/network_to_alpha.o: ./src/network_to_alpha.cpp include/LoadTrace.h
+./obj/I386/WIN32/network_to_ascii.o: ./src/network_to_ascii.cpp include/LoadTrace.h
+./obj/I386/WIN32/ascii_to_network.o: ./src/ascii_to_network.cpp include/LoadTrace.h
+./obj/I386/WIN32/alpha_to_ascii.o: ./src/alpha_to_ascii.cpp include/LoadTrace.h

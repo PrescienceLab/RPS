@@ -1,4 +1,4 @@
-#include "Predcomp.h"
+#include "PredComp.h"
 
 
 void usage()
