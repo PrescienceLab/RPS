@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 
 $#ARGV==3 or die "usage: import_sched_results.pl file database table \"description\"";
 

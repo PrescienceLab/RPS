@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 #
 # Generate testcases that show exectime 
 # predictions for mean, last, and default (ar16) models

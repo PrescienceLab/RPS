@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 #
 # start mean, last, and ar16 predictors on a set of hosts
 # generate scheduling testcases and attempt to rt schedule

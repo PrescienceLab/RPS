@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/bin/env perl
 
 if ($#ARGV!=0) { 
     print STDERR "start_pipeline_list.pl list\n";

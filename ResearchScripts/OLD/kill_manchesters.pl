@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/bin/env perl
 
 $DIR = "/afs/cs/project/cmcl-pdinda-2/LoadMon";
 $CMD = "perl $DIR/kill_lpp_on.pl";

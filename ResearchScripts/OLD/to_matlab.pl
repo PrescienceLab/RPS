@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/bin/env perl
 
 while (<STDIN>) {
     ($timestamp, $host, $tnom, $tlb, $texp, $tub, $tact, $tusr, $tsys) = split;

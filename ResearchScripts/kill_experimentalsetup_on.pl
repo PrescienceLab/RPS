@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/env perl
 
 $#ARGV==0 or die "usage: kill_experimentalsetup_on.pl host\n";
 

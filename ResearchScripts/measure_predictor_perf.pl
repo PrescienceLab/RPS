@@ -1,4 +1,4 @@
-#! /usr/local/bin/perl5 -w
+#! /usr/bin/env perl
 
 $file     = $ARGV[0];
 $numahead = $ARGV[1];
