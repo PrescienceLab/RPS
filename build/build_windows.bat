@@ -1,7 +1,6 @@
-set RPS_DIR=.
 set TYPE=DEBUG
 
-msdev RPS.dsw /MAKE ALL /REBUILD
+msdev %RPS_DIR%\RPS.dsw /MAKE ALL /REBUILD
 
 copy %RPS_DIR%\Sensors\include\*.h %RPS_DIR%\include
 copy %RPS_DIR%\Sensors\GetLoadAvg\include\*.h %RPS_DIR%\include

@@ -82,12 +82,30 @@ $RPS_INSTALL_DIR
   doc
   lib
   include
+  web
 
 In addition to binaries, the appropriate scripts will be copied 
 into the bin subdirectory.  
 
 To use RPS after installation, source $RPS_INSTALL_DIR/ENV and then
 explore the contents of the bin and doc directories.
+
+
+Installation Support for Windows Systems
+----------------------------------------
+
+Execute
+
+$RPS_DIR\build\install_windows.bat \where\you\want\RPS
+
+This will create a traditional unix-style directory tree:
+
+\where\you\want\RPS
+  bin
+  doc
+  lib
+  include
+
 
 
 Red Hat Linux 9.0 on Intel
@@ -150,15 +168,25 @@ g77 version 2.95.3-1 (cygwin special) (from FSF-g77 version 0.5.25 20010315 (rel
 ease))
 ...
 
-Windows 2000 Native with Visual Studio 6.0 on Intel
----------------------------------------------------
+Windows XP Native with Visual Studio 6.0 on Intel
+-------------------------------------------------
 
-c:\documents and settings\pdinda\my documents\Codes\RPS-development>cl
-Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8168 for 80x86
+C:\Documents and Settings\pdinda\My Documents\Codes\RPS-development>cl
+Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 12.00.8804 for 80x86
 Copyright (C) Microsoft Corp 1984-1998. All rights reserved.
+
+usage: cl [ option... ] filename... [ /link linkoption... ]
+
+RPS has also been build and run with an earlier version of the same
+compiler on Windows 2000.
+
 
 Solaris 2.8 on Sparc
 --------------------
+
+The current version of RPS has not been tested on a Solaris machine.
+However, the previous releases (0.9, 1.0) compiled and worked fine
+there with the following settings:
 
 bash-2.03$ uname -a
 SunOS sunlab-22 5.8 Generic sun4u sparc SUNW,Ultra-5_10
@@ -178,6 +206,10 @@ Solaris VM (build Solaris_JDK_1.2.1_04c, native threads, sunwjit)
 
 Digital Unix 4.0D on Alpha
 --------------------------
+
+The current version of RPS has not been tested on a DUX machine.
+However, the previous releases (0.9, 1.0) compiled and worked fine there
+with the following settings:
 
 (pyramid.cmcl) [/usr5/pdinda/RPS-development] uname -a
 OSF1 pyramid.cmcl.cs.cmu.edu V4.0 878 alpha

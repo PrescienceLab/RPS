@@ -1,0 +1,12 @@
+set PATH=%PATH%;%RPS_DIR%\bin;%RPS_DIR%\lib
+
+set PERLLIB=%RPS_DIR%\bin:${PERLLIB}
+
+set CLASSPATH=%RPS_DIR%\bin:%CLASSPATH%
+
+set RPS_NEWSTYLEOUTPUT=yes
+
+set RPS_MINLOGLEVEL=100000
+
+#set RPS_LOG=somefile
+
