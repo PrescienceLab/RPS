@@ -1,0 +1,27 @@
+RPS's Finder Package
+====================
+
+rps-help@cs.northwestern.edu
+
+Finder implements RPS component lookup, helping a client to find an
+appropriate server that can find the needed information.  Currently,
+it is quite primitive.  This will change with the next release.
+Finder is necessary in order to build RTA and RTSA.
+
+INCLUDE FILES
+-------------
+
+Finder.h
+ - general include
+
+
+LIBRARIES
+---------
+
+libFinder.a
+
+
+BINARIES
+--------
+
+none

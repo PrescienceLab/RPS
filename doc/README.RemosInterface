@@ -1,0 +1,25 @@
+RPS's RemosInterface Package
+============================
+
+rps-help@cs.northwestern.edu
+
+RemosInterface implements a simple C interface for RPS-based host load
+measurement and prediction.  At this point this exists as a simple hack.  
+Hopefully, it will evolve into an XML-based interface to RPS.
+
+INCLUDE FILES
+-------------
+
+RemosInteface.h
+ - general include
+
+
+LIBRARIES
+---------
+
+libRemosInterface.a
+
+BINARIES
+--------
+
+none

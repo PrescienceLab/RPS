@@ -1,0 +1,49 @@
+RPS's Trace Package
+===================
+
+rps-help@cs.northwestern.edu
+
+Trace contains code for accessing and manipulating host load trace files.
+
+
+INCLUDE FILES
+-------------
+
+Trace.h
+
+
+LIBRARIES
+---------
+
+libtrace.a
+
+
+BINARIES
+--------
+
+alpha_to_ascii
+ - Convert DEC Alpha trace to ascii
+
+alpha_to_network
+ - Convert DEC Alpha trace to network byte order
+
+ascii_to_network
+ - Convert Ascii trace to network byte order binary
+
+network_to_alpha
+ - convert network byte order trace to DEC Alpha
+
+network_to_ascii
+ - convert network byte order trace to ascii
+
+select_from_binary_trace_file
+ - select a segment from a trace file
+
+defilter_trace
+ - "deconvolve out" the smoothing
+
+genload 
+ - play back a trace, reproducing load
+ - note: you probably want to use
+   http://www.cs.nwu.edu/~pdinda/LoadTraces/playload instead.
+

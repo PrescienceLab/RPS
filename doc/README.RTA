@@ -1,0 +1,37 @@
+RPS's RTA Package
+=================
+
+rps-help@cs.northwestern.edu
+
+RTA implements the Running Time Advisor, which predicts the running
+time of a task as a confidence interval.  The RTA is described in more
+detail in the following papers:
+
+P. Dinda, Online Prediction of the Running Time of Tasks, 
+Proceedings of HPDC 2001.
+
+P. Dinda, Online Prediction of the Running Time of Tasks: Summary,
+Proceedings of SIGMETRICS 2001.
+
+
+INCLUDE FILES
+-------------
+
+RTA.h
+ - general include
+
+
+LIBRARIES
+---------
+
+libRTA.a
+
+BINARIES
+--------
+
+test_rta
+ - command line RTA queries
+
+rta_play
+ - command line RTA queries with more information
+ - the environment of the noted papers.

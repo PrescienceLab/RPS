@@ -18,9 +18,10 @@ Package Structure
 
 All releases contain the following:
 
-   $RPS_DIR            Makefile, RPS.dsw for Windows, README
-     build             Info on configuring, building, and running RPS
-     JavaGUI           simple Java GUI
+   $RPS_DIR            Makefile, RPS.dsw for Windows, README, LICENSE, ROADMAP
+     build             Config makefiles, and other tools
+     doc               Documentation
+     JavaGUI           Simple Java GUI
      Mirror            Mirror Template Library
      PredComp          Prediction Components
      RPSInterface      Objects that are communicated by prediction components
@@ -33,13 +34,15 @@ All releases contain the following:
       FracDiff         ARFIMA models
      Trace             Load trace access tools
      Spin              Spin Server and other tools
+     RTA               Running time advisor
+     RTSA              Real-time scheduling advisor
+     Finder            Simple lookup tool for components
 
 In addition, your distribution may also include these:
 
      Extra             Extra components *
-     RTA               Running Time Advisor *
-     RTSA              Real-time Scheduling Advisor *
-     Research          Research components *
+     ResearchTools     Research components *
+     ResearchScripts   Research scripts
 
 
 Outputs

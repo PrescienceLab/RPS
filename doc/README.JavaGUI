@@ -1,81 +1,175 @@
-This file describes LineGraph.java, its usage, and how it works.
-     Written by: Brandon O'Bryant on 3/10/01
+RPS's JavaGUI Package
+=====================
 
+rps-help@cs.northwestern.edu
+
+The JavaGUI package implements a very simple GUI for RPS measurement
+and prediction components.  JavaGUI was written by Brandon O'Bryant,
+and his original READMEs are appended below.
+
+
+
+INCLUDE FILES
+-------------
+
+none
+
+LIBRARIES
+---------
+
+libLineGraph.so
+ - JNI interface for RPS Reference
+
+BINARIES
+--------
+
+LineGraph.class
+LineGraphApp.class
+
+
+
+LINEGRAPH.JAVA	
+===============
 
 What It Does
 ---------------
-	Connects to a remote machine and takes load readings from a machine and displays them on a line graph.  It can also acquire prediction readings and display them along with the load measurements.   
+
+Connects to a remote machine and takes load readings from a machine
+and displays them on a line graph.  It can also acquire prediction
+readings and display them along with the load measurements.
 
 
 Usage
 ---------------
 
-	The program can be run from the command line or included in another application which can create an instance of it.
+The program can be run from the command line or included in another
+application which can create an instance of it.
 
- -- From the command line
-	The program can take one or two arguments.  Each argument is a path to a machine.  If one argument is provided the program will attempt to connect to machine and acquire a load reading every second which will be diplayed on a line graph.  A second argument will cause the linegraph to also connect to the input machine and it display prediction information along with the load measurements on the graph.  
+From the command line
+
+The program can take one or two arguments.  Each argument is a path to
+a machine.  If one argument is provided the program will attempt to
+connect to machine and acquire a load reading every second which will
+be diplayed on a line graph.  A second argument will cause the
+linegraph to also connect to the input machine and it display
+prediction information along with the load measurements on the graph.
 
   ex: $ java LineGraph client:tcp:skysaw:5151 client:tcp:skysaw:5001
 
- -- From another application
-	 There are two constructors for LineGraph.  The first takes a String which would represent the path to a target machine from which to acqure load measurements.  The second takes two Strings which would represent the target machines for load measurements and prediction measurements.  The following is an example of the creation of a LineGraph.
+
+From another application
+
+There are two constructors for LineGraph.  The first takes a String
+which would represent the path to a target machine from which to
+acqure load measurements.  The second takes two Strings which would
+represent the target machines for load measurements and prediction
+measurements.  The following is an example of the creation of a
+LineGraph.
 
   ex: LineGraph LG1 = new LineGraph("client:tcp:skysaw:5151", "client:tcp:skysaw:5001");  
 
-	 Upon running the previous line, a window will spawn that has connected to the target machine(s) and continuous readings will update the display.
+Upon running the previous line, a window will spawn that has connected
+to the target machine(s) and continuous readings will update the
+display.
 
 
 How it Works
 ---------------
-	The following are the functions in LineGraph.java with descriptions of their functions:
 
--- LineGraph constructors
-    (see previous section)
+The following are the functions in LineGraph.java with descriptions of
+their functions:
 
---init
-    Called by either constructor to initialize all variables 
+LineGraph constructors
 
---displayAxes
-    This function is currently not in use.  Its future intent is to display the axes of the graph and update them according should the scale be changed.
+(see previous section)
 
---beginTimer
-    Once this function is called, it will continuously run until the graph is closed.  It contains a time that will call getNewData() once every second. 
+init
 
---getNewData
-    Called by beginTimer every second.  Calls the JNI functions callLoadBufferClient and callPredBufferClient using the path(s) input in the constructor.  The data is returned and stored into arrays. Once the data is acquired updateStandardDisp, updatePredictionDisp, setRange, and repaint are called.  The first three functions prepare all the new data for the display update performed repaint.  
---updateStandardDisp
-    Copies the data from the input arrays into the 'display arrays' - the arrays that are the source of what is actually displayed. 
+Called by either constructor to initialize all variables 
 
---updatePredictionDisp
-    Same as updateStandardDisp except for prediction arrays.
+displayAxes
 
---setRange
-    Examines the information in the display arrays to set a new range.  If there is a new maximum value such that it would display off off the graph, the range values are set.  Currently, it is coded to set the maximum y-axis value to the nearest multiple of 5 above the maximum value in the arrays.  
+This function is currently not in use.  Its future intent is to
+display the axes of the graph and update them according should the
+scale be changed.
 
---paintComponent
-    When 'repaint' is called, this function is run.  This function redraws everything based on the new information on the range, standard line values, and prediction line values.  
-    This function is rather complex.  The best way to understand how it works to read through it and follow its logic.  It contains many comments.
+beginTimer
 
---recalculateDims
-    Called immediately by paintComponent().  Checks if the window size has been resized by the user.  If it has, alters size variables so that all the redrawing will be scaled appropriately.  
+Once this function is called, it will continuously run until the graph
+is closed.  It contains a time that will call getNewData() once every
+second.
 
---calcXpos & calcYpos
-    Auxiliary functions used by paintComponent to calculate locations to draw lines.This file describes LineGraphApp.java, its usage, and how it works
-Written by: Brandon O'Bryant on 3/10/01
+getNewData
 
+Called by beginTimer every second.  Calls the JNI functions
+callLoadBufferClient and callPredBufferClient using the path(s) input
+in the constructor.  The data is returned and stored into arrays. Once
+the data is acquired updateStandardDisp, updatePredictionDisp,
+setRange, and repaint are called.  The first three functions prepare
+all the new data for the display update performed repaint.
+
+updateStandardDisp
+
+Copies the data from the input arrays into the 'display arrays' - the
+arrays that are the source of what is actually displayed.
+
+updatePredictionDisp
+
+Same as updateStandardDisp except for prediction arrays.
+
+setRange
+
+Examines the information in the display arrays to set a new range.  If
+there is a new maximum value such that it would display off off the
+graph, the range values are set.  Currently, it is coded to set the
+maximum y-axis value to the nearest multiple of 5 above the maximum
+value in the arrays.
+
+paintComponent
+
+When 'repaint' is called, this function is run.  This function redraws
+everything based on the new information on the range, standard line
+values, and prediction line values.  This function is rather complex.
+The best way to understand how it works to read through it and follow
+its logic.  It contains many comments.
+
+recalculateDims
+
+Called immediately by paintComponent().  Checks if the window size has
+been resized by the user.  If it has, alters size variables so that
+all the redrawing will be scaled appropriately.
+
+calcXpos & calcYpos
+
+Auxiliary functions used by paintComponent to calculate locations to
+draw lines.
+
+
+LINEGRAPHAPP.JAVA
+=================
 
 What It Does
 ---------------
-	LineGraphApp is a framework from which a full scale program could be built.  Currently, it can only open a connection to a machine and get load measurements.  It makes use of LineGraph.java. 
 
+LineGraphApp is a framework from which a full scale program could be
+built.  Currently, it can only open a connection to a machine and get
+load measurements.  It makes use of LineGraph.java.
 
 Usage
 ---------------
-	It is run by simply typing "java LineGraphApp" at the command line.
-	Once open, in the File->Create menu you can select Create New Connection.  A window will spawn requesting connection information.  Fill in the appropriate information and press Create.  If the target is reachable, a window will open and the line graph will be displayed and updated until the window is closed. 
+	
+It is run by simply typing "java LineGraphApp" at the command line.
+Once open, in the File->Create menu you can select Create New
+Connection.  A window will spawn requesting connection information.
+Fill in the appropriate information and press Create.  If the target
+is reachable, a window will open and the line graph will be displayed
+and updated until the window is closed.
 
 
 How it Works
 ---------------
-	Development on LineGraphApp is in very preliminary stages.  Hence, the code is straight forward and comments contained within it will suffice for its technical explanation.
+
+Development on LineGraphApp is in very preliminary stages.  Hence, the
+code is straight forward and comments contained within it will suffice
+for its technical explanation.
 

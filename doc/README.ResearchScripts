@@ -1,0 +1,226 @@
+RPS's ResearchScripts Package
+=============================
+
+rps-help@cs.northwestern.edu
+
+ResearchScripts implements various scripts useful in our local
+research uses of RPS.  This package is generally not distributed
+outside of Peter A. Dinda's research group.
+
+
+LIBRARIES
+---------
+
+dataaccess.pm
+ - Access to performance data in mysql databases (column stats,
+   columns, counts)
+
+gnuplot.pm
+ - Perl-based access to 2D and 3D gnuplot-based plotting
+
+predci_dataaccess.pm
+ - Access to RTA testcases in a mysql database
+
+sched_dataccess.pm
+ - Access to RTSA testcases in a mysql database
+
+simple_stats.pm
+ - simple summary stats and t-tests
+
+
+Experimental setups
+-------------------
+
+start_experimentalsetup_list.pl
+ - start up the experimental apparatus on a list of machines
+
+start_experimentalsetup_on.pl
+ - start up the experimental apparatus on a specific machine
+
+kill_experimentalsetup_list.pl
+ - shutdown the experimental apparatus running on a list of machines.
+
+kill_experimentalsetup_on.pl
+ - shutdown the experimental apparatus running a specific machine.
+
+
+Host load prediction models and evaluation
+------------------------------------------
+
+simplify_crossval_output.pl
+ - simplify...
+
+analyze_crossval_output.pl
+ - study the textual output of crossval_generic and crossval_master
+
+measure_predictor_perf.pl
+ - runs perftest to measure TimeSeries performance for different models
+
+measure_system_perf.pl
+ - runs host load prediction system to measure performance and overhead
+
+plot_impulse_resp.pl
+ - plot the impulse response of a fitted model
+
+plot_step_resp.pl
+ - plot the step response of a fitted model.
+
+
+RTA Evaluation
+--------------
+
+run_predci_experiment.pl
+ - generate and run RTA testcases
+
+import_predci_results.pl
+ - import RTA testcases into mysql database
+
+plot_predci_results.pl
+ - plot RTA results derived from a mysql database
+
+predci_plot_stat_allhosts.pl
+ - plot RTA results for all hosts in database on one graph
+
+pred_gen_comparisons.pl
+ - print comparison tables to compare different RTA models stored in a 
+   mysql database
+
+pred_gen_stat.pl
+ - generate overall stats tables for different RTA models from database
+ - (per host)
+
+test_pred.pl
+testpred_getbounds.pl
+testpred_getrelerr.pl
+ - alternative (older) tools for testing and evaluating RTA
+
+
+RTSA Evaluation
+---------------
+
+run_sched_experiment.pl
+ - generate and run RTSA testcases
+
+run_sched_experiment_aggressive.pl
+ - generate and run RTSA testcases but use aggressive scheduling
+
+import_sched_results.pl
+ - import RTSA testcases into mysql database
+
+plot_sched_deadlines.pl
+ - plot RTSA deadline statistics derived from a mysql database
+ 
+plot_sched_results.pl
+ - plot RTSA results derived from mysql database
+
+sched_fracdeadlinesmet_vs_numpossible.pl
+ - print a table of this relationship using the RTSA testcases
+
+sched_gen_comparisons.pl 
+ - print tables of comparisons of different RTSA models using
+   RTSA testcases
+
+sched_gen_stat.pl
+ - generate statistics from RTSA testcases
+
+sched_plot_stat_allscenarios.pl
+ - generate and plot statistics for all scenarios from RTSA testcases
+
+
+
+Hacks and useful things
+-----------------------
+
+psxup_eps.pl
+ - psnup hack for eps
+
+eps2ps.pl
+ - convert eps to plain postscript
+
+epsnup.pl
+ - print eps files n-up on the page.
+
+plot_trace_events.pl
+ - plot events in a file produced using TRACE.cpp/.h
+
+test_gnuplot.pl
+ - test gnuplot.pm
+
+multirepl.pl
+ - multi-file string search-and-replace
+
+Other
+-----
+
+BROKEN     
+ - broken scripts
+OLD
+ - no longer relevant scripts
+
+junk.pl
+
+start_hostload.pl
+
+
+BROKEN contents
+---------------
+
+unixpipeline_with_evalfit.pl
+unixpipeline_withconnects.pl
+ - broken scripts for starting up prediction pipelines
+
+
+OLD contents
+------------
+
+kill_pipeline.pl
+ - shutdown a pipeline
+
+mcastpipeline.pl
+ - start up a pipeline based on multicast connections
+
+reconfigure_pipeline_list.pl
+ - modify a running pipeline on a list of machines
+
+run_crossval_generic.csh
+ - do randomized evaluations for resource signal prediction
+
+run_genload.csh
+ - run the background load generator
+
+run_pred.csh
+ - run the host load predictor
+
+run_spin.csh
+ - run the spin server
+
+start_manchesters.pl
+kill_manchesters.pl
+ - start and stop experimental setup on manchester testbed
+
+start_pipeline_list.pl
+ - start prediction pipelines on a list of machines
+
+start_pipeline_on.pl
+ - start a prediction pipeline on a specific machine
+
+start_spin_on.pl
+ - start a spin server on a specific machine
+
+tcppipeline.pl
+ - start a tcp-based predction pipeline
+
+tcppipeline_with_evalfit.pl
+ - start a tcp-based prediction pipeline with evalfit
+
+to_matlab.pl
+ - convert RTA testcase output to a matlab format
+
+udppipeline.pl
+ - start a udp-based prediction pipeline
+
+unixdompipeline_with_evalfit.pl
+ - start a unix domain-socket-based prediction pipeline
+
+unixpipeline.pl
+ - start a unix pipe based prediction pipeline

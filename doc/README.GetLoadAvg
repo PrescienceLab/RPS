@@ -1,0 +1,23 @@
+RPS's GetLoadAvg Package
+========================
+
+rps-help@cs.northwestern.edu
+
+GetLoadAvg is a sensor that measures the load on a host.
+
+INCLUDE FILES
+-------------
+
+GetLoadAvg.h
+ - general include
+
+LIBRARIES
+---------
+
+libgetloadavg.a
+
+
+BINARIES
+--------
+
+test_getloadavg

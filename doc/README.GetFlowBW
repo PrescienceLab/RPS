@@ -1,0 +1,25 @@
+RPS's GetFlowBW Package
+=======================
+
+rps-help@cs.northwestern.edu
+
+GetFlowBW is a sensor that measures the available bandwidth between
+two IP addresses.  It is a Remos application and will only function if
+compiled with Remos support.
+
+INCLUDE FILES
+-------------
+
+GetFlowBW.h
+ - general include
+
+LIBRARIES
+---------
+
+libgetflowbw.a
+
+
+BINARIES
+--------
+
+test_getflowbw

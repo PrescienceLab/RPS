@@ -1,0 +1,32 @@
+RPS's Mirror Package
+====================
+
+rps-help@cs.northwestern.edu
+
+The Mirror package implements communication for RPS components.   The
+core elements are the Mirror Template class and the Reference class.
+Mirror is described in considerable detail in the RPS technical report.
+
+INCLUDE FILES
+-------------
+
+Mirror.h
+ - general include
+
+MirrorTemplate.h
+ - Mirror Template Class
+
+Reference.h
+ - Reference class
+
+
+LIBRARIES
+---------
+
+libmirror.a
+
+
+BINARIES
+--------
+
+none

@@ -1,0 +1,59 @@
+RPS's TimeSeries Package
+========================
+
+rps-help@cs.northwestern.edu
+
+The TimeSeries package is an extensible toolkit for time series
+analysis and prediction.  RPS's predserver and pred_reqresp_server use
+this package to provide predictive models.  The package also includes
+sequential and parallel codes for doing offline evaluation of
+predictive models.
+
+The TimeSeries package includes a subpackage, FracDiff, which
+implements a fractional arima model.
+
+
+INCLUDE FILES
+-------------
+
+TimeSeries.h
+ - general include
+
+maths.h
+tools.h
+util.h
+ - used in many places in RPS
+
+LIBRARIES
+---------
+
+libtimeseries.a
+
+
+BINARIES
+--------
+
+ts_example
+test_generic
+ - example codes showing how to use TimeSeries
+
+impulseresp
+ - impulse and step responses of a fitted prediction filter
+
+crossval_generic
+ - sequential evaluation code
+
+crossval_master
+crossval_slave
+ - parallel evaluation code (needs PVM)
+
+evaluate
+ - evaluates the quality of predictions in a testcase
+
+perftest
+ - Measure fit and step performance of a model
+
+mi
+gfnn
+ - average mutual information and global false nearest neighbor tools
+   a la Abarbanel's methodology for nonlinear analysis

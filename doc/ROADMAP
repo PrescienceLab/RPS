@@ -1,0 +1,21 @@
+Roadmap to RPS Documentation
+============================
+
+rps-help@cs.northwestern.edu
+
+README     - overall readme file for RPS
+LICENSE    - license terms for RPS
+ROADMAP    - this file
+
+doc/STRUCTURE   - the structure of the RPS code
+doc/ENDPOINTS   - describes how communication in RPS is described
+
+doc/REMOS       - how to use RPS with CMU's Remos system
+
+doc/BUILD       - how to build RPS
+doc/RUN         - how to run RPS components
+doc/USE         - how to use the tools in RPS
+
+doc/README.*    - per-package readmes
+
+

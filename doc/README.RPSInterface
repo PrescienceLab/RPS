@@ -1,0 +1,26 @@
+RPS's RPSInterface Package
+==========================
+
+rps-help@cs.northwestern.edu
+
+RPSInterface includes the serializable classes that are used in the
+RPS Prediction Components, particularly Load, Flow, and Generic
+measurements, Prediction Requests and Responses, TimeStamps, etc.
+
+
+INCLUDE FILES
+-------------
+
+RPSInteface.h
+ - general include
+
+
+LIBRARIES
+---------
+
+libRPSInterface.a
+
+BINARIES
+--------
+
+none

@@ -1,0 +1,34 @@
+RPS's RTSA Package
+==================
+
+rps-help@cs.northwestern.edu
+
+RTSA implements the Real-time Scheduling Advisor, which provides
+predictive scheduling advise for soft real-time tasks.  The RTSA is
+described in more detail in Chapter 6 of
+
+P. Dinda, Resource Signal Prediction and Its Application to Real-time
+Scheduling Advisors (PhD Dissertation), Technical Report
+CMU-CS-00-131, School of Computer Science, Carnegie Mellon University,
+February, 2000.
+
+and will be the topic of a forthcoming paper.
+
+
+INCLUDE FILES
+-------------
+
+RTSA.h
+ - general include
+
+
+LIBRARIES
+---------
+
+libRTSA.a
+
+BINARIES
+--------
+
+test_rtsa
+ - command line RTSA queries

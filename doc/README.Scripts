@@ -1,0 +1,118 @@
+RPS's Scripts Package
+=====================
+
+rps-help@cs.northwestern.edu
+
+Scripts implements various scripts that are used to glue RPS
+prediction components together and to manage the complexity of the RPS
+system.
+
+
+Host load measurement
+---------------------
+
+start_hostloadmeasure.pl
+ - start host load measurement on this host
+
+start_hostloadmeasure_on.pl
+ - start host load measurement on a specific host
+
+start_hostloadmeasure_list.pl
+ - start host load measurement on a list of hosts
+
+kill_hostloadmeasure.pl
+ - stop host load measurement on this host
+
+kill_hostloadmeasure_on.pl
+ - stop host load measurement on specific host
+
+kill_hostloadmeasure_list.pl
+ - stop host load measurement on a list of hosts
+
+
+Host load prediction
+--------------------
+
+start_hostloadpred.pl
+ - start host load prediction on this host
+
+start_hostloadpred_on.pl
+ - start host load prediction on a specific host
+
+start_hostloadpred_list.pl
+ - start host load prediction on a list of hosts
+
+kill_hostloadpred.pl
+ - stop host load prediction on this host
+
+kill_hostloadpred_on.pl
+ - stop host load prediction on a specific host
+
+kill_hostloadpred_list.pl
+ - stop host load prediction on a list of hosts
+
+get_predictions_on.pl
+ - get host load predictions for a specific host
+
+get_predictions_list.pl
+ - get host load predictions for a list of hosts
+
+
+Background load playback
+------------------------
+
+start_genload.pl
+ - start the background load generator on this host
+
+start_genload_on.pl
+ - start the backgrond load generator on a specific host
+
+start_genload_list.pl
+ - start the background load generator on a list of hosts
+
+kill_genload.pl
+ - stop the background load generator on this host
+
+kill_genload_on.pl
+ - stop the background load generator on a specific host
+
+kill_genload_list.pl
+ - stop the background load generator on a list of hosts
+
+
+Spin server
+-----------
+
+start_spinserver.pl
+ - start spin server on this host
+
+start_spinserver_on.pl
+ - start spin server on a specific host
+
+start_spinserver_list.pl
+ - start spin server on a list of hosts
+
+kill_spinserver.pl
+ - stop spin server on this host
+
+kill_spinserver_on.pl
+ - stop spin server on a specific host
+
+kill_spinserver_list.pl
+ - stop spin server on a list of hosts
+
+
+General utilities
+-----------------
+
+clean_loadserver.pl
+ - Run loadserver with cleaned up output - two numbers per line
+
+clean_vmstat.pl
+ - Run vmstat with cleaned up output - three numbers per line
+
+kill_matching.pl
+ - kill matching processes
+
+select_from_loadtrace.pl
+ - grab a portion of a load trace

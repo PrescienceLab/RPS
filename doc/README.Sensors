@@ -1,0 +1,7 @@
+RPS's Sensors Package
+=====================
+
+rps-help@cs.northwestern.edu
+
+Sensors is the default package into which sensor subpackages are
+expected to be placed.

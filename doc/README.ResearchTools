@@ -1,0 +1,37 @@
+RPS's ResearchTools Package
+===========================
+
+rps-help@cs.northwestern.edu
+
+ResearchTools contains various binaries that are used for research
+purposes.  These codes are only useful to member's of Peter A. Dinda's
+research group.
+
+
+
+INCLUDE FILES
+-------------
+
+none
+
+
+LIBRARIES
+---------
+
+none
+
+
+BINARIES
+--------
+
+test_pred
+ - generate and run RTA testcases
+
+test_pred_vartau
+ - generate and run RTA testcases, varying tau
+
+test_sched
+ - generate and run RTSA testcases
+
+test_sched_aggressive
+ - generate and run RTSA testcases using aggressive scheduling

@@ -1,0 +1,28 @@
+RPS's FracDiff Package
+======================
+
+rps-help@cs.northwestern.edu
+
+This is Chris Fraley's implementation of the fractional ARIMA model,
+which is available from statlib. 
+ 
+
+INCLUDE FILES
+-------------
+
+none
+
+LIBRARIES
+---------
+
+libfd.a
+
+
+BINARIES
+--------
+
+fd_example
+ - example code showing how FracDiff is used
+
+fd_test
+ - test code

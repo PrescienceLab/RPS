@@ -1,0 +1,14 @@
+RPS's Extra Package
+===================
+
+rps-help@cs.northwestern.edu
+
+This package contains various bits and pieces that do not fit into any
+of the other packages.  It is unnecessary to build it.
+
+
+FILES
+-----
+
+TRACE.cpp, TRACE.h 
+ - program tracing macros

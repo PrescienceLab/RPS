@@ -1,6 +1,8 @@
 Building RPS
 ============
 
+pdinda@cs.northwestern.edu
+
 
 Needed Software
 ---------------
@@ -14,6 +16,7 @@ For additional functionality, other software is needed:
   - Fortran 77 compiler :  ARFIMA models (FracDiff)
   - Numerical Recipes in C : MA, ARMA, ARIMA models
   - CMU Remos : flow bandwidth measurement
+  - PVM 3.3.3 or better : parallel offline time series evaluation codes
   - Java : simple java gui 
   - Perl 5 : assorted scripts
   - tcsh and sh : assorted scripts
@@ -22,8 +25,8 @@ Some functionality is currently unavailable on the Native Windows
 build:
 
   - Communication using Unix domain sockets does not work
-  - Predserver runs predictive models internally
-  - Parts of the Spin and RTA packages are not built.
+  - Predserver is not built, so stream-oriented prediction is not supported
+  - Parts of various packages are not built
 
 
 Build Procedure
@@ -42,7 +45,7 @@ To build on native windows using Visual C++  (Not all components are built)
 
 0. set RPS_DIR=your rps directory
 1. make sure MSDEV.EXE is on your path and INCLUDE and LIB are set reasonably.
-2. build/build_windows.bat
+2. build\build_windows.bat
 
 The build process will drop executables into $RPS_DIR/bin/ARCH/OS,
 libraries into $RPS_DIR/lib/ARCH/OS, and include files into

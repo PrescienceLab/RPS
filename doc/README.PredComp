@@ -1,0 +1,136 @@
+RPS's PredComp Package
+======================
+
+rps-help@cs.northwestern.edu
+
+The PredComp package implemnt's RPS's prediction components, as
+described in the RPS technical report.  The following is a list of the
+components and what they do.
+
+
+INCLUDE FILES
+-------------
+
+PredComp.h   
+ - general include file
+
+
+LIBRARIES
+---------
+
+none
+
+BINARIES
+--------
+
+HOST LOAD MEASUREMENT AND PREDICTION
+
+
+loadserver
+ - host load measurement
+
+fileloadserver
+ - serve load measurements stored in a file
+
+load2measure
+ - convert host load measurements to generic measurements
+
+loadbuffer
+ - buffer load measurements
+
+loadbufferclient
+ - example client for loadbuffer
+
+loadclient
+ - example client for loadserver
+
+loadlatclient
+ - example client for loadserver (no printing, for performance 
+   testing)
+
+loadreconfig
+ - example client for reconfiguring a loadserver
+
+hostloadpred
+ - host load prediction engine
+ - integrates loadserver, load2measure, measurebuffer, predserver,
+   and evalfit.
+
+
+FLOW BANDWIDTH MEASUREMENT
+
+flowbwserver
+ - measures flow bw using remos
+
+flowbw2measure
+ - convert flow bw measurements to generic measurements
+
+flowbwbuffer
+ - buffer flow bw measurements for request/response access
+
+flowbwbufferclient
+ - example client for flowbwbuffer
+
+flowbwclient
+ - example client for flowbwserver
+
+flowbwreconfig
+ - example client for reconfiguring a flowbwserver
+
+
+GENERIC MEASUREMENTS
+
+text2measure
+ - convert stream of text measurements to generic measurements.
+
+measurebuffer
+ - buffer generic measurements
+
+measurebufferclient
+ - example client for measurebuffer
+
+measureclient
+ - example client for generic measurement producing server
+
+
+PREDICTION
+
+pred_reqresp_server
+ - request/response prediction server
+
+pred_reqresp_client
+ - example client for pred_reqresp_server
+
+predbuffer
+ - buffer predictions
+
+predbufferclient
+ - example client for predbuffer
+
+predclient
+ - example client for predserver
+
+predlatclient
+ - example client for predserver (performance oriented)
+
+predreconfig
+ - example client for reconfiguring predserver
+
+predserver
+ - streaming prediction server
+
+predserver_core
+ - core data path of predserver - this is run by predserver, not
+   directly
+
+evalfit                       
+ - continuous evaluation of prediction quality and auto-refitting
+
+
+OTHER
+
+sensorperf
+ - evaluate performance of sensor
+
+memperf
+ - memory performance tester
