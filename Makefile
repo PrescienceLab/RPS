@@ -169,10 +169,7 @@ GetFlowBW: force
 
 WatchTower: force
 	cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(WATCHTOWER_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
-	cp `find $(WATCHTOWER_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp `find $(WATCHTOWER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
-	cp `find $(WATCHTOWER_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
 Sensors : $(HGLA_DEP) $(HGFB_DEP) $(HWT_DEP) force
 	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
