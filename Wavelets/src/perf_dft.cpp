@@ -146,6 +146,9 @@ int main(int argc, char *argv[])
   switch(tt) {
   case APPROX: {
     for (i=0; i<blocks.size(); i++) {
+      if (sleep) {
+	usleep(sleeptime_us);
+      }
       forwardoutput.SetTransformType(APPROX);
       fdwt.DiscreteWaveletApproxOperation(forwardoutput, blocks[i]);
     }
@@ -153,6 +156,9 @@ int main(int argc, char *argv[])
   }
   case DETAIL: {
     for (i=0; i<blocks.size(); i++) {
+      if (sleep) {
+	usleep(sleeptime_us);
+      }
       forwardoutput.SetTransformType(DETAIL);
       fdwt.DiscreteWaveletDetailOperation(forwardoutput, blocks[i]);
     }
@@ -160,6 +166,9 @@ int main(int argc, char *argv[])
   }
   case TRANSFORM: {
     for (i=0; i<blocks.size(); i++) {
+      if (sleep) {
+	usleep(sleeptime_us);
+      }
       fdwt.DiscreteWaveletTransformOperation(forwardoutput, blocks[i]);
     }
     break;
@@ -167,6 +176,7 @@ int main(int argc, char *argv[])
   default:
     break;
   }
+
   // Print the output with appropriate tag
   if (flat) {
     *outstr << sleeptime_us << " " << wt << " " << blocksize << " " << tt;

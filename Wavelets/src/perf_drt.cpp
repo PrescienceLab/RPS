@@ -17,8 +17,8 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " scal_perf_drt [input-file] [wavelet-type-init]\n";
-  cerr << "  [transform-type] [blocksize] [numtests]\n";
+  cerr << " perf_drt [input-file] [wavelet-type-init]\n";
+  cerr << "  [transform-type] [blocksize] [sleep-rate]\n";
   cerr << "  [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
@@ -40,7 +40,8 @@ void usage()
   cerr << "[blocksize]         = The size of the blocks to be used in the\n";
   cerr << "                      analysis.\n";
   cerr << "\n";
-  cerr << "[numtests]          = This is the number of tests to run.\n";
+  cerr << "[sleep-rate]        = This rate is the sleep rate.  The value\n";
+  cerr << "                      is in microseconds and is long integer.\n";
   cerr << "\n";
   cerr << "[flat]              = Whether the output is flat or human\n";
   cerr << "                      readable.  flat | noflat to choose.\n";
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "scal_perf_drt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "perf_drt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -77,23 +78,27 @@ int main(int argc, char *argv[])
 
   TransformType tt=TRANSFORM;
   if (toupper(argv[3][0])!='T') {
-    cerr << "scal_perf_drt: Invalid transform type.  Must be type TRANSFORM.\n";
+    cerr << "perf_drt: Invalid transform type.  Must be type TRANSFORM.\n";
     exit(-1);
   }
 
   unsigned blocksize = atoi(argv[4]);
   if (blocksize == 0) {
-    cerr << "scal_perf_drt: Must be greater than 0.\n";
+    cerr << "perf_drt: Must be greater than 0.\n";
     exit(-1);
   }
 
-  unsigned numtests = atoi(argv[5]);
+  bool sleep=true;
+  unsigned long sleeptime_us = atoi(argv[5]);
+  if (sleeptime_us == 0) {
+    sleep=false;
+  }
 
   bool flat=true;
   if (toupper(argv[6][0])=='N') {
     flat = false;
   } else if (toupper(argv[6][0])!='F') {
-    cerr << "scal_perf_drt: Need to choose flat or noflat for human readable.\n";
+    cerr << "perf_drt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -105,7 +110,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[7]);
     if (!outfile) {
-      cerr << "scal_perf_drt: Cannot open output file " << argv[7] << ".\n";
+      cerr << "perf_drt: Cannot open output file " << argv[7] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
@@ -128,30 +133,24 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> reconst, finaloutput;
 
   // The operations
-  double usrbegin, sysbegin, usrend, sysend;
-  for (unsigned test=0; test<numtests; test++) {
-
-    GetRusage(sysbegin, usrbegin);
-    for (i=0; i<blocks.size(); i++) {
-      rdwt.DiscreteWaveletTransformOperation(reconst, blocks[i]);
-      reconst.ClearBlock();
+  for (i=0; i<blocks.size(); i++) {
+    if (sleep) {
+      usleep(sleeptime_us);
     }
-    GetRusage(sysend, usrend);
-
-    // Print the output with appropriate tag
-    if (flat) {
-      *outstr << wt << " " << blocksize << " " << tt << " "
-	      << usrend - usrbegin << " "
-	      << sysend - sysbegin;
-    } else {
-      *outstr << "Wavelet type = " << wt << endl;
-      *outstr << "Block size= " << blocksize << endl;
-      *outstr << "Transform type = " << tt << endl;
-      *outstr << "User time = " << usrend - usrbegin << endl;
-      *outstr << "System time = " << sysend - sysbegin << endl;
-    }
-    *outstr << endl;
+    rdwt.DiscreteWaveletTransformOperation(reconst, blocks[i]);
+    reconst.ClearBlock();
   }
+
+  // Print the output with appropriate tag
+  if (flat) {
+    *outstr << sleeptime_us << " " << wt << " " << blocksize << " " << tt;
+  } else {
+    *outstr << "Sleeptime (us) = " << sleeptime_us << endl;
+    *outstr << "Wavelet type = " << wt << endl;
+    *outstr << "Block size= " << blocksize << endl;
+    *outstr << "Transform type = " << tt << endl;
+  }
+  *outstr << endl;
 
   return 0;
 }
