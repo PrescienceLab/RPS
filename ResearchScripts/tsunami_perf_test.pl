@@ -68,8 +68,8 @@ for ($type=0; $type<4; $type++) {
       $usec = int(1000000/$hz);
     }
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null\"";
-    system "perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null";
+    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null\"";
+    system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null";
 
     sleep(400);
     system "kill_matching.pl clean_vmstat";
@@ -100,8 +100,8 @@ for ($type=0; $type<4; $type++) {
       $usec = int(1000000/$hz);
     }
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_srwt1 $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null\"";
-    system "perf_srwt1 $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null";
+    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null\"";
+    system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null";
     sleep(400);
     system "kill_matching.pl clean_vmstat";
     system "kill_matching.pl clean_loadserver";
@@ -128,8 +128,8 @@ for ($type=0; $type<4; $type++) {
       $usec = int(1000000/$hz);
     }
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_dft1 $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
-    system "perf_dft1 $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
+    system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
+    system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
 
     sleep(400);
     system "kill_matching.pl clean_vmstat";
@@ -157,8 +157,8 @@ for ($type=0; $type<4; $type++) {
       $usec = int(1000000/$hz);
     }
     print STDERR "$hz\t$usec\n";
-    system "echo \"perf_drt1 $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
-    system "perf_drt1 $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
+    system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
+    system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
 
     sleep(400);
     system "kill_matching.pl clean_vmstat";
