@@ -79,6 +79,9 @@ EXECLIST = loadclient 				\
         flowbw2measure                          \
         flowbwreconfig                          \
         text2measure                            \
+
+ifeq ($(HAVE_WAVELETS),YES) 
+  EXECLIST += \
 	wavelet_reqresp_client			\
 	wavelet_streaming_server		\
 	wavelet_streaming_selection             \
@@ -86,9 +89,9 @@ EXECLIST = loadclient 				\
         wavelet_buffer                          \
         wavelet_bufferclient                    \
 	wavelet_streaming_query
-
 #	wavelet_reqresp_server			\
 
+endif
 
 ifeq ($(HAVE_GETLOADAVG),YES)
    EXECLIST += loadserver sensorperf hostloadpred

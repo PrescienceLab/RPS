@@ -1,0 +1,27 @@
+#
+# The format of this file is
+#
+# TYPE,BASETYPE,BUFFER|STREAM,NAME,ENDPOINT
+#
+# TYPE is one of the following
+#
+# UNDERLYING
+# MEASUREMENT
+# PREDICTION
+#
+# BASETYPE is one of the following
+#
+# HOSTLOAD
+# NETPATHBW
+# NETPATHLAT
+# WATCHTOWER
+# MEASUREMENT
+#
+# NAME is the hostname or path endpoints a->b
+# ENDPOINT is an RPS Endpoint
+#
+
+UNDERLYING,HOSTLOAD,BUFFER,skysaw,client:tcp:skysaw:5151
+MEASUREMENT,HOSTLOAD,BUFFER,skysaw,client:tcp:skysaw:5201
+PREDICTION,HOSTLOAD,BUFFER,skysaw,client:tcp:skysaw:5001
+

@@ -35,8 +35,12 @@ LIBOBJSLIST = FlowBWMeasurement.o    \
               Measurement.o          \
               ModelInfo.o            \
               PredictionRequestResponse.o \
-              TimeStamp.o            \
-              WaveletInterface.o
+              TimeStamp.o            
+
+ifeq ($(HAVE_WAVELETS), YES)
+  LIBOBJSLIST += WaveletInterface.o
+endif
+  
 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
