@@ -16,7 +16,7 @@ void usage()
   char *b=GetRPSBanner();
 
   cerr << " sample_static_streaming_test [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [transform-type] [output-file]\n\n";
+  cerr << "  [numstages-init] [transform-type] [output-file] [flat]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing time-\n";
@@ -38,6 +38,8 @@ void usage()
   cerr << "\n";
   cerr << "[output-file]       = Which file to write the output.  This may\n";
   cerr << "                      also be stdout or stderr.\n\n";
+  cerr << "[flat]              = Whether the output is flat or human\n";
+  cerr << "                      readable.  flat | noflat to choose.\n";
   cerr << tb << endl;
   cerr << b << endl;
   delete [] tb;

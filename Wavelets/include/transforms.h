@@ -14,6 +14,8 @@
 #include "util.h"
 
 const unsigned BITS_PER_BYTE=8;
+enum TransformType{APPROX, DETAIL, TRANSFORM};
+
 
 #define MOREWORK 1
 

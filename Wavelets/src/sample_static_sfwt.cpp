@@ -15,8 +15,8 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " sample_static_streaming_test [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [transform-type] [output-file]\n\n";
+  cerr << " sample_static_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << "  [numstages-init] [transform-type] [output-file] [flat]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing time-\n";
@@ -33,11 +33,16 @@ void usage()
   cerr << "                      decomposition.  The number of levels is\n";
   cerr << "                      equal to the number of stages + 1.\n";
   cerr << "\n";
-  cerr << "[transform-type]    = The transform type may only be of type\n";
-  cerr << "                      TRANSFORM for this test.\n";
+  cerr << "[transform-type]    = The transform type may be of type\n";
+  cerr << "                      APPROX | DETAIL | TRANSFORM for this\n";
+  cerr << "                      test.\n";
   cerr << "\n";
   cerr << "[output-file]       = Which file to write the output.  This may\n";
   cerr << "                      also be stdout or stderr.\n\n";
+  cerr << "\n";
+  cerr << "[flat]              = Whether the output is flat or human\n";
+  cerr << "                      readable.  flat | noflat to choose.\n";
+  cerr << "\n";
   cerr << tb << endl;
   cerr << b << endl;
   delete [] tb;
@@ -67,14 +72,14 @@ WaveletType GetWaveletType(const char *x)
    } else if (!strcasecmp(x,"DAUB20")) { 
      return DAUB20;
    } else {
-     fprintf(stderr,"sample_static_streaming_test: Unknown wavelet type\n");
+     fprintf(stderr,"sample_static_sfwt: Unknown wavelet type\n");
      exit(-1);
    }
 }
 
 int main(int argc, char *argv[])
 {
-  if (argc!=6) {
+  if (argc!=7) {
     usage();
     exit(-1);
   }
@@ -99,8 +104,16 @@ int main(int argc, char *argv[])
     usage();
     exit(-1);
   }
+  unsigned numlevels = numstages + 1;
 
-  if (toupper(argv[4][0])!='T') {
+  TransformType tt;
+  if (toupper(argv[4][0])=='A') {
+    tt = APPROX;
+  } else if (toupper(argv[4][0])=='D') {
+    tt = DETAIL;
+  } else if (toupper(argv[4][0])=='T') {
+    tt = TRANSFORM;
+  } else {
     cerr << "For streaming tests, only TRANSFORM type allowed.\n";
     usage();
     exit(-1);
@@ -122,6 +135,17 @@ int main(int argc, char *argv[])
     outstr.tie(&outfile);
   }
 
+  bool flat=true;
+  if (toupper(argv[6][0])=='N') {
+    flat = false;
+  } else if (toupper(argv[6][0])!='F') {
+    cerr << "Need to choose flat or noflat for human readable.\n";
+    usage();
+    exit(-1);
+  }
+
+
+  unsigned i;
   typedef WaveletInputSample<double> wisd;
   typedef WaveletOutputSample<double> wosd;
 
@@ -140,55 +164,115 @@ int main(int argc, char *argv[])
   // Instantiate a static forward wavelet transform
   StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
 
-  // Parameterize and instantiate the delay block
-  unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[numstages+1];
-  CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
-  DelayBlock<wosd> dlyblk(numstages+1, 0, delay);
-
-  // Instantiate a static forward wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
-
   // Create result buffers
   vector<wosd> outsamples;
-  vector<wosd> delaysamples;
-  vector<wisd> finaloutput;
-  vector<wisd> outsamp;
 
-  for (unsigned i=0; i<samples.size(); i++) {
-    sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-    dlyblk.StreamingSampleOperation(delaysamples, outsamples);
-    if (srwt.StreamingTransformSampleOperation(outsamp, delaysamples)) {
-      for (unsigned j=0; j<outsamp.size(); j++) {
-	finaloutput.push_back(outsamp[j]);
+  // Create vectors for the level outputs
+  vector<deque<wosd> *> levels;
+  for (i=0; i<numlevels; i++) {
+    deque<wosd>* pwos = new deque<wosd>();
+    levels.push_back(pwos);
+  }
+
+  switch(tt) {
+  case APPROX: {
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
+
+      for (unsigned j=0; j<outsamples.size(); j++) {
+	int samplelevel = outsamples[j].GetSampleLevel();
+	levels[samplelevel]->push_front(outsamples[j]);
       }
+
+      outsamples.clear();
     }
+    numlevels -= 1;
+  }
+  break;
 
-    outsamp.clear();
-    outsamples.clear();
-    delaysamples.clear();
+  case DETAIL: {
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
+
+      for (unsigned j=0; j<outsamples.size(); j++) {
+	int samplelevel = outsamples[j].GetSampleLevel();
+	levels[samplelevel]->push_front(outsamples[j]);
+      }
+
+      outsamples.clear();
+    }
+    numlevels -= 1;
+  }
+  break;
+
+  case TRANSFORM: {
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+
+      for (unsigned j=0; j<outsamples.size(); j++) {
+	int samplelevel = outsamples[j].GetSampleLevel();
+	levels[samplelevel]->push_front(outsamples[j]);
+      }
+
+      outsamples.clear();
+    }
+  }
+  break;
+
+  default:
+    break;
   }
 
-  for (unsigned i=0; i<MIN(finaloutput.size(), samples.size()); i++) {
-    *outstr.tie() << i << "\t" << samples[i].GetSampleValue() << "\t"
-	    << finaloutput[i].GetSampleValue() << endl;
-  }
-  *outstr.tie() << endl;
+  // Human readable output
+  if (!flat) {
+    *outstr.tie() << "The size of each level:" << endl;
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << "\tLevel " << i << " size = " << levels[i]->size() << endl;
+    }
+    *outstr.tie() << endl;
 
-  // Calculate the error between input and output
-  double error=0;
-  unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-  unsigned i=0;
-  for (unsigned j=sampledelay; j<MIN(finaloutput.size(), samples.size()); i++, j++) {
-    error += samples[i].GetSampleValue() - finaloutput[j].GetSampleValue();
+    *outstr.tie() << "Index     ";
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << "Level " << i << "        " ;
+    }
+    *outstr.tie() << endl << "-----     ";
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << "-------        ";
+    }
+    *outstr.tie() << endl;
+
+    unsigned loopsize = levels[0]->size();
+    for (i=0; i<loopsize; i++) {
+      *outstr.tie() << i << "\t";
+
+      for (unsigned j=0; j<numlevels; j++) {
+	if (!levels[j]->empty()) {
+	  wosd wos;
+	  wos = levels[j]->back();
+	  *outstr.tie() << wos.GetSampleValue() << "\t";
+	  levels[j]->pop_back();
+	}
+      }
+      *outstr.tie() << endl;
+    }
+  } else {  // Machine readable output
+    *outstr.tie() << "Level     Size     Coefs (in order)" << endl;
+    for (i=0; i<numlevels; i++) {
+      *outstr.tie() << i << "\t" << levels[i]->size() << "\t";
+      for (unsigned j=0; j<levels[i]->size(); j++) {
+	wosd wos;
+	wos = levels[i]->back();
+	*outstr.tie() << wos.GetSampleValue() << "\t";
+	levels[i]->pop_back();
+      }
+      *outstr.tie() << endl;
+    }
   }
   
-  *outstr.tie() << "Mean error: " << error/(double)i << endl;
-
-  if (delay != 0) {
-    delete[] delay;
-    delay=0;
+  for (i=0; i<numlevels; i++) {
+    CHK_DEL(levels[i]);
   }
+  levels.clear();
 
   return 0;
 }
