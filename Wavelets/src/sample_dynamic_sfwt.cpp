@@ -161,6 +161,7 @@ int main(int argc, char *argv[])
   // Create vectors for output
   vector<vector<wosd> > levels;
 
+  // Dynamic bookkeeping
   bool orig_struct=true;
   int current_interval=0;
   for (i=0; i<samples.size(); i++) {

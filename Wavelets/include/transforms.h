@@ -414,7 +414,25 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class DynamicReverseWaveletTransform : public 
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> {
 public:
-  DynamicReverseWaveletTransform() {};
+  DynamicReverseWaveletTransform() :
+    StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>() {};
+
+  DynamicReverseWaveletTransform(const unsigned numstages=1,
+				 const int lowest_inlvl=0) :
+    StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(numstages,
+								   lowest_inlvl){};
+
+  DynamicReverseWaveletTransform(const unsigned numstages,
+				 const WaveletType wavetype,
+				 const unsigned rate_l,
+				 const unsigned rate_h,
+				 const int lowest_inlvl) :
+    StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(numstages,
+								   wavetype,
+								   rate_l,
+								   rate_h,
+								   lowest_inlvl){};
+
   DynamicReverseWaveletTransform(const DynamicReverseWaveletTransform &rhs) :
     StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>(rhs) {};
   virtual ~DynamicReverseWaveletTransform() {};
@@ -2202,7 +2220,7 @@ AddStage()
 
   // Transfer the highest insignal to the newly created intersignal level
   psbis = new SampleBlock<INSAMPLE>(*(insignals[numstages]));
-  intersignals.push_back(pdis);
+  intersignals.push_back(psbis);
 
   insignals[numstages].ClearBlock();
 
