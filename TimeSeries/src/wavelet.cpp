@@ -100,7 +100,7 @@ WaveletLevelOp::~WaveletLevelOp()
   samples=ahead=0;
 }
 
-void   WaveletLevelOp::Dump(FILE *out=stdout) const 
+void   WaveletLevelOp::Dump(FILE *out) const 
 {
   fprintf(out,"WaveletLevelOp: samples=%d, ahead=%d, template, model, predictor, and delay follow\n", samples,ahead);
   if (mt) mt->Dump(out);
