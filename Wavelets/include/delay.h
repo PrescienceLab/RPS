@@ -74,7 +74,7 @@ inline bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
   return true;
 };
 
-unsigned CalculateStreamingRealTimeDelay(const unsigned numcoefs,
+inline unsigned CalculateStreamingRealTimeDelay(const unsigned numcoefs,
 					 const unsigned numstages)
 {
   unsigned delay=0x1;
