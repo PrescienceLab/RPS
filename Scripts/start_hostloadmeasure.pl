@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!clean_loadserver.pl
 
 use Getopt::Long;
 

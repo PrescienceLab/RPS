@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!clean_loadserver.pl
 
 if ($#ARGV!=2) { 
     print STDERR "usage: select_from_loadtrace.pl start:end source_trace target_trace\n";
