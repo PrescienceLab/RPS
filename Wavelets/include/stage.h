@@ -19,6 +19,11 @@ struct EquivalenceException
 struct OperationSyncException
 {};
 
+struct InvalidStageTypeException
+{};
+
+enum StageType {FORWARD, REVERSE};
+
 /********************************************************************************
  *
  * The following class is simply a helper class that contains common components
@@ -28,6 +33,7 @@ struct OperationSyncException
 template <class OUTSAMPLE, class INSAMPLE>
 class WaveletStageHelper {
 protected:
+  StageType           stagetype;
   WaveletType         wavetype;
   WaveletCoefficients wavecoefs;
 
@@ -35,7 +41,7 @@ protected:
   FIRFilter<OUTSAMPLE, INSAMPLE> highpass;
 
 public:
-  WaveletStageHelper(WaveletType wavetype=DAUB2);
+  WaveletStageHelper(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD);
   WaveletStageHelper(const WaveletStageHelper &rhs);
   virtual ~WaveletStageHelper();
 
@@ -87,9 +93,10 @@ protected:
   DownSample<OUTSAMPLE, INSAMPLE> downsampler_h;
 
 public:
-  ForwardWaveletStage(WaveletType wavetype=DAUB2);
+  ForwardWaveletStage(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD);
   ForwardWaveletStage(const ForwardWaveletStage &rhs);
   ForwardWaveletStage(WaveletType wavetype,
+		      StageType   stagetype,
 		      unsigned    rate_l,
 		      unsigned    rate_h,
 		      int         outlevel_l,
@@ -145,9 +152,10 @@ protected:
   UpSample<OUTSAMPLE, INSAMPLE> upsampler_h;
 
 public:
-  ReverseWaveletStage(WaveletType wavetype=DAUB2);
+  ReverseWaveletStage(WaveletType wavetype=DAUB2, StageType stagetype=REVERSE);
   ReverseWaveletStage(const ReverseWaveletStage &rhs);
   ReverseWaveletStage(WaveletType wavetype,
+		      StageType   stagetype,
 		      unsigned    rate_l,
 		      unsigned    rate_h);
   virtual ~ReverseWaveletStage();
@@ -178,28 +186,46 @@ public:
  *******************************************************************************/
 template <class OUTSAMPLE, class INSAMPLE>
 WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
-(WaveletType wavetype=DAUB2) :
+(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
+  this->stagetype = stagetype;
 
   vector<double> coefs;
 
-  // Set up LPF
-  wavecoefs.GetTransformCoefsLPF(coefs);
-  lowpass.SetFilterCoefs(coefs);
-  coefs.clear();
+  switch (stagetype) {
+  case FORWARD:
+    // Set up LPF
+    wavecoefs.GetTransformCoefsLPF(coefs);
+    lowpass.SetFilterCoefs(coefs);
+    coefs.clear();
 
-  // Set up HPF
-  wavecoefs.GetTransformCoefsHPF(coefs);
-  highpass.SetFilterCoefs(coefs);
-  coefs.clear();
+    // Set up HPF
+    wavecoefs.GetTransformCoefsHPF(coefs);
+    highpass.SetFilterCoefs(coefs);
+    coefs.clear();
+    break;
+  case REVERSE:
+    // Set up LPF
+    wavecoefs.GetInverseCoefsLPF(coefs);
+    lowpass.SetFilterCoefs(coefs);
+    coefs.clear();
+
+    // Set up HPF
+    wavecoefs.GetInverseCoefsHPF(coefs);
+    highpass.SetFilterCoefs(coefs);
+    coefs.clear();
+    break;
+  default:
+    throw InvalidStageTypeException();
+  }
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
 WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
 (const WaveletStageHelper &rhs) : 
-  wavetype(rhs.wavetype), wavecoefs(rhs.wavecoefs),
+  stagetype(rhs.stagetype), wavetype(rhs.wavetype), wavecoefs(rhs.wavecoefs),
   lowpass(rhs.lowpass), highpass(rhs.highpass)
 {
 }
@@ -218,6 +244,7 @@ WaveletStageHelper<OUTSAMPLE, INSAMPLE>::operator=(const WaveletStageHelper &rhs
   if ((typeid(rhs) == typeid(WaveletStageHelper)) && (this != rhs)) {
     // Copy
     wavetype = rhs.wavetype;
+    stagetype = rhs.stagetype;
     wavecoefs = rhs.wavecoefs;
     lowpass = rhs.lowpass;
     highpass = rhs.highpass;
@@ -237,15 +264,32 @@ WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ChangeWaveletType
   this->wavetype = wavetype;
   wavecoefs.Initialize(wavetype);
 
-  // Set up LPF
-  wavecoefs.GetTransformCoefsLPF(coefs);
-  lowpass.SetFilterCoefs(coefs);
-  coefs.clear();
+  switch (stagetype) {
+  case FORWARD:
+    // Set up LPF
+    wavecoefs.GetTransformCoefsLPF(coefs);
+    lowpass.SetFilterCoefs(coefs);
+    coefs.clear();
 
-  // Set up HPF
-  wavecoefs.GetTransformCoefsHPF(coefs);
-  highpass.SetFilterCoefs(coefs);
-  coefs.clear();
+    // Set up HPF
+    wavecoefs.GetTransformCoefsHPF(coefs);
+    highpass.SetFilterCoefs(coefs);
+    coefs.clear();
+    break;
+  case REVERSE:
+    // Set up LPF
+    wavecoefs.GetInverseCoefsLPF(coefs);
+    lowpass.SetFilterCoefs(coefs);
+    coefs.clear();
+
+    // Set up HPF
+    wavecoefs.GetInverseCoefsHPF(coefs);
+    highpass.SetFilterCoefs(coefs);
+    coefs.clear();
+    break;
+  default:
+    throw InvalidStageTypeException();
+  }
 }
 
 template <class OUTSAMPLE, class INSAMPLE>
@@ -363,8 +407,9 @@ ostream & WaveletStageHelper<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 
 template <class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
-(WaveletType wavetype) : stagehelp(wavetype), rate_l(2), rate_h(2),
-  outlevel_l(-1), outlevel_h(-1), downsampler_l(rate_l), downsampler_h(rate_h)
+(WaveletType wavetype, StageType stagetype) : stagehelp(wavetype, stagetype), 
+  rate_l(2), rate_h(2), outlevel_l(-1), outlevel_h(-1), 
+  downsampler_l(rate_l), downsampler_h(rate_h)
 {
 }
 
@@ -378,8 +423,8 @@ ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
 
 template <class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::ForwardWaveletStage
-(WaveletType wavetype, unsigned rate_l, unsigned rate_h, 
- int outlevel_l, int outlevel_h) : stagehelp(wavetype), rate_l(rate_l),
+(WaveletType wavetype, StageType stagetype, unsigned rate_l, unsigned rate_h, 
+ int outlevel_l, int outlevel_h) : stagehelp(wavetype, stagetype), rate_l(rate_l),
   rate_h(rate_h), outlevel_l(outlevel_l), outlevel_h(outlevel_h),
   downsampler_l(rate_l), downsampler_h(rate_h)
 {
@@ -535,8 +580,8 @@ ostream & ForwardWaveletStage<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
  *******************************************************************************/
 template <class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
-(WaveletType wavetype) : stagehelp(wavetype), rate_l(2), rate_h(2),
-  upsampler_l(rate_l), upsampler_h(rate_h)
+(WaveletType wavetype, StageType stagetype) : stagehelp(wavetype, stagetype), 
+  rate_l(2), rate_h(2), upsampler_l(rate_l), upsampler_h(rate_h)
 {
 }
 
@@ -549,8 +594,9 @@ ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
 
 template <class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<OUTSAMPLE, INSAMPLE>::ReverseWaveletStage
-(WaveletType wavetype, unsigned rate_l, unsigned rate_h) : stagehelp(wavetype),
-  rate_l(rate_l), rate_h(rate_h), upsampler_l(rate_l), upsampler_h(rate_h)
+(WaveletType wavetype, StageType stagetype, unsigned rate_l, unsigned rate_h) : 
+  stagehelp(wavetype, stagetype), rate_l(rate_l), rate_h(rate_h), 
+  upsampler_l(rate_l), upsampler_h(rate_h)
 {
 }
 

@@ -48,11 +48,12 @@ int main(int argc, char *argv[])
   }
 
   WaveletType wt = (WaveletType) type;
+  StageType   st = FORWARD;
 
   // Instantiate a forward stage
   cout << "ForwardWaveletStage instantiation" << endl;
   ForwardWaveletStage<WaveletOutputSample, WaveletInputSample> 
-    fwd_stage(wt,2,2,0,1);
+    fwd_stage(wt,st,2,2,0,1);
 
   WaveletOutputSampleBlock output_l, output_h;
 
@@ -86,10 +87,12 @@ int main(int argc, char *argv[])
   cout << "----------";
   cout << "----------" << endl << endl;
 
+  st = REVERSE;
+
   // Instantiate a reverse stage
   cout << "ReverseWaveletStage instantiation" << endl;
   ReverseWaveletStage<WaveletInputSample, WaveletOutputSample> 
-    rev_stage(wt,2,2);
+    rev_stage(wt,st,2,2);
 
   WaveletInputSampleBlock reverseout;
 
