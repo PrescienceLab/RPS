@@ -13,7 +13,7 @@ $num = 1;
 
 &GetOptions(("measurebufferport=i"=>\$bufferport, "num=i"=>\$num) ) ;
 
-$#ARGV==0 and $host=$ARGV[0] or die "usage: $usage\n";
+$#ARGV==0 and $host=$ARGV[0] or die $usage;
 
 $CMD = "measurebufferclient $num client:tcp:$host:$bufferport";
 

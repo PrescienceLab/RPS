@@ -34,7 +34,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
 
   if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
     fprintf(stderr,"Invalid Endpoint\n");
-    exit(-1);
+    return;
   }
 
   env->ReleaseStringUTFChars(host, endpointstr);
@@ -47,7 +47,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
 
   if (ref.ConnectTo(ep)) {
     fprintf(stderr,"loadbufferclient: Can't Connect!!\n");
-    exit(-1);
+    return;
   }
 
   req.num=num;
@@ -55,7 +55,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callLoadBufferClient(JNIEnv *env, jobject 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"loadbufferclient: Call failed\n");
     ref.Disconnect();
-    exit(-1);
+    return;
   }
 
   ref.Disconnect();
@@ -88,7 +88,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject 
 
   if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
     fprintf(stderr,"Invalid Endpoint\n");
-    exit(-1);
+    return;
   }
 
   env->ReleaseStringUTFChars(host, endpointstr);
@@ -100,7 +100,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject 
         
   if (ref.ConnectTo(ep)) {
     fprintf(stderr,"predbufferclient: Can't Connect!!\n");
-    exit(-1);
+    return;
   }
 
   req.num=1;
@@ -108,7 +108,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callPredBufferClient(JNIEnv *env, jobject 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"predbufferclient: Call failed\n");
     ref.Disconnect();
-    exit(-1);
+    return;
   }
 
   ref.Disconnect();
@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobje
 
   if (ep.Parse(endpointstr) || ep.atype!=EndPoint::EP_SOURCE ) {
     fprintf(stderr,"Invalid Endpoint\n");
-    exit(-1);
+    return;
   }
 
   env->ReleaseStringUTFChars(host, endpointstr);
@@ -153,14 +153,14 @@ JNIEXPORT void JNICALL Java_LineGraph_callMeasureBufferClient(JNIEnv *env, jobje
 
   if (ref.ConnectTo(ep)) {
     fprintf(stderr,"measurebufferclient: Can't Connect!!\n");
-    exit(-1);
+    return;
   }
 
   req.num=num;
 
   if (ref.Call(req,repl)) { 
     fprintf(stderr,"measurebufferclient: Call failed\n");
-    exit(-1);
+    return;
   } 
 
   ref.Disconnect();
