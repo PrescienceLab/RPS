@@ -9,7 +9,7 @@ WaveletRepresentationInfo outputrep;
 typedef WaveletInputSample<double> WISD;
 typedef WaveletOutputSample<double> WOSD;
 
-StaticForwardWaveletTransform<double,WOSD,WISD> xform;
+StaticForwardWaveletTransform<double,WOSD,WISD>* xform;
 bool firsttime=true;
 unsigned curindex=0;
 
@@ -23,7 +23,11 @@ public:
   }
   int HandleRead(const int fd, Selector &s) {
     if (firsttime) { 
-      xform=StaticForwardWaveletTransform<double,WOSD,WISD>(outputrep.levels-1,outputrep.wtype,2,2,0);
+      xform = new StaticForwardWaveletTransform<double,WOSD,WISD>(outputrep.levels-1,
+								  outputrep.wtype,
+								  2,
+								  2,
+								  0);
       firsttime=false;
     }
 
@@ -45,13 +49,13 @@ public:
     for (int i=0; i<m.serlen; i++) {
       switch (outputrep.rtype) {
       case WAVELET_DOMAIN_DETAIL:
-	xform.StreamingDetailSampleOperation(output, WISD(m.series[i],curindex));
+	xform->StreamingDetailSampleOperation(output, WISD(m.series[i],curindex));
 	break;
       case WAVELET_DOMAIN_APPROX:
-	xform.StreamingApproxSampleOperation(output, WISD(m.series[i],curindex));
+	xform->StreamingApproxSampleOperation(output, WISD(m.series[i],curindex));
 	break;
       case WAVELET_DOMAIN_TRANSFORM:
-	xform.StreamingTransformSampleOperation(output, WISD(m.series[i],curindex));
+	xform->StreamingTransformSampleOperation(output, WISD(m.series[i],curindex));
 	break;
       default:
       assert(0);
