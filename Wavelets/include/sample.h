@@ -1,6 +1,7 @@
 #ifndef _sample
 #define _sample
 
+#include <iostream>
 #include "util.h"
 
 template <typename SAMPLETYPE>

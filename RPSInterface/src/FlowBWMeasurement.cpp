@@ -61,7 +61,7 @@ int FlowBWMeasurement::Unpack(Buffer &buf)
 
 
 
-void FlowBWMeasurement::Print(FILE *out) 
+void FlowBWMeasurement::Print(FILE *out)  const
 {
   char fromhost[1024], tohost[1024];
 
@@ -77,6 +77,17 @@ void FlowBWMeasurement::Print(FILE *out)
 	  bw);
 }
 
+ostream & FlowBWMeasurement::Print(ostream &os) const 
+{
+  char fromhost[1024], tohost[1024];
+
+  IPToHostname(fromip,fromhost,1024);
+  IPToHostname(toip,tohost,1024);
+  
+  os << "FlowBWMeasurement(fromip="<<fromip<<"["<< ((const char *)fromhost);
+  os << "], toip="<<toip<<"["<<((const char *)tohost)<<"], period_usec="<<period_usec<<", bw="<<bw<<")";
+  return os;
+}
 
 
 FlowBWMeasurementConfigurationRequest::FlowBWMeasurementConfigurationRequest() :
@@ -128,13 +139,27 @@ int FlowBWMeasurementConfigurationRequest::Unpack(Buffer &buf) {
   return 0;
 }
 
-void FlowBWMeasurementConfigurationRequest::Print(FILE *out) {
+void FlowBWMeasurementConfigurationRequest::Print(FILE *out)  const 
+{
   char fromhost[1024], tohost[1024];
   IPToHostname(fromip,fromhost,1024);
   IPToHostname(toip,tohost,1024);
 
   fprintf(out,"FlowBWMeasurementConfigurationRequest timetamp=%f period=%d usec from=%s to=%s\n",
 	  (double)timestamp, period_usec,fromhost,tohost);
+}
+
+ostream &FlowBWMeasurementConfigurationRequest::Print(ostream &os)  const 
+{
+  char fromhost[1024], tohost[1024];
+  IPToHostname(fromip,fromhost,1024);
+  IPToHostname(toip,tohost,1024);
+
+  os << "FlowBWMeasurementConfigurationRequest(timetamp="<<timestamp
+     <<", period_usec="<<period_usec
+     <<", fromip="<<fromip<<"["<<((const char*)fromhost)<<"], toip="<<toip
+     <<"["<<((const char*)tohost)<<"])";
+  return os;
 }
 	  
 
@@ -194,7 +219,7 @@ int FlowBWMeasurementConfigurationReply::Unpack(Buffer &buf) {
   return 0;
 }
 
-void FlowBWMeasurementConfigurationReply::Print(FILE *out) {
+void FlowBWMeasurementConfigurationReply::Print(FILE *out) const {
   char fromhost[1024], tohost[1024];
 
   IPToHostname(fromip,fromhost,1024);
@@ -204,3 +229,16 @@ void FlowBWMeasurementConfigurationReply::Print(FILE *out) {
 	  (double)reqtimestamp,(double)changetimestamp, period_usec, fromhost, tohost);
 }
 	  
+
+ostream &FlowBWMeasurementConfigurationReply::Print(ostream &os) const 
+{
+  char fromhost[1024], tohost[1024];
+  IPToHostname(fromip,fromhost,1024);
+  IPToHostname(toip,tohost,1024);
+
+  os << "FlowBWMeasurementConfigurationReply(reqtimetamp="<<reqtimestamp
+     <<", changetimestamp="<<changetimestamp<<", period_usec="<<period_usec
+     <<", fromip="<<fromip<<"["<<((const char*)fromhost)<<"], toip="<<toip
+     <<"["<<((const char*)tohost)<<"])";
+  return os;
+}

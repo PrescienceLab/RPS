@@ -1,9 +1,12 @@
 #ifndef _TimeStamp
 #define _TimeStamp
 
+#include <stdio.h>
+#include <iostream>
 #include "Timers.h"
-
 #include "Serializable.h"
+#include "util.h"
+#include "ioutil.h"
 
 struct TimeStamp : public timeval, public SerializeableInfo {
   TimeStamp(const unsigned sec, const unsigned usec);  
@@ -25,6 +28,9 @@ struct TimeStamp : public timeval, public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
   operator double() const ;
+
+  void Print(FILE *out=stdout) const;
+  ostream & Print(ostream &os) const;
 
 };
 

@@ -400,6 +400,16 @@ void ModelTemplate::Print(FILE *out) const
   delete [] temp;
 }
 
+ostream &ModelTemplate::Print(ostream &os) const
+{
+  char *temp = GetName();
+
+  os<<"ModelTemplate("<<temp<<")";
+  
+  delete [] temp;
+  
+  return os;
+}
 
 char *ModelTemplate::GetName() const
 {

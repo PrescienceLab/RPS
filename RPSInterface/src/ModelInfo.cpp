@@ -79,3 +79,11 @@ void ModelInfo::Print(FILE *out) const
   ModelTemplate::Print(out);
 }
 
+ostream &ModelInfo::Print(ostream &os) const
+{
+  os<<"ModelInfo(";
+  ModelTemplate::Print(os);
+  os<<")";
+  return os;
+}
+

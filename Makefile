@@ -24,6 +24,14 @@ else
   HTS_DEP =
 endif
 
+ifeq ($(HAVE_WAVELETS),YES)
+  HWA_DEP = Wavelets
+  HWA_CLEAN = cd $(WAVELETS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean
+  HWA_DEPEND = cd $(WAVELETS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend
+else
+  HWA_DEP =
+endif
+
 ifeq ($(HAVE_FRACDIFF),YES)
   HFD_DEP = FracDiff
   HFD_CLEAN = cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean
@@ -122,7 +130,7 @@ endif
 
 HSE_DEP = Sensors
 
-PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP) $(HFIN_DEP) $(HRT_DEP)
+PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP) $(HFIN_DEP) $(HRT_DEP)
 
 all:  $(PROJS) shared final_fixup
 
@@ -160,6 +168,13 @@ TimeSeries: $(HFD_DEP)
 	cp `find $(TS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 	cp `find $(TS_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
+Wavelets: force
+	cd $(WAVELETS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
+	cp `find $(WAVELETS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(WAVELETS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(WAVELETS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(WAVELETS_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
+
 FracDiff: force
 	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(FRACDIFF_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
@@ -192,7 +207,7 @@ RemosInterface:  $(HRPSI_DEP) force
 	cp `find $(REMOSINT_DIR)/obj/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
 
-PredComp: $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+PredComp: $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HMT_DEP) $(HRPSI_DEP) 
 
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(PREDCOMP_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include

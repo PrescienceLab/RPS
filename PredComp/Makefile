@@ -14,6 +14,7 @@ CFLAGS = -I$(INCDIR) \
          $(GETFLOWBW_CFLAGS) \
          -I$(SENSORS_INC_DIR)\
          $(TIMESERIES_CFLAGS) \
+         $(WAVELETS_CFLAGS) \
          $(FRACDIFF_CFLAGS) \
          $(RECIPES_CFLAGS) \
          $(RPSINT_CFLAGS) \
@@ -36,6 +37,7 @@ LD1FLAGS+=  $(GETLOADAVG_LDFLAGS) \
             $(LISTPACK_LDFLAGS)
 LD2FLAGS =  $(RPSINT_LDFLAGS) \
             $(TIMESERIES_LDFLAGS) \
+            $(WAVELETS_LDFLAGS) \
             $(FRACDIFF_LDFLAGS)  \
             $(RECIPES_LDFLAGS) \
             $(MIRROR_LDFLAGS) \
@@ -74,7 +76,13 @@ EXECLIST = loadclient 				\
         flowbwbufferclient                      \
         flowbw2measure                          \
         flowbwreconfig                          \
-        text2measure
+        text2measure                            \
+	wavelet_reqresp_server			\
+	wavelet_reqresp_client			\
+	wavelet_streaming_server		\
+	wavelet_streaming_selection             \
+	wavelet_streaming_client
+
 
 
 ifeq ($(HAVE_GETLOADAVG),YES)

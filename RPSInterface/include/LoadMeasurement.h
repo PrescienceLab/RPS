@@ -2,6 +2,8 @@
 #define _LoadMeasurement
 
 #include <stdio.h>
+#include <iostream>
+#include "ioutil.h"
 
 #include "Serializable.h"
 #include "TimeStamp.h"
@@ -12,6 +14,7 @@
 #define DEFAULT_PERIOD_USEC 1000000
 
 #define XML 0
+
 
 struct LoadMeasurement : public SerializeableInfo 
 #if XML
@@ -38,7 +41,8 @@ struct LoadMeasurement : public SerializeableInfo
   int Pack(Buffer &buf) const ;
   int Unpack(Buffer &buf) ;
 
-  void Print(FILE *out=stdout) ;
+  void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 
   static void SetSmoothingType(LoadMeasurement &measure);
 
@@ -65,7 +69,8 @@ struct LoadMeasurementConfigurationRequest : public SerializeableInfo {
   int Pack(Buffer &buf) const ;
   int Unpack(Buffer &buf) ;
 
-  void Print(FILE *out=stdout) ;
+  void Print(FILE *out=stdout) const;
+  ostream &Print(ostream &os) const;
 
 };
 
@@ -85,7 +90,8 @@ struct LoadMeasurementConfigurationReply: public SerializeableInfo {
   int Pack(Buffer &buf) const ;
   int Unpack(Buffer &buf) ;
 
-  void Print(FILE *out=stdout) ;
+  void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 
 };
 

@@ -5,10 +5,14 @@
 
 
 #include <stdio.h>
+#include <iostream>
+#include "ioutil.h"
 
 #include "Serializable.h"
 #include "ModelInfo.h"
 #include "TimeStamp.h"
+
+
 
 struct Measurement : public SerializeableInfo {
   unsigned tag;
@@ -37,7 +41,8 @@ struct Measurement : public SerializeableInfo {
   int Pack(Buffer &buf) const;
   int Unpack(Buffer &buf);
 
-  void Print(FILE *out=stdout);
+  void Print(FILE *out=stdout) const;
+  ostream &Print(ostream &os) const;
 };  
 
 

@@ -113,7 +113,7 @@ int Measurement::Unpack(Buffer &buf)
   return 0;
 }
 
-void Measurement::Print(FILE *out) 
+void Measurement::Print(FILE *out) const
 {
   int i;
   for (i=0;i<serlen;i++) { 
@@ -123,5 +123,20 @@ void Measurement::Print(FILE *out)
 	    series[i],
 	    i==0 ? "*" : "");
   }
+}
+
+ostream &Measurement::Print(ostream &os) const
+{
+  os<<"Measurement(tag="<<tag<<", timestamp="<<timestamp
+    <<", period_usec="<<period_usec<<", serlen="<<serlen
+    <<", series=(";
+  for (int i=0;i<serlen;i++) { 
+    if (i!=0) { 
+      os<<", ";
+    }
+    os<<series[i];
+  }
+  os<<"))";
+  return os;
 }
 

@@ -12,7 +12,7 @@ LIBNAME = RPSint
 
 LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
-CFLAGS = -I$(INCDIR) $(TIMESERIES_CFLAGS) $(MIRROR_CFLAGS)
+CFLAGS = -I$(INCDIR) $(TIMESERIES_CFLAGS) $(WAVELETS_CFLAGS) $(MIRROR_CFLAGS)
 
 ifeq ($(OPTIMIZE),YES)
   CFLAGS +=  -O
@@ -22,7 +22,7 @@ else
   LD1FLAGS = -g  -gstabs+ -ggdb 
 endif
 
-LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME) \
+LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME) $(TIMESERIES_LDFLAGS) $(WAVELETS_LDFLAGS) \
             $(MIRROR_LDFLAGS) \
 LD2FLAGS =  
 
@@ -35,7 +35,8 @@ LIBOBJSLIST = FlowBWMeasurement.o    \
               Measurement.o          \
               ModelInfo.o            \
               PredictionRequestResponse.o \
-              TimeStamp.o
+              TimeStamp.o            \
+              WaveletInterface.o
 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))

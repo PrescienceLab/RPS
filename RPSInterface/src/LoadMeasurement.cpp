@@ -70,7 +70,7 @@ int LoadMeasurement::Unpack(Buffer &buf)
 
 #define LOOKUP_HOST 1
 
-void LoadMeasurement::Print(FILE *out) 
+void LoadMeasurement::Print(FILE *out) const
 {
   struct in_addr ia; ia.s_addr=htonl(ipaddress);
  
@@ -95,6 +95,34 @@ void LoadMeasurement::Print(FILE *out)
 	  unsmoothed,
 	  avgs[0],avgs[1],avgs[2]);
 }
+
+
+ostream &LoadMeasurement::Print(ostream &os) const
+{
+  struct in_addr ia; ia.s_addr=htonl(ipaddress);
+ 
+#if LOOKUP_HOST
+  struct hostent *he=gethostbyaddr((const char *)&(ia),
+				   sizeof(ia),
+				   AF_INET);
+#endif
+  
+  os << "LoadMeasurement(ipaddress="<<ipaddress;
+#if LOOKUP_HOST
+  os << "[" << (he ? he->h_name : inet_ntoa(ia))<<"]";
+#else
+  os << "[" <<inet_ntoa(ia)<<"]";
+#endif
+  os << ", smoothingtype="<<
+    (smoothingtype == SMOOTH_MACH ? "MACH" :
+     smoothingtype == SMOOTH_UNIX ? "UNIX" : "UNKNOWN")
+     << ", period_usec="<<period_usec
+     <<", unsmoothed="<<unsmoothed
+     <<", avgs=("<<avgs[0]<<","<<avgs[1]<<","<<avgs[2]<<")"
+     << ")";
+  return os;
+}
+
 
 void LoadMeasurement::SetSmoothingType(LoadMeasurement &measure) 
 {
@@ -422,9 +450,15 @@ int LoadMeasurementConfigurationRequest::Unpack(Buffer &buf) {
   return 0;
 }
 
-void LoadMeasurementConfigurationRequest::Print(FILE *out) {
+void LoadMeasurementConfigurationRequest::Print(FILE *out) const {
   fprintf(out,"LoadMeasurementConfigurationRequest timetamp=%f period=%d usec\n",
 	  (double)timestamp, period_usec);
+}
+
+ostream &LoadMeasurementConfigurationRequest::Print(ostream &os) const {
+  os<<"LoadMeasurementConfigurationRequest(timetamp="<<timestamp
+    <<", period_usec="<<period_usec<<")";
+  return os;
 }
 	  
 
@@ -475,8 +509,14 @@ int LoadMeasurementConfigurationReply::Unpack(Buffer &buf) {
   return 0;
 }
 
-void LoadMeasurementConfigurationReply::Print(FILE *out) {
+void LoadMeasurementConfigurationReply::Print(FILE *out) const {
   fprintf(out,"LoadMeasurementConfigurationReply reqtimestamp=%f changetimestamp=%f period=%d usec\n",
 	  (double)reqtimestamp,(double)changetimestamp, period_usec);
+}
+
+ostream &LoadMeasurementConfigurationReply::Print(ostream &os) const {
+  os<<"LoadMeasurementConfigurationReply(reqtimestamp="<<reqtimestamp
+    <<", changetimestamp="<<changetimestamp<<", period_usec="<<period_usec<<")";
+  return os;
 }
 	  

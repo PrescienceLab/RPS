@@ -4,6 +4,7 @@
 SHARED_DIR        = $(RPS_DIR)/shared
 SENSORS_DIR       = $(RPS_DIR)/Sensors
 TS_DIR            = $(RPS_DIR)/TimeSeries
+WAVELETS_DIR      = $(RPS_DIR)/Wavelets
 MIRROR_DIR        = $(RPS_DIR)/Mirror
 RPSINT_DIR        = $(RPS_DIR)/RPSInterface
 REMOSINT_DIR      = $(RPS_DIR)/RemosInterface
@@ -21,13 +22,14 @@ FRACDIFF_DIR      = $(TS_DIR)/FracDiff
 GETLOADAVG_DIR    = $(SENSORS_DIR)/GetLoadAvg
 GETFLOWBW_DIR     = $(SENSORS_DIR)/GetFlowBW
 
-
-
 #
 #
 # Nothing below here needs to be changed
 #
 #
+
+SHARED_LIB_DIR     = $(SHARED_DIR)/lib/$(ARCH)/$(OS)
+SHARED_INC_DIR     = $(SHARED_DIR)/include
 
 GETLOADAVG_LIB_DIR = $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS)
 GETLOADAVG_INC_DIR = $(GETLOADAVG_DIR)/include
@@ -39,6 +41,9 @@ SENSORS_INC_DIR = $(SENSORS_DIR)/include
 
 TS_LIB_DIR = $(TS_DIR)/lib/$(ARCH)/$(OS)
 TS_INC_DIR = $(TS_DIR)/include
+
+WAVELETS_LIB_DIR = $(WAVELETS_DIR)/lib/$(ARCH)/$(OS)
+WAVELETS_INC_DIR = $(WAVELETS_DIR)/include
 
 FRACDIFF_LIB_DIR = $(TS_DIR)/FracDiff/lib/$(ARCH)/$(OS)
 FRACDIFF_INC_DIR = $(TS_DIR)/FracDiff/include
@@ -118,6 +123,14 @@ endif
 ifeq ($(HAVE_TIMESERIES),YES) 
    TIMESERIES_LDFLAGS = -L$(TS_LIB_DIR) -ltimeseries
    TIMESERIES_CFLAGS = -DHAVE_TIMESERIES -I$(TS_INC_DIR)
+else
+   TIMESERIES_LDFLAGS = 
+   TIMESERIES_CFLAGS = 
+endif
+
+ifeq ($(HAVE_WAVELETS),YES) 
+   WAVELETS_LDFLAGS = -L$(WAVELETS_LIB_DIR) -lwavelets
+   WAVELETS_CFLAGS = -DHAVE_WAVELETS -I$(WAVELETS_INC_DIR)
 else
    TIMESERIES_LDFLAGS = 
    TIMESERIES_CFLAGS = 
@@ -242,7 +255,7 @@ else
 endif
 
 
-CC += -D$(ARCH) -D$(OS) -Wall
+CC += -D$(ARCH) -D$(OS) -Wall -I$(SHARED_INC_DIR)
 
 
 

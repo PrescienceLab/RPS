@@ -99,3 +99,14 @@ TimeStamp::operator double() const
 {
   return (double) ((double)(tv_sec) + ((double)tv_usec/1e6));
 }
+
+void TimeStamp::Print(FILE *out) const 
+{
+  fprintf(out,"TimeStamp: tv_sec=%lu, tv_usec=%lu\n",tv_sec,tv_usec);
+}
+
+ostream &TimeStamp::Print(ostream &os) const
+{
+  os << "TimeStamp(tv_sec="<<tv_sec<<", tv_usec="<<tv_usec<<")";
+  return os;
+}

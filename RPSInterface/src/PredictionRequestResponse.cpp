@@ -162,6 +162,25 @@ void PredictionRequest::Print(FILE *out) const
 }
 
 
+ostream & PredictionRequest::Print(ostream &os) const
+{
+  os <<"PredictionRequest(tag="<<tag<<", flags="<<flags
+     <<", datatimestamp="<<datatimestamp
+     <<", modelinfo="<<modelinfo<<", period_usec="<<period_usec
+     <<", numsteps="<<numsteps<<", serlen="<<serlen<<", series=(";
+  for (int i=0;i<serlen;i++) {
+    if (i!=0) { 
+      os << ", ";
+    }
+    os << series[i];
+  }
+  os <<"))";
+  return os;
+}
+
+
+
+
 PredictionResponse::PredictionResponse(unsigned period_usec, int numsteps) 
 {
   this->period_usec = period_usec;
@@ -293,6 +312,28 @@ void PredictionResponse::Print(FILE *out) const
   }
 }
 
+ostream & PredictionResponse::Print(ostream &os) const
+{
+  os <<"PredictionResponse(tag="<<tag<<", flags="<<flags
+     <<", datatimestamp="<<datatimestamp<<", predtimestamp="<<predtimestamp
+     <<", modelinfo="<<modelinfo<<", period_usec="<<period_usec
+     <<", numsteps="<<numsteps<<", preds=(";
+  for (int i=0;i<numsteps;i++) {
+    if (i!=0) { 
+      os << ", ";
+    }
+    os << preds[i];
+  }
+  os <<"), errs=(";
+  for (int i=0;i<numsteps;i++) {
+    if (i!=0) { 
+      os << ", ";
+    }
+    os << errs[i];
+  }
+  os <<"))";
+  return os;
+}
 
 /*
 PredictionReconfigurationRequest::PredictionReconfigurationResponse(unsigned tag,
@@ -450,6 +491,14 @@ void PredictionReconfigurationResponse::Print(FILE *out) const
   modelinfo.Print(out);
 }
 
+ostream &PredictionReconfigurationResponse::Print(ostream &os) const
+{
+  os <<"PredictionReconfigurationResponse(tag="<<tag<<", flags="<<flags
+     <<", requesttimestamp="<<requesttimestamp<<", reconfigdonetimestamp="<<reconfigdonetimestamp
+     <<", modelinfo="<<modelinfo<<", period_usec="<<period_usec
+     <<", numsteps="<<numsteps<<")";
+  return os;
+}
 
 
 void PredictionReconfigurationResponse::MakeMatchingResponse(const PredictionReconfigurationRequest &req)

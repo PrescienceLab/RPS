@@ -2,12 +2,15 @@
 #define _PredictionRequestResponse
 
 #include <stdio.h>
+#include <iostream>
+#include "ioutil.h"
 
 #include "Serializable.h"
 #include "ModelInfo.h"
 #include "TimeStamp.h"
 
 #define MAX_SERIES_LENGTH 3600
+
 
 
 #define PREDREQ_FLAG_NONE     0
@@ -45,6 +48,7 @@ struct PredictionRequest : public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
   void Print(FILE *out=stdout) const;
+  ostream &Print(ostream &os) const;
 };
 
 
@@ -82,6 +86,7 @@ struct PredictionResponse : public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
   void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 };
 
 
@@ -147,6 +152,7 @@ struct PredictionReconfigurationResponse : public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
   void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 };
 
 

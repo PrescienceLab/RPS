@@ -2,6 +2,8 @@
 #define _FlowBWMeasurement
 
 #include <stdio.h>
+#include <iostream>
+#include "ioutil.h"
 
 #include "Serializable.h"
 #include "TimeStamp.h"
@@ -27,8 +29,8 @@ struct FlowBWMeasurement : public SerializeableInfo {
   int Pack(Buffer &buf) const ;
   int Unpack(Buffer &buf) ;
 
-  void Print(FILE *out=stdout) ;
-
+  void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 };
 
 
@@ -48,7 +50,8 @@ struct FlowBWMeasurementConfigurationRequest : public SerializeableInfo {
   int Pack(Buffer &buf) const ;
   int Unpack(Buffer &buf) ;
 
-  void Print(FILE *out=stdout) ;
+  void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 
 };
 
@@ -70,7 +73,8 @@ struct FlowBWMeasurementConfigurationReply: public SerializeableInfo {
   int Pack(Buffer &buf) const ;
   int Unpack(Buffer &buf) ;
 
-  void Print(FILE *out=stdout) ;
+  void Print(FILE *out=stdout) const ;
+  ostream &Print(ostream &os) const;
 
 };
 

@@ -6,6 +6,9 @@
 #include "shared.h"
 #include "Serializable.h"
 #include <stdio.h>
+#include <iostream>
+#include "ioutil.h"
+
 
 
 struct ModelInfo : public ModelTemplate, public SerializeableInfo {
@@ -26,6 +29,7 @@ struct ModelInfo : public ModelTemplate, public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
   void Print(FILE *out=stdout) const  ;
+  ostream &Print(ostream &os) const  ;
 
 #if 0
   static void MakePDQModel(ModelInfo &mi, 

@@ -2,6 +2,9 @@
 #define _fit
 
 #include <stdio.h>
+#include <iostream>
+#include "ioutil.h"
+
 #include "abstract.h"
 #include "pdqparamsets.h"
 #include "util.h"
@@ -56,6 +59,7 @@ struct ModelTemplate {
   int _Unpack(ByteStream &bs);
   
   void Print(FILE *out=stdout) const;
+  ostream &Print(ostream &os) const;
 };
 
 #endif
