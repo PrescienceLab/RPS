@@ -19,7 +19,7 @@ void usage()
 
   cerr << " block_dynamic_sfwt [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [wavelet-type-new]\n";
-  cerr << "  [numstages-new] [change-interval] [output-file] [flat]\n\n";
+  cerr << "  [numstages-new] [change-interval] [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing time-\n";
@@ -54,11 +54,11 @@ void usage()
   cerr << "                      changing to the new wavelet types and\n";
   cerr << "                      number of stage\n";
   cerr << "\n";
-  cerr << "[output-file]       = Which file to write the output.  This may\n";
-  cerr << "                      also be stdout or stderr.\n\n";
-  cerr << "\n";
   cerr << "[flat]              = Whether the output is flat or human\n";
   cerr << "                      readable.  flat | noflat to choose.\n";
+  cerr << "\n";
+  cerr << "[output-file]       = Which file to write the output.  This may\n";
+  cerr << "                      also be stdout or stderr.\n\n";
   cerr << "\n";
   cerr << tb << endl;
   cerr << b << endl;
@@ -109,37 +109,37 @@ int main(int argc, char *argv[])
 
   int numstages_new = atoi(argv[6]);
   if (numstages_new <= 0) {
-    cerr << "sample_dynamic_sfwt: Number of stages must be positive.\n";
+    cerr << "block_dynamic_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
 
   int change_interval = atoi(argv[7]);
   if (change_interval <= 0) {
-    cerr << "sample_dynamic_sfwt: Change interval must be positive.\n";
+    cerr << "block_dynamic_sfwt: Change interval must be positive.\n";
+    exit(-1);
+  }
+
+  bool flat=true;
+  if (toupper(argv[8][0])=='N') {
+    flat = false;
+  } else if (toupper(argv[8][0])!='F') {
+    cerr << "block_dynamic_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[8],"stdout")) {
+  if (!strcasecmp(argv[9],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[8],"stderr")) {
+  } else if (!strcasecmp(argv[9],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[8]);
+    outfile.open(argv[9]);
     if (!outfile) {
-      cerr << "block_dynamic_sfwt: Cannot open output file " << argv[8] << ".\n";
+      cerr << "block_dynamic_sfwt: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
-  }
-
-  bool flat=true;
-  if (toupper(argv[9][0])=='N') {
-    flat = false;
-  } else if (toupper(argv[9][0])!='F') {
-    cerr << "block_dynamic_sfwt: Need to choose flat or noflat for human readable.\n";
-    exit(-1);
   }
 
   unsigned i;

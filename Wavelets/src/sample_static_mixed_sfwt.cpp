@@ -19,8 +19,8 @@ void usage()
   char *b=GetRPSBanner();
 
   cerr << " sample_static_mixed_sfwt [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [output-file] [specification-file]\n";
-  cerr << "  [flat]\n\n";
+  cerr << "  [numstages-init] [specification-file] [flat]\n";
+  cerr << "  [output-file] \n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]         = The name of the file containing time-\n";
@@ -37,13 +37,13 @@ void usage()
   cerr << "                       decomposition.  The number of levels is\n";
   cerr << "                       equal to the number of stages + 1.\n";
   cerr << "\n";
-  cerr << "[output-file]        = Which file to write the output.  This may\n";
-  cerr << "                       also be stdout or stderr.\n\n";
-  cerr << "\n";
   cerr << "[specification-file] = Mixed signal specification.\n";
   cerr << "\n";
   cerr << "[flat]               = Whether the output is flat or human\n";
   cerr << "                       readable.  flat | noflat to choose.\n";
+  cerr << "\n";
+  cerr << "[output-file]        = Which file to write the output.  This may\n";
+  cerr << "                       also be stdout or stderr.\n\n";
   cerr << "\n";
   cerr << tb << endl;
   cerr << b << endl;
@@ -76,43 +76,42 @@ int main(int argc, char *argv[])
     cerr << "sample_static_mixed_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
-  unsigned numlevels = numstages + 1;
+
+  ifstream specfile;
+  specfile.open(argv[4]);
+  if (!specfile) {
+    cerr << "sample_static_mixed_sfwt: Cannot open specification file " << argv[4] << ".\n";
+    exit(-1);
+  }
+
+  bool flat=true;
+  if (toupper(argv[5][0])=='N') {
+    flat = false;
+  } else if (toupper(argv[5][0])!='F') {
+    cerr << "sample_static_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
+    exit(-1);
+  }
 
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[4],"stdout")) {
+  if (!strcasecmp(argv[6],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[4],"stderr")) {
+  } else if (!strcasecmp(argv[6],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[4]);
+    outfile.open(argv[6]);
     if (!outfile) {
-      cerr << "sample_static_mixed_sfwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "sample_static_mixed_sfwt: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
   }
 
-  ifstream specfile;
-  specfile.open(argv[5]);
-  if (!specfile) {
-    cerr << "sample_static_mixed_sfwt: Cannot open specification file " << argv[5] << ".\n";
-    exit(-1);
-  }
-
-  bool flat=true;
-  if (toupper(argv[6][0])=='N') {
-    flat = false;
-  } else if (toupper(argv[6][0])!='F') {
-    cerr << "sample_static_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
-    exit(-1);
-  }
+  unsigned i;
 
   SignalSpec sigspec;
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
-
-  unsigned i;
 
   // Read the data from file into an input vector
   vector<wisd> samples;
@@ -131,7 +130,7 @@ int main(int argc, char *argv[])
   vector<deque<wosd> *> approxlevels;
   vector<deque<wosd> *> detaillevels;
   deque<wosd>* pwos;
-  for (i=0; i<numlevels; i++) {
+  for (i=0; i<numstages; i++) {
     pwos = new deque<wosd>();
     approxlevels.push_back(pwos);
 
@@ -172,20 +171,19 @@ int main(int argc, char *argv[])
     detailout.clear();
     approxout.clear();
   }
-  numlevels -= 1;
 
   // Human readable output
   if (!flat) {
     *outstr.tie() << "APPROXIMATIONS" << endl;
     *outstr.tie() << "--------------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, approxlevels, numlevels);
+    OutputWaveletCoefsNonFlat(outstr, approxlevels, numstages);
 
     *outstr.tie() << endl << "DETAILS" << endl;
     *outstr.tie() << "-------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, detaillevels, numlevels);
+    OutputWaveletCoefsNonFlat(outstr, detaillevels, numstages);
   }
   
-  for (i=0; i<numlevels; i++) {
+  for (i=0; i<numstages; i++) {
     CHK_DEL(approxlevels[i]);
     CHK_DEL(detaillevels[i]);
   }
