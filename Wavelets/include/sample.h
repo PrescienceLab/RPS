@@ -8,7 +8,7 @@ template <typename SAMPLETYPE>
 class Sample {
 protected:
   SAMPLETYPE value;
-  unsigned   index;
+  unsigned index;
 
 public:
   Sample(const SAMPLETYPE value=0, const unsigned index=0) { 
@@ -54,7 +54,7 @@ public:
     return rhs*value;
   };
 
-  inline void SetSampleValue(SAMPLETYPE sample) {
+  inline void SetSampleValue(const SAMPLETYPE sample) {
     value = sample;
   };
 
@@ -69,9 +69,6 @@ public:
   virtual inline unsigned GetSampleIndex() const {
     return index;
   };
-
-  virtual void SetSampleLevel(int level) {};
-  virtual int GetSampleLevel() const { return -1; };
 
   virtual ostream & Print(ostream &os) const {
     os << "index:" << index << "\tvalue:" << value << endl;

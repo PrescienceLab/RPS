@@ -61,10 +61,10 @@ int main(int argc, char *argv[])
   WaveletType wt = (WaveletType) type;
 
   // Read the data from file into an input vector
-  deque<WaveletInputSample> samples;
+  deque<WaveletInputSample<double> > samples;
   double sample;
   while (infile >> sample) {
-    WaveletInputSample wavesample;
+    WaveletInputSample<double> wavesample;
     wavesample.SetSampleValue(sample);
     samples.push_back(wavesample);
   }
@@ -77,11 +77,11 @@ int main(int argc, char *argv[])
   }
 
   // Since we are working in block transforms, create an input block of samples
-  WaveletInputSampleBlock inputblock(samples);
+  WaveletInputSampleBlock<WaveletInputSample<double> > inputblock(samples);
 
   // Instantiate a static forward wavelet transform
   cout << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform<double, WaveletOutputSample, WaveletInputSample>
+  StaticForwardWaveletTransform<double, WaveletOutputSample<double>, WaveletInputSample<double> >
     sfwt(numstages,wt,2,2,0);
 
   // Parameterize the delay block
@@ -97,17 +97,17 @@ int main(int argc, char *argv[])
   }
 
   // Instantiate a delay block
-  DelayBlock<WaveletOutputSample>
+  DelayBlock<WaveletOutputSample<double> >
     dlyblk(numstages+1, 0, delay);
 
   // Instantiate a static reverse wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
-  StaticReverseWaveletTransform<double, WaveletInputSample, WaveletOutputSample>
+  StaticReverseWaveletTransform<double, WaveletInputSample<double>, WaveletOutputSample<double> >
     srwt(numstages,wt,2,2,0);
 
-  vector<SampleBlock<WaveletOutputSample> > forwardoutput;
-  vector<SampleBlock<WaveletOutputSample> > delayoutput;
-  WaveletInputSampleBlock  reverseoutput;
+  vector<WaveletOutputSampleBlock<WaveletOutputSample<double> > > forwardoutput;
+  vector<WaveletOutputSampleBlock<WaveletOutputSample<double> > > delayoutput;
+  WaveletInputSampleBlock<WaveletInputSample<double> >  reverseoutput;
 
   sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
   dlyblk.StreamingBlockOperation(delayoutput, forwardoutput);

@@ -10,6 +10,7 @@
 #include "stage.h"
 #include "sample.h"
 #include "sampleblock.h"
+#include "waveletsampleblock.h"
 #include "util.h"
 
 #define MOREWORK 1
@@ -94,25 +95,25 @@ public:
 				     const SignalSpec &spec);
 
   // Used to obtain all signals (approx, detail) at all levels in block operation
-  unsigned StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
-				   vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
+  unsigned StreamingBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
+				   vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
 				   const SampleBlock<INSAMPLE> &inblock);
 
   // Used to obtain one approximation level, and numlevels-1 details
-  unsigned StreamingTransformBlockOperation(vector<SampleBlock<OUTSAMPLE> > &outblock,
+  unsigned StreamingTransformBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &outblock,
 					    const SampleBlock<INSAMPLE> &inblock);
 
   // Used to obtain all approx signals at all levels in block operation
-  unsigned StreamingApproxBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
+  unsigned StreamingApproxBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
 					 const SampleBlock<INSAMPLE> &inblock);
 
   // Used to obtain all detail signals at all levels in streaming operation
-  unsigned StreamingDetailBlockOperation(vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
+  unsigned StreamingDetailBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
 					 const SampleBlock<INSAMPLE> &inblock);
 
   // Used to obtain a mix of approx and detail signals based on SignalSpec
-  unsigned StreamingMixedBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
-					vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
+  unsigned StreamingMixedBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
+					vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
 					const SampleBlock<INSAMPLE> &inblock,
 					const SignalSpec &spec);
 
@@ -201,13 +202,13 @@ public:
   // This routine expects blocks of sample levels upon which to reconstruct,
   //  range=[lowest_inlvl,lowest_inlvl+numlevels]
   unsigned StreamingBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
-				   const vector<SampleBlock<INSAMPLE> > &inblock);
+				   const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock);
 
   // This routine takes a subset of approximations and detail blocks, and figures out
   //  the correct combination to reconstruct with
   unsigned StreamingTransformBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
-					    const vector<SampleBlock<INSAMPLE> > &approx_block,
-					    const vector<SampleBlock<INSAMPLE> > &detail_block);
+					    const vector<WaveletOutputSampleBlock<INSAMPLE> > &approx_block,
+					    const vector<WaveletOutputSampleBlock<INSAMPLE> > &detail_block);
 
   ostream & Print(ostream &os) const;
 };
@@ -722,12 +723,12 @@ StreamingMixedSampleOperation(vector<OUTSAMPLE> &approx_out,
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
-			vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
+StreamingBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
+			vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
 			const SampleBlock<INSAMPLE> &inblock)
 {
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws;
-  SampleBlock<OUTSAMPLE> out_l, out_h;
+  WaveletOutputSampleBlock<OUTSAMPLE> out_l, out_h;
   unsigned blocklen=0, i;
 
   SampleBlock<INSAMPLE> newinput(inblock);
@@ -762,10 +763,10 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingTransformBlockOperation(vector<SampleBlock<OUTSAMPLE> > &outblock,
+StreamingTransformBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &outblock,
 				 const SampleBlock<INSAMPLE> &inblock)
 {
-  vector<SampleBlock<OUTSAMPLE> > approx;
+  vector<WaveletOutputSampleBlock<OUTSAMPLE> > approx;
   unsigned blen = StreamingBlockOperation(approx, outblock, inblock);
   if (blen) {
     for (unsigned i=0; i<approx.size(); i++) {
@@ -781,7 +782,7 @@ StreamingTransformBlockOperation(vector<SampleBlock<OUTSAMPLE> > &outblock,
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingApproxBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
+StreamingApproxBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
 			      const SampleBlock<INSAMPLE> &inblock)
 {
   vector<SampleBlock<OUTSAMPLE> > unused;
@@ -790,7 +791,7 @@ StreamingApproxBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingDetailBlockOperation(vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
+StreamingDetailBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
 			      const SampleBlock<INSAMPLE> &inblock)
 {
   vector<SampleBlock<OUTSAMPLE> > unused;
@@ -799,8 +800,8 @@ StreamingDetailBlockOperation(vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamingMixedBlockOperation(vector<SampleBlock<OUTSAMPLE> > &approx_outblock,
-			     vector<SampleBlock<OUTSAMPLE> > &detail_outblock,
+StreamingMixedBlockOperation(vector<WaveletOutputSampleBlock<OUTSAMPLE> > &approx_outblock,
+			     vector<WaveletOutputSampleBlock<OUTSAMPLE> > &detail_outblock,
 			     const SampleBlock<INSAMPLE> &inblock,
 			     const SignalSpec &spec)
 {
@@ -1269,7 +1270,7 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
-			const vector<SampleBlock<INSAMPLE> > &inblock)
+			const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock)
 {
 #if MOREWORK==0
   outblock.ClearBlock();
@@ -1369,8 +1370,8 @@ StreamingBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingTransformBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
-				 const vector<SampleBlock<INSAMPLE> > &approx_block,
-				 const vector<SampleBlock<INSAMPLE> > &detail_block)
+				 const vector<WaveletOutputSampleBlock<INSAMPLE> > &approx_block,
+				 const vector<WaveletOutputSampleBlock<INSAMPLE> > &detail_block)
 {
   return 5;
 }

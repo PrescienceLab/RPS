@@ -27,7 +27,7 @@ public:
 
   bool ZeroSample();
   void UpSampleBuffer(SampleBlock<SAMPLE> &output,
-		      SampleBlock<SAMPLE>  &input);
+		      const SampleBlock<SAMPLE> &input);
 
   ostream & Print(ostream &os) const;
 };
@@ -77,7 +77,7 @@ ZeroSample()
 
 template <class SAMPLE>
 void UpSample<SAMPLE>::
-UpSampleBuffer(SampleBlock<SAMPLE> &output, SampleBlock<SAMPLE> &input)
+UpSampleBuffer(SampleBlock<SAMPLE> &output, const SampleBlock<SAMPLE> &input)
 {
   output.ClearBlock();
   SAMPLE newin;

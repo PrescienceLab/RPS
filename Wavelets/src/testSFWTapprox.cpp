@@ -59,16 +59,16 @@ int main(int argc, char *argv[])
 
   // Instantiate a static forward wavelet transform
   cerr << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform<double, WaveletOutputSample, WaveletInputSample>
+  StaticForwardWaveletTransform<double, WaveletOutputSample<double>, WaveletInputSample<double> >
     sfwt(numstages,wt,2,2,0);
 
-  vector<WaveletOutputSample> outsamples;
+  vector<WaveletOutputSample<double> > outsamples;
 
   // Read the data from file into an input vector
-  vector<WaveletInputSample> samples;
+  vector<WaveletInputSample<double> > samples;
   double sample;
   while (infile >> sample) {
-    WaveletInputSample wavesample;
+    WaveletInputSample<double> wavesample;
     wavesample.SetSampleValue(sample);
     samples.push_back(wavesample);
   }
@@ -78,9 +78,9 @@ int main(int argc, char *argv[])
   unsigned i;
 
   // Create vectors for the level outputs
-  vector<deque<WaveletOutputSample> *> levels;
+  vector<deque<WaveletOutputSample<double> > *> levels;
   for (i=0; i<numlevels; i++) {
-    deque<WaveletOutputSample>* pwos = new deque<WaveletOutputSample>();
+    deque<WaveletOutputSample<double> >* pwos = new deque<WaveletOutputSample<double> >();
     levels.push_back(pwos);
   }
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
   for (i=0; i<samples.size(); i++) {
     // Copy the input signal to the level 0 approximation signal
-    WaveletOutputSample tempsamp(samples[i].GetSampleValue(),0,i);
+    WaveletOutputSample<double> tempsamp(samples[i].GetSampleValue(),0,i);
     levels[0]->push_front(tempsamp);
 
     sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
     for (unsigned j=0; j<numlevels; j++) {
       if (!levels[j]->empty()) {
-	WaveletOutputSample wos;
+	WaveletOutputSample<double> wos;
 	wos = levels[j]->back();
 	cout << wos.GetSampleValue() << "\t";
 	levels[j]->pop_back();

@@ -68,20 +68,20 @@ int main(int argc, char *argv[])
 
 
   // Read the data from file into an input vector
-  deque<WaveletInputSample> wisamples;
+  deque<WaveletInputSample<double> > wisamples;
   double sample;
   while (infile >> sample) {
-    WaveletInputSample wavesample;
+    WaveletInputSample<double> wavesample;
     wavesample.SetSampleValue(sample);
     wisamples.push_back(wavesample);
   }
   infile.close();
 
-  WaveletInputSampleBlock  input(wisamples);
-  WaveletOutputSampleBlock output;
+  WaveletInputSampleBlock<WaveletInputSample<double> > input(wisamples);
+  WaveletOutputSampleBlock<WaveletOutputSample<double> > output;
 
   // Create a filter
-  FIRFilter<double, WaveletOutputSample, WaveletInputSample> 
+  FIRFilter<double, WaveletOutputSample<double>, WaveletInputSample<double> > 
     lpfilter(wc.GetNumCoefs());
   lpfilter.SetFilterCoefs(translpf);
   

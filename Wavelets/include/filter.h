@@ -12,34 +12,34 @@
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class FIRFilter {
 private:
-  vector<double>             coefs;
+  vector<double> coefs;
   deque<Sample<SAMPLETYPE> > delayline;
-  unsigned                   numcoefs;
+  unsigned numcoefs;
 
 public:
-  FIRFilter(unsigned numcoefs=0);
+  FIRFilter(const unsigned numcoefs=0);
   FIRFilter(const FIRFilter &rhs);
-  FIRFilter(unsigned numcoefs, vector<double> &coefs);
+  FIRFilter(const unsigned numcoefs, const vector<double> &coefs);
   virtual ~FIRFilter();
 
   FIRFilter & operator=(const FIRFilter &rhs);
 
-  void   SetFilterCoefs(vector<double> &coefs);
-  void   GetFilterCoefs(vector<double> &coefs) const;
-  void   ClearDelayLine();
+  void SetFilterCoefs(const vector<double> &coefs);
+  void GetFilterCoefs(vector<double> &coefs) const;
+  void ClearDelayLine();
 
   void GetFilterOutput(Sample<SAMPLETYPE> &out,
-		       Sample<SAMPLETYPE> &in);
+		       const Sample<SAMPLETYPE> &in);
 
   void GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out,
-			     SampleBlock<INSAMPLE>  &in);
+			     const SampleBlock<INSAMPLE> &in);
 
   ostream & Print(ostream &os) const;
 };
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-FIRFilter(unsigned numcoefs)
+FIRFilter(const unsigned numcoefs=0)
 {
   this->numcoefs = numcoefs;
   
@@ -63,7 +63,7 @@ FIRFilter(const FIRFilter &rhs)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-FIRFilter(unsigned numcoefs, vector<double> &coefs)
+FIRFilter(const unsigned numcoefs, const vector<double> &coefs)
 {
   this->numcoefs = numcoefs;
   this->coefs = coefs;
@@ -96,7 +96,7 @@ operator=(const FIRFilter &rhs)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetFilterCoefs(vector<double> &coefs)
+SetFilterCoefs(const vector<double> &coefs)
 {
   this->numcoefs = coefs.size();
   this->coefs = coefs;
@@ -127,7 +127,7 @@ ClearDelayLine()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-GetFilterOutput(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
+GetFilterOutput(Sample<SAMPLETYPE> &out, const Sample<SAMPLETYPE> &in)
 {
   delayline.push_front(in); // insert newest element
   delayline.pop_back();     // remove oldest element
@@ -141,7 +141,8 @@ GetFilterOutput(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
+GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out, 
+		      const SampleBlock<INSAMPLE> &in)
 {
   out.ClearBlock();
   for (unsigned i=0; i<in.GetBlockSize(); i++) {

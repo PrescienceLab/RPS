@@ -15,26 +15,26 @@ private:
   unsigned samplecount;
 
 public:
-  DownSample(unsigned rate=1);
+  DownSample(const unsigned rate=1);
   DownSample(const DownSample &rhs);
   virtual ~DownSample();
 
   DownSample & operator=(const DownSample &rhs);
 
-  inline void     SetDownSampleRate(unsigned rate) { this->rate = rate;};
+  inline void     SetDownSampleRate(const unsigned rate) { this->rate = rate;};
   inline unsigned GetDownSampleRate() const { return rate;};
   inline void     ResetState() { samplecount=0;};
 
   bool KeepSample();
   void DownSampleBuffer(SampleBlock<SAMPLE> &output,
-			SampleBlock<SAMPLE> &input);
+			const SampleBlock<SAMPLE> &input);
 
   ostream & Print(ostream &os) const;
 };
 
 template <class SAMPLE>
 DownSample<SAMPLE>::
-DownSample(unsigned rate=1)
+DownSample(const unsigned rate=1)
 {
   this->rate = rate;
   samplecount = 0;
@@ -80,7 +80,7 @@ KeepSample()
 template <class SAMPLE>
 void DownSample<SAMPLE>::
 DownSampleBuffer(SampleBlock<SAMPLE> &output,
-		 SampleBlock<SAMPLE> &input)
+		 const SampleBlock<SAMPLE> &input)
 {
   output.ClearBlock();
 

@@ -11,11 +11,11 @@
 class WaveletCoefficients {
 private:
   WaveletType wt;
-  string      waveletname;
-  unsigned    numcoefs;
-  double      *g_coefs, *h_coefs;
+  string waveletname;
+  unsigned numcoefs;
+  double *g_coefs, *h_coefs;
 
-  void        init(const WaveletType wt);
+  void init(const WaveletType wt);
 
 public:
   WaveletCoefficients();

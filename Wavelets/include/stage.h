@@ -9,6 +9,7 @@
 #include "coefficients.h"
 #include "filter.h"
 #include "sampleblock.h"
+#include "waveletsampleblock.h"
 #include "downsample.h"
 #include "upsample.h"
 #include "waveletinfo.h"
@@ -34,15 +35,16 @@ enum StageType {FORWARD, REVERSE};
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class WaveletStageHelper {
 protected:
-  StageType           stagetype;
-  WaveletType         wavetype;
+  StageType stagetype;
+  WaveletType wavetype;
   WaveletCoefficients wavecoefs;
 
   FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> lowpass;
   FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> highpass;
 
 public:
-  WaveletStageHelper(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD);
+  WaveletStageHelper(const WaveletType wavetype=DAUB2, 
+		     const StageType stagetype=FORWARD);
   WaveletStageHelper(const WaveletStageHelper &rhs);
   virtual ~WaveletStageHelper();
 
@@ -53,21 +55,21 @@ public:
 
   void SetFilterCoefsLPF(const vector<double> &coefs);
   unsigned GetNumCoefsLPF() const;
-  void PrintCoefsLPF();
+  void PrintCoefsLPF() const;
 
   void SetFilterCoefsHPF(const vector<double> &coefs);
   unsigned GetNumCoefsHPF() const;
-  void PrintCoefsHPF();
+  void PrintCoefsHPF() const;
 
   void ClearLPFDelayLine();
-  void LPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in);
+  void LPFSampleOperation(Sample<SAMPLETYPE> &out, const Sample<SAMPLETYPE> &in);
   void LPFBufferOperation(SampleBlock<OUTSAMPLE> &out,
-			  SampleBlock<INSAMPLE>  &in);
+			  const SampleBlock<INSAMPLE>  &in);
 
   void ClearHPFDelayLine();
-  void HPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in);
+  void HPFSampleOperation(Sample<SAMPLETYPE> &out, const Sample<SAMPLETYPE> &in);
   void HPFBufferOperation(SampleBlock<OUTSAMPLE> &out,
-			  SampleBlock<INSAMPLE>  &in);
+			  const SampleBlock<INSAMPLE>  &in);
 
   ostream & Print(ostream &os) const;
 };
@@ -87,50 +89,50 @@ protected:
 
   unsigned rate_l;
   unsigned rate_h;
-  int      outlevel_l;
-  int      outlevel_h;
+  int outlevel_l;
+  int outlevel_h;
 
   DownSample<OUTSAMPLE> downsampler_l;
   DownSample<OUTSAMPLE> downsampler_h;
 
 public:
-  ForwardWaveletStage(WaveletType wavetype=DAUB2);
+  ForwardWaveletStage(const WaveletType wavetype=DAUB2);
   ForwardWaveletStage(const ForwardWaveletStage &rhs);
-  ForwardWaveletStage(WaveletType wavetype,
-		      unsigned    rate_l,
-		      unsigned    rate_h,
-		      int         outlevel_l,
-		      int         outlevel_h);
+  ForwardWaveletStage(const WaveletType wavetype,
+		      const unsigned rate_l,
+		      const unsigned rate_h,
+		      const int outlevel_l,
+		      const int outlevel_h);
   virtual ~ForwardWaveletStage();
 
   ForwardWaveletStage & operator=(const ForwardWaveletStage &rhs);
 
   ForwardWaveletStage* clone();
 
-  inline void SetDownSampleRateLow(unsigned rate);
+  inline void SetDownSampleRateLow(const unsigned rate);
   inline unsigned GetDownSampleRateLow() const;
 
-  inline void SetDownSampleRateHigh(unsigned rate);
+  inline void SetDownSampleRateHigh(const unsigned rate);
   inline unsigned GetDownSampleRateHigh() const;
 
-  inline void SetOutputLevelLow(int outlevel);
+  inline void SetOutputLevelLow(const int outlevel);
   inline int GetOutputLevelLow() const;
 
-  inline void SetOutputLevelHigh(int outlevel);
+  inline void SetOutputLevelHigh(const int outlevel);
   inline int GetOutputLevelHigh() const;
 
   inline void ClearFilterDelayLines();
   inline void ClearAllState();
 
   // Returns true if there is an output sample
-  bool PerformSampleOperation(Sample<SAMPLETYPE> &out_l,
-			      Sample<SAMPLETYPE> &out_h,
-			      Sample<SAMPLETYPE> &in);
+  bool PerformSampleOperation(WaveletOutputSample<SAMPLETYPE> &out_l,
+			      WaveletOutputSample<SAMPLETYPE> &out_h,
+			      const Sample<SAMPLETYPE> &in);
 
   // Returns output buffer length (both outputs same length)
-  unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out_l, 
-				 SampleBlock<OUTSAMPLE> &out_h, 
-				 SampleBlock<INSAMPLE>  &in);
+  unsigned PerformBlockOperation(WaveletOutputSampleBlock<OUTSAMPLE> &out_l, 
+				 WaveletOutputSampleBlock<OUTSAMPLE> &out_h, 
+				 const SampleBlock<INSAMPLE> &in);
 
   ostream & Print(ostream &os) const;
 };
@@ -157,21 +159,21 @@ protected:
   UpSample<INSAMPLE> upsampler_h;
 
 public:
-  ReverseWaveletStage(WaveletType wavetype=DAUB2);
+  ReverseWaveletStage(const WaveletType wavetype=DAUB2);
   ReverseWaveletStage(const ReverseWaveletStage &rhs);
-  ReverseWaveletStage(WaveletType wavetype,
-		      unsigned    rate_l,
-		      unsigned    rate_h);
+  ReverseWaveletStage(const WaveletType wavetype,
+		      const unsigned rate_l,
+		      const unsigned rate_h);
   virtual ~ReverseWaveletStage();
 
   ReverseWaveletStage & operator=(const ReverseWaveletStage &rhs);
 
   ReverseWaveletStage* clone();
 
-  inline void SetUpSampleRateLow(unsigned rate);
+  inline void SetUpSampleRateLow(const unsigned rate);
   inline unsigned GetUpSampleRateLow() const;
 
-  inline void SetUpSampleRateHigh(unsigned rate);
+  inline void SetUpSampleRateHigh(const unsigned rate);
   inline unsigned GetUpSampleRateHigh() const;
 
   inline void ClearFilterDelayLines();
@@ -179,13 +181,13 @@ public:
 
   // Takes two inputs and produces a vector of outputs, depending on upsample
   //  rates
-  bool PerformSampleOperation(vector<OUTSAMPLE>  &out,
-			      Sample<SAMPLETYPE> &in_l,
-			      Sample<SAMPLETYPE> &in_h);
+  bool PerformSampleOperation(vector<OUTSAMPLE> &out,
+			      const Sample<SAMPLETYPE> &in_l,
+			      const Sample<SAMPLETYPE> &in_h);
 
   unsigned PerformBlockOperation(SampleBlock<OUTSAMPLE> &out,
-				 SampleBlock<INSAMPLE>  &in_l,
-				 SampleBlock<INSAMPLE>  &in_h);
+				 const SampleBlock<INSAMPLE> &in_l,
+				 const SampleBlock<INSAMPLE> &in_h);
 
   ostream & Print(ostream &os) const;
 };
@@ -198,7 +200,8 @@ public:
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-WaveletStageHelper(WaveletType wavetype=DAUB2, StageType stagetype=FORWARD) :
+WaveletStageHelper(const WaveletType wavetype=DAUB2, 
+		   const StageType stagetype=FORWARD) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
@@ -328,7 +331,7 @@ GetNumCoefsLPF() const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-PrintCoefsLPF()
+PrintCoefsLPF() const
 {
   vector<double> coefs;
   lowpass.GetFilterCoefs(coefs);
@@ -354,7 +357,7 @@ GetNumCoefsHPF() const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-PrintCoefsHPF()
+PrintCoefsHPF() const
 {
   vector<double> coefs;
   highpass.GetFilterCoefs(coefs);
@@ -373,14 +376,14 @@ ClearLPFDelayLine()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-LPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
+LPFSampleOperation(Sample<SAMPLETYPE> &out, const Sample<SAMPLETYPE> &in)
 {
   lowpass.GetFilterOutput(out,in);
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-LPFBufferOperation(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
+LPFBufferOperation(SampleBlock<OUTSAMPLE> &out, const SampleBlock<INSAMPLE> &in)
 {
   lowpass.GetFilterBufferOutput(out,in);
 }
@@ -394,7 +397,7 @@ ClearHPFDelayLine()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-HPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
+HPFSampleOperation(Sample<SAMPLETYPE> &out, const Sample<SAMPLETYPE> &in)
 {
   highpass.GetFilterOutput(out,in);
 }
@@ -402,7 +405,7 @@ HPFSampleOperation(Sample<SAMPLETYPE> &out, Sample<SAMPLETYPE> &in)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-HPFBufferOperation(SampleBlock<OUTSAMPLE> &out, SampleBlock<INSAMPLE> &in)
+HPFBufferOperation(SampleBlock<OUTSAMPLE> &out, const SampleBlock<INSAMPLE> &in)
 {
   highpass.GetFilterBufferOutput(out,in);
 }
@@ -425,9 +428,9 @@ Print(ostream &os) const
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ForwardWaveletStage(WaveletType wavetype=DAUB2) : stagehelp(wavetype, FORWARD), 
-  rate_l(2), rate_h(2), outlevel_l(-1), outlevel_h(-1), 
-  downsampler_l(rate_l), downsampler_h(rate_h)
+ForwardWaveletStage(const WaveletType wavetype=DAUB2) : 
+  stagehelp(wavetype, FORWARD), rate_l(2), rate_h(2),
+  outlevel_l(-1), outlevel_h(-1), downsampler_l(rate_l), downsampler_h(rate_h)
 {
 }
 
@@ -442,11 +445,11 @@ ForwardWaveletStage(const ForwardWaveletStage &rhs) :
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ForwardWaveletStage(WaveletType wavetype,
-		    unsigned    rate_l, 
-		    unsigned    rate_h, 
-		    int         outlevel_l, 
-		    int         outlevel_h) : 
+ForwardWaveletStage(const WaveletType wavetype,
+		    const unsigned rate_l, 
+		    const unsigned rate_h, 
+		    const int outlevel_l, 
+		    const int outlevel_h) : 
   stagehelp(wavetype, FORWARD), rate_l(rate_l), rate_h(rate_h), 
   outlevel_l(outlevel_l), outlevel_h(outlevel_h),
   downsampler_l(rate_l), downsampler_h(rate_h)
@@ -493,7 +496,7 @@ clone()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetDownSampleRateLow(unsigned rate)
+SetDownSampleRateLow(const unsigned rate)
 {
   downsampler_l.SetDownSampleRate(rate);
 }
@@ -507,7 +510,7 @@ GetDownSampleRateLow() const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetDownSampleRateHigh(unsigned rate)
+SetDownSampleRateHigh(const unsigned rate)
 {
   downsampler_h.SetDownSampleRate(rate);
 }
@@ -521,7 +524,7 @@ GetDownSampleRateHigh() const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetOutputLevelLow(int outlevel)
+SetOutputLevelLow(const int outlevel)
 {
   outlevel_l = outlevel;
 }
@@ -535,7 +538,7 @@ GetOutputLevelLow() const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetOutputLevelHigh(int outlevel)
+SetOutputLevelHigh(const int outlevel)
 {
   outlevel_h = outlevel;
 }
@@ -567,9 +570,9 @@ ClearAllState()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-PerformSampleOperation(Sample<SAMPLETYPE> &out_l,
-		       Sample<SAMPLETYPE> &out_h, 
-		       Sample<SAMPLETYPE> &in)
+PerformSampleOperation(WaveletOutputSample<SAMPLETYPE> &out_l,
+		       WaveletOutputSample<SAMPLETYPE> &out_h, 
+		       const Sample<SAMPLETYPE> &in)
 {
   // Filter the new input sample through the LPF and HPF filters
   stagehelp.LPFSampleOperation(out_l,in);
@@ -595,13 +598,13 @@ PerformSampleOperation(Sample<SAMPLETYPE> &out_l,
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-PerformBlockOperation(SampleBlock<OUTSAMPLE> &out_l, 
-		      SampleBlock<OUTSAMPLE> &out_h, 
-		      SampleBlock<INSAMPLE>  &in)
+PerformBlockOperation(WaveletOutputSampleBlock<OUTSAMPLE> &out_l, 
+		      WaveletOutputSampleBlock<OUTSAMPLE> &out_h, 
+		      const SampleBlock<INSAMPLE> &in)
 {
   // Need a temporary output block for filter operations
-  SampleBlock<OUTSAMPLE>* tempblock_l = out_l.clone();
-  SampleBlock<OUTSAMPLE>* tempblock_h = out_h.clone();
+  WaveletOutputSampleBlock<OUTSAMPLE>* tempblock_l = out_l.clone();
+  WaveletOutputSampleBlock<OUTSAMPLE>* tempblock_h = out_h.clone();
 
   // Block filter and downsample the new input buffer
   stagehelp.LPFBufferOperation(*tempblock_l, in);
@@ -645,7 +648,7 @@ Print(ostream &os) const
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ReverseWaveletStage(WaveletType wavetype=DAUB2) : 
+ReverseWaveletStage(const WaveletType wavetype=DAUB2) : 
   stagehelp(wavetype, REVERSE), rate_l(2), rate_h(2), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
@@ -661,7 +664,9 @@ ReverseWaveletStage(const ReverseWaveletStage &rhs) :
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ReverseWaveletStage(WaveletType wavetype, unsigned rate_l, unsigned rate_h) : 
+ReverseWaveletStage(const WaveletType wavetype, 
+		    const unsigned rate_l, 
+		    const unsigned rate_h) : 
   stagehelp(wavetype, REVERSE), rate_l(rate_l), rate_h(rate_h), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
@@ -703,7 +708,7 @@ clone()
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetUpSampleRateLow(unsigned rate)
+SetUpSampleRateLow(const unsigned rate)
 {
   upsampler_l.SetUpSampleRate(rate);
 }
@@ -717,7 +722,7 @@ GetUpSampleRateLow() const
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-SetUpSampleRateHigh(unsigned rate)
+SetUpSampleRateHigh(const unsigned rate)
 {
   upsampler_h.SetUpSampleRate(rate);
 }
@@ -749,8 +754,8 @@ ClearAllState()
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 PerformSampleOperation(vector<OUTSAMPLE>  &out, 
-		       Sample<SAMPLETYPE> &in_l, 
-		       Sample<SAMPLETYPE> &in_h)
+		       const Sample<SAMPLETYPE> &in_l, 
+		       const Sample<SAMPLETYPE> &in_h)
 {
   Sample<SAMPLETYPE> zero(0);
   Sample<SAMPLETYPE> tempout(0);
@@ -788,8 +793,8 @@ PerformSampleOperation(vector<OUTSAMPLE>  &out,
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 PerformBlockOperation(SampleBlock<OUTSAMPLE> &out, 
-		      SampleBlock<INSAMPLE>  &in_l, 
-		      SampleBlock<INSAMPLE>  &in_h)
+		      const SampleBlock<INSAMPLE> &in_l, 
+		      const SampleBlock<INSAMPLE> &in_h)
 {
   // Need a temporary output block for filter operations
   SampleBlock<INSAMPLE>* tempin_l = in_l.clone();

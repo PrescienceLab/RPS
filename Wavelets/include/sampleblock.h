@@ -9,8 +9,8 @@
 template <class SAMPLETYPE>
 class SampleBlock {
 protected:
-  deque<SAMPLETYPE>  samples;
-  unsigned           blockindex;
+  deque<SAMPLETYPE> samples;
+  unsigned blockindex;
 
 public:
   SampleBlock(const unsigned blockindex=0) { this->blockindex = blockindex; };
@@ -74,7 +74,9 @@ public:
   };
 
   // This routine gets a range of values from the buffer
-  void GetSamples(deque<SAMPLETYPE> &buf, unsigned first, unsigned last) const {
+  void GetSamples(deque<SAMPLETYPE> &buf, 
+		  const unsigned first,
+		  const unsigned last) const {
     if ((first >= 0) && (first < samples.size()) && (last >= first)) {
       buf.clear();
       for (unsigned i=first; i<last; i++) {
@@ -100,7 +102,7 @@ public:
   };
 
   // This is equivalent to random access []
-  inline void GetSample(SAMPLETYPE *samp, unsigned i) const {
+  inline void GetSample(SAMPLETYPE *samp, const unsigned i) const {
     if (i < samples.size())
       *samp = samples[i];
   };
@@ -113,7 +115,7 @@ public:
     return blockindex;
   };
 
-  void AppendBlockBack(SampleBlock &block) {
+  void AppendBlockBack(const SampleBlock &block) {
     SAMPLETYPE newsamp;
     for (unsigned i=0; i<block.GetBlockSize(); i++) {
       block.GetSample(&newsamp,i);
@@ -121,7 +123,7 @@ public:
     }
   };
 
-  void AppendBlockFront(SampleBlock &block) {
+  void AppendBlockFront(const SampleBlock &block) {
     SAMPLETYPE newsamp;
     for (int i=block.GetBlockSize()-1; i>=0; i--) {
       block.GetSample(&newsamp,i);
@@ -137,7 +139,7 @@ public:
     return samples.size();
   };
 
-  virtual SampleBlock* clone() {
+  virtual SampleBlock* clone() const {
     return new SampleBlock(*this);
   };
 
@@ -148,9 +150,6 @@ public:
     }
     return os;
   };
-
-  virtual void SetBlockLevel(int level) {};
-  virtual int GetBlockLevel() const { return -1;};
 };
 
 template <class SAMPLETYPE>

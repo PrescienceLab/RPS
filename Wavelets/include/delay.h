@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include "waveletinfo.h"
+#include "waveletsampleblock.h"
 #include "filter.h"
 #include "sample.h"
 #include "sampleblock.h"
@@ -50,7 +51,8 @@ private:
 
   vector<deque<SAMPLE> *> dbanks;
 
-  unsigned StreamBlock(SampleBlock<SAMPLE> &out, const SampleBlock<SAMPLE> &in);
+  unsigned StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out,
+		       const WaveletOutputSampleBlock<SAMPLE> &in);
 
 public:
   DelayBlock(const unsigned numlevels=2,
@@ -78,8 +80,8 @@ public:
 
   bool StreamingSampleOperation(vector<SAMPLE> &out, const vector<SAMPLE> &in);
 
-  unsigned StreamingBlockOperation(vector<SampleBlock<SAMPLE> > &outblock,
-				   const vector<SampleBlock<SAMPLE> > &inblock);
+  unsigned StreamingBlockOperation(vector<WaveletOutputSampleBlock<SAMPLE> > &outblock,
+				   const vector<WaveletOutputSampleBlock<SAMPLE> > &inblock);
 
   ostream & Print(ostream &os) const;
 };
@@ -314,21 +316,20 @@ StreamingSampleOperation(vector<SAMPLE> &out, const vector<SAMPLE> &in)
     outsamp.SetSampleIndex(sampleindex);
     out.push_back(outsamp);
   }
-
   return out.size();
 }
 
 template<class SAMPLE>
 unsigned DelayBlock<SAMPLE>::
-StreamingBlockOperation(vector<SampleBlock<SAMPLE> > &outblock,
-			const vector<SampleBlock<SAMPLE> > &inblock)
+StreamingBlockOperation(vector<WaveletOutputSampleBlock<SAMPLE> > &outblock,
+			const vector<WaveletOutputSampleBlock<SAMPLE> > &inblock)
 {
   unsigned i;
 
   // Clear the output block to signal new samples to the calling routine
   outblock.clear();
 
-  SampleBlock<SAMPLE> block;
+  WaveletOutputSampleBlock<SAMPLE> block;
   for (i=0; i<inblock.size(); i++) {
     if (StreamBlock(block, inblock[i])) {
       outblock.push_back(block);
@@ -354,7 +355,7 @@ Print(ostream &os) const
 // Private functions
 template<class SAMPLE>
 unsigned DelayBlock<SAMPLE>::
-StreamBlock(SampleBlock<SAMPLE> &out, const SampleBlock<SAMPLE> &in)
+StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out, const WaveletOutputSampleBlock<SAMPLE> &in)
 {
   unsigned sampleindex;
   deque<SAMPLE> inbuf, outbuf;

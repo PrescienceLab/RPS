@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
   WaveletType wt = (WaveletType) type;
 
   // Read the data from file into an input vector
-  vector<WaveletInputSample> samples;
+  vector<WaveletInputSample<double> > samples;
   double sample;
   unsigned index=0;
   while (infile >> sample) {
-    WaveletInputSample wavesample;
+    WaveletInputSample<double> wavesample;
     wavesample.SetSampleValue(sample);
     wavesample.SetSampleIndex(index++);
     samples.push_back(wavesample);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
   // Instantiate a static forward wavelet transform
   cout << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform<double, WaveletOutputSample, WaveletInputSample>
+  StaticForwardWaveletTransform<double, WaveletOutputSample<double>, WaveletInputSample<double> >
     sfwt(numstages,wt,2,2,0);
 
   // Parameterize the delay block
@@ -96,20 +96,20 @@ int main(int argc, char *argv[])
   }
 
   // Instantiate a delay block
-  DelayBlock<WaveletOutputSample>
+  DelayBlock<WaveletOutputSample<double> >
     dlyblk(numstages+1, 0, delay);
 
   // Instantiate a static forward wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
-  StaticReverseWaveletTransform<double, WaveletInputSample, WaveletOutputSample>
+  StaticReverseWaveletTransform<double, WaveletInputSample<double>, WaveletOutputSample<double> >
     srwt(numstages,wt,2,2,0);
 
 
   // Create result buffers
-  vector<WaveletOutputSample> outsamples;
-  vector<WaveletOutputSample> delaysamples;
-  vector<WaveletInputSample>  finaloutput;
-  vector<WaveletInputSample>  outsamp;
+  vector<WaveletOutputSample<double> > outsamples;
+  vector<WaveletOutputSample<double> > delaysamples;
+  vector<WaveletInputSample<double> >  finaloutput;
+  vector<WaveletInputSample<double> >  outsamp;
 
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
