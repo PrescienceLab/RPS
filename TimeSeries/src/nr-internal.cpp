@@ -4,6 +4,8 @@
 
 #include "nr-internal.h"
 
+#include "rps_log.h"
+
 #define NRANSI
 #define SQR(a) ((sqrarg=(a)) == 0.0 ? 0.0 : sqrarg*sqrarg)
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
@@ -22,9 +24,7 @@ namespace nrc {
   void nrerror(char error_text[])
     /* Numerical Recipes standard error handler */
   {
-    fprintf(stderr,"Numerical Recipes run-time error...\n");
-    fprintf(stderr,"%s\n",error_text);
-    fprintf(stderr,"...now exiting to system...\n");
+    RPSLog(CONTEXT,99,"Numerical Recipes run-time error...\n%s\n...now exiting to system...\n",error_text);
     exit(1);
   }
 

@@ -8,7 +8,8 @@
 #define M_PI       3.1415926535897932385E0  /*Hex  2^ 1 * 1.921FB54442D18 */
 #endif
 
-  
+
+#include "rps_log.h"  
   
 
 static inline double Factorial(int x)
@@ -43,7 +44,7 @@ static inline double LnGammaPos(double xx)
    double ser, tmp, x, y;
 
    if (xx<=0) { 
-     fprintf(stderr,"LnGammaPos() called with negative argument or zero.\n");
+     RPSLog(CONTEXT,50,"LnGammaPos() called with negative argument or zero.\n");
      return 0.0;
    }
    x=xx;

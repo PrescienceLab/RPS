@@ -8,15 +8,40 @@ EtaThetaPredictor::EtaThetaPredictor()
    variance=0;
 }
 
+EtaThetaPredictor::EtaThetaPredictor(const EtaThetaPredictor &rhs)
+{
+  numeta=rhs.numeta;
+  etas = new double [numeta];
+  memcpy(etas,rhs.etas,sizeof(etas[0])*numeta);
+  numtheta=rhs.numtheta;
+  thetas = new double [numtheta];
+  memcpy(thetas,rhs.thetas,sizeof(thetas[0])*numtheta);
+  variance=rhs.variance;
+  values = new double[numeta];
+  memcpy(values,rhs.values,sizeof(values[0])*numeta);
+  errors = new double[numtheta];
+  memcpy(errors,rhs.errors,sizeof(errors[0])*numtheta);
+  numsamples=rhs.numsamples;
+  next_val=rhs.next_val;
+  mean=rhs.mean;
+}
+
 EtaThetaPredictor::~EtaThetaPredictor()
 {
    CHK_DEL_MAT(etas);
    CHK_DEL_MAT(thetas);
+   CHK_DEL_MAT(values);
+   CHK_DEL_MAT(errors);
    numeta=numtheta=0;
    variance=0;
 }
 
-int EtaThetaPredictor::Initialize(Polynomial *et, Polynomial *th, double var, double mn)
+EtaThetaPredictor & EtaThetaPredictor::operator=(const EtaThetaPredictor &rhs)
+{
+  return *(new(this) EtaThetaPredictor(rhs));
+}
+
+int EtaThetaPredictor::Initialize(const Polynomial *et, const Polynomial *th, const double var, const double mn)
 {
    int i;
 
@@ -49,29 +74,17 @@ int EtaThetaPredictor::Initialize(Polynomial *et, Polynomial *th, double var, do
 
 int EtaThetaPredictor::Begin()
 {
- 
-/*
-  int i;
-   for (i=0;i<numeta;i++) {
-      values[i]=0.0;
-   }
-
-   for (i=0;i<numtheta;i++) {
-      errors[i]=0.0;
-   }
-*/
    next_val = 0;
    numsamples=0;
-
    return 0;
 }
 
-int EtaThetaPredictor::StepsToPrime()
+int EtaThetaPredictor::StepsToPrime() const
 {
   return MAX(numeta,numtheta) - 1;
 }
 
-double EtaThetaPredictor::Step(double observation)
+double EtaThetaPredictor::Step(const double observation)
 {
    int i;
 
@@ -91,7 +104,7 @@ double EtaThetaPredictor::Step(double observation)
 }
 
 
-int EtaThetaPredictor::Predict(int l,double *out)
+int EtaThetaPredictor::Predict(const int l,double *out) const
 {
    int i,j;
 
@@ -126,7 +139,7 @@ int EtaThetaPredictor::Predict(int l,double *out)
 
 // ests must be of size maxahead*maxahead
 // order of covariances is: (+1,+1),(+1,+2),(+1,+3),...,(+2,+1),...
-int EtaThetaPredictor::ComputeCoVariances(int maxahead, double *ests)
+int EtaThetaPredictor::ComputeCoVariances(const int maxahead, double *ests) const
 {
   int l1,l2,i,j;
   
@@ -167,7 +180,7 @@ int EtaThetaPredictor::ComputeCoVariances(int maxahead, double *ests)
   return 0;
 }
 
-int EtaThetaPredictor::ComputePointVariances(int maxahead, double *ests)
+int EtaThetaPredictor::ComputePointVariances(const int maxahead, double *ests) const
 {
    int i;
 
@@ -203,7 +216,7 @@ int EtaThetaPredictor::ComputePointVariances(int maxahead, double *ests)
 }
 
 
-int EtaThetaPredictor::ComputeSumVariances(int maxahead, double *ests)
+int EtaThetaPredictor::ComputeSumVariances(const int maxahead, double *ests) const
 {
    int i,j,k;
 
@@ -227,8 +240,8 @@ int EtaThetaPredictor::ComputeSumVariances(int maxahead, double *ests)
 }
 
 
-int EtaThetaPredictor::ComputeVariances(int maxahead, double *ests, 
-					enum VarianceType vtype)
+int EtaThetaPredictor::ComputeVariances(const int maxahead, double *ests, 
+					const enum VarianceType vtype) const
 {
    switch (vtype) { 
    case POINT_VARIANCES:
@@ -247,7 +260,7 @@ int EtaThetaPredictor::ComputeVariances(int maxahead, double *ests,
 
 #define NUM_COVARS_TO_PRINT 4
       
-void EtaThetaPredictor::Dump(FILE *out)
+void EtaThetaPredictor::Dump(FILE *out) const
 {
    int i,j;
 
@@ -284,4 +297,61 @@ void EtaThetaPredictor::Dump(FILE *out)
    }
    delete [] covars;
 #endif
+}
+
+
+ostream & EtaThetaPredictor::operator<<(ostream &os) const
+{
+   int i,j;
+
+   os << "EtaThetaPredictor(numeta="<<numeta<<", numtheta="<<numtheta<<", variance="<<variance<<", mean="<<mean<<", etas=(";
+   for (i=0;i<numeta;i++) {
+     if (i>0) {
+       os << ", ";
+     } 
+     os << etas[i];
+   }
+   os <<"), thetas=(";
+   for (i=0;i<numtheta;i++) {
+     if (i>0) {
+       os << ", ";
+     }
+     os << thetas[i];
+   }
+   os <<"), numsamples="<<numsamples<<", values=(";
+   for (i=0;i<MIN(numsamples,numeta);i++) {
+     if (i>0) { 
+       os << ", ";
+     } 
+     os << values[(numsamples-MIN(numsamples,numeta)+i)%numeta];
+   }
+   os <<"), errors=(";
+   for (i=0;i<MIN(numsamples,numtheta);i++) {
+     if (i>0) {
+       os <<", ";
+     }
+     os << errors[(numsamples-MIN(numsamples,numtheta)+i)%numtheta];
+   }
+   os <<") next_predicted_value="<<next_val;
+
+#if NUM_COVARS_TO_PRINT>0
+   os <<", covariancematrix=(("<<NUM_COVARS_TO_PRINT<<"x"<<NUM_COVARS_TO_PRINT<<"), ";
+   double *covars = new double [NUM_COVARS_TO_PRINT*NUM_COVARS_TO_PRINT];
+   ComputeCoVariances(NUM_COVARS_TO_PRINT,covars);
+   for (i=0;i<NUM_COVARS_TO_PRINT;i++) {
+     if (i>0) {
+       os <<";";
+     }
+     for (j=0;j<NUM_COVARS_TO_PRINT;j++) { 
+       if (j>0) {
+	 os << ", ";
+       }
+       os << covars[i*NUM_COVARS_TO_PRINT+j];
+     }
+   }
+   os << ")";
+   delete [] covars;
+#endif
+   os << ")";
+   return os;
 }

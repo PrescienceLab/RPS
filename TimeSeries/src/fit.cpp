@@ -274,6 +274,8 @@ char *GetAvailableModels()
 	   "\n"
 	   "Underlying Models\n"
 	   "-----------------\n"
+	   "NONE\n"
+	   " No model\n"
 	   "MEAN\n"
 	   " Long-term mean\n"
 	   "LAST\n"
@@ -298,9 +300,9 @@ char *GetAvailableModels()
 }
 	   
 
-Model *FitThis(ModelType mclass,
-	       double *seq,
-	       int numsamples,
+Model *FitThis(const ModelType mclass,
+	       const double *seq,
+	       const int numsamples,
 	       const PDQParameterSet &params)
 {
    switch (mclass) {
@@ -341,18 +343,18 @@ Model *FitThis(ModelType mclass,
 }
 
 
-Model *FitThis(ModelType mclass,
-	       double *seq, int numsamples, 
-	       int p, double d, int q)
+Model *FitThis(const ModelType mclass,
+	       const double *seq, const int numsamples, 
+	       const int p, const double d, const int q)
 {
   PDQParameterSet params(p,(int)d,q);
   return FitThis(mclass,seq,numsamples,params);
 }
 
 
-Model *FitThis(ModelType mclass,
-	       double *seq,
-	       int numsamples,
+Model *FitThis(const ModelType mclass,
+	       const double *seq,
+	       const int numsamples,
 	       const RefittingPDQParameterSet &params)
 {
   int refitinterval;
@@ -395,14 +397,15 @@ Model *FitThis(ModelType mclass,
 }
 
 
-Model *FitThis(ModelType mclass,
-	       double *seq, int numsamples, 	       int p, double d, int q, int refitinterval)
+Model *FitThis(const ModelType mclass,
+	       const double *seq, const int numsamples,
+ 	       const int p, const double d, const int q, const int refitinterval)
 {
   RefittingPDQParameterSet ps(p,(int)d,q,refitinterval);
   return FitThis(mclass,seq,numsamples,ps);
 }
 
-Model *FitThis(ModelType mclass,
+Model *FitThis(const ModelType mclass,
 	       const AwaitingPDQParameterSet &params)
 {
   int await;
@@ -445,15 +448,15 @@ Model *FitThis(ModelType mclass,
 }
 
 
-Model *FitThis(ModelType mclass,
-	       int p, double d, int q, int await)
+Model *FitThis(const ModelType mclass,
+	       const int p, const double d, const int q, const int await)
 {
   AwaitingPDQParameterSet ps(p,(int)d,q,await);
   return FitThis(mclass,ps);
 }
 
 
-Model *FitThis(ModelType mclass,
+Model *FitThis(const ModelType mclass,
 	       const ManagedPDQParameterSet &params)
 {
   int await;
@@ -505,16 +508,16 @@ Model *FitThis(ModelType mclass,
 }
 
 
-Model *FitThis(ModelType mclass,
-	       int p, double d, int q, 
-	       int await, int refit, int mintest,
-	       double errlimit, double varlimit)
+Model *FitThis(const ModelType mclass,
+	       const int p, const double d, const int q, 
+	       const int await, const int refit, const int mintest,
+	       const double errlimit, const double varlimit)
 {
   ManagedPDQParameterSet ps(p,(int)d,q,await,refit,mintest,errlimit,varlimit);
   return FitThis(mclass,ps);
 }
 
-Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt)
+Model *FitThis(const double *seq, const int numsamples, const ModelTemplate &mt)
 {
 
   if (mt.ps->GetType()==PDQ) { 
@@ -530,7 +533,7 @@ Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt)
   }
 }
     
-ModelTemplate *ParseModel(int argc, char *argv[])
+ModelTemplate *ParseModel(const int argc, const char *argv[])
 {
   int p=0;
   double d=0;
@@ -695,7 +698,7 @@ ModelTemplate *ParseModel(int argc, char *argv[])
 
 
 #define MAX_COMPS 100
-ModelTemplate *ParseModel(char *buf)
+ModelTemplate *ParseModel(const char *buf)
 {
   char **argv = new char * [MAX_COMPS] ;
   char *temp=new char [strlen(buf)+1];

@@ -53,7 +53,7 @@ endif
 #
 # gfnn             global false nearest neighbor from abarbanel method
 # mi               average mutual information profile from abarbanel method
-#
+# polycalc         polynomial calculator
 
 EXECLIST = ts_example 	    \
            test_generic     \
@@ -64,6 +64,7 @@ EXECLIST = ts_example 	    \
            gfnn             \
            mi               \
 	   test_await       \
+           polycalc
 
 ifeq ($(HAVE_PVM),YES)
    EXECLIST +=  crossval_master crossval_slave

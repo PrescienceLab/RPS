@@ -25,18 +25,29 @@ private:
    double mean;
 public:
    EtaThetaPredictor();
+   EtaThetaPredictor(const EtaThetaPredictor &rhs);
    virtual ~EtaThetaPredictor();
-   int Initialize(Polynomial *et, Polynomial *th, double var, double mean=0.0);
+
+   EtaThetaPredictor & operator=(const EtaThetaPredictor &rhs);
+
+   int Initialize(const Polynomial *et, const Polynomial *th, const double var, const double mean=0.0);
    int Begin();
-   int StepsToPrime();
+   int StepsToPrime() const;
    // Feed the filter with a new observation - returns predicted next value
-   double Step(double observation);
-   int Predict(int maxahead, double *pred);
-   int ComputeVariances(int maxahead, double *vars, 
-			enum VarianceType vtype=POINT_VARIANCES);
-   int ComputeCoVariances(int maxahead, double *covars);
-   int ComputeSumVariances(int maxahead, double *sumvars);
-   int ComputePointVariances(int maxahead, double *pointvars);
-   void Dump(FILE *out=stdout);
+   double Step(const double observation);
+   int Predict(const int maxahead, double *pred) const;
+   int ComputeVariances(const int maxahead, double *vars, 
+			const enum VarianceType vtype=POINT_VARIANCES) const;
+   int ComputeCoVariances(const int maxahead, double *covars) const ;
+   int ComputeSumVariances(const int maxahead, double *sumvars) const;
+   int ComputePointVariances(const int maxahead, double *pointvars) const;
+
+   void Dump(FILE *out=stdout) const;
+   ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<< (ostream &os, const EtaThetaPredictor &p) {
+  return p.operator<<(os);
+}
+
 #endif

@@ -19,33 +19,54 @@ private:
   double   mean;
 public:
   ARMAModel();
+  ARMAModel(const ARMAModel &rhs);
   virtual ~ARMAModel();
-  void   Initialize(int P, int Q);
-  int    GetP();
-  int    GetQ();
-  void   SetARCoeff(int num, double value);
-  double GetARCoeff(int num);
-  void   SetMACoeff(int num, double value);
-  double GetMACoeff(int num);
-  void   SetVariance(double variance);
-  double EstimateVariance(double *seq, int len);
-  double GetVariance();
-  void   SetMean(double mean);
-  double GetMean();
-  void   Dump(FILE *out=stdout);
-  Predictor *MakePredictor();
+
+  ARMAModel & operator=(const ARMAModel &rhs);
+
+  void   Initialize(const int P, const int Q);
+  int    GetP() const;
+  int    GetQ() const;
+  void   SetARCoeff(const int num, const double value);
+  double GetARCoeff(const int num) const ;
+  void   SetMACoeff(const int num, const double value);
+  double GetMACoeff(const int num) const ;
+  void   SetVariance(const double variance);
+  double EstimateVariance(const double *seq, const int len) const ;
+  double GetVariance() const ;
+  void   SetMean(const double mean);
+  double GetMean() const ;
+  Predictor *MakePredictor() const;
+
+  void   Dump(FILE *out=stdout) const ;
+  ostream &operator<<(ostream &os) const;
 };
+
+inline ostream & operator<< (ostream &os, const ARMAModel &p) {
+  return p.operator<<(os);
+}
 
 
 // No State
 class ARMAModeler : public Modeler {
 public:
   ARMAModeler();
+  ARMAModeler(const ARMAModeler &rhs);
   virtual ~ARMAModeler();
-  static ARMAModel *Fit(double *sequence, int len, int P, int Q);
-  static ARMAModel *Fit(double mean, double *acovf, int len, int P, int Q);
-  static Model *Fit(double *seq, int len, const ParameterSet &ps);
+  
+  ARMAModeler & operator=(const ARMAModeler &rhs);
+
+  static ARMAModel *Fit(const double *sequence, const int len, const int P, const int Q);
+  static ARMAModel *Fit(const double mean, const double *acovf, const int len, const int P, const int Q);
+  static Model *Fit(const double *seq, const int len, const ParameterSet &ps);
+
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
+
+inline ostream & operator<< (ostream &os, const ARMAModeler &p) {
+  return p.operator<<(os);
+}
 
 
 

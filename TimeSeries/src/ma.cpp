@@ -1,24 +1,27 @@
+#include <new>
 #include "ma.h"
 #include "tools.h"
 #include "util.h"
 #include <string.h>
 
+#include "rps_log.h"
 
-#ifdef HAVE_NUMERICAL_RECIPES
-extern "C" {
-#include "nr.h"
-#include "nrutil.h"
-}
-#else 
 #include "nr-internal.h"
 using namespace nrc;
-#endif
 
 #include "pdqparamsets.h"
 
 MAModel::MAModel()
 {
   coeffs=0;
+}
+
+MAModel::MAModel(const MAModel &rhs)
+{
+  Initialize(rhs.order);
+  memcpy(coeffs,rhs.coeffs,sizeof(coeffs[0])*order);
+  variance=rhs.variance;
+  mean=rhs.mean;
 }
 
 MAModel::~MAModel()
@@ -28,7 +31,13 @@ MAModel::~MAModel()
   }
 }
 
-void MAModel::Initialize(int order)
+MAModel & MAModel::operator=(const MAModel &rhs)
+{
+  return *(new(this) MAModel(rhs));
+}
+
+
+void MAModel::Initialize(const int order)
 {
   if (coeffs!=0) {
     delete coeffs;
@@ -42,14 +51,14 @@ void MAModel::Initialize(int order)
 #define CHECK(num) ((num)>=0 && (num)<order)
 #define ADJUST(num) ((num))
 
-void MAModel::SetCoeff(int num, double value)
+void MAModel::SetCoeff(const int num, const double value)
 {
   if (CHECK(num)) {
     coeffs[ADJUST(num)]=value;
   }
 }
 
-double MAModel::GetCoeff(int num)
+double MAModel::GetCoeff(const int num) const 
 {
   if (CHECK(num)) {
     return coeffs[ADJUST(num)];
@@ -57,17 +66,17 @@ double MAModel::GetCoeff(int num)
 	return 0.0;
   }
 }
-void MAModel::SetVariance(double var)
+void MAModel::SetVariance(const double var)
 {
   variance=var;
 }
 
-double MAModel::GetVariance() 
+double MAModel::GetVariance() const 
 {
   return variance;
 }
 
-double MAModel::EstimateVariance(double *seq, int len)
+double MAModel::EstimateVariance(const double *seq, const int len) const 
 {
   Predictor *p=MakePredictor();
   int i;
@@ -93,22 +102,22 @@ double MAModel::EstimateVariance(double *seq, int len)
 }
   
 
-void MAModel::SetMean(double mn)
+void MAModel::SetMean(const double mn)
 {
   mean=mn;
 }
 
-double MAModel::GetMean()
+double MAModel::GetMean() const 
 {
   return mean;
 }
 
-int MAModel::GetOrder() 
+int MAModel::GetOrder() const 
 {
   return order;
 }
 
-void MAModel::Dump(FILE *out)
+void MAModel::Dump(FILE *out) const 
 {
   if (out==0) {
     out=stdout;
@@ -127,12 +136,26 @@ void MAModel::Dump(FILE *out)
   fprintf(out,"\n");
 }
 
+ostream & MAModel::operator<<(ostream &os) const 
+{
+  os <<"MAModel(q="<<order<<", mean="<<mean<<", variance="<<variance<<", coeffs=(";
+  for (int i=0;i<order;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os <<coeffs[i];
+  }
+  os <<"))";
+  return os;
+}
+
+
 
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 
 
-Predictor *MAModel::MakePredictor()
+Predictor *MAModel::MakePredictor() const
 {
    int i;
    Polynomial et, th;
@@ -162,15 +185,22 @@ MAModeler::MAModeler()
 {
 }
 
+MAModeler::MAModeler(const MAModeler &rhs)
+{
+}
+
 MAModeler::~MAModeler()
 {
 }
 
+MAModeler & MAModeler:: operator=(MAModeler &rhs)
+{
+  return *(new(this)MAModeler(rhs));
+}
 
-
-double MAConditionalSumOfSquares(double *seq, int len, 
-				 double *coeff, int numcoeff,
-				 double maxreturn)
+double MAConditionalSumOfSquares(const double *seq, const int len, 
+				 const double *coeff, const int numcoeff,
+				 const double maxreturn)
 {
   double *a = new double [numcoeff];
   double a2, temp;
@@ -230,8 +260,8 @@ float  MAConditionalSumOfSquaresWrapper(float p[])
 
 
 // Note: NOT FUNCTIONAL AS OF 5/21/98
-double MAUnConditionalSumOfSquares(double *seq, int len, 
-                                   double *coeff, int numcoeff)
+double MAUnConditionalSumOfSquares(const double *seq, const int len, 
+                                   const double *coeff, const int numcoeff)
 {
   double *a = new double [numcoeff];
   double *e = new double [numcoeff];
@@ -278,11 +308,11 @@ double MAUnConditionalSumOfSquares(double *seq, int len,
 }
 
 
-MAModel *MAModeler::Fit(double *seq, int len, int maxord)
+MAModel *MAModeler::Fit(const double *seq, const int len, const int maxord)
 {
   int i,j;
-  float *p = vector(1,maxord);
-  float **xi = matrix(1,maxord,1,maxord);
+  float *p = nrc::vector(1,maxord);
+  float **xi = nrc::matrix(1,maxord,1,maxord);
   double mean;
   
   double *workseq = new double [len];
@@ -311,10 +341,7 @@ MAModel *MAModeler::Fit(double *seq, int len, int maxord)
 
   powell(p,xi,maxord,ftol,&iter,&fret,MAConditionalSumOfSquaresWrapper);
 
-  //fprintf(stderr,"powell() finished after %d iterations\n",iter);
-
-  // unneeded
-  //UnMeanifySequence(seq,len,mean);
+  RPSLog(CONTEXT,10,"powell() finished after %d iterations\n",iter);
 
   MAModel *model;
 
@@ -358,7 +385,7 @@ MAModel *MAModeler::Fit(double *seq, int len, int maxord)
 }
 
 // NOTE: DO NOT USE THIS
-MAModel *MAModeler::Fit(double mean, double *acovf, int len, int maxord)
+MAModel *MAModeler::Fit(const double mean, const double *acovf, const int len, const int maxord)
 {
   MAModel *model;
   int i,j,k;
@@ -429,13 +456,25 @@ MAModel *MAModeler::Fit(double mean, double *acovf, int len, int maxord)
 }
 			  
 
-Model *MAModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *MAModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   int p,d,q;
 
   ((const PDQParameterSet &)ps).Get(p,d,q);
   
   return Fit(seq,len,q);
+}
+
+
+void   MAModeler::Dump(FILE *out=stdout) const
+{
+  fprintf(out,"MAModeler()");
+}
+
+ostream & MAModeler::operator<<(ostream &os) const
+{
+  os <<"MAModeler()";
+  return os;
 }
 
   

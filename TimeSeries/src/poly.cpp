@@ -1,3 +1,4 @@
+#include <new>
 #include "poly.h"
 #include "maths.h"
 #include <string.h>
@@ -8,7 +9,7 @@
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 
-int Polynomial::Resize(int newnumcoeffs)
+int Polynomial::Resize(const int newnumcoeffs)
 {
    if (coeffsize<newnumcoeffs) {
       double *newcoeffs = new double [newnumcoeffs];
@@ -30,7 +31,7 @@ int Polynomial::Resize(int newnumcoeffs)
    return 0;
 }
 
-int Polynomial::Initialize(int pow, int numc, double *coeffs)
+int Polynomial::Initialize(const int pow, const int numc, const double *coeffs)
 {
    if (Resize(numc)) {
       return -1;
@@ -91,13 +92,31 @@ Polynomial::Polynomial()
    power=0;
 }
 
+Polynomial::Polynomial(const Polynomial &rhs) 
+{
+  coeffs=0;
+  coeffsize=0;
+  numcoeffs=0;
+  power=0;
+  Resize(rhs.numcoeffs);
+  power=rhs.power;
+  memcpy(coeffs,rhs.coeffs,sizeof(coeffs[0])*rhs.numcoeffs);
+}
+
+
 Polynomial::~Polynomial()
 {
    CHK_DEL_MAT(coeffs);
    coeffsize=0;
 }
 
-int Polynomial::Duplicate(Polynomial *right)
+Polynomial & Polynomial::operator=(const Polynomial &rhs)
+{
+  return *(new(this)Polynomial(rhs));
+}
+
+
+int Polynomial::Duplicate(const Polynomial *right)
 {
    if (Resize(right->numcoeffs)) { 
       return -1;
@@ -109,7 +128,7 @@ int Polynomial::Duplicate(Polynomial *right)
    return 0;
 }
 
-Polynomial * Polynomial::Clone()
+Polynomial * Polynomial::Clone() const
 {
    Polynomial *p = new Polynomial;
 
@@ -128,12 +147,12 @@ int Polynomial::Clear()
 }
 
 
-int Polynomial::GetNumCoeffs()
+int Polynomial::GetNumCoeffs() const
 {
    return numcoeffs;
 }
 
-int Polynomial::SetCoeff(int i, double newcoeff)
+int Polynomial::SetCoeff(const int i, const double newcoeff)
 {
    if (i<0) {
       return -1;
@@ -150,7 +169,7 @@ int Polynomial::SetCoeff(int i, double newcoeff)
    return 0;
 }
 
-double Polynomial::GetCoeff(int i)
+double Polynomial::GetCoeff(const int i) const
 {
    if (i<0 || i>=numcoeffs) {
       return 0.0;
@@ -159,18 +178,18 @@ double Polynomial::GetCoeff(int i)
    return coeffs[i];
 }
 
-int Polynomial::GetPower()
+int Polynomial::GetPower() const
 {
    return power;
 }
 
-int Polynomial::SetPower(int pow)
+int Polynomial::SetPower(const int pow)
 {
    power=pow;
    return 0;
 }
 
-double Polynomial::Evaluate(double x)
+double Polynomial::Evaluate(const double x) const
 {
    int i;
    double result=0.0;
@@ -182,7 +201,7 @@ double Polynomial::Evaluate(double x)
    return result;
 }
 
-int Polynomial::AddInternal(Polynomial *right,int options)
+int Polynomial::AddInternal(const Polynomial *right, const int options)
 {
    int i;
 
@@ -224,12 +243,12 @@ int Polynomial::AddInternal(Polynomial *right,int options)
    }
 }
 
-int Polynomial::Add(Polynomial *right)
+int Polynomial::Add(const Polynomial *right)
 {
    return AddInternal(right);
 }
 
-int Polynomial::Subtract(Polynomial *right)
+int Polynomial::Subtract(const Polynomial *right)
 {
    Polynomial temp;
    
@@ -248,7 +267,7 @@ int Polynomial::Subtract(Polynomial *right)
    return 0;
 }
 
-int Polynomial::MultiplyBy(double c)
+int Polynomial::MultiplyBy(const double c)
 {
    int i;
 
@@ -259,7 +278,7 @@ int Polynomial::MultiplyBy(double c)
 }
 
 // This is a simple convolution based implementation
-int Polynomial::MultiplyBy(Polynomial *right)
+int Polynomial::MultiplyBy(const Polynomial *right)
 {
 // zero special case
    if (right->numcoeffs==0) { 
@@ -301,8 +320,8 @@ int Polynomial::MultiplyBy(Polynomial *right)
 }
 
 // Assume that denominator is larger than numerator
-int Polynomial::DivideBy(Polynomial *right, 
-                         int truncationlimit)
+int Polynomial::DivideBy(const Polynomial *right, 
+                         const int truncationlimit)
 {
   PolynomialRatio *rem;
 
@@ -314,7 +333,7 @@ int Polynomial::DivideBy(Polynomial *right,
 }
 
 
-int Polynomial::Equals(Polynomial *right)
+int Polynomial::Equals(const Polynomial *right) const
 {
    if (numcoeffs != right->numcoeffs || power != right->power) {
       return -1;
@@ -331,9 +350,9 @@ int Polynomial::Equals(Polynomial *right)
    }
 }
 
-int Polynomial::DivideBy(Polynomial *right, 
+int Polynomial::DivideBy(const Polynomial *right, 
                          PolynomialRatio **remainder,
-                         int truncationlimit)
+                         const int truncationlimit)
 {
   int i;
   int numsteps = truncationlimit==0 ? numcoeffs : truncationlimit;
@@ -373,81 +392,13 @@ int Polynomial::DivideBy(Polynomial *right,
 
   return 0;
 
-/*
-  int i,j,k;
-  int shift;
-  int firststep;
-
-  shift = numcoeffs-right->numcoeffs;
-
-  // If
-  if (shift<0) {
-     Polynomial *num = new Polynomial;
-     Polynomial *denom = new Polynomial;
-     num->Duplicate(this);
-     denom->Duplicate(right);
-     PolynomialRatio *rat= new PolynomialRatio;
-     rat->SetNumerator(num);
-     rat->SetDenominator(denom);
-     *remainder=rat;
-     Resize(0);
-     return 0;
-  }
-
-  double *newcoeffs = new double [numsteps];
-
-
-  if (newcoeffs==0) {
-    return -1;
-  }
-
-  // First, knock off leading zeros
-  for (firststep=0,i=0;i<right->numcoeffs;i++) {
-    if (right->coeffs[i] == 0) {
-      newcoeffs[i]=0.0;
-      ++firststep;
-    } else {
-      break;
-    }
-  }
-  
-  Polynomial cursub, mpyby;
-  Polynomial zero;
-  Polynomial *curresult = new Polynomial;
-  
-  curresult->Duplicate(this);
-
-  for (i=0;i<numsteps;i++) {
-    newcoeffs[i]=curresult->GetCoeff(i)/right->coeffs[firststep];
-    mpyby.Duplicate(&zero);
-    mpyby.SetCoeff(i,newcoeffs[i+firststep]);
-    cursub.Duplicate(right);
-    cursub.MultiplyBy(&mpyby);
-    curresult->Subtract(&cursub);
-  }
-
-  CHK_DEL_MAT(coeffs);
-  coeffs=newcoeffs;
-  numcoeffs=numsteps;
-  coeffsize=numsteps;
-
-  Polynomial *denom = new Polynomial;
-  PolynomialRatio *rat = new PolynomialRatio;
-
-  denom->Duplicate(right);
-  rat->SetNumerator(curresult);
-  rat->SetDenominator(denom);
-
-  *remainder=rat;
-  Fixup();
-  rat->Fixup();
-  return 0;
-*/
 }
 
-int Polynomial::RaiseTo(int power) 
+int Polynomial::RaiseTo(const int power) 
 {
-   if (power==0) { 
+  int ppower=power;
+
+   if (ppower==0) { 
       if (Resize(1)) { 
          return -1;
       } else {
@@ -456,11 +407,11 @@ int Polynomial::RaiseTo(int power)
       }
    }
 
-   if (power==1) {
+   if (ppower==1) {
      return 0;
    }
 
-   if (power<0) {
+   if (ppower<0) {
       Polynomial *temp = new Polynomial;
       if (temp==0) { 
          return -1;
@@ -469,11 +420,11 @@ int Polynomial::RaiseTo(int power)
       temp->DivideBy(this);
       this->Duplicate(temp);
       delete temp;
-      power=-power;
+      ppower=-ppower;
    }
 
    int i;
-   int numexp = (int) floor(log(power-1)/log(2));
+   int numexp = (int) floor(log(ppower-1)/log(2));
    Polynomial *original = Clone();
 
    for (i=0;i<numexp;i++) {
@@ -482,7 +433,7 @@ int Polynomial::RaiseTo(int power)
          return -1;
       }
    }
-   for (i=numexp;i<power-1;i++) {
+   for (i=numexp;i<ppower-1;i++) {
       if (MultiplyBy(original)) {
          Duplicate(original);
          return -1;
@@ -493,13 +444,13 @@ int Polynomial::RaiseTo(int power)
    return 0;
 }
 
-int Polynomial::RaiseTo(double power, int truncationlimit)
+int Polynomial::RaiseTo(const double power, const int truncationlimit)
 {
    return -1;
 }
 
 
-void Polynomial::Dump(FILE *out)
+void Polynomial::Dump(FILE *out) const
 {
    int i;
 
@@ -513,10 +464,30 @@ void Polynomial::Dump(FILE *out)
    }
 }
 
+ostream & Polynomial::operator<<(ostream &os) const
+{
+  os <<"Polynomial(power="<<power<<", numcoeffs="<<numcoeffs<<"coeffs=(";
+  
+  for (int i=0;i<numcoeffs;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << coeffs[i];
+  }
+  os <<"))";
+  return os;
+}
+
 
 PolynomialRatio::PolynomialRatio()
 {
   numerator=denominator=0;
+}
+
+PolynomialRatio::PolynomialRatio(const PolynomialRatio &rhs)
+{
+  numerator=rhs.numerator->Clone();
+  denominator=rhs.denominator->Clone();
 }
 
 PolynomialRatio::~PolynomialRatio()
@@ -534,13 +505,13 @@ int PolynomialRatio::Fixup()
    return 0;
 }
 
-Polynomial *PolynomialRatio::GetNumerator()
+Polynomial *PolynomialRatio::GetNumerator() const
 {
   return numerator;
 }
 
 
-Polynomial *PolynomialRatio::GetDenominator()
+Polynomial *PolynomialRatio::GetDenominator() const
 {
   return denominator;
 }
@@ -559,12 +530,12 @@ int PolynomialRatio::SetNumerator(Polynomial *num)
 }
 
 
-double PolynomialRatio::Evaluate(double x)
+double PolynomialRatio::Evaluate(const double x) const
 {
   return (numerator->Evaluate(x))/(denominator->Evaluate(x));
 }
 
-Polynomial *PolynomialRatio::Approximate(int truncationlimit)
+Polynomial *PolynomialRatio::Approximate(const int truncationlimit) const
 {
   Polynomial *temp = new Polynomial;
 
@@ -576,15 +547,25 @@ Polynomial *PolynomialRatio::Approximate(int truncationlimit)
 
 }
 
-void PolynomialRatio::Dump(FILE *out)
+void PolynomialRatio::Dump(FILE *out) const
 {
   numerator->Dump(out);
   fprintf(out,"/\n");
   denominator->Dump(out);
 }
 
+ostream &PolynomialRatio::operator<<(ostream &os) const
+{
+  os <<"PolynomialRatio(numerator=";
+  os << *numerator;
+  os <<", denominator=";
+  os << *denominator;
+  os <<")";
+  return os;
+}
 
-Polynomial * Add(Polynomial *left, Polynomial *right)
+
+Polynomial * Add(const Polynomial *left, const Polynomial *right)
 {
    Polynomial *temp=new Polynomial;
    temp->Duplicate(left);
@@ -592,7 +573,7 @@ Polynomial * Add(Polynomial *left, Polynomial *right)
    return temp;
 }
 
-Polynomial * Subtract(Polynomial *left, Polynomial *right)
+Polynomial * Subtract(const Polynomial *left, const Polynomial *right)
 {
    Polynomial *temp=new Polynomial;
    temp->Duplicate(left);
@@ -600,7 +581,7 @@ Polynomial * Subtract(Polynomial *left, Polynomial *right)
    return temp;
 }
 
-Polynomial * Multiply(Polynomial *left, Polynomial *right)
+Polynomial * Multiply(const Polynomial *left, const Polynomial *right)
 {
    Polynomial *temp=new Polynomial;
    temp->Duplicate(left);
@@ -608,7 +589,7 @@ Polynomial * Multiply(Polynomial *left, Polynomial *right)
    return temp;
 }
 
-Polynomial * Divide(Polynomial *left, Polynomial *right, int truncationlimit)
+Polynomial * Divide(const Polynomial *left, const Polynomial *right, const int truncationlimit)
 {
    Polynomial *temp=new Polynomial;
    temp->Duplicate(left);
@@ -616,8 +597,8 @@ Polynomial * Divide(Polynomial *left, Polynomial *right, int truncationlimit)
    return temp;
 }
 
-Polynomial * Divide(Polynomial *left, Polynomial *right, 
-		    PolynomialRatio **remainder, int truncationlimit)
+Polynomial * Divide(const Polynomial *left, const Polynomial *right, 
+		    PolynomialRatio **remainder, const int truncationlimit)
 {
    Polynomial *temp=new Polynomial;
    temp->Duplicate(left);
@@ -625,7 +606,7 @@ Polynomial * Divide(Polynomial *left, Polynomial *right,
    return temp;
 }
 
-Polynomial * Raise(Polynomial *left, double power)
+Polynomial * Raise(const Polynomial *left, const double power)
 {
    Polynomial *temp=new Polynomial;
    temp->Duplicate(left);
@@ -634,7 +615,7 @@ Polynomial * Raise(Polynomial *left, double power)
 }
 
 
-Polynomial *MakeDeltaFracD(double d, int truncationlimit)
+Polynomial *MakeDeltaFracD(const double d, const int truncationlimit)
 {
    Polynomial *diff = new Polynomial;
 

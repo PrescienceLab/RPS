@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
     fprintf(stderr,"Can't load trace file %s\n",tracefile);
     exit(-1);
   }
-  //fprintf(stderr,"Read %d samples from %s\n",numsamples,tracefile);
 
   InitRandom();
 
@@ -204,12 +203,10 @@ int main(int argc, char *argv[])
 	  pvm_send(tid,JOB);
 
 	  delete testcase;
-	  //fprintf(stderr,"Sent JOB to %d\n",tid);
 	  ++issuedtests;
 	}
 	break;
 	case RESULT: {
-	  //fprintf(stderr,"Received RESULT from %d\n",tid);
 	  Testcase testcase;
 	  IntervalStats fitstats,teststats;
 	  int bmp;
@@ -238,7 +235,6 @@ int main(int argc, char *argv[])
 	    fprintf(stderr,"ignoring invalid prediction results (%d,%d)\n",	
 		    bmmodelstats.usertags,testmodelstats.usertags);
 	  }
-	  //fprintf(stderr,"Unpacked RESULT from %d\n",tid);
 	}
 	break;
 	case TASKFAIL: {

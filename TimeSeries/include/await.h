@@ -1,6 +1,7 @@
 #ifndef _await
 #define _await
 
+#include <new>
 #include "abstract.h"
 
 template <class MODELER> 
@@ -22,7 +23,18 @@ class AwaitingPredictor : public Predictor {
     }
   }
  public:
-  AwaitingPredictor(const ParameterSet &ps, int awaitint) {
+  AwaitingPredictor() : ps(0), lastobs(0), seq(0), seqlen(0), cur(0), model(0), pred(0) {}
+  AwaitingPredictor(const AwaitingPredictor &rhs) {
+    ps=rhs.ps->Clone();
+    lastobs=rhs.lastobs;
+    seqlen=rhs.seqlen;
+    seq=new double[seqlen];
+    memcpy(seq,rhs.seq,sizeof(seq[0])*seqlen);
+    cur=rhs.cur;
+    model=rhs.model.Clone();
+    pred=rhs.pred.Clone();
+  }
+  AwaitingPredictor(const ParameterSet &ps, const int awaitint) {
     this->seqlen=awaitint;
     seq = new double [seqlen];
     this->ps = ps.Clone();
@@ -40,13 +52,16 @@ class AwaitingPredictor : public Predictor {
     CHK_DEL(model);
     CHK_DEL(pred);
   }
+  AwaitingPredictor &operator=(const AwaitingPredictor &rhs) {
+    return *(new(this)AwaitingPredictor(rhs));
+  }
   int Begin() {
     return 0;
   }
-  int StepsToPrime() { 
+  int StepsToPrime() const { 
     return 0;
   }
-  double Step(double obs) {
+  double Step(const double obs) {
     lastobs=obs;
     if (cur<seqlen) { 
       seq[cur]=obs;
@@ -60,7 +75,7 @@ class AwaitingPredictor : public Predictor {
     }
   }
   
-  int Predict(int maxahead, double *predictions) {
+  int Predict(const int maxahead, double *predictions) const {
     if (pred) { 
       return pred->Predict(maxahead,predictions);
     } else {
@@ -71,8 +86,8 @@ class AwaitingPredictor : public Predictor {
     }
   }
   
-  int ComputeVariances(int maxahead, double *vars, 
-		       enum VarianceType vtype=POINT_VARIANCES) {
+  int ComputeVariances(const int maxahead, double *vars, 
+		       const VarianceType vtype=POINT_VARIANCES) const {
     if (pred) { 
       return pred->ComputeVariances(maxahead,vars,vtype);
     } else {
@@ -84,7 +99,7 @@ class AwaitingPredictor : public Predictor {
     }
   }
 
-  void Dump(FILE *out=stdout) {
+  void Dump(FILE *out=stdout) const {
     fprintf(out, "AwaitingPredictor cur=%d seqlen=%d lastobs=%f curmodel and curpredictor follow\n",
 	    cur,seqlen,lastobs);
     if (model) { 
@@ -98,6 +113,27 @@ class AwaitingPredictor : public Predictor {
       fprintf(out,"No current predictor\n");
     }
   }
+  ostream & operator<<(ostream &os) const {
+    os << "AwaitingPredictor(cur="<<cur<<", seqlen="<<seqlen<<", lastobs="<<lastobs<<", model=";
+    if (model) {
+      os <<*model;
+    } else {
+      os <<"none";
+    }
+    os <<", predictor=";
+    if (pred) {  
+      os << *pred;
+    } else {
+      os <<"none";
+    }
+    os <<")";
+    return os;
+  }
+};
+
+template <class MODELER>
+inline ostream & operator<< (ostream &os, const AwaitingPredictor<MODELER> &p) {
+  return p.operator<<(os);
 };
 
 
@@ -107,6 +143,11 @@ class AwaitingModel : public Model {
   ParameterSet  *params; 
   int            awaitinterval;
  public:
+  AwaitingModel() : params(0), awaitinterval(0) {}
+  AwaitingModel(const AwaitingModel &rhs) {
+    params=rhs.params->Clone();
+    awaitinterval=rhs.awaitinterval;
+  }
   AwaitingModel(const ParameterSet &ps, int awaitinterval) {
     params = ps.Clone();
     this->awaitinterval=awaitinterval;
@@ -114,25 +155,54 @@ class AwaitingModel : public Model {
   ~AwaitingModel() { 
     CHK_DEL(params);
   }
-  Predictor * MakePredictor() { 
+  AwaitingModel & operator=(const AwaitingModel &rhs) {
+    return *(new(this)AwaitingModel(rhs));
+  }
+  Predictor * MakePredictor() const { 
     return new AwaitingPredictor<MODELER>(*params,awaitinterval);
   }
-  void Dump(FILE *out=stdout) {
-    fprintf(out,"AwaitingModel, awaitinterval=%d\n", awaitinterval);
+  void Dump(FILE *out=stdout) const {
+    fprintf(out,"AwaitingModel, awaitinterval=%d, parameterset follows\n", awaitinterval);
+    params->Dump(out);
   }
+  ostream & operator<<(ostream &os) const {
+    os <<"AwaitingModel(awaitinterval="<<awaitinterval<<", params="<<*params<<")";
+    return os;
+  }
+};
+
+template <class MODELER>
+inline ostream & operator<< (ostream &os, const AwaitingModel<MODELER> &p) {
+  return p.operator<<(os);
 };
 
 
 template <class MODELER>
 class AwaitingModeler : public Modeler {
  public:
-  static Model *Fit(double *sequence, int len, const ParameterSet &ps) {
+  AwaitingModeler() {}
+  AwaitingModeler(const AwaitingModeler<MODELER> &rhs) {}
+  ~AwaitingModeler() {}
+  AwaitingModeler &operator=(const AwaitingModeler<MODELER> &rhs) { return *(new(this)AwaitingModeler<MODELER>(rhs));}
+  static Model *Fit(const double *sequence, const int len, const ParameterSet &ps) {
     assert(0);
   }
   static AwaitingModel<MODELER> *Fit(const ParameterSet &ps,
-				     int awaitinterval) {
+				     cosnt int awaitinterval) {
     return new AwaitingModel<MODELER>(ps,awaitinterval);
   }
+  void Dump(FILE *out=stdout) const {
+    fprintf(out,"AwaitingModeler\n");
+  }
+  ostream & operator<<(ostream &os) const {
+    os <<"AwaitingModeler()";
+    return os;
+  }
+};
+
+template <class MODELER>
+inline ostream & operator<< (ostream &os, const AwaitingModeler<MODELER> &p) {
+  return p.operator<<(os);
 };
 
 

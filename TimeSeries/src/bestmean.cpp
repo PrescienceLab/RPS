@@ -1,3 +1,4 @@
+#include <new>
 #include "bestmean.h"
 #include "tools.h"
 #include "util.h"
@@ -13,11 +14,22 @@ BestMeanModel::BestMeanModel()
   mean=0.0;
 }
 
+BestMeanModel::BestMeanModel(const BestMeanModel &rhs) :
+  order(rhs.order), variance(rhs.variance), mean(rhs.mean)
+{
+}
+
+
 BestMeanModel::~BestMeanModel()
 {
 }
 
-void BestMeanModel::Initialize(int order)
+BestMeanModel & BestMeanModel::operator=(const BestMeanModel &rhs)
+{
+  return *(new(this)BestMeanModel(rhs));
+}
+
+void BestMeanModel::Initialize(int const order) 
 {
   this->order=order;
 }
@@ -25,32 +37,32 @@ void BestMeanModel::Initialize(int order)
 #define CHECK(num) ((num)>=0 && (num)<order)
 #define ADJUST(num) ((num))
 
-void BestMeanModel::SetVariance(double var)
+void BestMeanModel::SetVariance(const double var)
 {
   variance=var;
 }
 
-double BestMeanModel::GetVariance() 
+double BestMeanModel::GetVariance() const 
 {
   return variance;
 }
 
-void BestMeanModel::SetMean(double mn)
+void BestMeanModel::SetMean(const double mn)
 {
   mean=mn;
 }
 
-double BestMeanModel::GetMean()
+double BestMeanModel::GetMean() const 
 {
   return mean;
 }
 
-int BestMeanModel::GetOrder() 
+int BestMeanModel::GetOrder() const  
 {
   return order;
 }
 
-void BestMeanModel::Dump(FILE *out)
+void BestMeanModel::Dump(FILE *out) const 
 {
   if (out==0) {
     out=stdout;
@@ -61,13 +73,19 @@ void BestMeanModel::Dump(FILE *out)
 }
 
 
+ostream & BestMeanModel::operator<<(ostream &os) const 
+{
+  os << "BestMeanModel(order="<<order<<", mean="<<mean<<", variance="<<variance<<")";
+  return os;
+}
+
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 
 #define LEAVE() goto leave_error
 
 
-Predictor *BestMeanModel::MakePredictor()
+Predictor *BestMeanModel::MakePredictor() const
 {
 #ifdef BESTMEAN_AS_AR
    int i;
@@ -104,12 +122,25 @@ BestMeanPredictor::BestMeanPredictor()
   mult=0.0;
 }
 
+BestMeanPredictor::BestMeanPredictor(const BestMeanPredictor &rhs)
+{
+  samples=0; order=0; numsamples=0; mult=0.0;
+  Initialize(rhs.order,rhs.variance);
+  memcpy(samples,rhs.samples,sizeof(samples[0])*order);
+  numsamples=rhs.numsamples;
+}
+
 BestMeanPredictor::~BestMeanPredictor()
 {
   CHK_DEL_MAT(samples);
 }
 
-int BestMeanPredictor::Initialize(int order,double variance)
+BestMeanPredictor & BestMeanPredictor::operator=(const BestMeanPredictor &rhs)
+{
+  return *(new(this)BestMeanPredictor(rhs));
+}
+
+int BestMeanPredictor::Initialize(const int order, const double variance)
 {
   this->order=order;
   mult = 1.0/(double)order;
@@ -127,13 +158,13 @@ int BestMeanPredictor::Begin()
 }
 
 
-int BestMeanPredictor::StepsToPrime()
+int BestMeanPredictor::StepsToPrime() const 
 {
   return order;
 }
 
 
-double BestMeanPredictor::Step(double obs)
+double BestMeanPredictor::Step(const double obs)
 {
   samples[(numsamples)%order]=obs;
   ++numsamples;
@@ -148,7 +179,7 @@ double BestMeanPredictor::Step(double obs)
 }
 
 
-int BestMeanPredictor::Predict(int maxahead, double *predictions)
+int BestMeanPredictor::Predict(const int maxahead, double *predictions) const
 {
   double res;
   int i;
@@ -164,8 +195,8 @@ int BestMeanPredictor::Predict(int maxahead, double *predictions)
 
 
 
-int BestMeanPredictor::ComputeVariances(int maxahead, double *vars,
-					VarianceType vtype)
+int BestMeanPredictor::ComputeVariances(const int maxahead, double *vars,
+					const VarianceType vtype) const
 {
   int i;
   // Evalauate as an ar(p) model
@@ -212,12 +243,32 @@ int BestMeanPredictor::ComputeVariances(int maxahead, double *vars,
 }
 
 
-void BestMeanPredictor::Dump(FILE *out)
+void BestMeanPredictor::Dump(FILE *out) const
 {
-  fprintf(out,"BestMeanPredictor(order=%d,variance=%f)\n",order,variance);
+  fprintf(out,"BestMeanPredictor(order=%d,variance=%f,numsamples=%d)\nsamples are:\n",order,variance,numsamples);
+  for (int i=0;i<order;i++) {
+    fprintf(out,"%f\n",samples[i]);
+  }
 }	
 
+ostream & BestMeanPredictor::operator<<(ostream &os) const
+{
+  os<<"BestMeanPredictor(order="<<order<<", variance="<<variance<<", numsamples="<<numsamples<<", samples=(";
+  for (int i=0;i<order;i++) {
+    if (i>0) { 
+      os <<", ";
+    }
+    os <<samples[i];
+  }
+  return os;
+}
+
+
 BestMeanModeler::BestMeanModeler()
+{
+}
+
+BestMeanModeler::BestMeanModeler(const BestMeanModeler &rhs)
 {
 }
 
@@ -225,10 +276,16 @@ BestMeanModeler::~BestMeanModeler()
 {
 }
 
+BestMeanModeler & BestMeanModeler::operator=(const BestMeanModeler &rhs)
+{
+  return *(new(this)BestMeanModeler(rhs));
+}
+
+
 
 #define ABS(x) ((x)> 0 ? (x) : (-(x)))
 
-BestMeanModel *BestMeanModeler::Fit(double *seq, int len, int maxord)
+BestMeanModel *BestMeanModeler::Fit(const double *seq, const int len, const int maxord)
 {
   int i;
   int ord;
@@ -277,13 +334,25 @@ BestMeanModel *BestMeanModeler::Fit(double *seq, int len, int maxord)
   return model;
 }
 
-Model *BestMeanModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *BestMeanModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   int p,d,q;
   ((const PDQParameterSet &)ps).Get(p,d,q);
   return Fit(seq,len,p);
 }
 			  
+
+void BestMeanModeler::Dump(FILE *out) const
+{
+  fprintf(out,"BestMeanModeler()\n");
+}
+
+ostream & BestMeanModeler::operator<<(ostream &os) const
+{
+  os << "BestMeanModeler()";
+  return os;
+}
+
   
 
   

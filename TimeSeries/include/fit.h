@@ -14,43 +14,45 @@ struct ModelTemplate;
 
 char *GetAvailableModels();
 
-ModelTemplate *ParseModel(int argc, char *argv[]);
-ModelTemplate *ParseModel(char *buf);
+ModelTemplate *ParseModel(const int argc, const char *argv[]);
+ModelTemplate *ParseModel(const char *buf);
 
-Model *FitThis(double *seq, int numsamples, const ModelTemplate &mt);
+Model *FitThis(const double *seq, const int numsamples, const ModelTemplate &mt);
 
-Model *FitThis(ModelType mclass,
-	       double *seq,
-	       int numsamples,
+Model *FitThis(const ModelType mclass,
+	       const double *seq,
+	       const int numsamples,
 	       const PDQParameterSet &ps);
 
-Model *FitThis(ModelType mclass,
-	       double *seq, int numsamples, 
-	       int p, double d, int q);
+Model *FitThis(const ModelType mclass,
+	       const double *seq, 
+	       const int numsamples, 
+	       const int p, const double d, const int q);
 
-Model *FitThis(ModelType mclass,
-	       double *seq,
-	       int numsamples,
+Model *FitThis(const ModelType mclass,
+	       const double *seq,
+	       const int numsamples,
 	       const RefittingPDQParameterSet &ps);
 
-Model *FitThis(ModelType mclass,
-	       double *seq, int numsamples, 
-	       int p, double d, int q, int refitinterval);
+Model *FitThis(const ModelType mclass,
+	       const double *seq, 
+	       const int numsamples, 
+	       const int p, const double d, const int q, const int refitinterval);
 
-Model *FitThis(ModelType mclass,
+Model *FitThis(const ModelType mclass,
 	       const AwaitingPDQParameterSet &ps);
 
-Model *FitThis(ModelType mclass,
-	       int p, double d, int q, int await);
+Model *FitThis(const ModelType mclass,
+	       const int p, const double d, const int q, const int await);
 
-Model *FitThis(ModelType mclass,
+Model *FitThis(const ModelType mclass,
 	       const ManagedPDQParameterSet &ps);
 
-Model *FitThis(ModelType mclass,
-	       int p, double d, int q, 
-	       int num_await, int num_refit,
-	       int min_num_test, double errlimit,
-	       double varlimit);
+Model *FitThis(const ModelType mclass,
+	       const int p, const double d, const int q, 
+	       const int num_await, const int num_refit,
+	       const int min_num_test, const double errlimit,
+	       const double varlimit);
 
 
 

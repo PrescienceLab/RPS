@@ -1,3 +1,5 @@
+#include <new>
+
 #include "arfima.h"
 #include "ar.h"
 #include "poly.h"
@@ -6,13 +8,30 @@
 #include "util.h"
 #include "tools.h"
 
+#include "rps_log.h"
+
 ARFIMAModel::ARFIMAModel() 
 {
-	p=q=0;
-   d=0.0;
-   phis=thetas=0;
-   variance=0;
+  p=q=0;
+  d=0.0;
+  phis=thetas=0;
+  variance=0;
 }
+
+ARFIMAModel::ARFIMAModel(const ARFIMAModel &rhs)
+{
+  Initialize(rhs.p, rhs.d, rhs.q);
+  memcpy(phis,rhs.phis,sizeof(phis[0])*p);
+  memcpy(thetas,rhs.thetas,sizeof(thetas[0])*q);
+  variance=rhs.variance;
+  mean=rhs.variance;
+}
+
+ARFIMAModel &ARFIMAModel::operator=(const ARFIMAModel &rhs)
+{
+  return *(new(this) ARFIMAModel(rhs));
+}
+ 
 
 ARFIMAModel::~ARFIMAModel()
 {
@@ -20,7 +39,7 @@ ARFIMAModel::~ARFIMAModel()
    CHK_DEL_MAT(thetas);
 }
 
-int ARFIMAModel::Initialize(int P, double D, int Q)
+int ARFIMAModel::Initialize(const int P, const double D, const int Q)
 {
    p=P;
    d=D;
@@ -31,47 +50,42 @@ int ARFIMAModel::Initialize(int P, double D, int Q)
    CHK_DEL_MAT(thetas);
 
    phis = new double [p];
-   if (phis==0) {
-      return -1;
-   }
    thetas = new double [q];
-   if (thetas==0) {
-      return -1;
-   }
+
    return 0;
 }
 
-int ARFIMAModel::GetP()
+int ARFIMAModel::GetP() const
 {
    return p;
 }
 
-int ARFIMAModel::GetQ()
+int ARFIMAModel::GetQ() const 
 {
    return q;
 }
 
-double ARFIMAModel::GetD()
+double ARFIMAModel::GetD() const
 {
    return d;
 }
 
 
-void ARFIMAModel::SetARCoeff(int num, double value)
+void ARFIMAModel::SetARCoeff(const int num, const double value)
 {
    if (num>=0 && num<p) {
       phis[num]=value;
    }
 }
 
-void ARFIMAModel::SetMACoeff(int num, double value)
+void ARFIMAModel::SetMACoeff(const int num, const double value)
 {
    if (num>=0 && num<p) {
       thetas[num]=value;
    }
 }
 
-double ARFIMAModel::GetARCoeff(int num)
+double ARFIMAModel::GetARCoeff(const int num) const
 {
    if (num<0 || num>=p) {
       return 0.0;
@@ -79,7 +93,7 @@ double ARFIMAModel::GetARCoeff(int num)
    return phis[num];
 }
 
-double ARFIMAModel::GetMACoeff(int num)
+double ARFIMAModel::GetMACoeff(const int num) const
 {
    if (num<0 || num>=q) {
       return 0.0;
@@ -87,17 +101,17 @@ double ARFIMAModel::GetMACoeff(int num)
    return thetas[num];
 }
 
-void ARFIMAModel::SetVariance(double variance)
+void ARFIMAModel::SetVariance(const double variance)
 {
    this->variance=variance;
 }
 
-double ARFIMAModel::GetVariance()
+double ARFIMAModel::GetVariance() const
 {
    return variance;
 }
 
-double ARFIMAModel::EstimateVariance(double *seq, int len)
+double ARFIMAModel::EstimateVariance(const double *seq, const int len) const
 {
   Predictor *predictor=MakePredictor();
   int i;
@@ -122,18 +136,18 @@ double ARFIMAModel::EstimateVariance(double *seq, int len)
   return ssd/((double)len);
 }
 
-void ARFIMAModel::SetMean(double mean)
+void ARFIMAModel::SetMean(const double mean)
 {
    this->mean=mean;
 }
 
-double ARFIMAModel::GetMean()
+double ARFIMAModel::GetMean() const
 {
    return mean;
 }
 
 
-void ARFIMAModel::Dump(FILE *out)
+void ARFIMAModel::Dump(FILE *out) const
 {
   fprintf(out,"ARFIMA(%d,%f,%d) model\n",p,d,q);
   fprintf(out,"Phis (AR coeffs):");
@@ -151,7 +165,27 @@ void ARFIMAModel::Dump(FILE *out)
   fprintf(out,"\nNoise Variance=%f\n",variance);
 }
 
-Predictor * ARFIMAModel::MakePredictor(int truncationlimit)
+ostream &ARFIMAModel::operator<<(ostream &os) const
+{
+  os << "ARFIMAModel(p="<<p<<", d="<<d<<", q="<<q<<", noisevariance="<<variance<<", phis=(";
+  for (int i=0;i<p;i++) {
+    if (i>0) { 
+      os << "," << phis[i];
+    }
+  }
+  os << "), thetas=(";
+  for (int i=0;i<q;i++) {
+    if (i>0) { 
+      os << "," << thetas[i];
+    } else {
+      os << thetas[i];
+    }
+  }
+  os << ")";
+  return os;
+}
+
+Predictor * ARFIMAModel::MakePredictor(const int truncationlimit) const
 {
    int i;
    Polynomial et,th, *dh;
@@ -186,7 +220,7 @@ Predictor * ARFIMAModel::MakePredictor(int truncationlimit)
    return pred;
 }
 
-Predictor * ARFIMAModel::MakePredictor(){
+Predictor * ARFIMAModel::MakePredictor() const {
    return MakePredictor((int) 100*(p+q));
 }
 
@@ -195,13 +229,23 @@ ARFIMAModeler::ARFIMAModeler()
 {
 }
 
+ARFIMAModeler::ARFIMAModeler(const ARFIMAModeler &rhs)
+{
+}
+
 ARFIMAModeler::~ARFIMAModeler()
 {
 }
 
+ARFIMAModeler & ARFIMAModeler::operator=(const ARFIMAModeler &rhs)
+{
+  return *(new(this) ARFIMAModeler(rhs));
+}
+
+
 // No model is fitted if you don't have the fracdiff package
 #ifndef HAVE_FRACDIFF
-Model *ARFIMAModeler::Fit(double *sequence, int len, int p, double d, int q)
+Model *ARFIMAModeler::Fit(const double *sequence, const int len, const int p, const double d, const int q)
 {
   fprintf(stderr,"Attempt to fit ARFIMA model with no fracdiff package\n");
    return 0;
@@ -258,9 +302,13 @@ void  fdvar_(float  *x,         // [in] sequence
 	     int    *lenw);     // [in] size of work array
 
 
-Model *ARFIMAModeler::Fit(double *sequence, int len, int p, double d, int q)
+Model *ARFIMAModeler::Fit(const double *sequence, const int lenlen, const int pp, const double dd, const int qq)
 {
   int i;
+  int len=lenlen;
+  int p=pp;
+  int q=qq;
+  double d=dd;
 
   double mean=0.0;
   for (i=0;i<len;i++) {
@@ -309,11 +357,9 @@ Model *ARFIMAModeler::Fit(double *sequence, int len, int p, double d, int q)
   }
 #endif
 
-#if 0
-  printf("Allocated %d bytes of memory for call to fracdf\n",
+  RPSLog(CONTEXT,10,"Allocated %d bytes of memory for call to fracdf\n",
 	 sizeof(double)*(p+q+3*(p+q+1)*(p+q+1) + (p+q+1) + lenw) +
 	 sizeof(float)*len);
-#endif
 
   fracdf_(x,
 	  &len,
@@ -396,10 +442,10 @@ Model *ARFIMAModeler::Fit(double *sequence, int len, int p, double d, int q)
 #endif
 
 
-Model *ARFIMAModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *ARFIMAModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   int p,d,q;
-  
+
   ((const PDQParameterSet &)ps).Get(p,d,q);
   
   return Fit(seq,len,p,(double)d,q);

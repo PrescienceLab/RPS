@@ -207,16 +207,7 @@ double AverageMutualInformation(double *seq1, int len1, double *seq2, int len2)
   for (i=0;i<numunique2;i++) {
     h2.Add(i,vals2[i]);
   }
-  /*
-  unsigned numh;
-  double mean,sdev;
-  h1.GetStats(&numh,&mean,&sdev);
-  printf("h1 has %u items with mean list len %f and sdev %f\n",numh,mean,sdev);
-  h2.GetStats(&numh,&mean,&sdev);
-  printf("h2 has %u items with mean list len %f and sdev %f\n",numh,mean,sdev);
-  h1.DumpListLengths(stdout);
-  h2.DumpListLengths(stdout);
-  */
+
   // Compute joint probabilities
   // This is rather slow - A serious implementation would use hashing
   int numsamples = MIN(len1,len2);

@@ -4,6 +4,8 @@
 #include "crossval_core.h"
 #include "fit.h"
 
+#include "rps_log.h"
+
 int Testcase::Pack(PackInts PI, PackDoubles PD, PackString PS)
 {
   PS(tag,strlen(tag));
@@ -211,13 +213,12 @@ int Simulate(double *seq,
     rc=-1; goto done;
   }
 
-#if 0
-  fprintf(stderr,"Fit to %d..%d and test on %d..%d\n",
+  RPSLog(CONTEXT,10,"Fit to %d..%d and test on %d..%d\n",
 	  testcase->fitfirst,
 	  testcase->fitfirst+testcase->fitnum-1,
 	  testcase->testfirst,
 	  testcase->testfirst+testcase->testnum-1);
-#endif
+
 
   DoIntervalStats(seq,testcase->fitfirst,testcase->fitnum,
 		  testcase->maxlag,testcase->acfconf,fit);
@@ -226,14 +227,14 @@ int Simulate(double *seq,
 		  testcase->maxlag,testcase->acfconf,test);
   
 
-  //  fprintf(stderr,"training sequence mean is %f and variance is %f\n", *fitmean, *fitvar);
-  //fprintf(stderr,"testing  sequence mean is %f and variance is %f\n", *testmean, *testvar);
+  RPSLog(CONTEXT,10,"training sequence mean is %f and variance is %f\n", fit->mean, fit->var);
+  RPSLog(CONTEXT,10,"testing  sequence mean is %f and variance is %f\n", test->mean, test->var);
 
   model=FitThis(&(seq[testcase->fitfirst]),testcase->fitnum,
 		testcase->p,testcase->d,testcase->q);
 
   if (model==0) {
-    //fprintf(stderr,"model fit failed\n");
+    RPSLog(CONTEXT,50,"model fit failed\n");
     rc=-1; goto done;
   }
 
@@ -242,7 +243,7 @@ int Simulate(double *seq,
   pred = model->MakePredictor();
 
   if (pred==0) {
-    //fprintf(stderr,"couldn't make predictor from model\n");
+    RPSLog(CONTEXT,50,"couldn't make predictor from model\n");
     rc=-1; goto done;
   }
   
@@ -258,7 +259,7 @@ int Simulate(double *seq,
 		  testcase->fitnum,testcase->bmlimit,0,0);
   
   if (bmmodel==0) {
-    fprintf(stderr,"bm model fit failed\n");
+    RPSLog(CONTEXT,50,"bm model fit failed\n");
     rc=-1; goto done;
   }	
 
@@ -268,7 +269,7 @@ int Simulate(double *seq,
   bmpred = bmmodel->MakePredictor();
 
   if (bmpred==0) {
-    fprintf(stderr,"couldn't make bm predictor from model\n");
+    RPSLog(CONTEXT,50,"couldn't make bm predictor from model\n");
     rc=-1; goto done;
   }
 
@@ -278,26 +279,12 @@ int Simulate(double *seq,
     bmpred->Step(seq[i]);
   }
   
-  //bmpred->Dump(stderr);
-
-  // for the linear models, the variances will not change, so we will
-  // compute them here, out of loop
-  //pred->ComputeVariances(numahead,variances);
-  //bmpred->ComputeVariances(numahead,bmvariances);
-  //fprintf(stderr,"Lead\tVariance\tImprove\tBMVar\tBMImprove\n");
-  //for (i=0;i<numahead;i++) {
-  //  fprintf(stderr,"+%d\t%f\t%f%%\t%f\t%f%%\n",i+1,variances[i],
-  //	    100.0*(fitvar-variances[i])/fitvar,
-  //    bmvariances[i],
-  //    100.0*(fitvar-bmvariances[i])/fitvar);
-  //}
-  
   if (eval.Initialize(testcase->numahead)) {
-    //fprintf(stderr,"Out of memory for evaluator\n");
+    RPSLog(CONTEXT,50,"Out of memory for evaluator\n");
     exit(-1);
   }
   if (bmeval.Initialize(testcase->numahead)) {
-    //fprintf(stderr,"Out of memory for bm evaluator\n");
+    RPSLog(CONTEXT,50,"Out of memory for bm evaluator\n");
     exit(-1);
   }
   for (i=testcase->testfirst;i<testcase->testfirst+testcase->testnum;i++) {
@@ -332,10 +319,10 @@ int Simulate(double *seq,
   if (blowup) {
     *testmodelstats=new PredictionStats;
     *bmmodelstats=new PredictionStats;
-    //fprintf(stderr,"%s blew up\n", 
-    //    blowup==1 ? "test model" :
-    //    blowup==2 ? "bm model" :
-    //    blowup==3 ? "both models" : "UNKNOWN");
+    RPSLog(CONTEXT,50,"%s blew up\n", 
+	   blowup==1 ? "test model" :
+	   blowup==2 ? "bm model" :
+	   blowup==3 ? "both models" : "UNKNOWN");
     if (blowup&0x1) {
       (*testmodelstats)->valid=0;
       (*testmodelstats)->usertags |= BLOWUP_TAG;
@@ -354,15 +341,13 @@ int Simulate(double *seq,
  done:
   CHK_DEL_MAT(predictions);
   CHK_DEL_MAT(bmpredictions);
-  //CHK_DEL_MAT(variances);
-  //CHK_DEL_MAT(bmvariances);
   CHK_DEL(bmpred);
   CHK_DEL(pred);
   CHK_DEL(bmmodel);
   CHK_DEL(model);
 
 #ifdef TEST_SEQ_INTEGRITY
-  //  fprintf(stderr,"Checking integrity of sequence\n");
+  fprintf(stderr,"Checking integrity of sequence\n");
   for (i=testcase->fitfirst;i<testcase->fitfirst+testcase->fitnum;i++) {
     if (fittemp[i-testcase->fitfirst]!=seq[i]) {
       fprintf(stderr,"seq[%d] changed from %f to %f\n",

@@ -185,8 +185,6 @@ int main(int argc, char *argv[])
 
     fittimes[step] = (sysend-sysbegin) + (usrend-usrbegin);
 
-    //fprintf(stderr,"%d\t%f                   \r",step,fittimes[step]);
-
     if (model==0) {
       fprintf(stderr,"model fit failed\n");
       exit(-1);
@@ -271,15 +269,6 @@ int main(int argc, char *argv[])
 	     testvar,
 	     teststats->GetMeanSquaredError(i+1),
 	     bmstats->GetMeanSquaredError(i+1));
-      /*       printf("eval:\t+%d\t%f\t%f\t%f%%\t%f\t%f%%\t%f%%\n", 
-	       i+1, 
-	       testvar, 
-	       msqerr[i],
-	       testvar==0 ? 0 : 100.0*(testvar-msqerr[i])/testvar,
-	       bmmsqerr[i],
-	       testvar==0 ? 0 : 100.0*(testvar-bmmsqerr[i])/testvar,
-	       100.0*(bmmsqerr[i]-msqerr[i])/bmmsqerr[i]);
-      */
       meantestvar[i] += testvar;
       meanmsqerr[i] += teststats->GetMeanSquaredError(i+1);
       meanbmmsqerr[i] += bmstats->GetMeanSquaredError(i+1);
@@ -290,12 +279,6 @@ int main(int argc, char *argv[])
     }
     delete bmstats;
     delete teststats;
-    /*     printf("Predictor\tMinErr\tMaxErr\tMeanAbsErr\tMeanSquareError\tMeanErr\n");
-	   for (i=0;i<numahead;i++) { 
-	   printf(" t+%-3u\t%10.3le\t%10.3le\t%10.3le\t%10.3le\t%10.3le\n",
-	   i+1,minerr[i],maxerr[i],meanabserr[i],msqerr[i],meanerr[i]);
-	   }
-    */
 #endif
     GetRusage(stepsysend,stepusrend);
     double steptime=(stepsysend-stepsysbegin)+(stepusrend-stepusrbegin);

@@ -1,29 +1,85 @@
+#include <new>
 #include "last.h"
 
-LastModel::LastModel(const BestMeanModel &right)
+LastModel::LastModel() : BestMeanModel()
+{}
+
+LastModel::LastModel(const LastModel &rhs) : BestMeanModel(rhs)
+{}
+
+
+LastModel::LastModel(const BestMeanModel &rhs) : BestMeanModel(rhs)
+{}
+
+LastModel::~LastModel()
+{}
+
+LastModel &LastModel::operator=(const LastModel &rhs)
 {
-  *((BestMeanModel*)this) = right;
+  return *(new(this)LastModel(rhs));
 }
 
-void LastModel::Dump(FILE *out)
+void LastModel::Dump(FILE *out) const
 {
   fprintf(out,"LastModel:");
   BestMeanModel::Dump(out);
 }
 
-Predictor *LastModel::MakePredictor()
+ostream & LastModel::operator<<(ostream &os) const
+{
+  os <<"LastModel(";
+  BestMeanModel::operator<<(os);
+  os <<")";
+  return os;
+}
+
+Predictor *LastModel::MakePredictor() const
 {
   return BestMeanModel::MakePredictor();
 }
 
-void LastPredictor::Dump(FILE *out)
+LastPredictor::LastPredictor() : BestMeanPredictor()
+{}
+
+LastPredictor::LastPredictor(const LastPredictor &rhs) : BestMeanPredictor(rhs)
+{}
+
+LastPredictor::~LastPredictor()
+{}
+
+LastPredictor & LastPredictor::operator=(const LastPredictor &rhs) 
+{
+  return *(new(this)LastPredictor(rhs));
+}
+ 
+
+void LastPredictor::Dump(FILE *out) const
 {
   fprintf(out,"LastPredictor:");
   BestMeanPredictor::Dump(out);
 }
 
+ostream & LastPredictor::operator<<(ostream &os) const
+{
+  os <<"LastPredictor(";
+  BestMeanPredictor::operator<<(os);
+  os <<")";
+  return os;
+}
 
-LastModel *LastModeler::Fit(double *seq, int len)
+LastModeler::LastModeler()
+{}
+LastModeler::LastModeler(const LastModeler &)
+{}
+LastModeler::~LastModeler()
+{}
+LastModeler &LastModeler::operator=(const LastModeler &rhs)
+{
+  return *(new(this)LastModeler(rhs));
+}
+
+
+LastModel *LastModeler::Fit(const double *seq, const int len) 
 {
   BestMeanModel *bm =BestMeanModeler::Fit(seq,len,1);
   LastModel *lm = new LastModel(*bm);
@@ -31,7 +87,21 @@ LastModel *LastModeler::Fit(double *seq, int len)
   return lm;
 }
 
-Model *LastModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *LastModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   return Fit(seq,len);
 }
+
+void LastModeler::Dump(FILE *out=stdout) const
+{
+  fprintf(out,"LastModeler\n");
+}
+
+ostream & LastModeler::operator<<(ostream &os) const
+{
+  os<<"LastModeler()";
+  return os;
+}
+
+
+

@@ -6,7 +6,7 @@
 #include "random.h"
 #include <assert.h>
 
-double Sum(double *seq, int len)
+double Sum(const double *seq, const int len)
 {
   int i;
   double sum;
@@ -21,7 +21,7 @@ double Sum(double *seq, int len)
   return sum;
 }
 
-double SumOfSquares(double *seq, int len)
+double SumOfSquares(const double *seq, const int len)
 {
   int i;
   double sum;
@@ -38,7 +38,7 @@ double SumOfSquares(double *seq, int len)
 
 
   
-double Mean(double *seq, int len)
+double Mean(const double *seq, const int len)
 {
   int i;
   double mean;
@@ -56,13 +56,13 @@ double Mean(double *seq, int len)
   return mean;
 }
 
-double StandardDeviation(double *seq, int len)
+double StandardDeviation(const double *seq, const int len)
 {
   assert(len>0);
   return sqrt(Variance(seq,len));
 }
 
-double Variance(double *seq, int len)
+double Variance(const double *seq, const int len)
 {
   int i;
   double mean;
@@ -97,7 +97,7 @@ extern "C" int compare_doubles(const void *leftv, const void *rightv)
   }
 }
 
-double Min(double *seq, int len)
+double Min(const double *seq, const int len)
 {
   int i;
 
@@ -113,7 +113,7 @@ double Min(double *seq, int len)
   return min;
 }
 
-double Max(double *seq, int len)
+double Max(const double *seq, const int len)
 {
   int i;
 
@@ -130,7 +130,7 @@ double Max(double *seq, int len)
 }
   
 // Yes, this is pretty hideous
-double Median(double *seq, int len)
+double Median(const double *seq, const int len)
 {
   assert(len>0);
 
@@ -146,7 +146,7 @@ double Median(double *seq, int len)
   return med;
 }
   
-double MeanifySequence(double *seq, int len)
+double MeanifySequence(double *seq, const int len)
 {
   int i;
   double mean;
@@ -159,7 +159,7 @@ double MeanifySequence(double *seq, int len)
   return mean;
 }
 
-void UnMeanifySequence(double *seq, int len, double mean)
+void UnMeanifySequence(double *seq, const int len, const double mean)
 {
   int i;
 
@@ -170,7 +170,7 @@ void UnMeanifySequence(double *seq, int len, double mean)
 
 }
 
-double DifferenceSequence(double *seq, int len)
+double DifferenceSequence(double *seq, const int len)
 {
   int i;
   double first=seq[0];
@@ -183,7 +183,7 @@ double DifferenceSequence(double *seq, int len)
   return first;
 }
 
-void   UnDifferenceSequence(double *seq, int len, double first)
+void   UnDifferenceSequence(double *seq, const int len, const double first)
 {
   int i;
 
@@ -196,7 +196,7 @@ void   UnDifferenceSequence(double *seq, int len, double first)
   }
 }
 
-double ComputeAutoCor(double *seq, int len, double *acf, int numlag)
+double ComputeAutoCor(const double *seq, const int len, double *acf, const int numlag)
 {
   double mean;
   double acf0;
@@ -213,7 +213,7 @@ double ComputeAutoCor(double *seq, int len, double *acf, int numlag)
   return mean;
 }
 
-double ComputeAutoCov(double *seq, int len, double *acovf, int numlag)
+double ComputeAutoCov(const double *seq, const int len, double *acovf, const int numlag)
 {
   double mean;
   int i,j;
@@ -240,7 +240,7 @@ double ComputeAutoCov(double *seq, int len, double *acovf, int numlag)
   return mean;
 }
 
-double AutoCov2VarianceOfSum(double *autocov, int num, double *sums)
+double AutoCov2VarianceOfSum(const double *autocov, const int num, double *sums)
 {
   int i,j;
 
@@ -260,8 +260,8 @@ double AutoCov2VarianceOfSum(double *autocov, int num, double *sums)
   return sums[num-1];
 }
 
-double AutoCov2VarianceOfSum(double *autocov, int numautocov, 
-			     double *sumvars, int numsums)
+double AutoCov2VarianceOfSum(const double *autocov, const int numautocov, 
+			     double *sumvars, const int numsums)
 {
   if (numsums<=numautocov) { 
     return AutoCov2VarianceOfSum(autocov,numsums,sumvars);
@@ -284,8 +284,8 @@ double AutoCov2VarianceOfSum(double *autocov, int numautocov,
 }
 
 
-double AutoCov2Covariances(double *autocov, int numautocov,
-			   double *covars, int numrows)
+double AutoCov2Covariances(const double *autocov, const int numautocov,
+			   double *covars, const int numrows)
 {
   int i, j;
 
@@ -301,7 +301,7 @@ double AutoCov2Covariances(double *autocov, int numautocov,
 // Translated from Numerical Recipes in Fortran, Second Edition
 // Solve Toeplitz Matrix
 #define F(i) ((i)-1)
-int SolveToeplitz(double *r, double *x, double *y, int n)
+int SolveToeplitz(const double *r, double *x, const double *y, const int n)
 {      
   int j,k,m,m1,m2;
   double pp, pt1, pt2, qq, qt1, qt2, sd, sgd, sgn, shn, sxn;
@@ -389,7 +389,7 @@ SUCCEED:
 
 // returns the highest confidence level at which we can reject that the sequence
 // is IID by the nunber of turning points
-double TurningPointTestForIID(double *seq, int len, int *numtp)
+double TurningPointTestForIID(const double *seq, const int len, int *numtp)
 {
   int nt;
   double ntf;
@@ -425,7 +425,7 @@ double TurningPointTestForIID(double *seq, int len, int *numtp)
 
 // returns the highest confidence level at which we can reject that the sequence
 // is IID by the nunber of sign changes
-double SignTestForIID(double *seq, int len, int *nums)
+double SignTestForIID(const double *seq, const int len, int *nums)
 {
   int ns;
   double nsf, nsm, nsv, diff;
@@ -459,7 +459,7 @@ double SignTestForIID(double *seq, int len, int *nums)
 // returns the highest confidence level at which we can reject that the sequence
 // is IID by the portmanteau test
 // Ljung/Box variant
-double PortmanteauTestForIID(double *seq, int len, double *qout, int maxlag)
+double PortmanteauTestForIID(const double *seq, const int len, double *qout, const int maxlag)
 {
   double Q;
   int i;
@@ -495,7 +495,7 @@ double PortmanteauTestForIID(double *seq, int len, double *qout, int maxlag)
 // the +/- interval associated with the confidence level.
 // To be IID at confidence level F,  m/maxlag should be < F
 // This is a large sample test, so len should be at least maxlag+30
-int AcfTestForIID(double *seq, int len, int maxlag, double conflevel)
+int AcfTestForIID(const double *seq, const int len, const int maxlag, const double conflevel)
 {
   int    lag;
   double interval;
@@ -522,7 +522,7 @@ int AcfTestForIID(double *seq, int len, int maxlag, double conflevel)
 
 // Returns the highest confidence level at which we can
 // reject that the sequence is IID based on acf
-double AcfTestForIID(double *seq, int len, int maxlag, int numiters)
+double AcfTestForIID(const double *seq, const int len, const int maxlag, const int numiters)
 {
   int    lag;
   double ci, interval;
@@ -553,7 +553,7 @@ double AcfTestForIID(double *seq, int len, int maxlag, int numiters)
 }
 
 
-double QuantileQuantile(double *seq1, double *seq2, int len, double *m, double *b)
+double QuantileQuantile(const double *seq1, const double *seq2, const int len, double *m, double *b)
 {  
   assert(len>0);
 
@@ -582,7 +582,7 @@ double QuantileQuantile(double *seq1, double *seq2, int len, double *m, double *
   return R2;
 }
 
-double QuantilesOfNormal(double *seq, int len, double *m, double *b)
+double QuantilesOfNormal(const double *seq, const int len, double *m, double *b)
 {
   assert(len>0);
 
@@ -601,7 +601,7 @@ double QuantilesOfNormal(double *seq, int len, double *m, double *b)
 }
 
 
-double LeastSquares(double *x, double *y, int len, double *m, double *b)
+double LeastSquares(const double *x, const double *y, const int len, double *m, double *b)
 {
   double sumxy, sumx2, sumy2, meanx, meany;
   int i;

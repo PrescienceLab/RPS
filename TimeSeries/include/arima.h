@@ -17,36 +17,54 @@ private:
   double   mean;
 public:
   ARIMAModel();
+  ARIMAModel(const ARIMAModel &rhs);
   virtual ~ARIMAModel();
-  void   Initialize(int P, int D, int Q);
-  int    GetP();
-  int    GetD();
-  int    GetQ();
-  void   SetARCoeff(int num, double value);
-  double GetARCoeff(int num);
-  void   SetMACoeff(int num, double value);
-  double GetMACoeff(int num);
-  void   SetVariance(double variance);
-  double EstimateVariance(double *seq, int len);
-  double GetVariance();
-  void   SetMean(double m);
-  double GetMean();
-  virtual void   Dump(FILE *out=stdout);
-  virtual Predictor *MakePredictor();
+  
+  ARIMAModel & operator=(const ARIMAModel &rhs);
+
+  void   Initialize(const int P, const int D, const int Q);
+  int    GetP() const ;
+  int    GetD() const ;
+  int    GetQ() const ;
+  void   SetARCoeff(const int num, const double value);
+  double GetARCoeff(const int num) const ;
+  void   SetMACoeff(const int num, const double value);
+  double GetMACoeff(const int num) const ;
+  void   SetVariance(const double variance);
+  double EstimateVariance(const double *seq, const int len) const ;
+  double GetVariance() const ;
+  void   SetMean(const double m);
+  double GetMean() const ;
+  virtual Predictor *MakePredictor() const ;
+
+  virtual void   Dump(FILE *out=stdout) const ;
+  ostream &operator<<(ostream &os) const;
 };
+
+inline ostream & operator<< (ostream &os, const ARIMAModel &p) {
+  return p.operator<<(os);
+}
 
 
 // No State
 class ARIMAModeler : public Modeler {
 public:
   ARIMAModeler();
+  ARIMAModeler(const ARIMAModeler &rhs);
   virtual ~ARIMAModeler();
-  // Fit AR models of order 1..maxord to the sequnce and return these
-  // models in an array
-  // Assumes a zero mean sequence
-  static ARIMAModel *Fit(double *sequence, int len, int P, int D, int Q);
-  static Model *Fit(double *seq, int len, const ParameterSet &ps);
+
+  ARIMAModeler & operator=(const ARIMAModeler &rhs);
+
+  static ARIMAModel *Fit(const double *sequence, const int len, const int P, const int D, const int Q);
+  static Model *Fit(const double *seq, const int len, const ParameterSet &ps);
+
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
+
+inline ostream & operator<< (ostream &os, const ARIMAModeler &p) {
+  return p.operator<<(os);
+}
 
 
 #endif

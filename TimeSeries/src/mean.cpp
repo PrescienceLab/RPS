@@ -3,6 +3,16 @@
 #include "util.h"
 #include "tools.h"
 
+MeanModel::MeanModel() : autocovs(0), numautocovs(0)
+{}
+
+MeanModel::MeanModel(const MeanModel &rhs)
+{
+  numautocovs=rhs.numautocovs;
+  autocovs=new double [numautocovs];
+  memcpy(autocovs,rhs.autocovs,numautocovs*sizeof(autocovs[0]));
+}
+
 MeanModel::MeanModel(double *autocovs, int n)
 {
   this->autocovs = new double [n];
@@ -16,14 +26,50 @@ MeanModel::~MeanModel()
   numautocovs=0;
 }
 
-void MeanModel::Dump(FILE *out)
+MeanModel & MeanModel::operator=(const MeanModel &rhs)
 {
-  fprintf(out,"MeanModel\n");
+  return *(new(this)MeanModel(rhs));
 }
 
-Predictor * MeanModel::MakePredictor()
+
+void MeanModel::Dump(FILE *out) const
+{
+  fprintf(out,"MeanModel: numautocovs=%d, autocovs follow:",numautocovs); 
+  for (int i=0;i<numautocovs;i++) {
+    fprintf(out,"%f\n",autocovs[i]);
+  }
+}
+
+ostream & MeanModel::operator<<(ostream &os) const
+{
+  os << "MeanModel(numautocovs="<<numautocovs<<", autocovs=(";
+  for (int i=0;i<numautocovs;i++) {
+    if (i>0) { 
+      os << ", ";
+    }
+    os << autocovs[i];
+  }
+  os <<"))";
+  return os;
+}
+
+
+Predictor * MeanModel::MakePredictor() const
 {
   return new MeanPredictor(autocovs,numautocovs);
+}
+
+MeanPredictor::MeanPredictor() : autocovs(0), numautocovs(0), sum(0), sum2(0), numsamples(0)
+{}
+
+MeanPredictor::MeanPredictor(const MeanPredictor &rhs) 
+{
+  numautocovs=rhs.numautocovs;
+  autocovs=new double [numautocovs];
+  memcpy(autocovs,rhs.autocovs,sizeof(autocovs[0])*numautocovs);
+  sum=rhs.sum;
+  sum2=rhs.sum2;
+  numsamples=rhs.numsamples;
 }
 
 MeanPredictor::MeanPredictor(double *autocovs, int n)
@@ -43,6 +89,11 @@ MeanPredictor::~MeanPredictor()
   numsamples=0;
 }
 
+MeanPredictor & MeanPredictor::operator=(const MeanPredictor &rhs) 
+{
+  return *(new(this)MeanPredictor(rhs));
+}
+
 int MeanPredictor::Begin()
 {
   sum=sum2=0;
@@ -50,12 +101,12 @@ int MeanPredictor::Begin()
   return 0;
 }
 
-int MeanPredictor::StepsToPrime()
+int MeanPredictor::StepsToPrime() const
 {
   return 0;
 }
 
-double MeanPredictor::Step(double obs)
+double MeanPredictor::Step(const double obs)
 {
   sum+=obs;
   sum2+=obs*obs;
@@ -63,7 +114,7 @@ double MeanPredictor::Step(double obs)
   return sum/numsamples;
 }
 
-int MeanPredictor::Predict(int maxahead, double *preds)
+int MeanPredictor::Predict(const int maxahead, double *preds) const
 {
   int i;
   for (i=0;i<maxahead;i++) { 
@@ -72,8 +123,8 @@ int MeanPredictor::Predict(int maxahead, double *preds)
   return 0;
 }
 
-int MeanPredictor::ComputeVariances(int maxahead, double *vars,
-				    VarianceType vtype)
+int MeanPredictor::ComputeVariances(const int maxahead, double *vars,
+				    const VarianceType vtype) const
 {
   int i;
   double var;
@@ -103,13 +154,44 @@ int MeanPredictor::ComputeVariances(int maxahead, double *vars,
   return -1;
 }
 
-void MeanPredictor::Dump(FILE *out)
+void MeanPredictor::Dump(FILE *out) const
 {
-  fprintf(stderr,"MeanPredictor: sum=%f sum2=%f numsamples=%d\n",
-	  sum,sum2,numsamples);
+  fprintf(out,"MeanPredictor: sum=%f sum2=%f numsamples=%d numautocov=%d autocovs follow:\n",
+	  sum,sum2,numsamples,numautocovs);
+  for (int i=0;i<numautocovs;i++) {
+    fprintf(out,"%f\n",autocovs[i]);
+  }
 }
 
-MeanModel * MeanModeler::Fit(double *sequence, int len)
+ostream & MeanPredictor::operator<<(ostream &os) const
+{
+  os <<"MeanPredictor(sum="<<sum<<", sum2="<<sum2<<", numsamples="<<numsamples<<", numautocovs="<<numautocovs<<", autocovs=(";
+  for (int i=0;i<numautocovs;i++) {
+    if (i>0) { 
+      os << ", ";
+    }
+    os << autocovs[i];
+  }
+  os <<"))";
+  return os;
+}
+
+MeanModeler::MeanModeler()
+{}
+
+MeanModeler::MeanModeler(const MeanModeler &rhs)
+{}
+
+MeanModeler::~MeanModeler()
+{}
+
+MeanModeler &MeanModeler::operator=(const MeanModeler &rhs)
+{
+  return *(new(this)MeanModeler(rhs));
+}
+
+
+MeanModel * MeanModeler::Fit(const double *sequence, const int len)
 {
   int n = len-30 > 0 ? len-30 : len;
   double *autocovs = new double [n];
@@ -119,8 +201,19 @@ MeanModel * MeanModeler::Fit(double *sequence, int len)
   return m;
 }
 
-Model *MeanModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *MeanModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   return Fit(seq,len);
+}
+
+
+void MeanModeler::Dump(FILE *out=stdout) const
+{
+  fprintf(out,"MeanModeler\n");
+}
+
+ostream & MeanModeler::operator<<(ostream &os) const
+{
+  return (os<<"MeanModeler()");
 }
 

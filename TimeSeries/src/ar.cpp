@@ -1,3 +1,4 @@
+#include <new>
 #include "ar.h"
 #include "tools.h"
 #include "util.h"
@@ -7,6 +8,15 @@ ARModel::ARModel()
   coeffs=0;
 }
 
+ARModel::ARModel(const ARModel &rhs)
+{
+  coeffs=0;
+  Initialize(rhs.order);
+  memcpy(coeffs,rhs.coeffs,sizeof(coeffs[0])*order);
+  variance=rhs.variance;
+  mean=rhs.mean;
+}
+
 ARModel::~ARModel()
 {
   if (coeffs!=0) {
@@ -14,7 +24,13 @@ ARModel::~ARModel()
   }
 }
 
-void ARModel::Initialize(int order)
+ARModel & ARModel::operator=(const ARModel &rhs)
+{
+  return *(new(this)ARModel(rhs));
+}
+
+
+void ARModel::Initialize(const int order)
 {
   if (coeffs!=0) {
     delete coeffs;
@@ -28,14 +44,14 @@ void ARModel::Initialize(int order)
 #define CHECK(num) ((num)>=0 && (num)<order)
 #define ADJUST(num) ((num))
 
-void ARModel::SetCoeff(int num, double value)
+void ARModel::SetCoeff(const int num, const double value)
 {
   if (CHECK(num)) {
     coeffs[ADJUST(num)]=value;
   }
 }
 
-double ARModel::GetCoeff(int num)
+double ARModel::GetCoeff(const int num) const
 {
   if (CHECK(num)) {
     return coeffs[ADJUST(num)];
@@ -43,32 +59,32 @@ double ARModel::GetCoeff(int num)
 	return 0.0;
   }
 }
-void ARModel::SetVariance(double var)
+void ARModel::SetVariance(const double var)
 {
   variance=var;
 }
 
-double ARModel::GetVariance() 
+double ARModel::GetVariance() const
 {
   return variance;
 }
 
-void ARModel::SetMean(double mn)
+void ARModel::SetMean(const double mn)
 {
   mean=mn;
 }
 
-double ARModel::GetMean()
+double ARModel::GetMean() const
 {
   return mean;
 }
 
-int ARModel::GetOrder() 
+int ARModel::GetOrder() const
 {
   return order;
 }
 
-void ARModel::Dump(FILE *out)
+void ARModel::Dump(FILE *out) const
 {
   if (out==0) {
     out=stdout;
@@ -87,13 +103,26 @@ void ARModel::Dump(FILE *out)
   fprintf(out,"\n");
 }
 
+ostream & ARModel::operator<<(ostream &os) const
+{
+  os << "ARModel(p="<<order<<", mean="<<mean<<", variance="<<variance<<", coeffs=(";
+  for (int i=0;i<order;i++) {
+    if (i>0) {
+      os <<", ";
+    } 
+    os << coeffs[i];
+  }
+  os <<"))";
+  return os;
+}
+
 
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 
 #define LEAVE() goto leave_error
 
-Predictor *ARModel::MakePredictor()
+Predictor *ARModel::MakePredictor() const
 {
    int i;
    Polynomial et, th;
@@ -126,14 +155,22 @@ ARModeler::ARModeler()
 {
 }
 
+ARModeler::ARModeler(const ARModeler &rhs)
+{
+}
+
 ARModeler::~ARModeler()
 {
 }
 
 
+ARModeler & ARModeler::operator=(const ARModeler &rhs)
+{
+  return *(new(this)ARModeler(rhs));
+}
 
 
-Model *ARModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *ARModeler::Fit(const double *seq, const int len, const ParameterSet &ps) 
 {
   int p,d,q;
   
@@ -145,7 +182,7 @@ Model *ARModeler::Fit(double *seq, int len, const ParameterSet &ps)
 
 #define ABS(x) ((x)> 0 ? (x) : (-(x)))
 
-ARModel *ARModeler::Fit(double *seq, int len, int maxord)
+ARModel *ARModeler::Fit(const double *seq, const int len, const int maxord)
 {
   double mean;
 
@@ -171,7 +208,7 @@ ARModel *ARModeler::Fit(double *seq, int len, int maxord)
 
 //#define OLD
 
-ARModel *ARModeler::Fit(double mean, double *acovf, int len, int maxord)
+ARModel *ARModeler::Fit(const double mean, const double *acovf, const int len, const int maxord)
 {
 
   ARModel *model;
@@ -296,6 +333,16 @@ FAIL:
 
 }
 			  
-  
+void ARModeler::Dump(FILE *out) const
+{
+  fprintf(out,"ARModeler\n");
+}
+
+ostream & ARModeler::operator<<(ostream &os) const
+{
+  os <<"ARModeler()";
+  return os;
+}
+
 
   

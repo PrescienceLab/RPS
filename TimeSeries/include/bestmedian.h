@@ -15,13 +15,25 @@ private:
   int      order;
   double   var;
 public:
+  BestMedianModel();
   BestMedianModel(int order, double var);
+  BestMedianModel(const BestMedianModel &rhs);
   virtual ~BestMedianModel();
-  void   SetOrder(int order);
-  int    GetOrder();
-  void   Dump(FILE *out=stdout);
-  Predictor *MakePredictor();
+
+  BestMedianModel & operator=(const BestMedianModel &rhs);
+
+  void   SetOrder(const int order);
+  int    GetOrder() const;
+  Predictor *MakePredictor() const;
+
+  void   Dump(FILE *out=stdout) const ;
+  ostream &operator<<(ostream &os) const;
 };
+
+inline ostream & operator<< (ostream &os, const BestMedianModel &p) {
+  return p.operator<<(os);
+}
+
 
 class BestMedianPredictor : public Predictor {
 private:
@@ -31,31 +43,52 @@ private:
   int     numsamples;
   double  currentmedian;
 public:
-  BestMedianPredictor(int order, double var);
+  BestMedianPredictor();
+  BestMedianPredictor(const int order, const double var);
+  BestMedianPredictor(const BestMedianPredictor &rhs);
   ~BestMedianPredictor();
+
+  BestMedianPredictor & operator=(const BestMedianPredictor &rhs);
+
   double ComputeCurrentMedian();
-  void SetOrder(int order);
-  int GetOrder();
+  void SetOrder(const int order);
+  int GetOrder() const;
   int Begin();
-  int StepsToPrime();
-  double Step(double obs);
-  int Predict(int maxahead, double *predictions);
-  virtual int ComputeVariances(int maxahead, 
+  int StepsToPrime() const;
+  double Step(const double obs);
+  int Predict(const int maxahead, double *predictions) const;
+  virtual int ComputeVariances(const int maxahead, 
 			       double *vars, 
-			       VarianceType vtype=POINT_VARIANCES);
-  void Dump(FILE *out=stdout);
+			       const VarianceType vtype=POINT_VARIANCES) const;
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
+
+inline ostream & operator<< (ostream &os, const BestMedianPredictor &p) {
+  return p.operator<<(os);
+}
 
 // No State
 class BestMedianModeler : public Modeler {
  private:
-  static double TestFit(int order, double *sequence, int len);
+  static double TestFit(const int order, const double *sequence, const int len);
  public:
   BestMedianModeler();
+  BestMedianModeler(const BestMedianModeler &rhs);
   virtual ~BestMedianModeler();
-  static BestMedianModel *Fit(double *sequence, int len, int maxord);
-  static Model *Fit(double *sequence,int len, const ParameterSet &ps);
+  
+  BestMedianModeler & operator=(const BestMedianModeler &rhs);
+
+  static BestMedianModel *Fit(const double *sequence, const int len, const int maxord);
+  static Model *Fit(const double *sequence, const int len, const ParameterSet &ps);
+
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
+
+inline ostream & operator<< (ostream &os, const BestMedianModeler &p) {
+  return p.operator<<(os);
+}
 
 
 #endif

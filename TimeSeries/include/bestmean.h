@@ -2,6 +2,7 @@
 #ifndef _bestmean
 #define _bestmean
 
+#include <new>
 #include <stdio.h>
 #include "abstract.h"
 #include "etathetapred.h"
@@ -15,16 +16,27 @@ private:
   double   mean;
 public:
   BestMeanModel();
+  BestMeanModel(const BestMeanModel &rhs);
   virtual ~BestMeanModel();
-  void   Initialize(int order);
-  int    GetOrder();
-  void   SetMean(double mean);
-  double GetMean();
-  void   SetVariance(double var);
-  double GetVariance();
-  void   Dump(FILE *out=stdout);
-  Predictor *MakePredictor();
+
+  BestMeanModel & operator=(const BestMeanModel &rhs);
+
+  void   Initialize(const int order);
+  int    GetOrder() const;
+  void   SetMean(const double mean);
+  double GetMean() const;
+  void   SetVariance(const double var);
+  double GetVariance() const;
+  Predictor *MakePredictor() const;
+
+  void   Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
+
+inline ostream & operator<< (ostream &os, const BestMeanModel &p) {
+  return p.operator<<(os);
+}
+
 
 class BestMeanPredictor : public Predictor {
 private:
@@ -35,28 +47,47 @@ private:
   double variance;
 public:
   BestMeanPredictor();
+  BestMeanPredictor(const BestMeanPredictor &rhs);
   ~BestMeanPredictor();
-  int Initialize(int order,double variance);
+
+  BestMeanPredictor & operator=(const BestMeanPredictor &rhs);
+
+  int Initialize(const int order, const double variance);
   int Begin();
-  int StepsToPrime();
-  double Step(double obs);
-  int Predict(int maxahead, double *predictions);
-  virtual int ComputeVariances(int maxahead, 
+  int StepsToPrime() const;
+  double Step(const double obs);
+  int Predict(const int maxahead, double *predictions) const;
+  virtual int ComputeVariances(const int maxahead, 
 			       double *vars, 
-			       VarianceType vtype=POINT_VARIANCES);
-  void Dump(FILE *out=stdout);
+			       const VarianceType vtype=POINT_VARIANCES) const;
+
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
+
+inline ostream & operator<< (ostream &os, const BestMeanPredictor &p) {
+  return p.operator<<(os);
+}
 
 // No State
 class BestMeanModeler : public Modeler {
 public:
   BestMeanModeler();
+  BestMeanModeler(const BestMeanModeler &rhs);
   virtual ~BestMeanModeler();
 
-  static BestMeanModel *Fit(double *sequence, int len, int maxord);
-  static Model *Fit(double *sequence,int len, const ParameterSet &ps);
+  BestMeanModeler & operator=(const BestMeanModeler &rhs);
+
+  static BestMeanModel *Fit(const double *sequence, const int len, const int maxord);
+  static Model *Fit(const double *sequence, const int len, const ParameterSet &ps);
+
+  void Dump(FILE *out=stdout) const;
+  ostream & operator<<(ostream &rhs) const;
 };
 
+inline ostream & operator<< (ostream &os, const BestMeanModeler &p) {
+  return p.operator<<(os);
+}
 
 #endif
 

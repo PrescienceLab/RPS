@@ -1,7 +1,10 @@
 #ifndef _abstractions
 #define _abstractions
 
+#include <iostream>
 #include <stdio.h>
+
+using namespace std;
 
 // This file includes the core abstractions
 
@@ -20,6 +23,7 @@ enum ParameterSetType {PDQ, RefittingPDQ, AwaitingPDQ, ManagedPDQ};
 
 class ParameterSet {
  public:
+  virtual ~ParameterSet() {};
   virtual ParameterSetType GetType() const =0;
   virtual ParameterSet *Clone() const =0;
 };
@@ -35,27 +39,31 @@ class Predictor {
 public:
 	virtual ~Predictor() {} 
 	virtual int Begin()=0;
-        virtual int StepsToPrime()=0;
-	virtual double Step(double obs)=0;
-	virtual int Predict(int maxahead, double *predictions)=0;
-	virtual int ComputeVariances(int maxahead, 
+        virtual int StepsToPrime() const =0;
+	virtual double Step(const double obs)=0;
+	virtual int Predict(const int maxahead, double *predictions) const =0;
+	virtual int ComputeVariances(const int maxahead, 
 				     double *vars, 
-				     VarianceType vtype=POINT_VARIANCES)=0;
-        virtual void Dump(FILE *out=stdout)=0;
+				     const VarianceType vtype=POINT_VARIANCES) const =0;
+        virtual void Dump(FILE *out=stdout) const =0;
+	virtual ostream & operator<<(ostream &os) const = 0;
 };
 
 class Model {
 public:
 	virtual ~Model() {} ;
-	virtual Predictor * MakePredictor()=0;
-        virtual void Dump(FILE *out=stdout)=0;
+	virtual Predictor * MakePredictor() const =0;
+        virtual void Dump(FILE *out=stdout) const =0;
+	virtual ostream & operator<<(ostream &os) const =0;
 //        virtual ParamterSet *GetParameterSet()=0;
 };
 
 class Modeler {
 public:
    virtual ~Modeler() {}
-   static Model *Fit(double *sequence,int len, const ParameterSet &ps);
+   static Model *Fit(const double *sequence, const int len, const ParameterSet &ps);
+   virtual void Dump(FILE *out=stdout) const =0;
+   virtual ostream & operator<<(ostream &os) const = 0;
 };
 
 

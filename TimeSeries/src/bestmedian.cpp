@@ -6,37 +6,69 @@
 #include "tools.h"
 #include "pdqparamsets.h"
 
-BestMedianModel::BestMedianModel(int order, double var)
+BestMedianModel::BestMedianModel() : order(0), var(0)
 {
-  this->order=order;
-  this->var=var;
+}
+
+BestMedianModel::BestMedianModel(const BestMedianModel &rhs) : order(rhs.order), var(rhs.var)
+{
+}
+
+BestMedianModel::BestMedianModel(int o, double v) : order(o), var(v)
+{
 }
 
 BestMedianModel::~BestMedianModel()
 {
 }
 
-void BestMedianModel::Dump(FILE *out)
+BestMedianModel & BestMedianModel::operator=(const BestMedianModel &rhs)
+{
+  return *(new(this)BestMedianModel(rhs));
+}
+
+void BestMedianModel::Dump(FILE *out) const
 {
   fprintf(out,"BestMedianModel(windowsize=%d, variance=%f)\n",order,var);
 }
 
-Predictor * BestMedianModel::MakePredictor()
+ostream & BestMedianModel::operator<<(ostream &os) const
+{
+  os <<"BestMedianModel(order="<<order<<", variance="<<var<<")";
+  return os;
+}
+
+Predictor * BestMedianModel::MakePredictor() const
 {
   return new BestMedianPredictor(order, var);
 }
+
+BestMedianPredictor::BestMedianPredictor() :  var(0), order(0), numsamples(0), currentmedian(0)
+{
+}
+
+BestMedianPredictor::BestMedianPredictor(const BestMedianPredictor &rhs) : var(rhs.var), window(rhs.window), 
+									   order(rhs.order), numsamples(rhs.numsamples), 
+									   currentmedian(rhs.currentmedian)
+{}
 
 BestMedianPredictor::BestMedianPredictor(int order, double var)
 {
   this->order=order;
   this->var=var;
   numsamples=0;
+  currentmedian=0;
 }
 
 BestMedianPredictor::~BestMedianPredictor()
 {
   numsamples=0;
   order=0;
+}
+
+BestMedianPredictor & BestMedianPredictor::operator=(const BestMedianPredictor &rhs)
+{
+  return *(new(this)BestMedianPredictor(rhs));
 }
 
 int BestMedianPredictor::Begin()
@@ -46,12 +78,12 @@ int BestMedianPredictor::Begin()
   return 0;
 }
 
-int BestMedianPredictor::StepsToPrime()
+int BestMedianPredictor::StepsToPrime() const
 {
   return 0;
 }
 
-double BestMedianPredictor::ComputeCurrentMedian()
+double BestMedianPredictor::ComputeCurrentMedian() 
 {
   if (window.size()==0) { 
     return 0;
@@ -65,18 +97,11 @@ double BestMedianPredictor::ComputeCurrentMedian()
     currentmedian=0.5*(temp[temp.size()/2]+temp[temp.size()/2-1]);
   }
 
-#if 0
-  fprintf(stderr,"Median of (");
-  for (deque<double>::const_iterator v=window.begin(); v!=window.end(); ++v) {
-    fprintf(stderr," %f",*v);
-  }
-  fprintf(stderr,") is %f\n",currentmedian);
-#endif
 
   return currentmedian;
 }
 
-double BestMedianPredictor::Step(double obs)
+double BestMedianPredictor::Step(const double obs)
 {
   assert(window.size()<=(unsigned)order);
 
@@ -90,7 +115,7 @@ double BestMedianPredictor::Step(double obs)
   return ComputeCurrentMedian();
 }
 
-int BestMedianPredictor::Predict(int maxahead, double *preds)
+int BestMedianPredictor::Predict(const int maxahead, double *preds) const
 {
   int i;
   for (i=0;i<maxahead;i++) { 
@@ -100,8 +125,8 @@ int BestMedianPredictor::Predict(int maxahead, double *preds)
 }
 
 
-int BestMedianPredictor::ComputeVariances(int maxahead, double *vars,
-				      VarianceType vtype)
+int BestMedianPredictor::ComputeVariances(const int maxahead, double *vars,
+					  const VarianceType vtype) const
 {
   int i,j;
 
@@ -130,13 +155,45 @@ int BestMedianPredictor::ComputeVariances(int maxahead, double *vars,
   return -1;
 }
 
-void BestMedianPredictor::Dump(FILE *out)
+void BestMedianPredictor::Dump(FILE *out) const
 {
-  fprintf(stderr,"BestMedianPredictor: order=%d, variance=%f, numsamples=%d\n",
+  fprintf(out,"BestMedianPredictor: order=%d, variance=%f, numsamples=%d, samples are:\n",
 	  order,var,numsamples);
+  for (deque<double>::const_iterator i=window.begin(); i!=window.end(); ++i) {
+    fprintf(out, "%f\n",*i);
+  }
 }
 
-double BestMedianModeler::TestFit(int order, double *sequence, int len)
+ostream & BestMedianPredictor::operator<<(ostream &os) const
+{
+  os << "BestMedianPredictor(order="<<order<<", variance="<<var<<", numsamples="<<numsamples<<", samples=(";
+  for (deque<double>::const_iterator i=window.begin(); i!=window.end(); ++i) {
+    if (i!=window.begin()) { 
+      os <<", ";
+    } 
+    os << *i;
+  }
+  os << "))";
+  return os;
+}
+
+
+BestMedianModeler::BestMedianModeler()
+{}
+
+BestMedianModeler::BestMedianModeler(const BestMedianModeler &rhs)
+{}
+
+BestMedianModeler::~BestMedianModeler()
+{}
+
+BestMedianModeler & BestMedianModeler::operator=(const BestMedianModeler &rhs)
+{
+  return *(new(this)BestMedianModeler(rhs));
+}
+
+
+double BestMedianModeler::TestFit(const int order, const double *sequence, const int len) 
 {
   assert(len>=2);
 
@@ -160,7 +217,7 @@ double BestMedianModeler::TestFit(int order, double *sequence, int len)
 }
 
 
-BestMedianModel * BestMedianModeler::Fit(double *sequence, int len, int maxord)
+BestMedianModel * BestMedianModeler::Fit(const double *sequence, const int len, const int maxord)
 {
   double bestvar=99e99, thisvar;
   int bestord;
@@ -176,9 +233,21 @@ BestMedianModel * BestMedianModeler::Fit(double *sequence, int len, int maxord)
 }
 
 
-Model *BestMedianModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *BestMedianModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   int p,d,q;
   ((const PDQParameterSet &)ps).Get(p,d,q);
   return Fit(seq,len,p);
+}
+
+
+void BestMedianModeler::Dump(FILE *out=stdout) const
+{
+  fprintf(out,"BestMedianModeler()\n");
+}
+
+ostream & BestMedianModeler::operator<<(ostream &os) const
+{
+  os << "BestMedianModeler()";
+  return os;
 }

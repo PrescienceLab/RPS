@@ -1,19 +1,26 @@
+#include <new>
 #include "arma.h"
 #include "tools.h"
 #include "util.h"
 #include "ar.h"
 #include "ma.h"
+
+#include "rps_log.h"
+
 #include <string.h>
 
-#ifdef HAVE_NUMERICAL_RECIPES
-extern "C" {
-#include "nr.h"
-#include "nrutil.h"
-}
-#else
 #include "nr-internal.h"
 using namespace nrc;
-#endif //HAVE_NUMERICAL_RECIPES
+
+ARMAModel::ARMAModel(const ARMAModel &rhs)
+{
+  phis=thetas=0;
+  Initialize(rhs.p, rhs.q);
+  memcpy(phis,rhs.phis,sizeof(phis[0])*p);
+  memcpy(thetas,rhs.thetas,sizeof(thetas[0])*q);
+  variance=rhs.variance;
+  mean=rhs.mean;
+}
 
 ARMAModel::ARMAModel()
 {
@@ -26,7 +33,12 @@ ARMAModel::~ARMAModel()
   CHK_DEL_MAT(thetas);
 }
 
-void ARMAModel::Initialize(int P, int Q)
+ARMAModel & ARMAModel::operator=(const ARMAModel &rhs)
+{
+  return *(new(this)ARMAModel(rhs));
+}
+
+void ARMAModel::Initialize(const int P, const int Q)
 {
   CHK_DEL_MAT(phis);
   CHK_DEL_MAT(thetas);
@@ -43,14 +55,14 @@ void ARMAModel::Initialize(int P, int Q)
 #define ADJUSTP(num) ((num))
 #define ADJUSTQ(num) ((num))
 
-void ARMAModel::SetARCoeff(int num, double value)
+void ARMAModel::SetARCoeff(const int num, const double value)
 {
   if (CHECKP(num)) {
     phis[ADJUSTP(num)]=value;
   }
 }
 
-double ARMAModel::GetARCoeff(int num)
+double ARMAModel::GetARCoeff(const int num) const 
 {
   if (CHECKP(num)) {
     return phis[ADJUSTP(num)];
@@ -59,14 +71,14 @@ double ARMAModel::GetARCoeff(int num)
   }
 }
 
-void ARMAModel::SetMACoeff(int num, double value)
+void ARMAModel::SetMACoeff(const int num, const double value)
 {
   if (CHECKQ(num)) {
     thetas[ADJUSTQ(num)]=value;
   }
 }
 
-double ARMAModel::GetMACoeff(int num)
+double ARMAModel::GetMACoeff(const int num) const 
 {
   if (CHECKQ(num)) {
     return thetas[ADJUSTQ(num)];
@@ -75,17 +87,17 @@ double ARMAModel::GetMACoeff(int num)
   }
 }
 
-void ARMAModel::SetVariance(double var)
+void ARMAModel::SetVariance(const double var)
 {
   variance=var;
 }
 
-double ARMAModel::GetVariance() 
+double ARMAModel::GetVariance() const 
 {
   return variance;
 }
 
-double ARMAModel::EstimateVariance(double *seq, int len)
+double ARMAModel::EstimateVariance(const double *seq, const int len) const 
 {
   Predictor *predictor=MakePredictor();
   int i;
@@ -112,28 +124,28 @@ double ARMAModel::EstimateVariance(double *seq, int len)
 
 
 
-void ARMAModel::SetMean(double mn)
+void ARMAModel::SetMean(const double mn)
 {
   mean=mn;
 }
 
-double ARMAModel::GetMean()
+double ARMAModel::GetMean() const 
 {
   return mean;
 }
 
-int ARMAModel::GetP() 
+int ARMAModel::GetP() const 
 {
   return p;
 }
 
-int ARMAModel::GetQ() 
+int ARMAModel::GetQ() const 
 {
   return q;
 }
 
 
-void ARMAModel::Dump(FILE *out)
+void ARMAModel::Dump(FILE *out) const 
 {
   int i;
 
@@ -159,12 +171,32 @@ void ARMAModel::Dump(FILE *out)
   fprintf(out,"\n");
 }
 
+ostream & ARMAModel::operator<<(ostream &os) const 
+{
+  os << "ARMAModel(p="<<p<<", q="<<q<<", mean="<<mean<<", variance="<<variance<<", phis=(";
+  for (int i=0;i<p;i++) {
+    if (i>0) {
+      os <<", ";
+    }
+    os << phis[i];
+  }
+  os << "), thetas=(";
+  for (int i=0;i<q;i++) {
+    if (i>0) {
+      os <<", ";
+    } 
+    os <<thetas[i];
+  }
+  os << "))";
+  return os;
+}
+
 
 #define MAX(x,y) ((x)>(y) ? (x) : (y))
 #define MIN(x,y) ((x)<(y) ? (x) : (y))
 
 
-Predictor *ARMAModel::MakePredictor()
+Predictor *ARMAModel::MakePredictor() const
 {
    int i;
    Polynomial et, th;
@@ -193,7 +225,11 @@ Predictor *ARMAModel::MakePredictor()
    return pred;
 }
 
-ARMAModeler::ARMAModeler()
+ARMAModeler::ARMAModeler() 
+{
+}
+
+ARMAModeler::ARMAModeler(const ARMAModeler &rhs) 
 {
 }
 
@@ -202,13 +238,10 @@ ARMAModeler::~ARMAModeler()
 }
 
 
-
-
-
-double ARMAConditionalSumOfSquares(double *seq, int len, 
-				   double *phi, int numphi,
-				   double *theta, int numtheta,
-				   double maxreturn)
+double ARMAConditionalSumOfSquares(const double *seq, const int len, 
+				   const double *phi, const int numphi,
+				   const double *theta, const int numtheta,
+				   const double maxreturn)
 {
   double *a = new double [numtheta] ;
   double a2, temp;
@@ -285,12 +318,12 @@ float  ARMAConditionalSumOfSquaresWrapper(float p[])
 }
 
 				   
-ARMAModel *ARMAModeler::Fit(double *seq, int len, int P, int Q)
+ARMAModel *ARMAModeler::Fit(const double *seq, const int len, const int P, const int Q)
 {
   int numparam = P+Q;
   int i,j;
-  float *p = vector(1,numparam);
-  float **xi = matrix(1,numparam,1,numparam);
+  float *p = nrc::vector(1,numparam);
+  float **xi = nrc::matrix(1,numparam,1,numparam);
   double mean;
 
   double *workseq = new double [len];
@@ -320,7 +353,7 @@ ARMAModel *ARMAModeler::Fit(double *seq, int len, int P, int Q)
 
   powell(p,xi,numparam,ftol,&iter,&fret,ARMAConditionalSumOfSquaresWrapper);
 
-  //fprintf(stderr,"powell() finished after %d iterations\n",iter);
+  RPSLog(CONTEXT,10,"powell() finished after %d iterations\n",iter);
 
   // no neeed - we use temporary
   //UnMeanifySequence(seq,len,mean);
@@ -345,39 +378,11 @@ ARMAModel *ARMAModeler::Fit(double *seq, int len, int P, int Q)
 
   return model;
 
-#if 0
-  int i,j;
-  double mean;
-  ARModeler arm;
-  MAModeler mam;
-  ARModel *ar;
-  MAModel *ma;
-  
-
-  if (len<=0) { 
-    return 0;	
-  }
-
-  double *acovf = new double [P+Q+1];
-
-  if (acovf==0) {
-    return 0;
-  }
-
-  mean = ComputeAutoCov(seq,len,acovf,P+Q+1);
-
-  ARMAModel *model = Fit(mean,acovf,P+Q+1,P,Q);
-
-  CHK_DEL_MAT(acovf);
-
-  return model;
-#endif
-
 }
 
 // NOTE: DO NOT USE THIS
-ARMAModel *ARMAModeler::Fit(double mean, double *acovf, int len, 
-			    int P, int Q)
+ARMAModel *ARMAModeler::Fit(const double mean, const double *acovf, const int len, 
+			    const int P, const int Q)
 {
   ARMAModel *model;
   int i,j,k;
@@ -453,7 +458,7 @@ ARMAModel *ARMAModeler::Fit(double mean, double *acovf, int len,
 }
 
 
-Model *ARMAModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *ARMAModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   int p,d,q;
   
@@ -462,6 +467,17 @@ Model *ARMAModeler::Fit(double *seq, int len, const ParameterSet &ps)
   return Fit(seq,len,p,q);
 }
 			  
+
+void ARMAModeler::Dump(FILE *out=stdout) const
+{
+  fprintf(out,"ARMAModeler()\n");
+}
+
+ostream & ARMAModeler::operator<<(ostream &os) const
+{
+  os << "ARMAModeler()";
+  return os;
+}
   
 
   

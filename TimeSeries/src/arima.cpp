@@ -12,13 +12,28 @@ ARIMAModel::ARIMAModel()
   phis=thetas=0;
 }
 
+ARIMAModel::ARIMAModel(const ARIMAModel &rhs)
+{
+  phis=thetas=0;
+  Initialize(rhs.p, rhs.d, rhs.q);
+  memcpy(phis,rhs.phis,sizeof(phis[0])*p);
+  memcpy(thetas,rhs.thetas,sizeof(thetas[0])*q);
+  mean=rhs.mean;
+  variance=rhs.variance;
+}
+
 ARIMAModel::~ARIMAModel()
 {
   CHK_DEL_MAT(phis);
   CHK_DEL_MAT(thetas);
 }
 
-void ARIMAModel::Initialize(int P, int D, int Q)
+ARIMAModel & ARIMAModel::operator=(const ARIMAModel &rhs)
+{
+  return *(new(this)ARIMAModel(rhs));
+}
+
+void ARIMAModel::Initialize(const int P, const int D, const int Q)
 {
   CHK_DEL_MAT(phis);
   CHK_DEL_MAT(thetas);
@@ -32,17 +47,17 @@ void ARIMAModel::Initialize(int P, int D, int Q)
 
 }
 
-int ARIMAModel::GetP()
+int ARIMAModel::GetP() const 
 {
    return p;
 }
 
-int ARIMAModel::GetQ()
+int ARIMAModel::GetQ() const 
 {
    return q;
 }
 
-int ARIMAModel::GetD()
+int ARIMAModel::GetD() const 
 {
    return d;
 }
@@ -53,21 +68,21 @@ int ARIMAModel::GetD()
 #define ADJUSTP(num) ((num))
 #define ADJUSTQ(num) ((num))
 
-void ARIMAModel::SetARCoeff(int num, double value)
+void ARIMAModel::SetARCoeff(const int num, const double value)
 {
   if (CHECKP(num)) {
     phis[ADJUSTP(num)]=value;
   }
 }
 
-void ARIMAModel::SetMACoeff(int num, double value)
+void ARIMAModel::SetMACoeff(const int num, const double value)
 {
   if (CHECKQ(num)) {
     thetas[ADJUSTQ(num)]=value;
   }
 }
 
-double ARIMAModel::GetARCoeff(int num)
+double ARIMAModel::GetARCoeff(const int num) const 
 {
   if (CHECKP(num)) {
     return phis[ADJUSTP(num)];
@@ -76,7 +91,7 @@ double ARIMAModel::GetARCoeff(int num)
   }
 }
 
-double ARIMAModel::GetMACoeff(int num)
+double ARIMAModel::GetMACoeff(const int num) const 
 {
   if (CHECKQ(num)) {
     return thetas[ADJUSTQ(num)];
@@ -85,18 +100,18 @@ double ARIMAModel::GetMACoeff(int num)
   }
 }
 
-void ARIMAModel::SetVariance(double var)
+void ARIMAModel::SetVariance(const double var)
 {
   variance=var;
 }
 
-double ARIMAModel::GetVariance()
+double ARIMAModel::GetVariance() const 
 {
   return variance;
 }
 
 
-double ARIMAModel::EstimateVariance(double *seq, int len)
+double ARIMAModel::EstimateVariance(const double *seq, const int len) const 
 {
   Predictor *predictor=MakePredictor();
   int i;
@@ -121,17 +136,17 @@ double ARIMAModel::EstimateVariance(double *seq, int len)
   return ssd/((double)len);
 }
 
-void ARIMAModel::SetMean(double mn)
+void ARIMAModel::SetMean(const double mn) 
 {
   mean=mn;
 }
 
-double ARIMAModel::GetMean()
+double ARIMAModel::GetMean() const 
 {
   return mean;
 }
 
-void ARIMAModel::Dump(FILE *out)
+void ARIMAModel::Dump(FILE *out) const 
 {
   fprintf(out,"ARIMA(%d,%d,%d) model\n",GetP(),GetD(),GetQ());
   fprintf(out,"Phis (AR coeffs):");
@@ -149,7 +164,27 @@ void ARIMAModel::Dump(FILE *out)
   fprintf(out,"\nNoise Variance=%f\n",GetVariance());
 }
 
-Predictor * ARIMAModel::MakePredictor()
+ostream & ARIMAModel::operator<<(ostream &os) const 
+{
+  os <<" ARIMAModel(p="<<p<<", d="<<d<<", q="<<q<<", mean="<<mean<<", variance="<<variance<<", phis=(";
+  for (int i=0;i<p;i++) {
+    if (i>0) { 
+      os <<", ";
+    }
+    os << phis[i];
+  }
+  os <<"), thetas=(";
+  for (int i=0;i<q;i++) {
+    if (i>0) { 
+      os <<", ";
+    } 
+    os << thetas[i];
+  }
+  os <<"))";
+  return os;
+}
+
+Predictor * ARIMAModel::MakePredictor() const
 {
    int i;
    Polynomial et,dh,th;
@@ -189,8 +224,21 @@ Predictor * ARIMAModel::MakePredictor()
 }
 
 
+ARIMAModeler::ARIMAModeler()
+{}
 
-ARIMAModel *ARIMAModeler::Fit(double *seq, int len, int P, int D, int Q)
+ARIMAModeler::ARIMAModeler(const ARIMAModeler &rhs)
+{}
+
+ARIMAModeler::~ARIMAModeler()
+{}
+
+ARIMAModeler & ARIMAModeler::operator=(const ARIMAModeler &rhs)
+{
+  return *(new(this)ARIMAModeler(rhs));
+}
+
+ARIMAModel *ARIMAModeler::Fit(const double *seq, const int len, const int P, const int D, const int Q)
 {
   double mean;
   int i;
@@ -238,11 +286,22 @@ ARIMAModel *ARIMAModeler::Fit(double *seq, int len, int P, int D, int Q)
   return model;
 }
 
-Model *ARIMAModeler::Fit(double *seq, int len, const ParameterSet &ps)
+Model *ARIMAModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 {
   int p,d,q;
   
   ((const PDQParameterSet &)ps).Get(p,d,q);
   
   return Fit(seq,len,p,d,q);
+}
+
+void ARIMAModeler::Dump(FILE *out) const
+{
+  fprintf(out,"ARIMAModeler()\n");
+}
+
+ostream & ARIMAModeler::operator<<(ostream &os) const
+{
+  os << "ARIMAModeler()";
+  return os;
 }
