@@ -178,7 +178,6 @@ int main(int argc, char *argv[])
     case APPROX: {
       GetRusage(sysbegin, usrbegin);
       for (i=0; i<samples.size(); i++) {
-	sleep(1);
 	sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
 	outsamples.clear();
       }
@@ -188,7 +187,6 @@ int main(int argc, char *argv[])
     case DETAIL: {
       GetRusage(sysbegin, usrbegin);
       for (i=0; i<samples.size(); i++) {
-	sleep(1);
 	sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
 	outsamples.clear();
       }
@@ -198,7 +196,6 @@ int main(int argc, char *argv[])
     case TRANSFORM: {
       GetRusage(sysbegin, usrbegin);
       for (i=0; i<samples.size(); i++) {
-	sleep(1);
 	sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
 	outsamples.clear();
       }
@@ -213,7 +210,6 @@ int main(int argc, char *argv[])
     case APPROX: {
       GetRusage(sysbegin, usrbegin);
       for (i=0; i<blocks.size(); i++) {
-	sleep(1);
 	sfwt.StreamingApproxBlockOperation(forwardoutput, blocks[i]);
 	forwardoutput.clear();
       }
@@ -223,7 +219,6 @@ int main(int argc, char *argv[])
     case DETAIL: {
       GetRusage(sysbegin, usrbegin);
       for (i=0; i<blocks.size(); i++) {
-	sleep(1);
 	sfwt.StreamingDetailBlockOperation(forwardoutput, blocks[i]);
 	forwardoutput.clear();
       }
@@ -233,7 +228,6 @@ int main(int argc, char *argv[])
     case TRANSFORM: {
       GetRusage(sysbegin, usrbegin);
       for (i=0; i<blocks.size(); i++) {
-	sleep(1);
 	sfwt.StreamingTransformBlockOperation(forwardoutput, blocks[i]);
 	forwardoutput.clear();
       }
@@ -246,20 +240,28 @@ int main(int argc, char *argv[])
   }
   // Print the output with appropriate tag
   if (flat) {
-
+    *outstr << "MAXRATE " << wt << " " << numstages << " " << tt << " "
+	    << ((sample) ? "SAMPLE " : "BLOCK ") << usrend - usrbegin << " "
+	    << sysend - sysbegin;
   } else {
-
+    *outstr << "MAXRATE" << endl;
+    *outstr << "Wavelet type = " << wt << endl;
+    *outstr << "Number stages = " << numstages << endl;
+    *outstr << "Transform type = " << tt << endl;
+    *outstr << "Operation type = " << ((sample) ? "SAMPLE" : "BLOCK") << endl;
+    *outstr << "User time = " << usrend - usrbegin;
+    *outstr << "System time = " << sysend - sysbegin;
   }
 
-
-  // ugly code, but trying to maximize performance here!
+  // Finish the tests by incrementing sleep time
+  double sleeptime=sleeprate;
   for (unsigned test=0; test<numrates; test++) {
     if (sample) {
       switch(tt) {
       case APPROX: {
 	GetRusage(sysbegin, usrbegin);
 	for (i=0; i<samples.size(); i++) {
-	  sleep(1);
+	  sleep(sleeptime);
 	  sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
 	  outsamples.clear();
 	}
@@ -269,7 +271,7 @@ int main(int argc, char *argv[])
       case DETAIL: {
 	GetRusage(sysbegin, usrbegin);
 	for (i=0; i<samples.size(); i++) {
-	  sleep(1);
+	  sleep(sleeptime);
 	  sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
 	  outsamples.clear();
 	}
@@ -279,7 +281,7 @@ int main(int argc, char *argv[])
       case TRANSFORM: {
 	GetRusage(sysbegin, usrbegin);
 	for (i=0; i<samples.size(); i++) {
-	  sleep(1);
+	  sleep(sleeptime);
 	  sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
 	  outsamples.clear();
 	}
@@ -294,7 +296,7 @@ int main(int argc, char *argv[])
       case APPROX: {
 	GetRusage(sysbegin, usrbegin);
 	for (i=0; i<blocks.size(); i++) {
-	  sleep(1);
+	  sleep(sleeptime);
 	  sfwt.StreamingApproxBlockOperation(forwardoutput, blocks[i]);
 	  forwardoutput.clear();
 	}
@@ -304,7 +306,7 @@ int main(int argc, char *argv[])
       case DETAIL: {
 	GetRusage(sysbegin, usrbegin);
 	for (i=0; i<blocks.size(); i++) {
-	  sleep(1);
+	  sleep(sleeptime);
 	  sfwt.StreamingDetailBlockOperation(forwardoutput, blocks[i]);
 	  forwardoutput.clear();
 	}
@@ -314,7 +316,7 @@ int main(int argc, char *argv[])
       case TRANSFORM: {
 	GetRusage(sysbegin, usrbegin);
 	for (i=0; i<blocks.size(); i++) {
-	  sleep(1);
+	  sleep(sleeptime);
 	  sfwt.StreamingTransformBlockOperation(forwardoutput, blocks[i]);
 	  forwardoutput.clear();
 	}
@@ -326,6 +328,20 @@ int main(int argc, char *argv[])
       }
     }
     // Print the output with appropriate tag
+    if (flat) {
+      *outstr << 1/sleeptime << " " << wt << " " << numstages << " " << tt << " "
+	      << ((sample) ? "SAMPLE " : "BLOCK ") << usrend - usrbegin << " "
+	      << sysend - sysbegin;
+    } else {
+      *outstr << "Samplerate = " << 1/sleeptime << endl;
+      *outstr << "Wavelet type = " << wt << endl;
+      *outstr << "Number stages = " << numstages << endl;
+      *outstr << "Transform type = " << tt << endl;
+      *outstr << "Operation type = " << ((sample) ? "SAMPLE" : "BLOCK") << endl;
+      *outstr << "User time = " << usrend - usrbegin;
+      *outstr << "System time = " << sysend - sysbegin;
+    }
+    sleeptime *= multiplier;
   }
 
   return 0;
