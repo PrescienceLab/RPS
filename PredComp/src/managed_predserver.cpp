@@ -20,7 +20,8 @@ void usage(const char *n)
 	  "control         = server endpoint for control\n"
 	  "target+         = one or more target or connect endpoints for predictions\n"
 	  "numpred         = number of steps ahead to predict\n"
-	  "MANGED MODEL    = a managed model (see below)\n\n%s\n%s",n,m,b);
+	  "MANAGED MODEL   = a managed model or some other model\n"
+          "                  that does not require startup (see below)\n\n%s\n%s",n,m,b);
   delete [] b;
   delete [] m;
 }
@@ -100,14 +101,22 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  for (managed=5;managed<argc;managed++) {
-    if (!strcasecmp(argv[managed],"MANAGED")) {
+  // look for the prediction horizon.  it must be immediately before the model.
+
+  for (managed=4;managed<argc;managed++) {
+    if (isdigit(argv[managed][0])) { 
       break;
     }
   }
   if (managed==argc) {
-    usage(argv[0]);
-    exit(0);
+    fprintf(stderr, "Could not find where the model starts!\n");
+    exit(-1);
+  }
+  managed++;
+
+  if (strcasecmp(argv[managed],"MANAGED") && strcasecmp(argv[managed],"AWAIT")) {
+    fprintf(stderr,"Warning: model does not have MANAGED or AWAIT modifier.\n"
+                   "Going ahead anyway, but this could cause managed_predserver to fail.\n");
   }
 
   PredictionMirror mirror;

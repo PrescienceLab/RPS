@@ -78,6 +78,12 @@ int ModelTemplate::_GetPackedSize() const
   case ManagedPDQ:
     return 4+4+6*4+2*8;
     break;
+  case File: {
+    string s;
+    ((FileParameterSet *)ps)->Get(s);
+    return 4+4+4+4*s.size();
+  }
+    break;
   // Add other types here
   default:
     assert(0);
@@ -88,7 +94,8 @@ int ModelTemplate::_GetPackedSize() const
 
 int ModelTemplate::_GetMaxPackedSize() const 
 {
-  return 4+4+6*4+2*8;
+  //  return 4+4+6*4+2*8;
+  return 1024;
 }
 
 #if !defined(IEEE_DOUBLE_LSB) && !defined(IEEE_DOUBLE_MSB)
@@ -257,7 +264,7 @@ int ModelTemplate::_Unpack(ByteStream &bs)
     ps = new ManagedPDQParameterSet(p,d,q,a,r,m,errlimit,varlimit);
     break;
   case File: {
-    bs.Get((char*)&(bi[2]),2*4);
+    bs.Get((char*)&(bi[2]),1*4);
     int len = ntohl(bi[2]);
     char *buf = new char[len+1];
     int rc1=bs.Get(buf,len)==len;
