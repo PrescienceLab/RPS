@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
   vector<WaveletInputSample<double> >  finaloutput;
   vector<WaveletInputSample<double> >  outsamp;
 
+
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
     

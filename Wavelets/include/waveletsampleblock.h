@@ -104,6 +104,7 @@ void WaveletOutputSampleBlock<SAMPLETYPE>::
 SetBlockLevel(const int level)
 {
   this->level = level;
+  SetAllSamplesToCorrectLevel();
 }
 
 template <class SAMPLETYPE>

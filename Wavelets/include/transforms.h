@@ -191,7 +191,8 @@ public:
 
   // This routine expects a range of sample levels upon which to reconstruct,
   //  range=[lowest_inlvl,lowest_inlvl+numlevels]
-  bool StreamingSampleOperation(vector<OUTSAMPLE> &out, const vector<INSAMPLE> &in);
+  bool StreamingSampleOperation(vector<OUTSAMPLE> &out,
+				const vector<INSAMPLE> &in);
 
   // This routine takes a subset of approximations and details, and figures out
   //  the correct combination to reconstruct with
@@ -201,14 +202,16 @@ public:
 
   // This routine expects blocks of sample levels upon which to reconstruct,
   //  range=[lowest_inlvl,lowest_inlvl+numlevels]
-  unsigned StreamingBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
-				   const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock);
+  unsigned StreamingBlockOperation
+    (SampleBlock<OUTSAMPLE> &outblock,
+     const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock);
 
   // This routine takes a subset of approximations and detail blocks, and figures out
   //  the correct combination to reconstruct with
-  unsigned StreamingTransformBlockOperation(SampleBlock<OUTSAMPLE> &outblock,
-					    const vector<WaveletOutputSampleBlock<INSAMPLE> > &approx_block,
-					    const vector<WaveletOutputSampleBlock<INSAMPLE> > &detail_block);
+  unsigned StreamingTransformBlockOperation
+    (SampleBlock<OUTSAMPLE> &outblock,
+     const vector<WaveletOutputSampleBlock<INSAMPLE> > &approx_block,
+     const vector<WaveletOutputSampleBlock<INSAMPLE> > &detail_block);
 
   ostream & Print(ostream &os) const;
 };
@@ -651,9 +654,9 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
   //  level+1
   if (result) {
     for (unsigned i=0; i<approx.size(); i++) {
-      unsigned level = approx[i].GetSampleLevel();
-      if (level == numstages+lowest_outlvl) {
-	approx[i].SetSampleLevel(level+1);
+      int level = approx[i].GetSampleLevel();
+      if (level == lowest_outlvl + (int) numstages - 1) {
+	approx[i].SetSampleLevel(numstages);
 	out.push_back(approx[i]);
       }
     }

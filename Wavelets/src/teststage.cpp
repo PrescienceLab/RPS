@@ -59,9 +59,9 @@ int main(int argc, char *argv[])
   // Read the data from file into an input vector
   deque<WaveletInputSample<double> > samples;
   double sample;
+  unsigned index=0;
   while (infile >> sample) {
-    WaveletInputSample<double> wavesample;
-    wavesample.SetSampleValue(sample);
+    WaveletInputSample<double> wavesample(sample, index++);
     samples.push_back(wavesample);
   }
   infile.close();
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     cout << "\t" << samples[i];
   }
 
-  WaveletInputSampleBlock<WaveletInputSample<double> >  input(samples);
+  WaveletInputSampleBlock<WaveletInputSample<double> > input(samples);
   cout << "The WaveletInputSampleBlock: " << endl;
   cout << input;
 
