@@ -353,14 +353,14 @@ else
 	-mkdir $(RPS_INSTALL_DIR)/lib
 	-mkdir $(RPS_INSTALL_DIR)/include
 	-cp $(RPS_DIR)/include/* $(RPS_INSTALL_DIR)/include
-	-cp $(RPS_DIR)/lib/$(RPS_ARCH)/$(RPS_OS)/* $(RPS_INSTALL_DIR)/lib
-	-cp $(RPS_DIR)/bin/$(RPS_ARCH)/$(RPS_OS)/* $(RPS_INSTALL_DIR)/bin
+	-cp $(RPS_DIR)/lib/$(ARCH)/$(OS)/* $(RPS_INSTALL_DIR)/lib
+	-cp $(RPS_DIR)/bin/$(ARCH)/$(OS)/* $(RPS_INSTALL_DIR)/bin
 	-cp $(RPS_DIR)/Scripts/* $(RPS_INSTALL_DIR)/bin
 	-cp $(RPS_DIR)/doc/* $(RPS_INSTALL_DIR)/doc
 	-cp $(RPS_DIR)/README $(RPS_DIR)/LICENSE $(RPS_INSTALL_DIR)
 	-echo "export RPS_DIR=$(RPS_INSTALL_DIR)" > $(RPS_INSTALL_DIR)/ENV
-	-echo "export RPS_OS=$(RPS_OS)" >> $(RPS_INSTALL_DIR)/ENV
-	-echo "export RPS_ARCH=$(RPS_ARCH)" >> $(RPS_INSTALL_DIR)/ENV
+	-echo "export RPS_OS=$(OS)" >> $(RPS_INSTALL_DIR)/ENV
+	-echo "export RPS_ARCH=$(ARCH)" >> $(RPS_INSTALL_DIR)/ENV
 	-cat $(RPS_DIR)/build/setup_rps_env_installed >> $(RPS_INSTALL_DIR)/ENV
 	-cat $(RPS_DIR)/build/setup_default_ports >> $(RPS_INSTALL_DIR)/ENV
 endif

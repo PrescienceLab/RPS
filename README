@@ -19,6 +19,10 @@ in the technical report in doc/rps-techreport.pdf (CMU-CS-99-138).
 There are a number of papers on the author's home page that present
 research results derived from using RPS.
 
+RPS includes Tsunami, a wavelet toolkit for distributed systems 
+written by Jason Skicewicz.  The toolkit and RPS components based on 
+it are described in doc/tsunami-techreport.pdf (NWU-CS-03-16)
+
 Licensing (this is not "free" software):
 
 Read the file LICENSE
@@ -47,4 +51,6 @@ email to majordomo@cs.northwestern.edu with the line
 
 Please do not send mail directly to the author.  It will likely be
 ignored.
+
+
 

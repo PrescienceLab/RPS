@@ -18,6 +18,7 @@ For additional functionality, other software is needed:
   - PVM 3.3.3 or better : parallel offline time series evaluation codes
   - Java : simple java gui 
   - Perl 5 : assorted scripts
+  - gnuplot : graphical display
   - tcsh and sh : assorted scripts
 
 Some functionality is currently unavailable on the Native Windows
@@ -83,34 +84,51 @@ $RPS_INSTALL_DIR
   include
 
 In addition to binaries, the appropriate scripts will be copied 
-into the bin subdirectory
+into the bin subdirectory.  
+
+To use RPS after installation, source $RPS_INSTALL_DIR/ENV and then
+explore the contents of the bin and doc directories.
 
 
-Red Hat Linux 6.2 on Intel
+Red Hat Linux 9.0 on Intel
 --------------------------
 
 targets in .../I386/LINUX
 
-[pdinda@skysaw RPS-development]$ uname -a
-Linux skysaw 2.2.14-5.0smp #1 SMP Tue Mar 7 21:01:40 EST 2000 i686 unknown
-[pdinda@skysaw RPS-development]$ make -v
-GNU Make version 3.78.1, by Richard Stallman and Roland McGrath.
-Built for i386-redhat-linux-gnu
-...
-[pdinda@skysaw RPS-development]$ g++ -v
-Reading specs from /usr/local/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/specs
-gcc version 2.95.3 20010315 (release)
-...
-[pdinda@skysaw RPS-development]$ g77 -v
-g77 version 2.95.3 20010315 (release) (from FSF-g77 version 0.5.25 20010315 (relea
-se))
-...
-[pdinda@skysaw RPS-development]$ java -version
-java version "1.3.0"
-Java(TM) 2 Runtime Environment, Standard Edition (build 1.3.0)
-Java HotSpot(TM) Client VM (build 1.3.0, mixed mode)
 
-RPS has also been built on out-of-the-box Red Hat 7.0.
+[pdinda@virtuoso-1 doc]$ uname -a
+Linux virtuoso-1.cs.nwu.edu 2.4.20-8smp #1 SMP Thu Mar 13 17:45:54 EST 2003 i686 i686 i386 GNU/Linux
+[pdinda@virtuoso-1 doc]$ make -v
+GNU Make version 3.79.1, by Richard Stallman and Roland McGrath.
+Built for i386-redhat-linux-gnu
+Copyright (C) 1988, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 2000
+	Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.
+
+Report bugs to <bug-make@gnu.org>.
+
+[pdinda@virtuoso-1 doc]$ g++ -v
+Reading specs from /usr/lib/gcc-lib/i386-redhat-linux/3.2.2/specs
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --enable-shared --enable-threads=posix --disable-checking --with-system-zlib --enable-__cxa_atexit --host=i386-redhat-linux
+Thread model: posix
+gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+[pdinda@virtuoso-1 doc]$ g77 -v
+Reading specs from /usr/lib/gcc-lib/i386-redhat-linux/3.2.2/specs
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --enable-shared --enable-threads=posix --disable-checking --with-system-zlib --enable-__cxa_atexit --host=i386-redhat-linux
+Thread model: posix
+gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+[pdinda@virtuoso-1 doc]$ java -version
+java version "1.3.1"
+jdkgcj 0.2.3 (http://www.arklinux.org/projects/jdkgcj)
+gcj (GCC) 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+Copyright (C) 2002 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+RPS has also been built in the past on out-of-the-box Red Hat 6.2 and 7.0.
+To simplify compilation of the java viewer, use of Sun's java is recommended.
 
 
 Cygwin 1.1.8 on Windows 2000 on Intel

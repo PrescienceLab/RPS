@@ -99,6 +99,8 @@ unsigned ToIPAddress(const char *hostname)
 }
 
 
+
+#if 0
 #define WELL_KNOWN_HOST ((char*)"www.cnn.com")
 #define WELL_KNOWN_PORT 80
 
@@ -141,6 +143,28 @@ unsigned GetMyIPAddress()
     }
   }
 }
+
+#else 
+
+unsigned GetMyIPAddress()
+{
+  static unsigned adx=0;
+  static bool setup=false;
+
+  if (setup) { 
+    return adx;
+  } else {
+    char host[1024];
+    if (gethostname(host,1024)) { 
+      return 0;
+    }
+    adx=ToIPAddress(host);
+    setup=true;
+    return adx;
+  }
+}
+
+#endif
 
 int CreateAndSetupUdpSocket(const int bufsize, const bool nonblocking)
 {

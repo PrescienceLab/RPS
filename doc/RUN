@@ -4,8 +4,8 @@ Running RPS
 rps-help@cs.northwestern.edu
 
 What it means to "Run RPS" is more complex that might be expected.  A
-typical RPS build generates about 10 libraries and over 60
-executables, not to mention another 20+ scripts.  Generally speaking,
+typical RPS build generates about 10 libraries and over 120
+executables, not to mention another 30+ scripts.  Generally speaking,
 one runs RPS by either running Prediction Components (ie, those codes
 produced from the PredComp package) and Scripts (from the Scripts
 package).
@@ -44,6 +44,10 @@ Get a measurement:
 
 get_measurements_on.pl host
 
+Plot measurements:
+
+plot_measurements_and_predications_on.pl --rate=1 --nopred host
+
 shut down the measurement system:
 
 kill_hostloadmeasure.pl
@@ -62,6 +66,14 @@ Get a prediction:
 
 get_predictions_on.pl host
 
+Plot predictions:
+
+plot_measurements_and_predictions_on.pl --rate=1 --nomeasure host
+
+Plot both predictions and measurements:
+
+plot_measurements_and_predictions_on.pl --rate=1 host
+
 shut down the measurement system:
 
 kill_hostloadpred.pl
@@ -77,6 +89,18 @@ Display measurements and predictions on a host:
 run_gui_on.pl host
 
 
+
+Network Flow Measurements and Predictions
+-----------------------------------------
+
+To do flow measurements, you will need to use the raw components
+(flowbw*).  Notice that these will only work if you have Remos
+installed and running and you built RPS with HAVE_REMOS=YES.
+
+Alterantively, you can turn any command-line measuremeent tool into an
+RPS measurement and prediction source using the following description.
+
+
 Wrapping Any Tool to be an RPS Measurement and Prediction Source
 ----------------------------------------------------------------
 
@@ -84,6 +108,7 @@ Any tool that produces a stream of one (value) or two column
 (timestamp, value) numerical output can be made into an RPS
 measurement source, prediction source, or both.  
 
+We provide a very simple tool for testing, gen_numbers.pl
 
 Wrapping a tool as a measurement source with streaming and buffering
 access modes (TCP-only): 
@@ -115,6 +140,27 @@ is a wrapper provided in the WatchTowerRPS package):
 measurement_and_prediction_source.pl ... wt_disk.pl
 
 
+Wrapping any Tool With Streaming Wavelet Decomposition
+------------------------------------------------------
+
+Any tool that produces measurements, as described in the previous
+section, can also be wrapped as an RPS "wavelet measurement source",
+meaning that its output is transformed using a streaming wavelet
+transform in to a set of signals, one for each level of the
+transform.  
+
+wavelet_measurement_source.pl stream_port|none buffer_port|none
+       multicast_addr:port|none wavelet_type num_levels numitems
+       period text-generator
+
+Notice that you can supply a multicast destination as well.
+
+You can get data from the buffer using get_wavelet_measurements_on.pl.
+
+You can plot data from the buffer using plot_wavelet_source_on.pl.
+
+
+
 Predictions of Task Running Time (Running Time Advisor)
 -------------------------------------------------------
 
@@ -122,12 +168,32 @@ A host load predictor must be running on the host.
 
 test_rta task_size confidence_level host
 
+
+
 Real-time Scheduling Advisor
 ----------------------------
 
 A host load predictor must be running on each of the hosts.
 
 test_rtsa task_size confidence_level slack_factor host+
+
+
+Offline Time Series Analysis and Prediction
+-------------------------------------------
+
+You can do offline analysis on any text file that has a one or two
+column format.  You can transform into text files using the various
+trace file translators (alpha_to_ascii, network_to_ascii, etc)/
+
+The core offline time series prediction tool is ts_example, which is
+relatively self explanatory.  Run it without arguments for help.
+
+
+Offline Wavelet Analysis
+------------------------
+
+Tsunami includes a wide range of offline analysis tools.  Consult
+the Tsunami TR for more information.
 
 
 Use the individual components

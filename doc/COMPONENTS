@@ -1,0 +1,171 @@
+RPS Packages
+=============
+
+pdinda@cs.northwestern.edu
+
+RPS is a collection of packages that can be used at several
+different levels.  
+
+At the highest level, there is a package containing a scripts that
+construct measurement, prediction, and wavelet systems at run-time.
+
+At the next level, the individual executables (components) within the
+various RPS packages can be used separately or tied together using
+various protocols.
+
+Finally, for most packages, the core functionalty is available as a
+C++ include file and library.  The structure of a package is described
+in the file STRUCTURE.
+
+The following are the RPS packages.  For more information, consult
+README.package_name. 
+
+
+High-level Performance and Scheduling Advisors
+==============================================
+
+RTA
+
+Running Time Advisor.  Predicts the running time of tasks.
+
+
+RTSA
+
+Real-time Scheduling Advisor.  Predictive scheduling of tasks with
+deadlines. 
+
+
+
+Scripts
+=======
+
+Scripts 
+
+This contains the scripts to do host load measurement and prediction,
+and to wrap measurement, prediction, and wavelet services around
+existing programs.  Also scripts for static and dynamic plotting of
+information from these services.
+
+
+ResearchScripts
+
+Scripts for research (not usually distributed with RPS)
+
+
+
+Signal Processing Packages and Offline Analysis
+===============================================
+
+FracDiff
+
+Fortran implementation of the fractional ARIMA predictive model.
+
+
+TimeSeries
+
+Extensive time-series prediction library and offline prediction tools.
+
+
+Wavelets
+
+Tsunami: An extensive wavelet analysis library and offline tools.
+(see tsunami-tr.pdf for more information)
+
+
+Trace
+
+Interface library and coversion between different trace formats.
+
+
+Communication and RPS Components
+================================
+
+Finder
+
+Simple interface to find RPS measurement and prediction sources. 
+This is currently very primitive
+
+
+Mirror
+
+C++ template library to implement communication for RPS prediction
+components.  Please see the RPS technical report for more information.
+
+
+PredComp
+
+Prediction components.  Executables that can interconnected to form
+measurement, prediction, and wavelet systems.
+
+
+RPSInterface
+
+Serializable objects and other elements of the interfaces between RPS
+prediction components.
+
+Display
+=======
+
+JavaGUI
+
+Simple scrolling display of measurements and predictions.
+
+
+Scripts
+
+(Scripts includes various plotting utilities, plot*)
+
+
+Web
+
+A web interface suitable for use with Apache
+
+
+Sensors
+=======
+
+GetFlowBW
+
+Sensor (based on Remos) for measuring network bandwidth along a path.
+
+
+GetLoadAvg
+
+Sensor for measuring host load.
+
+
+Proc
+
+Sensors for the Linux /proc filesystem.
+
+
+Sensors
+
+Shared elements of RPS sensors.
+
+
+WatchTowerRPS
+
+RPS Sensor for Windows performance counters.
+
+
+
+Other
+====-
+
+
+Extra
+
+Other items (may not be distributed with RPS)
+
+
+RemosInterface
+
+Simple C interface to some elements of RPS (used by Remos)
+
+
+ResearchTools
+
+Executables for research (not usuaully distributed with RPS)
+
+

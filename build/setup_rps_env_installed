@@ -1,8 +1,12 @@
 export PATH=${PATH}:${RPS_DIR}/bin
 
+export PERLLIB=${RPS_DIR}/Scripts:${PERLLIB}
+
 export LD_LIBRARY_PATH=${RPS_DIR}/lib:${LD_LIBRARY_PATH}
 
 export RPS_NEWSTYLEOUTPUT=yes
 
+export RPS_MINLOGLEVEL=100000
 
+#export RPS_LOG=somefile
 
