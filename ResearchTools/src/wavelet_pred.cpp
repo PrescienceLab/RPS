@@ -57,6 +57,11 @@ int ReadSpecFile(const char *file)
 
   state=LEVELS;
   while (!feof(in) && fgets(buf,MAXBUF,in)) { 
+    for (int i=0;i<strlen(buf);i++) { 
+      if (buf[i]=='\n') {
+	buf[i]=' ';
+      }
+    }
     if (buf[0]=='#') { 
     } else {
       switch (state) {
