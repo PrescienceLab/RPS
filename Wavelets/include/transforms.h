@@ -2839,6 +2839,11 @@ DiscreteWaveletTransformOperation
     AddVectors(f_vector, outh, outl);
   }
 
+  // Transfer result to outblock
+  for (i=0; i<f_vector.size(); i++) {
+    outblock.PushSampleBack(OUTSAMPLE(f_vector[i], index++));
+  }
+
   for (i=0; i<NUMROWS; i++) {
     CHK_DEL(lpf[i]);
     CHK_DEL(hpf[i]);
