@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "util.h"
-#include "sample.h"
 #include "sampleblock.h"
 
 template <class OUTSAMPLE, class INSAMPLE>

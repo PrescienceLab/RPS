@@ -4,8 +4,6 @@
 #include <vector>
 #include <iostream>
 
-#include "waveletsample.h"
-#include "sample.h"
 #include "util.h"
 
 template <class SAMPLETYPE>
