@@ -102,7 +102,7 @@ struct Prediction : public SerializeableInfo {
 
 
   void Print(FILE *out=stdout) {
-    struct in_addr ia; ia.s_addr=ipaddress;
+    struct in_addr ia; ia.s_addr=htonl(ipaddress);
     
     struct hostent *he=gethostbyaddr((const char *)&(ia),
 				     sizeof(ia),

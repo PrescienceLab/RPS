@@ -235,7 +235,7 @@ void LoadMeasurementXmlEndElement(void *object,
 
   switch (LoadMeasurementXmlState) {
   case Hostname: 
-    lm->ipaddress=ntohl(ToIPAddress(LoadMeasurementXmlCDataBuffer));
+    lm->ipaddress=ToIPAddress(LoadMeasurementXmlCDataBuffer);
     break;
   case Period: 
     lm->period_usec=atoi(LoadMeasurementXmlCDataBuffer);
