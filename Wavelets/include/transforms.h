@@ -2895,7 +2895,7 @@ DiscreteWaveletTransformZeroFillOperation
 
   this->DiscreteWaveletTransformOperation(outblock, inblock);
 
-  return blocksize;
+  return outblock.GetBlockSize();
 }
 
 // Function assumes that the structure optimizer was run before calling
