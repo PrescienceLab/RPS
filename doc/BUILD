@@ -94,13 +94,16 @@ explore the contents of the bin and doc directories.
 Installation Support for Windows Systems
 ----------------------------------------
 
-Execute
+set RPS_DIR=your build dir
+set RPS_OS=WIN32
+set RPS_ARCH=I386
+set RPS_INSTALL_DIR=c:\where\you\want\RPS
 
-$RPS_DIR\build\install_windows.bat \where\you\want\RPS
+$RPS_DIR\build\install_windows.bat
 
 This will create a traditional unix-style directory tree:
 
-\where\you\want\RPS
+c:\where\you\want\RPS
   bin
   doc
   lib
