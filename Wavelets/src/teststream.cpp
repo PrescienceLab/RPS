@@ -110,10 +110,14 @@ int main(int argc, char *argv[])
   vector<WaveletInputSample>  outsamp;
 
   for (i=0; i<samples.size(); i++) {
+    cout << "sample: " << i << endl;
+    cout << "FORWARD: sample in.\n";
     sfwt.StreamingSampleOperation(outsamples, samples[i]);
 
+    cout << "DELAY: sample in. \n";
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
 
+    cout << "REVERSE: sample in. \n" << endl;
     if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
       for (unsigned j=0; j<outsamp.size(); j++) {
 	finaloutput.push_back(outsamp[j]);

@@ -72,6 +72,15 @@ public:
     buf = samples;
   };
 
+  void GetSamples(vector<SAMPLETYPE> &buf, unsigned first, unsigned last) const {
+    if ((first >= 0) && (first < samples.size()) && (last >= first)) {
+      buf.clear();
+      for (unsigned i=first; i<last; i++) {
+	buf.push_back(samples[i]);
+      }
+    }
+  };
+
   inline void SetSample(SAMPLETYPE &input) {
     samples.push_back(input);
   };

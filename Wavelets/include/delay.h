@@ -297,9 +297,28 @@ unsigned DelayBlock<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
 			vector<SampleBlock<INSAMPLE> *>  &inblock)
 {
-  if (inblock.size() != numlevels) {
+  if ((inblock.size() != numlevels) || (outblock.size() != numlevels)) {
     return 0;
   }
+
+  unsigned i, blocklen=0;
+  SampleBlock<OUTSAMPLE>* psbo;
+  SampleBlock<INSAMPLE>*  psbi;
+
+  // Clear the output block to signal new samples to the calling routine
+  for (i=0; i<outblock.size(); i++) {
+    psbo = outblock[i];
+    psbo->ClearBlock();
+  }
+
+  for (i=0; i<outblock.size(); i++) {
+    psbo = outblock[i];
+    psbi = inblock[i];
+
+    dbanks[i]->GetFilterBufferOutput(*psbo, *psbi);
+    blocklen += psbo->GetBlockSize();
+  }
+  return blocklen;
 }
 
 template<typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
