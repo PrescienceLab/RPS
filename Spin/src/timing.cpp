@@ -1,60 +1,38 @@
 #include <sys/time.h>
 #include <math.h>
 
+#include "Timers.h"
+
 #include "timing.h"
 
 
 #define CALIBRATION_ITERS 1000000
 /*#define CALIBRATION_ITERS 10000*/
 
-void GetCurrentTime(TimeValue *tv) 
-{  
-    struct timeval t;
-    gettimeofday(&t,0);
-    tv->sec=t.tv_sec;
-    tv->usec=t.tv_usec;
-}
-
-double TimeIntervalToSeconds(TimeInterval *ti) {
-    return ti->sec + ti->usec/1e6;
-};
-
-
-void DiffTimes(TimeValue *earlier, TimeValue *later, TimeInterval *interval) 
-{
-  if (later->usec>=earlier->usec) {
-    interval->usec=later->usec-earlier->usec;
-    interval->sec=later->sec-earlier->sec;
-  } else {
-    interval->usec=(later->usec+1000000)-earlier->usec;
-    interval->sec=later->sec-earlier->sec-1;
-  }
-}
-
 static double TimingOverhead;
 
 double TimeOnce(void (*func)(int),int arg)
 {
   TimeValue before,after;
-  TimeInterval dur;
+  IntervalValue dur;
 
-  GetCurrentTime(&before);
+  before.GetCurrentTime();
   func(arg);
-  GetCurrentTime(&after);
-  DiffTimes(&before,&after,&dur);
-  return TimeIntervalToSeconds(&dur);
+  after.GetCurrentTime();
+  TimeValue::Diff(before,after,&dur);
+  return dur.GetSeconds();
 }
 
 double TimeOnceDouble(void (*func)(double),double arg)
 {
   TimeValue before,after;
-  TimeInterval dur;
+  IntervalValue dur;
 
-  GetCurrentTime(&before);
+  before.GetCurrentTime();
   func(arg);
-  GetCurrentTime(&after);
-  DiffTimes(&before,&after,&dur);
-  return TimeIntervalToSeconds(&dur);
+  after.GetCurrentTime();
+  TimeValue::Diff(before,after,&dur);
+  return dur.GetSeconds();
 }
 
 
