@@ -363,6 +363,8 @@ public:
   bool ChangeStageWaveletTypes(const WaveletType wavetype,
 			       const unsigned stagenum);
 
+  bool ChangeStructure(const unsigned new_numstages, const WaveletType new_wavetype);
+
   ostream & operator<<(ostream &os) const {
     return (os << "DynamicForwardWaveletTransform...");
   };
@@ -395,6 +397,8 @@ public:
   bool ChangeAllWaveletTypes(const WaveletType wavetype);
   bool ChangeStageWaveletTypes(const WaveletType wavetype,
 			       const unsigned stagenum);
+
+  bool ChangeStructure(const unsigned new_numstages, const WaveletType new_wavetype);
 
   ostream & operator<<(ostream &os) const { 
     return (os << "DynamicReverseWaveletTransform...");
@@ -1999,16 +2003,95 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ChangeAllWaveletTypes(const WaveletType wavetype)
 {
-
+  bool result=false;
+  switch (wavetype) {
+  case DAUB2:
+  case DAUB4:
+  case DAUB6:
+  case DAUB8:
+  case DAUB10:
+  case DAUB12:
+  case DAUB14:
+  case DAUB16:
+  case DAUB18:
+  case DAUB20:
+    first_stage->ChangeWaveletType(wavetype);
+    ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> *pfws;
+    for (unsigned i=0; i<stages.size(); i++) {
+      pfws = stages[i];
+      pfws->ChangeWaveletType(wavetype);
+    }
+    result = true;
+    break;
+  default:
+    break;
+  }
+  return result;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ChangeStageWaveletTypes(const WaveletType wavetype, const unsigned stagenum)
 {
+  bool result=false;
 
+  if (stagenum <= 0) {
+    return result;
+  }
+
+  switch (wavetype) {
+  case DAUB2:
+  case DAUB4:
+  case DAUB6:
+  case DAUB8:
+  case DAUB10:
+  case DAUB12:
+  case DAUB14:
+  case DAUB16:
+  case DAUB18:
+  case DAUB20:
+    if (stagenum == 0) {
+      first_stage->ChangeWaveletType(wavetype);
+    } else {
+      stages[stagenum-1]->ChangeWaveletType(wavetype);
+    }
+    result = true;
+    break;
+  default:
+    break;
+  }
+  return result;
 }
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeStructure(const unsigned new_numstages, const WaveletType new_wavetype)
+{
+  bool result=false;
+  unsigned delta;
+
+  if (new_numstages == this->numstages || new_numstages == 0) {
+    return result;
+  } else if (this->numstages > new_numstages) {
+    // Remove stages
+    delta = this->numstages - new_numstages;
+    for (unsigned i=0; i<delta; i++) {
+      if (!RemoveStage()) {
+	return result;
+      }
+    }
+  } else {
+    // Add stages
+    delta = new_numstages - this->numstages;
+    for (unsigned i=0; i<delta; i++) {
+      if (!AddStage()) {
+	return result;
+      }
+    }
+  }
+  result = ChangeAllWaveletTypes(new_wavetype);
+  return result;
+}
 
 /********************************************************************************
  * 
@@ -2113,14 +2196,94 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ChangeAllWaveletTypes(const WaveletType wavetype)
 {
-
+  bool result=false;
+  switch (wavetype) {
+  case DAUB2:
+  case DAUB4:
+  case DAUB6:
+  case DAUB8:
+  case DAUB10:
+  case DAUB12:
+  case DAUB14:
+  case DAUB16:
+  case DAUB18:
+  case DAUB20:
+    last_stage->ChangeWaveletType(wavetype);
+    ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE> *prws;
+    for (unsigned i=0; i<stages.size(); i++) {
+      prws = stages[i];
+      prws->ChangeWaveletType(wavetype);
+    }
+    result = true;
+    break;
+  default:
+    break;
+  }
+  return result;
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ChangeStageWaveletTypes(const WaveletType wavetype, const unsigned stagenum)
 {
+  bool result=false;
 
+  if (stagenum <= 0) {
+    return result;
+  }
+
+  switch (wavetype) {
+  case DAUB2:
+  case DAUB4:
+  case DAUB6:
+  case DAUB8:
+  case DAUB10:
+  case DAUB12:
+  case DAUB14:
+  case DAUB16:
+  case DAUB18:
+  case DAUB20:
+    if (stagenum == 0) {
+      last_stage->ChangeWaveletType(wavetype);
+    } else {
+      stages[stagenum-1]->ChangeWaveletType(wavetype);
+    }
+    result = true;
+    break;
+  default:
+    break;
+  }
+  return result;
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+bool DynamicReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeStructure(const unsigned new_numstages, const WaveletType new_wavetype)
+{
+  bool result=false;
+  unsigned delta;
+
+  if (new_numstages == this->numstages || new_numstages == 0) {
+    return result;
+  } else if (this->numstages > new_numstages) {
+    // Remove stages
+    delta = this->numstages - new_numstages;
+    for (unsigned i=0; i<delta; i++) {
+      if (!RemoveStage()) {
+	return result;
+      }
+    }
+  } else {
+    // Add stages
+    delta = new_numstages - this->numstages;
+    for (unsigned i=0; i<delta; i++) {
+      if (!AddStage()) {
+	return result;
+      }
+    }
+  }
+  result = ChangeAllWaveletTypes(new_wavetype);
+  return result;
 }
 
 /********************************************************************************

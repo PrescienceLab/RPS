@@ -38,6 +38,21 @@ void usage()
   cerr << "[transform-type]    = The transform type may be of type\n";
   cerr << "                      APPROX | DETAIL | TRANSFORM.\n";
   cerr << "\n";
+  cerr << "[wavelet-type-new]  = The new type of wavelet.  The choices\n";
+  cerr << "                      are {DAUB2 (Haar), DAUB4, DAUB6, DAUB8,\n";
+  cerr << "                      DAUB10, DAUB12, DAUB14, DAUB16, DAUB18,\n";
+  cerr << "                      DAUB20}.  The 'DAUB' stands for\n";
+  cerr << "                      Daubechies wavelet types and the order\n";
+  cerr << "                      is the number of coefficients.\n";
+  cerr << "\n";
+  cerr << "[numstages-new]     = The new number of stages to use in the\n";
+  cerr << "                      decomposition.  The number of levels is\n";
+  cerr << "                      equal to the number of stages + 1.\n";
+  cerr << "\n";
+  cerr << "[change-interval]   = The amount of time in samples before\n";
+  cerr << "                      changing to the new wavelet types and\n";
+  cerr << "                      number of stage\n";
+  cerr << "\n";
   cerr << "[output-file]       = Which file to write the output.  This may\n";
   cerr << "                      also be stdout or stderr.\n\n";
   cerr << "\n";
@@ -52,7 +67,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=7) {
+  if (argc!=10) {
     usage();
     exit(-1);
   }
@@ -90,25 +105,40 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  WaveletType wtnew = GetWaveletType(argv[5], argv[0]);
+
+  int numstages_new = atoi(argv[6]);
+  if (numstages_new <= 0) {
+    cerr << "sample_dynamic_sfwt: Number of stages must be positive.\n";
+    exit(-1);
+  }
+  unsigned numlevels_new = numstages_new + 1;
+
+  int change_interval = atoi(argv[7]);
+  if (change_interval <= 0) {
+    cerr << "sample_dynamic_sfwt: Change interval must be positive.\n";
+    exit(-1);
+  }
+
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[5],"stdout")) {
+  if (!strcasecmp(argv[8],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[5],"stderr")) {
+  } else if (!strcasecmp(argv[8],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[5]);
+    outfile.open(argv[8]);
     if (!outfile) {
-      cerr << "sample_dynamic_sfwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "sample_dynamic_sfwt: Cannot open output file " << argv[8] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
   }
 
   bool flat=true;
-  if (toupper(argv[6][0])=='N') {
+  if (toupper(argv[9][0])=='N') {
     flat = false;
-  } else if (toupper(argv[6][0])!='F') {
+  } else if (toupper(argv[9][0])!='F') {
     cerr << "sample_dynamic_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
@@ -130,7 +160,7 @@ int main(int argc, char *argv[])
   infile.close();
 
   // Instantiate a dynamic forward wavelet transform
-  DynamicForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
+  DynamicForwardWaveletTransform<double, wosd, wisd> dfwt(numstages,wt,2,2,0);
 
   // Create result buffers
   vector<wosd> outsamples;
@@ -142,10 +172,22 @@ int main(int argc, char *argv[])
     levels.push_back(pwos);
   }
 
+  bool orig_struct=true;
+  int current_interval=0;
   switch(tt) {
   case APPROX: {
     for (i=0; i<samples.size(); i++) {
-      sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
+      if (++current_interval == change_interval) {
+	// Toggle the structure
+	bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
+	  dfwt.ChangeStructure(numstages, wt);
+	if (!success) {
+	  cerr << "sample_dynamic_sfwt: Structure failure.\n";
+	}
+	current_interval=0;
+	(orig_struct) ? (orig_struct=false) : (orig_struct=true);
+      }
+      dfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
 
       if (flat) {
 	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
@@ -161,16 +203,25 @@ int main(int argc, char *argv[])
       if (flat) {
 	*outstr.tie() << endl;
       }
-
       outsamples.clear();
     }
-    numlevels -= 1;
+    numlevels = (orig_struct) ? numlevels - 1 : numlevels_new - 1;
   }
   break;
 
   case DETAIL: {
     for (i=0; i<samples.size(); i++) {
-      sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
+      if (++current_interval == change_interval) {
+	// Toggle the structure
+	bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
+	  dfwt.ChangeStructure(numstages, wt);
+	if (!success) {
+	  cerr << "sample_dynamic_sfwt: Structure failure.\n";
+	}
+	current_interval=0;
+	(orig_struct) ? (orig_struct=false) : (orig_struct=true);
+      }
+      dfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
 
       if (flat) {
 	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
@@ -186,16 +237,25 @@ int main(int argc, char *argv[])
       if (flat) {
 	*outstr.tie() << endl;
       }
-
       outsamples.clear();
     }
-    numlevels -= 1;
+    numlevels = (orig_struct) ? numlevels - 1 : numlevels_new - 1;
   }
   break;
 
   case TRANSFORM: {
     for (i=0; i<samples.size(); i++) {
-      sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+      if (++current_interval == change_interval) {
+	// Toggle the structure
+	bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
+	  dfwt.ChangeStructure(numstages, wt);
+	if (!success) {
+	  cerr << "sample_dynamic_sfwt: Structure failure.\n";
+	}
+	current_interval=0;
+	(orig_struct) ? (orig_struct=false) : (orig_struct=true);
+      }
+      dfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
 
       if (flat) {
 	*outstr.tie() << i << "\t" << outsamples.size() << "\t";

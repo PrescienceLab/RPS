@@ -130,6 +130,8 @@ public:
   inline void SetOutputLevelHigh(const int outlevel);
   inline int GetOutputLevelHigh() const;
 
+  inline void ChangeWaveletType(const WaveletType wavetype);
+
   inline void ClearFilterDelayLines();
   inline void ClearAllState();
 
@@ -193,6 +195,8 @@ public:
 
   inline void SetUpSampleRateHigh(const unsigned rate);
   inline unsigned GetUpSampleRateHigh() const;
+
+  inline void ChangeWaveletType(const WaveletType wavetype);
 
   inline void ClearFilterDelayLines();
   inline void ClearAllState();
@@ -295,7 +299,7 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ChangeWaveletType(const WaveletType wavetype)
 {
-  vector<double> &coefs;
+  vector<double> coefs;
 
   this->wavetype = wavetype;
   wavecoefs.Initialize(wavetype);
@@ -576,6 +580,14 @@ GetOutputLevelHigh() const
   return out_level_h;
 }
 
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeWaveletType(const WaveletType wavetype)
+{
+  stagehelp.ChangeWaveletType(wavetype);
+}
+
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 void ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ClearFilterDelayLines()
@@ -763,6 +775,13 @@ unsigned ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 GetUpSampleRateHigh() const
 {
   return upsampler_h.GetUpSampleRate();
+}
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+void ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+ChangeWaveletType(const WaveletType wavetype)
+{
+  stagehelp.ChangeWaveletType(wavetype);
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

@@ -16,8 +16,9 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " block_static_sfwt [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [transform-type] [output-file] [flat]\n\n";
+  cerr << " block_dynamic_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << "  [numstages-init] [transform-type] [wavelet-type-new]\n";
+  cerr << "  [numstages-new] [change-interval] [output-file] [flat]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]        = The name of the file containing time-\n";
@@ -37,6 +38,21 @@ void usage()
   cerr << "[transform-type]    = The transform type may be of type\n";
   cerr << "                      APPROX | DETAIL | TRANSFORM.\n";
   cerr << "\n";
+  cerr << "[wavelet-type-new]  = The new type of wavelet.  The choices\n";
+  cerr << "                      are {DAUB2 (Haar), DAUB4, DAUB6, DAUB8,\n";
+  cerr << "                      DAUB10, DAUB12, DAUB14, DAUB16, DAUB18,\n";
+  cerr << "                      DAUB20}.  The 'DAUB' stands for\n";
+  cerr << "                      Daubechies wavelet types and the order\n";
+  cerr << "                      is the number of coefficients.\n";
+  cerr << "\n";
+  cerr << "[numstages-new]     = The new number of stages to use in the\n";
+  cerr << "                      decomposition.  The number of levels is\n";
+  cerr << "                      equal to the number of stages + 1.\n";
+  cerr << "\n";
+  cerr << "[change-interval]   = The amount of time in samples before\n";
+  cerr << "                      changing to the new wavelet types and\n";
+  cerr << "                      number of stage\n";
+  cerr << "\n";
   cerr << "[output-file]       = Which file to write the output.  This may\n";
   cerr << "                      also be stdout or stderr.\n\n";
   cerr << "\n";
@@ -51,7 +67,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=7) {
+  if (argc!=10) {
     usage();
     exit(-1);
   }
@@ -61,7 +77,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "block_dynamic_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -71,7 +87,7 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "block_static_sfwt: Number of stages must be positive.\n";
+    cerr << "block_dynamic_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
   unsigned numlevels = numstages + 1;
@@ -84,31 +100,46 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[4][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "block_static_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "block_dynamic_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     usage();
+    exit(-1);
+  }
+
+  WaveletType wtnew = GetWaveletType(argv[5], argv[0]);
+
+  int numstages_new = atoi(argv[6]);
+  if (numstages_new <= 0) {
+    cerr << "sample_dynamic_sfwt: Number of stages must be positive.\n";
+    exit(-1);
+  }
+  unsigned numlevels_new = numstages_new + 1;
+
+  int change_interval = atoi(argv[7]);
+  if (change_interval <= 0) {
+    cerr << "sample_dynamic_sfwt: Change interval must be positive.\n";
     exit(-1);
   }
 
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[5],"stdout")) {
+  if (!strcasecmp(argv[8],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[5],"stderr")) {
+  } else if (!strcasecmp(argv[8],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[5]);
+    outfile.open(argv[8]);
     if (!outfile) {
-      cerr << "block_static_sfwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "block_dynamic_sfwt: Cannot open output file " << argv[8] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
   }
 
   bool flat=true;
-  if (toupper(argv[6][0])=='N') {
+  if (toupper(argv[9][0])=='N') {
     flat = false;
-  } else if (toupper(argv[6][0])!='F') {
-    cerr << "block_static_sfwt: Need to choose flat or noflat for human readable.\n";
+  } else if (toupper(argv[9][0])!='F') {
+    cerr << "block_dynamic_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -116,7 +147,7 @@ int main(int argc, char *argv[])
   typedef WaveletInputSample<double> wisd;
   typedef WaveletOutputSample<double> wosd;
 
-  // Read the data from file into an input vector
+  // Read a block of data from file into an input vector
   deque<wisd> samples;
   double sample;
   unsigned index=0;
@@ -131,29 +162,60 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> inputblock(samples);
 
   // Instantiate a static forward wavelet transform
-  StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
+  DynamicForwardWaveletTransform<double, wosd, wisd> dfwt(numstages,wt,2,2,0);
 
   // Create result buffers
   vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
 
-  switch(tt) {
-  case APPROX: {
-    sfwt.StreamingApproxBlockOperation(forwardoutput, inputblock);
-    numlevels -= 1;
-    break;
+  bool orig_struct=true;
+  int samplecnt=0;
+  deque<wisd> buf;
+
+  unsigned *levelsize=0;
+  if (tt==APPROX || tt==DETAIL) {
+    levelsize = new unsigned[MAX(numstages, numstages_new)];
+  } else {
+    levelsize = new unsigned[MAX(numstages+1, numstages_new+1)];
   }
-  case DETAIL: {
-    sfwt.StreamingDetailBlockOperation(forwardoutput, inputblock);
-    numlevels -= 1;
-    break;
+
+  while (inputblock.GetBlockSize() - samplecnt >= 0) {
+
+    if ( (unsigned)(samplecnt + change_interval) <= inputblock.GetBlockSize()) {
+      inputblock.GetSamples(buf, samplecnt, samplecnt+change_interval);
+      samplecnt += change_interval;
+    } else {
+      inputblock.GetSamples(buf, samplecnt, inputblock.GetBlockSize()-1);
+      samplecnt += inputblock.GetBlockSize();
+    }
+
+    switch(tt) {
+    case APPROX: {
+      dfwt.StreamingApproxBlockOperation(forwardoutput, buf);
+      break;
+    }
+    case DETAIL: {
+      dfwt.StreamingDetailBlockOperation(forwardoutput, buf);
+      break;
+    }
+    case TRANSFORM: {
+      dfwt.StreamingTransformBlockOperation(forwardoutput, buf);
+    }
+    default:
+      break;
+    }
+
+    // Print the results and clear the buffer
+
+    // Toggle the structure
+    bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
+      dfwt.ChangeStructure(numstages, wt);
+    if (!success) {
+      cerr << "block_dynamic_sfwt: Structure failure.\n";
+    }
+    (orig_struct) ? (orig_struct=false) : (orig_struct=true);
   }
-  case TRANSFORM: {
-    sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
-    break;
-  }
-  default:
-    break;
-  }
+
+  numlevels = (orig_struct) ? (numlevels-1) : (numlevels_new-1);
 
   // Human readable output
   if (!flat) {
