@@ -67,6 +67,14 @@ foreach $package (keys %PackagesDeactivate) {
 }
 
 
+print "Fixing up RPS.dsw and .dsp files.\n";
+
+fixfile("RPS.dsw","\\n","\\r\\n");
+foreach $dsp (split(/\s+/,`find . -name "*.dsp" -print`)) {
+  print "Fixing $dsp\n";
+  fixfile($dsp,"\\n","\\r\\n");
+}
+
 chdir "..";
 
 rename "RPS-development", $name;
@@ -98,3 +106,4 @@ sub fixfile {
   close(OUT);
   `mv $outfile $infile`;
 }
+
