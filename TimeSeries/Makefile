@@ -74,7 +74,7 @@ MAINLIST = $(EXECLIST:=.o)
 LIB_TS_OBJECTS_LIST = poly.o ar.o arima.o arfima.o etathetapred.o \
                       tools.o ma.o arma.o bestmean.o it.o evaluate_core.o \
                       crossval_core.o mean.o last.o none.o fit.o \
-                      await.o refit.o
+                      await.o refit.o nr-internal.o bestmedian.o
 
 SRCLIST = $(MAINLIST:.o=.cpp) $(LIB_TS_OBJECTS_LIST:.o=.cpp)
 

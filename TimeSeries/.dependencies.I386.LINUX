@@ -32,8 +32,8 @@
   /home/pdinda/RPS-development/shared/include/ioutil.h include/abstract.h \
   include/pdqparamsets.h
 ./obj/I386/LINUX/test_await.o: ./src/test_await.cpp include/TimeSeries.h \
-  include/abstract.h include/none.h include/mean.h include/etathetapred.h \
-  include/poly.h include/bestmean.h include/last.h include/ar.h \
+  include/abstract.h include/none.h include/mean.h include/bestmean.h \
+  include/etathetapred.h include/poly.h include/last.h include/ar.h \
   include/pdqparamsets.h include/ma.h include/arma.h include/arima.h \
   include/util.h include/arfima.h include/refit.h include/await.h \
   include/managed.h include/evaluate_core.h include/fit.h \
@@ -70,14 +70,11 @@
 ./obj/I386/LINUX/tools.o: ./src/tools.cpp include/tools.h include/util.h include/maths.h \
   include/random.h
 ./obj/I386/LINUX/ma.o: ./src/ma.cpp include/ma.h include/abstract.h include/etathetapred.h \
-  include/poly.h include/tools.h include/util.h \
-  /home/RPS/recipes_c-ansi/include/nr.h \
-  /home/RPS/recipes_c-ansi/include/nrutil.h include/pdqparamsets.h
+  include/poly.h include/tools.h include/util.h include/nr-internal.h \
+  include/pdqparamsets.h
 ./obj/I386/LINUX/arma.o: ./src/arma.cpp include/arma.h include/abstract.h \
   include/etathetapred.h include/poly.h include/tools.h include/util.h \
-  include/ar.h include/pdqparamsets.h include/ma.h \
-  /home/RPS/recipes_c-ansi/include/nr.h \
-  /home/RPS/recipes_c-ansi/include/nrutil.h
+  include/ar.h include/pdqparamsets.h include/ma.h include/nr-internal.h
 ./obj/I386/LINUX/bestmean.o: ./src/bestmean.cpp include/bestmean.h include/abstract.h \
   include/etathetapred.h include/poly.h include/tools.h include/util.h \
   include/pdqparamsets.h include/ar.h
@@ -91,16 +88,17 @@
   include/util.h include/arfima.h include/bestmean.h include/tools.h \
   include/evaluate_core.h include/random.h include/fit.h \
   /home/pdinda/RPS-development/shared/include/ioutil.h
-./obj/I386/LINUX/mean.o: ./src/mean.cpp include/mean.h include/abstract.h \
-  include/etathetapred.h include/poly.h include/util.h include/tools.h
+./obj/I386/LINUX/mean.o: ./src/mean.cpp include/mean.h include/abstract.h include/util.h \
+  include/tools.h
 ./obj/I386/LINUX/last.o: ./src/last.cpp include/last.h include/abstract.h \
   include/etathetapred.h include/poly.h include/bestmean.h
 ./obj/I386/LINUX/none.o: ./src/none.cpp include/none.h include/abstract.h
 ./obj/I386/LINUX/fit.o: ./src/fit.cpp include/ar.h include/abstract.h \
   include/etathetapred.h include/poly.h include/pdqparamsets.h \
   include/ma.h include/arma.h include/arima.h include/util.h \
-  include/arfima.h include/bestmean.h include/none.h include/mean.h \
-  include/last.h include/refit.h include/await.h include/managed.h \
-  include/fit.h /home/pdinda/RPS-development/shared/include/ioutil.h
+  include/arfima.h include/bestmean.h include/bestmedian.h include/none.h \
+  include/mean.h include/last.h include/refit.h include/await.h \
+  include/managed.h include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h
 ./obj/I386/LINUX/await.o: ./src/await.cpp include/await.h include/abstract.h
 ./obj/I386/LINUX/refit.o: ./src/refit.cpp include/refit.h include/abstract.h
