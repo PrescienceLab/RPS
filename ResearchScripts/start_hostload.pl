@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/bin/env perl
 
 $loadserver_ctrlport=5000;
 $measurebuffer_rrport=5001;

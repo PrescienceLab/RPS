@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl5 -w
+#!/usr/bin/env perl
 
 if ($#ARGV!=0) { 
     print STDERR "kill_genload_list.pl list\n";
