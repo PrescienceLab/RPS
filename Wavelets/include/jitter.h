@@ -23,10 +23,8 @@ template <class INSAMPLE, class JITTERACTION>
 class JitterProtectStream {
 private:
   unsigned backlog_thresh;
-
   bool     curr_index_init;
   unsigned curr_index;
-
   list<INSAMPLE> jitter_buffer;
 
   inline bool NextIndex(const unsigned index);
@@ -104,7 +102,8 @@ public:
 template <class INSAMPLE>
 class ZeroFillAction {
 public:
-  unsigned JitterAction(list<INSAMPLE> &samples, const unsigned curr_index);
+  static unsigned JitterAction(list<INSAMPLE> &samples,
+			       const unsigned curr_index);
 };
 
 

@@ -42,6 +42,41 @@ bool CalculateWaveletDelayBlock(const unsigned numcoefs,
   return true;
 };
 
+bool CalculateFilterBankDelayBlock(const unsigned numcoefs,
+				   const unsigned numlevels,
+				   const unsigned twoband_delay,
+				   int* delay_vals)
+{
+  if (!delay_vals) {
+    return false;
+  }
+
+  switch (numlevels) {
+  case 0:
+  case 1:
+    return false;
+
+  case 2:
+    delay_vals[numlevels-1] = 0;
+    delay_vals[numlevels-2] = 0;
+    break;
+
+  default:
+    unsigned delay=twoband_delay;
+    delay_vals[numlevels-1] = 0;
+    delay_vals[numlevels-2] = 0;
+    delay_vals[numlevels-3] = 0;
+    for (int i=numlevels-4; i>=0; i--) {
+      delay++;
+      delay_vals[i] = delay;
+    }
+  }
+  return true;
+};
+
+
+
+
 template <class SAMPLE>
 class DelayBlock {
 private:

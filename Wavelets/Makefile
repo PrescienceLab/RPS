@@ -35,7 +35,8 @@ EXECLIST = testcoefs  \
            testblock  \
            testSFWTapprox \
 	   testSFWTblock \
-	   testSFWTmixed
+	   testSFWTmixed \
+	   testfilterbank
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

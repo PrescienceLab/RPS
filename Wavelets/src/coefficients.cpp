@@ -140,27 +140,54 @@ const double daub_g20[20] = {+0.037717157593/sqrt(2.0),
 			     +0.000132354366/sqrt(2.0),
 			     -0.000018758416/sqrt(2.0)};
 
-const double *coefTable[NUM_WAVELET_TYPES] = {daub_g2,
-					      daub_g4,
-					      daub_g6,
-					      daub_g8,
-					      daub_g10,
-					      daub_g12,
-					      daub_g14,
-					      daub_g16,
-					      daub_g18,
-					      daub_g20};
+// Filter Bank hack for now
 
-const unsigned numCoefTable[NUM_WAVELET_TYPES] = {2,
-						  4,
-						  6,
-						  8,
-						  10,
-						  12,
-						  14,
-						  16,
-						  18,
-						  20};
+// Filter Bank Coefficients
+// Nayebi-Barnwell-Smith, 8-tap, 1 sample delay filters
+const double nbs_g_d1[8] = {+3.89565e-1/sqrt(2.0),
+                            +6.32632e-1/sqrt(2.0),
+                            +1.40179e-1/sqrt(2.0),
+                            -2.12770e-1/sqrt(2.0),
+                            +4.41944e-3/sqrt(2.0),
+                            +8.06863e-2/sqrt(2.0),
+                            -2.10077e-2/sqrt(2.0),
+                            -9.78011e-3/sqrt(2.0)};
+
+const double nbs_h_d1[8] = {+4.15186e-1*sqrt(2.0),
+                            -6.09244e-1*sqrt(2.0),
+                            +1.06619e-1*sqrt(2.0),
+                            +1.65608e-1*sqrt(2.0),
+                            -4.31897e-3*sqrt(2.0),
+                            -3.19333e-2*sqrt(2.0),
+                            +7.99625e-3*sqrt(2.0),
+                            +3.76170e-3*sqrt(2.0)};
+
+const double *waveletCoefTable[NUM_WAVELET_TYPES] = {daub_g2,
+						     daub_g4,
+						     daub_g6,
+						     daub_g8,
+						     daub_g10,
+						     daub_g12,
+						     daub_g14,
+						     daub_g16,
+						     daub_g18,
+						     daub_g20,
+                                                     nbs_g_d1,
+                                                     nbs_h_d1};
+
+
+const unsigned numWaveletCoefTable[NUM_WAVELET_TYPES] = {2,
+							 4,
+							 6,
+							 8,
+							 10,
+							 12,
+							 14,
+							 16,
+							 18,
+							 20,
+                                                         8,
+                                                         8};
 
 char *waveletNames[NUM_WAVELET_TYPES] = {"Daubechies 2 (Haar)",
 					 "Daubechies 4",
@@ -171,7 +198,9 @@ char *waveletNames[NUM_WAVELET_TYPES] = {"Daubechies 2 (Haar)",
 					 "Daubechies 14",
 					 "Daubechies 16",
 					 "Daubechies 18",
-					 "Daubechies 20"};
+					 "Daubechies 20",
+                                         "NBS Filterbank G8, delay 1",
+                                         "NBS Filterbank H8, delay 1"};
 
 WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
 {
@@ -179,16 +208,27 @@ WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
 
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
-  numcoefs = numCoefTable[wt];
+  numcoefs = numWaveletCoefTable[wt];
   waveletname = waveletNames[wt];
 
   g_coefs = new double[numcoefs];
   h_coefs = new double[numcoefs];
 
-  for (unsigned i=0; i<numcoefs; ++i) {
-    const double *coefptr = coefTable[wt];
-    g_coefs[i] = coefptr[i];
-    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+  unsigned i;
+
+  if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {
+    const double *coefptr_g=waveletCoefTable[FILTERBANK_NBS_G8_D1];
+    const double *coefptr_h=waveletCoefTable[FILTERBANK_NBS_H8_D1];
+    for (i=0; i<numcoefs; ++i) {
+      g_coefs[i] = coefptr_g[i];
+      h_coefs[i] = coefptr_h[i];
+    }    
+  } else {
+    const double *coefptr = waveletCoefTable[wt];
+    for (i=0; i<numcoefs; ++i) {
+      g_coefs[i] = coefptr[i];
+      h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+    }
   }
 
   DEBUG_PRINT("  wt= " << wt << endl
@@ -211,7 +251,7 @@ WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
   h_coefs = new double[numcoefs];
 
   for (unsigned i=0; i<numcoefs; ++i) {
-    const double *coefptr = coefTable[wt];
+    const double *coefptr = waveletCoefTable[wt];
     g_coefs[i] = coefptr[i];
     h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
   }
@@ -271,16 +311,30 @@ unsigned WaveletCoefficients::GetNumCoefs() const
 void WaveletCoefficients::GetTransformCoefsLPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
-  for (unsigned i=0; i<numcoefs; i++) {
-    coefs.push_back(g_coefs[numcoefs-1-i]/sqrt(2.0));
+  unsigned i;
+  if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(g_coefs[i]);
+    }
+  } else {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(g_coefs[numcoefs-1-i]/sqrt(2.0));
+    }
   }
 }
 
 void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
-  for (unsigned i=0; i<numcoefs; i++) {
-    coefs.push_back(h_coefs[numcoefs-1-i]/sqrt(2.0));
+  unsigned i;
+  if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(h_coefs[i]);
+    }
+  } else {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(h_coefs[numcoefs-1-i]/sqrt(2.0));
+    }
   }
 }
 
@@ -288,16 +342,30 @@ void WaveletCoefficients::GetTransformCoefsHPF(vector<double> &coefs) const
 void WaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
-  for (unsigned i=0; i<numcoefs; i++) {
-    coefs.push_back(g_coefs[i]*sqrt(2.0));
+  unsigned i;
+  if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {    
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(h_coefs[i]*pow(-1.0,i));
+    }
+  } else {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(g_coefs[i]*sqrt(2.0));
+    }
   }
 }
 
 void WaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
 {
   assert(coefs.size()==0);
-  for (unsigned i=0; i<numcoefs; i++) {
-    coefs.push_back(h_coefs[i]*sqrt(2.0));
+  unsigned i;
+  if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(-g_coefs[i]*pow(-1.0,i));
+    }
+  } else {
+    for (i=0; i<numcoefs; i++) {
+      coefs.push_back(h_coefs[i]*sqrt(2.0));
+    }
   }
 }
 
@@ -321,14 +389,14 @@ ostream & WaveletCoefficients::operator<<(ostream &os) const
 // Private functions
 void WaveletCoefficients::init(const WaveletType wt)
 {
-  numcoefs = numCoefTable[wt];
+  numcoefs = numWaveletCoefTable[wt];
   waveletname = waveletNames[wt];
 
   g_coefs = new double[numcoefs];
   h_coefs = new double[numcoefs];
 
   for (unsigned i=0; i<numcoefs; ++i) {
-    const double *coefptr = coefTable[wt];
+    const double *coefptr = waveletCoefTable[wt];
     g_coefs[i] = coefptr[i];
     h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
   }

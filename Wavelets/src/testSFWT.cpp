@@ -10,11 +10,11 @@
 
 void usage()
 {
-  cerr << "testSFWT [wavelet-type]   [numstages]   [infile]\n";
-  cerr << "         --------------   -----------   --------\n";
-  cerr << "         D2 (Haar)= 0     # stages in   file formatted\n";
-  cerr << "         D4       = 1       decomp       as sample per\n";
-  cerr << "         D6       = 2       ( > 0 )      line\n";
+  cerr << "testSFWT [wavelet-type]   [numstages]   [type]    [infile]\n";
+  cerr << "         --------------   -----------   ------    --------\n";
+  cerr << "         D2 (Haar)= 0     # stages in   approx=0  file formatted\n";
+  cerr << "         D4       = 1       decomp      detail=1   as sample per\n";
+  cerr << "         D6       = 2       ( > 0 )     transf=2   line\n";
   cerr << "         D8       = 3\n";
   cerr << "         D10      = 4\n";
   cerr << "         D12      = 5\n";
@@ -29,7 +29,7 @@ void print() {
 
 int main(int argc, char *argv[])
 {
-  if (argc!=4) {
+  if (argc!=5) {
     usage();
     exit(-1);
   }
@@ -49,7 +49,15 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ifstream infile(argv[3]);
+  int operation = atoi(argv[3]);
+  if (operation > 2 || operation < 0) {
+    cerr << "Type must be less than 2 and greater than 0.\n";
+    usage();
+    exit(-1);
+  }
+
+
+  ifstream infile(argv[4]);
   if (!infile) {
     cerr << "Cannot open input file.\n";
     exit(-1);
@@ -95,19 +103,63 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  for (i=0; i<samples.size(); i++) {
-    sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+  switch(operation) {
+  case 0: {
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
 
-    // Print the new samples
-    cerr << "Output for input sample " << i << ":" << endl;
-    for (unsigned j=0; j<outsamples.size(); j++) {
-      cerr << outsamples[j];
+      // Print the new samples
+      cerr << "Output for input sample " << i << ":" << endl;
+      for (unsigned j=0; j<outsamples.size(); j++) {
+	cerr << outsamples[j];
 
-      int samplelevel = outsamples[j].GetSampleLevel();
-      levels[samplelevel]->push_front(outsamples[j]);
+	int samplelevel = outsamples[j].GetSampleLevel();
+	levels[samplelevel]->push_front(outsamples[j]);
+      }
+
+      outsamples.clear();
     }
+  }
+  break;
 
-    outsamples.clear();
+  case 1: {
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
+
+      // Print the new samples
+      cerr << "Output for input sample " << i << ":" << endl;
+      for (unsigned j=0; j<outsamples.size(); j++) {
+	cerr << outsamples[j];
+
+	int samplelevel = outsamples[j].GetSampleLevel();
+	levels[samplelevel]->push_front(outsamples[j]);
+      }
+
+      outsamples.clear();
+    }
+  }
+  break;
+
+  case 2: {
+    for (i=0; i<samples.size(); i++) {
+      sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+
+      // Print the new samples
+      cerr << "Output for input sample " << i << ":" << endl;
+      for (unsigned j=0; j<outsamples.size(); j++) {
+	cerr << outsamples[j];
+
+	int samplelevel = outsamples[j].GetSampleLevel();
+	levels[samplelevel]->push_front(outsamples[j]);
+      }
+
+      outsamples.clear();
+    }
+  }
+  break;
+
+  default:
+    break;
   }
 
   cerr << "The size of each level:" << endl;

@@ -13,16 +13,17 @@ void usage()
 {
   cerr << "teststream [wavelet-type]   [numstages]   [infile]\n";
   cerr << "           --------------   -----------   --------\n";
-  cerr << "           D2 (Haar)= 0     # stages in   file formatted\n";
-  cerr << "           D4       = 1       decomp       as sample per\n";
-  cerr << "           D6       = 2       ( > 0 )      line\n";
-  cerr << "           D8       = 3\n";
-  cerr << "           D10      = 4\n";
-  cerr << "           D12      = 5\n";
-  cerr << "           D14      = 6\n";
-  cerr << "           D16      = 7\n";
-  cerr << "           D18      = 8\n";
-  cerr << "           D20      = 9\n";
+  cerr << "           D2 (Haar)=  0    # stages in   file formatted\n";
+  cerr << "           D4       =  1      decomp       as sample per\n";
+  cerr << "           D6       =  2      ( > 0 )      line\n";
+  cerr << "           D8       =  3\n";
+  cerr << "           D10      =  4\n";
+  cerr << "           D12      =  5\n";
+  cerr << "           D14      =  6\n";
+  cerr << "           D16      =  7\n";
+  cerr << "           D18      =  8\n";
+  cerr << "           D20      =  9\n";
+  cerr << "           NBS-1-8  = 10\n";
 }
 
 const unsigned numcoefs[10] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
@@ -115,9 +116,9 @@ int main(int argc, char *argv[])
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
 
   // Print the delay components
-  cerr << "Delay values: " << endl;
+  cout << "Delay values: " << endl;
   for (int j=0; j<numstages+1; j++) {
-    cerr << "\tLevel " << j << ":\t" << delay[j] << endl;
+    cout << "\tLevel " << j << ":\t" << delay[j] << endl;
   }
 
   // Instantiate a delay block
@@ -158,7 +159,7 @@ int main(int argc, char *argv[])
       DBG_PRINT(0, outsamples, i);
 
       for (unsigned j=0; j<outsamp.size(); j++) {
-	finaloutput.push_back(outsamp[j]);
+	finaloutput.push_back(outsamp[j]*2);
 	cerr << "\t" << outsamp[j];
       }
     }
@@ -171,7 +172,7 @@ int main(int argc, char *argv[])
   cout << "The size of the output: " << finaloutput.size() << endl;
   cout << "The final output samples: " << endl;
   for (i=0; i<finaloutput.size(); i++) {
-    cout << finaloutput[i].GetSampleValue() << endl;
+    cout << i << "\t" << finaloutput[i].GetSampleValue() << endl;
   }
 
   if (delay != 0) {
