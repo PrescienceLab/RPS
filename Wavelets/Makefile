@@ -54,7 +54,8 @@ EXECLIST = setup_wavelet_delay			\
 	   discrete_reverse_zerofill_transform  \
 	   discrete_transform_test              \
            samplerate_perf_sfwt                 \
-	   samplerate_perf_srwt
+	   samplerate_perf_srwt                 \
+	   samplerate_perf_dft
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

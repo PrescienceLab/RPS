@@ -2605,7 +2605,7 @@ DiscreteWaveletOperation
     index_d[J-i] += detail.size();
 
     for (j=0; j<2*m; j++) {
-      a_vector[j] = (j<m) ? approx[j] : detail[j];
+      a_vector[j] = (j<m) ? approx[j] : detail[j-m];
     }
   }
   return lenofblock;

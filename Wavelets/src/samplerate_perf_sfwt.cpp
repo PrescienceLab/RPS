@@ -257,7 +257,6 @@ int main(int argc, char *argv[])
 	    usleep(sleeptime_us);
 	  }
 	  sfwt.StreamingTransformBlockOperation(forwardoutput, blocks[i]);
-	  // Something would be done here with output
 	  forwardoutput.clear();
 	}
 	GetRusage(sysend, usrend);
