@@ -11,14 +11,16 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " block_static_mixed_sfwt [input-file] [wavelet-type-init]\n";
-  cerr << "  [numstages-init] [output-file] [specification-file] [flat]\n\n";
+  cerr << " block_dynamic_mixed_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << "  [numstages-init] [specification-file] [wavelet-type-new]\n";
+  cerr << "  [numstages-new] [change-interval] [flat] [output-file]\n\n";
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]         = The name of the file containing time-\n";
@@ -35,13 +37,28 @@ void usage()
   cerr << "                       decomposition.  The number of levels is\n";
   cerr << "                       equal to the number of stages + 1.\n";
   cerr << "\n";
-  cerr << "[output-file]        = Which file to write the output.  This may\n";
-  cerr << "                       also be stdout or stderr.\n\n";
-  cerr << "\n";
   cerr << "[specification-file] = Mixed signal specification.\n";
+  cerr << "\n";
+  cerr << "[wavelet-type-new]   = The new type of wavelet.  The choices\n";
+  cerr << "                       are {DAUB2 (Haar), DAUB4, DAUB6, DAUB8,\n";
+  cerr << "                       DAUB10, DAUB12, DAUB14, DAUB16, DAUB18,\n";
+  cerr << "                       DAUB20}.  The 'DAUB' stands for\n";
+  cerr << "                       Daubechies wavelet types and the order\n";
+  cerr << "                       is the number of coefficients.\n";
+  cerr << "\n";
+  cerr << "[numstages-new]      = The new number of stages to use in the\n";
+  cerr << "                       decomposition.  The number of levels is\n";
+  cerr << "                       equal to the number of stages + 1.\n";
+  cerr << "\n";
+  cerr << "[change-interval]    = The amount of time in samples before\n";
+  cerr << "                       changing to the new wavelet types and\n";
+  cerr << "                       number of stage\n";
   cerr << "\n";
   cerr << "[flat]               = Whether the output is flat or human\n";
   cerr << "                       readable.  flat | noflat to choose.\n";
+  cerr << "\n";
+  cerr << "[output-file]        = Which file to write the output.  This may\n";
+  cerr << "                       also be stdout or stderr.\n\n";
   cerr << "\n";
   cerr << tb << endl;
   cerr << b << endl;
@@ -51,7 +68,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-  if (argc!=7) {
+  if (argc!=10) {
     usage();
     exit(-1);
   }
@@ -61,7 +78,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "block_dynamic_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -71,188 +88,156 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "block_static_mixed_sfwt: Number of stages must be positive.\n";
+    cerr << "block_dynamic_mixed_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
-  unsigned numlevels = numstages + 1;
+
+  ifstream specfile;
+  specfile.open(argv[4]);
+  if (!specfile) {
+    cerr << "sample_dynamic_mixed_sfwt: Cannot open specification file " << argv[4] << ".\n";
+    exit(-1);
+  }
+
+  WaveletType wtnew = GetWaveletType(argv[5], argv[0]);
+
+  int numstages_new = atoi(argv[6]);
+  if (numstages_new <= 0) {
+    cerr << "sample_dynamic_mixed_sfwt: Number of stages must be positive.\n";
+    exit(-1);
+  }
+
+  int change_interval = atoi(argv[7]);
+  if (change_interval <= 0) {
+    cerr << "sample_dynamic_mixed_sfwt: Change interval must be positive.\n";
+    exit(-1);
+  }
+
+  bool flat=true;
+  if (toupper(argv[8][0])=='N') {
+    flat = false;
+  } else if (toupper(argv[8][0])!='F') {
+    cerr << "block_dynamic_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
+    exit(-1);
+  }
 
   ostream outstr;
   ofstream outfile;
-  if (!strcasecmp(argv[4],"stdout")) {
+  if (!strcasecmp(argv[9],"stdout")) {
     outstr.tie(&cout);
-  } else if (!strcasecmp(argv[4],"stderr")) {
+  } else if (!strcasecmp(argv[9],"stderr")) {
     outstr.tie(&cerr);
   } else {
-    outfile.open(argv[4]);
+    outfile.open(argv[9]);
     if (!outfile) {
-      cerr << "block_static_mixed_sfwt: Cannot open output file " << argv[4] << ".\n";
+      cerr << "block_dynamic_mixed_sfwt: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
   }
 
-  ifstream specfile;
-  specfile.open(argv[5]);
-  if (!specfile) {
-    cerr << "sample_static_mixed_sfwt: Cannot open specification file " << argv[5] << ".\n";
-    exit(-1);
-  }
-
-  bool flat=true;
-  if (toupper(argv[6][0])=='N') {
-    flat = false;
-  } else if (toupper(argv[6][0])!='F') {
-    cerr << "block_static_mixed_sfwt: Need to choose flat or noflat for human readable.\n";
-    exit(-1);
-  }
+  unsigned i;
 
   SignalSpec sigspec;
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
 
-  unsigned i;
-  typedef WaveletInputSample<double> wisd;
-  typedef WaveletOutputSample<double> wosd;
-
   // Read the data from file into an input vector
   deque<wisd> samples;
-  double sample;
-  unsigned index=0;
-  while (cin >> sample) {
-    wisd wavesample;
-    wavesample.SetSampleValue(sample);
-    wavesample.SetSampleIndex(index++);
-    samples.push_back(wavesample);
-  }
+  FlatParser fp;
+  fp.ParseTimeDomain(samples, cin);
   infile.close();
 
   WaveletInputSampleBlock<wisd> inputblock(samples);
 
   // Instantiate a static forward wavelet transform
-  StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
+  DynamicForwardWaveletTransform<double, wosd, wisd> dfwt(numstages,wt,2,2,0);
 
   // Create result buffers
   vector<WaveletOutputSampleBlock<wosd> > approxout;
   vector<WaveletOutputSampleBlock<wosd> > detailout;
 
-  sfwt.StreamingMixedBlockOperation(approxout, detailout, inputblock, sigspec);
-  numlevels -= 1;
+  vector<vector<WaveletOutputSampleBlock<wosd> > > approxlevels;
+  vector<vector<WaveletOutputSampleBlock<wosd> > > detaillevels;
 
-  // Approximations
-  if (!flat) {
-    *outstr.tie() << "The size of each approximation level:" << endl;
-    for (i=0; i<approxout.size(); i++) {
-      *outstr.tie() << "\tLevel " << approxout[i].GetBlockLevel() << " size = " 
-		    << approxout[i].GetBlockSize() << endl;
-    }
-    *outstr.tie() << endl;
+  // Dynamic bookkeeping...sigh
+  bool orig_struct=true;
+  int samplecnt=0;
+  deque<wisd> buf;
 
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
+  // Structure for printing out level metadata
+  unsigned *a_levelsize=0;
+  unsigned *d_levelsize=0;
+  unsigned levelcnt=MAX(numstages, numstages_new);
+
+  a_levelsize = new unsigned[levelcnt];
+  d_levelsize = new unsigned[levelcnt];
+
+  for (i=0; i<levelcnt; i++) {
+    a_levelsize[i]=0;
+    d_levelsize[i]=0;
   }
 
-  unsigned loopsize=0;
-  for (i=0; i<approxout.size(); i++) {
-    if (approxout[i].GetBlockSize() > loopsize) {
-      loopsize = approxout[i].GetBlockSize();
+  while (inputblock.GetBlockSize() - samplecnt > 0) {
+    if ( (unsigned)(samplecnt + change_interval) <= inputblock.GetBlockSize()) {
+      inputblock.GetSamples(buf, samplecnt, samplecnt+change_interval);
+      samplecnt += change_interval;
+    } else {
+      inputblock.GetSamples(buf, samplecnt, inputblock.GetBlockSize()-1);
+      samplecnt += inputblock.GetBlockSize() - samplecnt - 1;
     }
-  }
 
-  for (i=0; i<loopsize; i++) {
-    *outstr.tie() << i << "\t";
+    dfwt.StreamingMixedBlockOperation(approxout,
+				      detailout,
+				      WaveletInputSampleBlock<wisd>(buf),
+				      sigspec);
 
-    // Find number of samples for this line
-    unsigned numsamples=0;
+    approxlevels.push_back(approxout);
+    detaillevels.push_back(detailout);
+
+    // Update counts
     for (unsigned j=0; j<approxout.size(); j++) {
-      if (!approxout[j].Empty()) {
-	numsamples++;
-      }
+      a_levelsize[j] += approxout[j].GetBlockSize();
     }
-
-    if (flat) {
-      *outstr.tie() << "A " << numsamples << "\t";
-    }
-
-    for (unsigned j=0; j<numsamples; j++) {
-      if (!approxout[j].Empty()) {
-	wosd wos;
-	wos = approxout[j].Front();
-
-	if (flat) {
-	  *outstr.tie() << wos.GetSampleLevel() << " ";
-	}
-
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	approxout[j].PopSampleFront();
-      }
-    }
-    *outstr.tie() << endl;
-  }
-
-  // Details
-  if (!flat) {
-    *outstr.tie() << endl << "The size of each detail level:" << endl;
-    for (i=0; i<detailout.size(); i++) {
-      *outstr.tie() << "\tLevel " << detailout[i].GetBlockLevel() << " size = " 
-		    << detailout[i].GetBlockSize() << endl;
-    }
-    *outstr.tie() << endl;
-
-    *outstr.tie() << "Index     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "Level " << i << "        " ;
-    }
-    *outstr.tie() << endl << "-----     ";
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << "-------        ";
-    }
-    *outstr.tie() << endl;
-  }
-
-  loopsize=0;
-  for (i=0; i<detailout.size(); i++) {
-    if (detailout[i].GetBlockSize() > loopsize) {
-      loopsize = detailout[i].GetBlockSize();
-    }
-  }
-
-  for (i=0; i<loopsize; i++) {
-    *outstr.tie() << i << "\t";
-
-    // Find number of samples for this line
-    unsigned numsamples=0;
     for (unsigned j=0; j<detailout.size(); j++) {
-      if (!detailout[j].Empty()) {
-	numsamples++;
-      }
+      d_levelsize[j] += detailout[j].GetBlockSize();
     }
+    approxout.clear();
+    detailout.clear();
 
-    if (flat) {
-      *outstr.tie() << "D " << numsamples << "\t";
+    // Toggle the structure
+    bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
+      dfwt.ChangeStructure(numstages, wt);
+    if (!success) {
+      cerr << "block_dynamic_sfwt: Structure failure.\n";
     }
-
-    for (unsigned j=0; j<numsamples; j++) {
-      if (!detailout[j].Empty()) {
-	wosd wos;
-	wos = detailout[j].Front();
-
-	if (flat) {
-	  *outstr.tie() << wos.GetSampleLevel() << " ";
-	}
-
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	detailout[j].PopSampleFront();
-      }
-    }
-    *outstr.tie() << endl;
+    (orig_struct) ? (orig_struct=false) : (orig_struct=true);
   }
-  
+
+  // Human readable output
+  if (!flat) {
+    *outstr.tie() << "APPROXIMATIONS" << endl;
+    *outstr.tie() << "--------------" << endl;
+    OutputLevelMetaData(outstr, a_levelsize, levelcnt);
+
+    *outstr.tie() << endl << "DETAILS" << endl;
+    *outstr.tie() << "-------" << endl;
+    OutputLevelMetaData(outstr, d_levelsize, levelcnt);
+  }
+
+  unsigned count=0;
+  for (i=0; i<MIN(approxlevels.size(), detaillevels.size()); i++) {
+    count=OutputMRACoefs(outstr, approxlevels[i], detaillevels[i], count);
+  }
+
+  if (a_levelsize != 0) {
+    delete[] a_levelsize;
+    a_levelsize=0;
+  }
+  if (d_levelsize != 0) {
+    delete[] d_levelsize;
+    d_levelsize=0;
+  }
+
   return 0;
 }

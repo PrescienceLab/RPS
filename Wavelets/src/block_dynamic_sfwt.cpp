@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
       samplecnt += change_interval;
     } else {
       inputblock.GetSamples(buf, samplecnt, inputblock.GetBlockSize()-1);
-      samplecnt += inputblock.GetBlockSize();
+      samplecnt += inputblock.GetBlockSize() - samplecnt -1;
     }
 
     switch(tt) {

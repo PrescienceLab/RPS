@@ -440,6 +440,78 @@ void OutputMRACoefs(ostream &os,
   }
 }
 
+unsigned OutputMRACoefs(ostream &os,
+			vector<WaveletOutputSampleBlock<wosd> > &approx,
+			vector<WaveletOutputSampleBlock<wosd> > &detail,
+			const unsigned index)
+{
+  unsigned i, j, k;
+  unsigned alevels=approx.size();
+  unsigned dlevels=detail.size();
+
+  // Find maximum blocksize and level
+  unsigned maxblock=0;
+  unsigned level;
+  for (i=0; i<alevels; i++) {
+    if (approx[i].GetBlockSize() > maxblock) {
+      maxblock = approx[i].GetBlockSize();
+      level = i;
+    }
+  }
+  for (i=0; i<dlevels; i++) {
+    if (detail[i].GetBlockSize() > maxblock) {
+      maxblock = detail[i].GetBlockSize();
+      level = i;
+    }
+  }
+
+  vector<unsigned> indices;
+  for (i=0; i<maxblock*(2<<level); i++) {
+
+    // APPROXIMATIONS
+    unsigned numsamples=0;
+    for (j=0; j<alevels; j++) {
+      if (!approx[j].Empty() && (i % (2 << j)) == 0) {
+	numsamples++;
+	indices.push_back(j);
+      }
+    }
+
+    *os.tie() << i+index << "\tA\t" << numsamples << "\t";
+    for (k=0; k<indices.size(); k++) {
+      wosd wos;
+      wos = approx[indices[k]].Front();
+      *os.tie() << wos.GetSampleLevel() << " ";
+      *os.tie() << wos.GetSampleValue() << "\t";
+      approx[indices[k]].PopSampleFront();
+    }
+    *os.tie() << endl;
+    indices.clear();
+
+    // DETAILS
+    numsamples=0;
+    for (j=0; j<dlevels; j++) {
+      if (!detail[j].Empty() && (i % (2 << j)) == 0) {
+	numsamples++;
+	indices.push_back(j);
+      }
+    }
+
+    *os.tie() << i+index << "\tD\t" << numsamples << "\t";
+    for (k=0; k<indices.size(); k++) {
+      wosd wos;
+      wos = detail[indices[k]].Front();
+      *os.tie() << wos.GetSampleLevel() << " ";
+      *os.tie() << wos.GetSampleValue() << "\t";
+      detail[indices[k]].PopSampleFront();
+    }
+    *os.tie() << endl;
+    indices.clear();
+  }
+  return i+index;
+}
+
+
 void OutputLevelMetaData(ostream &os,
 			 vector<vector<wosd> > &levels,
 			 const unsigned numlevels)

@@ -155,15 +155,8 @@ int main(int argc, char *argv[])
   vector<wosd> detailout;
 
   // Create vectors for the level outputs
-  vector<deque<wosd> *> approxlevels;
-  vector<deque<wosd> *> detaillevels;
-  for (i=0; i<(unsigned)MAX(numstages,numstages_new); i++) {
-    deque<wosd>* pwos = new deque<wosd>();
-    approxlevels.push_back(pwos);
-
-    pwos = new deque<wosd>();
-    detaillevels.push_back(pwos);
-  }
+  vector<vector<wosd> > approxlevels;
+  vector<vector<wosd> > detaillevels;
 
   bool orig_struct=true;
   int current_interval=0;
@@ -182,34 +175,8 @@ int main(int argc, char *argv[])
 
     dfwt.StreamingMixedSampleOperation(approxout, detailout, samples[i], sigspec);
 
-    // Approximations
-    if (flat) {
-      *outstr.tie() << i << "\t" << "A\t" << approxout.size() << "\t";
-    }
-
-    for (unsigned j=0; j<approxout.size(); j++) {
-      int samplelevel = approxout[j].GetSampleLevel();
-      approxlevels[samplelevel]->push_front(approxout[j]);
-      if (flat) {
-	*outstr.tie() << samplelevel << " " << approxout[j].GetSampleValue() << "\t";
-      }
-    }
-
-    if (flat) {
-      *outstr.tie() << endl << i << "\t" << "D\t" << detailout.size() << "\t";
-    }
-
-    // Details
-    for (unsigned j=0; j<detailout.size(); j++) {
-      int samplelevel = detailout[j].GetSampleLevel();
-      detaillevels[samplelevel]->push_front(detailout[j]);
-      if (flat) {
-	*outstr.tie() << samplelevel << " " << detailout[j].GetSampleValue() << "\t";
-      }
-    }
-    if (flat) {
-      *outstr.tie() << endl;
-    }
+    approxlevels.push_back(approxout);
+    detaillevels.push_back(detailout);
 
     approxout.clear();
     detailout.clear();
@@ -219,19 +186,13 @@ int main(int argc, char *argv[])
   if (!flat) {
     *outstr.tie() << "APPROXIMATIONS" << endl;
     *outstr.tie() << "--------------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, approxlevels, MAX(numstages, numstages_new));
+    OutputLevelMetaData(outstr, approxlevels, MAX(numstages, numstages_new));
 
     *outstr.tie() << endl << "DETAILS" << endl;
     *outstr.tie() << "-------" << endl;
-    OutputWaveletCoefsNonFlat(outstr, detaillevels, MAX(numstages, numstages_new));
+    OutputLevelMetaData(outstr, detaillevels, MAX(numstages, numstages_new));
   }
 
-  for (i=0; i<(unsigned)MAX(numstages, numstages_new); i++) {
-    CHK_DEL(approxlevels[i]);
-    CHK_DEL(detaillevels[i]);
-  }
-  approxlevels.clear();
-  detaillevels.clear();
-
+  OutputMRACoefs(outstr, approxlevels, detaillevels);
   return 0;
 }

@@ -54,6 +54,11 @@ void OutputMRACoefs(ostream &os,
 		    vector<WaveletOutputSampleBlock<wosd> > &approx,
 		    vector<WaveletOutputSampleBlock<wosd> > &detail);
 
+unsigned OutputMRACoefs(ostream &os,
+			vector<WaveletOutputSampleBlock<wosd> > &approx,
+			vector<WaveletOutputSampleBlock<wosd> > &detail,
+			const unsigned index);
+
 void OutputLevelMetaData(ostream &os,
 			 vector<vector<wosd> > &levels,
 			 const unsigned numlevels);
