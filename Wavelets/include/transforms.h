@@ -2898,8 +2898,10 @@ DiscreteWaveletTransformZeroFillOperation
   return outblock.GetBlockSize();
 }
 
-// Function assumes that the structure optimizer was run before calling
-// this routine, and there is therefore 0 or 1 approximation levels
+// Function assumes that the blocks that are input have already been
+// filtered by the signal specification.  All that needs to be done is
+// put the available levels into a dwosb block.  All other levels are
+// zeros.
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 DiscreteWaveletMixedOperation
@@ -2909,21 +2911,24 @@ DiscreteWaveletMixedOperation
  const unsigned numlevels,
  const SignalSpec &spec)
 {
-  unsigned blocksize=0x1 << (numlevels-1);
+  unsigned blocksize=0x1 << (numlevels);
 
   // Zero out a DiscreteWaveletOutputSampleBlock
   deque<INSAMPLE> zeros(blocksize,INSAMPLE(0,0));
-  DiscreteWaveletOutputSampleBlock<INSAMPLE> dwosb(numlevels,
+  DiscreteWaveletOutputSampleBlock<INSAMPLE> dwosb(numlevels+1,
 						   this->lowest_inlvl,
 						   TRANSFORM);
   dwosb.SetSamples(zeros);
 
   // Place approximations and details into the dwosb block
   deque<INSAMPLE> samps;
-  if (approxblock.size()) {
-    int level=approxblock[0].GetBlockLevel();
-    approxblock[0].GetSamples(samps);
-    dwosb.SetSamplesAtLevel(samps,level);
+  const unsigned HIGH_APPROX_BLKSIZE=1;
+  for (unsigned i=0; i<approxblock.size(); i++) {
+    if (approxblock[i].GetBlockSize() == HIGH_APPROX_BLKSIZE) {
+      int level=approxblock[i].GetBlockLevel();
+      approxblock[i].GetSamples(samps);
+      dwosb.SetSamplesAtLevel(samps,level+1);
+    }
   }
 
   samps.clear();

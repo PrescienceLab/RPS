@@ -114,50 +114,39 @@ int main(int argc, char *argv[])
     }
   }
 
-  // Optimize the operations
-  SignalSpec optim_spec;
-  unsigned optim_stages;
-  StructureOptimizer(optim_spec, optim_stages, numstages, 0, sigspec);
-
   // Instantiate a reverse discrete wavelet transform
   ReverseDiscreteWaveletTransform<double, wisd, wosd> rdwt(wt);
 
   // Create output buffers
-  vector<WaveletOutputSampleBlock<wosd> > t_approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
   vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
-  for (unsigned i=0; i<optim_stages; i++) {
-    t_approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
+  for (unsigned i=0; i<numstages+1; i++) {
+    approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
     detailcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
   }
   WaveletInputSampleBlock<wisd> reconst;
 
   // Read in the MRA coefficients
   FlatParser fp;
-  fp.ParseMRACoefsBlock(optim_spec, t_approxcoefs, detailcoefs, cin);
+  fp.ParseMRACoefsBlock(sigspec, approxcoefs, detailcoefs, cin);
 
   // Could possible look at available approximation levels and optimize
   // that way, but for now if the one sample approximation is not in
   // the representation, then no approximations are used.
-  for (unsigned i=0; i>optim_stages; i++) {
-    if (t_approxcoefs[i].GetBlockSize() == 1) {
-      approxcoefs.push_back(t_approxcoefs[i]);
-    }
-  }
 
   if (!flat) {
     *outstr.tie() << "APPROX LEVELS:" << endl;
-    OutputLevelMetaData(outstr, approxcoefs, optim_stages);
+    OutputLevelMetaData(outstr, approxcoefs, numstages+1);
     *outstr.tie() << "DETAIL LEVELS:" << endl;
-    OutputLevelMetaData(outstr, detailcoefs, optim_stages);
+    OutputLevelMetaData(outstr, detailcoefs, numstages+1);
   }
 
   // The operations
   rdwt.DiscreteWaveletMixedOperation(reconst,
 				     approxcoefs,
 				     detailcoefs,
-				     optim_stages+1,
-				     optim_spec);
+				     numstages+1,
+				     sigspec);
 
   if (!flat) {
     *outstr.tie() << "The real-time system delay is no less than "
