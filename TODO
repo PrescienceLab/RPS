@@ -1,8 +1,8 @@
 Sensors
 
 Wavelets
-  => Need README.Wavelets
   => Jason
+  => ostream bug with newest g++ compiler.
 
 TimeSeries
   => Wavelet Predictor (sanity check)
