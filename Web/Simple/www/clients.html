@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Query a non-buffered RPS sensor</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<font size="+6">Non-buffered Sensor Query</font><br>
+<br>
+<form action="rpsquery.pl" method="get">
+	<input type="hidden" name="type" value="nonbuffered">
+  <table border="0" cellpadding="5" cellspacing="0" width="750">
+    <tr>
+			<td>
+				Non-buffered client name
+			</td>
+			
+      <td> <!-- #BeginLibraryItem "/SourceBuilderTag.lbi" -->
+
+Source location <font size="-2">(For UDP, IP multicast, and Unix Domain sockets, server is ignored)</font><!-- #EndLibraryItem --></td>
+			
+      		<td>Page Refresh(s): </td>
+		</tr>
+		<tr>
+			<td>
+				<select name="client">
+					<option value="flowbwclient" selected>flowbw</option>
+					<option value="loadclient">load</option>
+					<option value="measureclient">measure</option>
+					<option value="predclient">pred</option>
+					<option value="pred_reqresp_client">pred_reqresp</option>
+			
+				</select>
+      </td>
+			
+      <td> <!-- #BeginLibraryItem "/SourceBuilder.lbi" -->
+		<select name="streamsource">
+			<option value="tcp" selected>TCP</option>
+			<option value="udp">UDP</option>
+			<option value="unix">Unix</option>
+		</select>
+		<input type="text" name="server" value="server">
+		<input type="text" name="port" size="6" value="port">
+		<input type="hidden" name="sourcebuilder" value="true">
+<!-- #EndLibraryItem --> 
+      </td>
+			
+      		
+      <td> <!-- #BeginLibraryItem "/RefreshInput.lbi" -->
+				<select name="refresh">
+					<option value="1">1</option>
+					<option value="2" selected>2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="10">10</option>
+					<option value="15">15</option>
+					<option value="30">30</option>
+					<option value="60">60</option>
+				</select>
+<!-- #EndLibraryItem --> 
+      </td>
+			
+      <td> <!-- #BeginLibraryItem "/RunQueryButton.lbi" -->
+<input type="submit" name="runquery" value="Run Query"><!-- #EndLibraryItem --> 
+      </td>
+		</tr>
+	</table>
+	<br>
+	<strong>Options:</strong><br><br>
+  <!-- #BeginLibraryItem "/JumpQueryBuilderButton.lbi" -->
+<input type="submit" name="querybuilder" value="Use the selected tool's query builder">
+<!-- #EndLibraryItem --><br>
+	<a href="uniclient.html">Run a generic query</a><br>
+	<a href="bufferclients.html">Run a query on a generic buffered Sensor</a><br>
+	
+	
+</form>
+
+
+<!-- #BeginLibraryItem "/footer.lbi" -->
+<hr width="625" align="left">
+Part of the RPS web interface By <a href="mailto:jtc560@cs.northwestern.edu">John 
+Cihocki.</a> Maintained by <a href="mailto:pdinda@cs.northwestern.edu">Peter Dinda</a>. 
+See the <a href="http://www.cs.nwu.edu/~RPS">RPS home. </a> <!-- #EndLibraryItem --></body>
+</html>

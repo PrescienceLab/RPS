@@ -227,7 +227,7 @@ CQFWaveletCoefficients::CQFWaveletCoefficients(const WaveletType wt)
     const double *coefptr = waveletCoefTable[wt];
     for (i=0; i<numcoefs; ++i) {
       g_coefs[i] = coefptr[i];
-      h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+      h_coefs[i] = coefptr[numcoefs-1-i]*::pow(-1.0,(double)(i+1));
     }
   }
 
@@ -253,7 +253,7 @@ CQFWaveletCoefficients::CQFWaveletCoefficients(const CQFWaveletCoefficients &rhs
   for (unsigned i=0; i<numcoefs; ++i) {
     const double *coefptr = waveletCoefTable[wt];
     g_coefs[i] = coefptr[i];
-    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+    h_coefs[i] = coefptr[numcoefs-1-i]*::pow(-1.0,(double)(i+1));
   }
 }
 
@@ -345,7 +345,7 @@ void CQFWaveletCoefficients::GetInverseCoefsLPF(vector<double> &coefs) const
   unsigned i;
   if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {    
     for (i=0; i<numcoefs; i++) {
-      coefs.push_back(h_coefs[i]*pow(-1.0,i));
+      coefs.push_back(h_coefs[i]*::pow(-1.0,(double)i));
     }
   } else {
     for (i=0; i<numcoefs; i++) {
@@ -360,7 +360,7 @@ void CQFWaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
   unsigned i;
   if (wt==FILTERBANK_NBS_G8_D1 || wt==FILTERBANK_NBS_H8_D1) {
     for (i=0; i<numcoefs; i++) {
-      coefs.push_back(-g_coefs[i]*pow(-1.0,i));
+      coefs.push_back(-g_coefs[i]*pow(-1.0,(double)i));
     }
   } else {
     for (i=0; i<numcoefs; i++) {
@@ -398,6 +398,6 @@ void CQFWaveletCoefficients::init(const WaveletType wt)
   for (unsigned i=0; i<numcoefs; ++i) {
     const double *coefptr = waveletCoefTable[wt];
     g_coefs[i] = coefptr[i];
-    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+    h_coefs[i] = coefptr[numcoefs-1-i]*::pow(-1.0,(double)(i+1));
   }
 }

@@ -1,0 +1,5 @@
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	  	<select name="output_options">
+			<option value="stats" selected>Print Latency Stats</option>
+			<option value="dump">Print Latency Measurements</option>
+		</select>

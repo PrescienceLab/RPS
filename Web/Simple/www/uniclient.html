@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Query an RPS Sensor</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<font size="+6">Generic RPS Query</font> <br>
+<br>
+
+<form action="rpsquery.pl" method="get" name="RPSQuery">
+<input type="hidden" name="type" value="generic">
+<table border="0" cellpadding="7" cellspacing="0" width="625">
+	<tr>
+		
+      <td> RPS tool to connect to </td>
+		<td>
+			Command line arguments
+		</td>
+	</tr>
+	<tr>
+
+		<td width="150" valign="top">
+				<select name="client">
+					<option value="flowbwbufferclient" selected>flowbwbuffer</option>
+					<option value="flowbwclient">flowbw</option>
+					<option value="loadbufferclient">loadbuffer</option>
+					<option value="loadclient">load</option>
+					<option value="loadlatclient">loadlat</option>
+					<option value="measurebufferclient">measurebuffer</option>
+					<option value="measureclient">measure</option>
+					<option value="predbufferclient">predbuffer</option>
+					<option value="predclient">pred</option>
+					<option value="predlatclient">predlat</option>
+					<option value="pred_reqresp_client">pred_reqresp</option>
+			
+				</select><Br><br>
+		</td>
+		<td width="300" valign="top">
+			<input type="text" name="args" size="50"><br><br>
+			
+		</td>
+		
+      <td valign="top"> <!-- #BeginLibraryItem "/RunQueryButton.lbi" -->
+<input type="submit" name="runquery" value="Run Query"><!-- #EndLibraryItem --> 
+      </td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<strong>Options:</strong><br><br>
+        <!-- #BeginLibraryItem "/JumpQueryBuilderButton.lbi" -->
+<input type="submit" name="querybuilder" value="Use the selected tool's query builder">
+<!-- #EndLibraryItem --> <br>
+        <a href="bufferclients.html">Generic Buffer Client</a><br>
+			<a href="clients.html">Generic Non-Buffered Client</a>
+		</td>
+	</tr>
+</table>
+</form>
+
+<!-- #BeginLibraryItem "/footer.lbi" -->
+<hr width="625" align="left">
+Part of the RPS web interface By <a href="mailto:jtc560@cs.northwestern.edu">John 
+Cihocki.</a> Maintained by <a href="mailto:pdinda@cs.northwestern.edu">Peter Dinda</a>. 
+See the <a href="http://www.cs.nwu.edu/~RPS">RPS home. </a> <!-- #EndLibraryItem --></body>
+</html>

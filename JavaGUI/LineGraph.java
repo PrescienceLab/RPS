@@ -164,7 +164,8 @@ public class LineGraph extends JPanel
 
 	double dArr[] = new double[3];
 	if (standardLine) {
-	    callLoadBufferClient(dArr, path1);
+            // measurement - NEW -PAD
+	    callMeasureBufferClient(dArr, path1);
 	}
 	if (predictionLine) {
 	    callPredBufferClient(predictionLineVals, predictionLineErrors, path2);

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><!-- InstanceBegin template="/Templates/BufferQueryBuilder.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+<!-- InstanceBeginEditable name="doctitle" --> 
+<title>Query Prediction Latency</title>
+<!-- InstanceEndEditable --> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!-- InstanceBeginEditable name="head" --> <!-- InstanceEndEditable --> <!-- InstanceParam name="value" type="text" value="predlatclient" -->
+</head>
+
+<body>
+<font size="+6"><!-- InstanceBeginEditable name="HeadingText" -->Query Prediction 
+Latency <!-- InstanceEndEditable --></font><br>
+  <br>
+  <br>
+  <strong><!-- InstanceBeginEditable name="ToolName" -->Using predlatclient<!-- InstanceEndEditable --></strong><br>
+  <br>
+  Command line argument builder<br>
+<form action="rpsquery.pl" method="get">
+<input type="hidden" name="type" value="querybuilder">
+<input type="hidden" name="client" value="predlatclient">
+<!-- InstanceBeginEditable name="BuilderTable" -->
+  <table border="0" cellpadding="8">
+<tr>
+	  <td width="359"> <!-- #BeginLibraryItem "/SourceBuilderTag.lbi" -->
+
+Source location <font size="-2">(For UDP, IP multicast, and Unix Domain sockets, server is ignored)</font><!-- #EndLibraryItem --></td>
+	  <td width="129">
+	  Output Options
+	  </td>
+	  <td>Number of measures</td>
+</tr>
+<tr>
+	  <td> <!-- #BeginLibraryItem "/SourceBuilder.lbi" -->
+		<select name="streamsource">
+			<option value="tcp" selected>TCP</option>
+			<option value="udp">UDP</option>
+			<option value="unix">Unix</option>
+		</select>
+		<input type="text" name="server" value="server">
+		<input type="text" name="port" size="6" value="port">
+		<input type="hidden" name="sourcebuilder" value="true">
+<!-- #EndLibraryItem --> 
+      </td>
+	  <td> <!-- #BeginLibraryItem "/LatencyOutputOptions.lbi" -->
+	  	<select name="output_options">
+			<option value="stats" selected>Print Latency Stats</option>
+			<option value="dump">Print Latency Measurements</option>
+		</select><!-- #EndLibraryItem -->
+      </td>
+	  <td>	  	<input type="text" name="num_measures" value="10" size="8"></td>
+	  <td> <!-- #BeginLibraryItem "/RunQueryButton.lbi" -->
+<input type="submit" name="runquery" value="Run Query"><!-- #EndLibraryItem --> 
+      </td>
+</tr>
+</table>
+<!-- InstanceEndEditable -->
+<br>
+<a href="uniclient.html">Build a Generic Query</a><br>
+<a href="bufferclients.html">Build a Query for a Buffered Client</a><br>
+<a href="clients.html">Build a Query for a Non-Buffered Client</a><br>
+
+</form>
+
+
+
+<!-- #BeginLibraryItem "/footer.lbi" -->
+<hr width="625" align="left">
+Part of the RPS web interface By <a href="mailto:jtc560@cs.northwestern.edu">John 
+Cihocki.</a> Maintained by <a href="mailto:pdinda@cs.northwestern.edu">Peter Dinda</a>. 
+See the <a href="http://www.cs.nwu.edu/~RPS">RPS home. </a> <!-- #EndLibraryItem --></body>
+<!-- InstanceEnd --></html>
