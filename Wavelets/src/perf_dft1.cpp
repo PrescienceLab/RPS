@@ -147,8 +147,7 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> inputblock(samples);
   WaveletInputSampleBlock<wisd> block;
   unsigned numblocks = samples.size() / blocksize;
-  unsigned datasize = samples.size();
-  const unsigned MINBLOCKS = 32;
+  const unsigned MINBLOCKS = 512;
 
   // Find number of tests
   unsigned numtests=0;
@@ -159,9 +158,11 @@ int main(int argc, char *argv[])
     numblocks = samples.size() / blocksize;
   }
 
-  //  datasize = datasize >> (numtests-1);
   blocksize = blocksize_save;
-  numblocks = datasize / blocksize;
+  numblocks = MINBLOCKS;
+
+  // Sleep 50 seconds
+  usleep(1000000*50);
 
   for (unsigned j=0; j<numtests; j++) {
 
@@ -206,7 +207,6 @@ int main(int argc, char *argv[])
       break;
     }
     blocksize *= 2;
-    numblocks = datasize/blocksize;
   }
 
   // Print the output with appropriate tag

@@ -162,8 +162,7 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> reconst;
 
   unsigned numblocks = wavecoefs.GetBlockSize() / blocksize;
-  unsigned datasize = wavecoefs.GetBlockSize();
-  const unsigned MINBLOCKS = 32;
+  const unsigned MINBLOCKS = 512;
 
   // Find number of tests
   unsigned numtests=0;
@@ -171,12 +170,14 @@ int main(int argc, char *argv[])
   while (numblocks >= MINBLOCKS) {
     numtests++;
     blocksize *= 2;
-    numblocks = datasize / blocksize;
+    numblocks = wavecoefs.GetBlockSize() / blocksize;
   }
 
-  //  datasize = datasize >> (numtests-1);
   blocksize = blocksize_save;
-  numblocks = datasize / blocksize;
+  numblocks = MINBLOCKS;
+
+  // Sleep 50 seconds
+  usleep(1000000*50);
 
   for (unsigned j=0; j<numtests; j++) {
 
@@ -194,7 +195,6 @@ int main(int argc, char *argv[])
       reconst.ClearBlock();
     }
     blocksize *= 2;
-    numblocks = datasize/blocksize;
   }
 
   // Print the output with appropriate tag

@@ -166,9 +166,8 @@ int main(int argc, char *argv[])
     infile.close();
 
     // Find the number of tests
-    //    unsigned numblocks = waveletcoefs.size() / blocksize;
-    unsigned datasize = waveletcoefs.size();
-    const unsigned MINBLOCKS = 32;
+    unsigned datasize = numblocks * blocksize;
+    const unsigned MINBLOCKS = 512;
 
     // Find number of tests
     unsigned numtests=0;
@@ -179,9 +178,11 @@ int main(int argc, char *argv[])
       numblocks = datasize / blocksize;
     }
 
-    //  datasize = datasize >> (numtests-1);
     blocksize = blocksize_save;
-    numblocks = datasize / blocksize;
+    numblocks = MINBLOCKS;
+
+    // Sleep 50 seconds
+    usleep(1000000*50);
 
     for (unsigned j=0; j<numtests; j++) {
 
@@ -199,7 +200,6 @@ int main(int argc, char *argv[])
 	}
       }
       blocksize *= 2;
-      numblocks = datasize/blocksize;
     }
   } else { //Block mode
 
