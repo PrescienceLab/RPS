@@ -24,7 +24,8 @@ struct SignalSpec {
   vector<int> details;
 };
 
-void StructureOptimizer(SignalSpec &optim, 
+// Returns true if TRANSFORM, false if ZEROFILL
+bool StructureOptimizer(SignalSpec &optim, 
 			unsigned numlevels,
 			const SignalSpec &spec);
 

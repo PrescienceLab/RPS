@@ -1,9 +1,10 @@
 #include "transforms.h"
 
-void StructureOptimizer(SignalSpec &optim,
+bool StructureOptimizer(SignalSpec &optim,
 			unsigned numlevels,
 			const SignalSpec &spec)
 {
+  bool transform=false;
   unsigned i;
 
   // Find the lowest approximation signal
@@ -32,4 +33,5 @@ void StructureOptimizer(SignalSpec &optim,
       numlevels++;
     }
   }
+  return transform;
 }
