@@ -269,14 +269,14 @@ int main(int argc, char *argv[])
     // Print the output with appropriate tag
     if (flat) {
       *outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
-	      << ((sample) ? "SAMPLE " : "BLOCK ") << usrend - usrbegin << " "
+	      << ((sample) ? 1 : blocksize) << " " << usrend - usrbegin << " "
 	      << sysend - sysbegin;
     } else {
       *outstr << "Sleeptime (us) = " << sleeptime_us << endl;
       *outstr << "Wavelet type = " << wt << endl;
       *outstr << "Number stages = " << numstages << endl;
       *outstr << "Transform type = " << tt << endl;
-      *outstr << "Operation type = " << ((sample) ? "SAMPLE" : "BLOCK") << endl;
+      *outstr << "Block size (1 = sample op) = " << ((sample) ? 1 : blocksize) << endl;
       *outstr << "User time = " << usrend - usrbegin << endl;
       *outstr << "System time = " << sysend - sysbegin << endl;
     }

@@ -14,7 +14,7 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
 CFLAGS = -I$(INCDIR)
 
-OPTIMIZE = YES
+OPTIMIZE = NO
 
 ifeq ($(OPTIMIZE),YES)
   CFLAGS +=  -O2 -funroll-all-loops -ffast-math

@@ -59,6 +59,31 @@ void usage()
   delete [] b;
 }
 
+void GetNextBlock(vector<WaveletOutputSampleBlock<wosd> > &outblock,
+		  const unsigned blocknumber,
+		  const vector<WaveletOutputSampleBlock<wosd> > &inblock,
+		  const int approxlevel,
+		  const unsigned blocksize)
+{
+  outblock.clear();
+  for (unsigned i=0; i<inblock.size(); i++) {
+    int lvl = inblock[i].GetBlockLevel();
+    unsigned size = blocksize >> (1+lvl);
+    if (lvl == approxlevel) {
+      size = size << 1;
+    }
+
+    unsigned start_indx = blocknumber*size;
+    deque<wosd> levelbuf;
+    inblock[i].GetSamples(levelbuf, start_indx, start_indx+size);
+
+    WaveletOutputSampleBlock<wosd> block(levelbuf, start_indx);
+    block.SetBlockLevel(lvl);
+
+    outblock.push_back(block);
+  }
+}
+
 int main(int argc, char *argv[])
 {
   if (argc!=11) {
@@ -195,14 +220,14 @@ int main(int argc, char *argv[])
       // Print the output with appropriate tag
       if (flat) {
 	*outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
-		<< "SAMPLE " << usrend - usrbegin << " "
+		<< 1 << " " << usrend - usrbegin << " "
 		<< sysend - sysbegin;
       } else {
 	*outstr << "Sleeptime (us) = " << sleeptime_us << endl;
 	*outstr << "Wavelet type = " << wt << endl;
 	*outstr << "Number stages = " << numstages << endl;
 	*outstr << "Transform type = " << tt << endl;
-	*outstr << "Operation type = SAMPLE" << endl;
+	*outstr << "Block size (1 = sample op) = 1" << endl;
 	*outstr << "User time = " << usrend - usrbegin << endl;
 	*outstr << "System time = " << sysend - sysbegin << endl;
       }
@@ -211,7 +236,7 @@ int main(int argc, char *argv[])
 
   } else { //Block mode
     vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
-    vector<vector<WaveletOutputSampleBlock<wosd> > > blocks;
+    vector<WaveletOutputSampleBlock<wosd> > block;
     vector<WaveletOutputSampleBlock<wosd> > delayoutput;
     WaveletInputSampleBlock<wisd> reconst;
     WaveletInputSampleBlock<wisd> finaloutput;
@@ -220,42 +245,47 @@ int main(int argc, char *argv[])
     // Read the data from file into an input vector
     deque<wisd> samples;
     FlatParser fp;
-    unsigned index=0;
-    while (fp.ParseTimeDomain(samples, *is, index, blocksize)) {
-      WaveletInputSampleBlock<wisd> inputblock(samples);
-      sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
-      blocks.push_back(forwardoutput);
-      forwardoutput.clear();
-    }
+    fp.ParseTimeDomain(samples, *is);
+    WaveletInputSampleBlock<wisd> inputblock(samples);
     infile.close();
+
+    sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
+
+    // Calculate the number of blocks
+    unsigned blocks = samples.size() / blocksize;
 
     for (unsigned test=0; test<numtests; test++) {
 
       GetRusage(sysbegin, usrbegin);
-      for (i=0; i<blocks.size(); i++) {
+
+      for (unsigned i=0; i<blocks; i++) {
+	GetNextBlock(block, i, forwardoutput, numstages, blocksize);
 	if (sleep) {
 	  usleep(sleeptime_us);
 	}
 	// The operations
-	dlyblk.StreamingBlockOperation(delayoutput, blocks[i]);
+	dlyblk.StreamingBlockOperation(delayoutput, block);
 	srwt.StreamingTransformBlockOperation(reconst, delayoutput);
 	finaloutput.AppendBlockBack(reconst);
 
+	delayoutput.clear();
 	reconst.ClearBlock();
       }
       GetRusage(sysend, usrend);
 
+      finaloutput.ClearBlock();
+
       // Print the output with appropriate tag
       if (flat) {
 	*outstr << sleeptime_us << " " << wt << " " << numstages << " " << tt << " "
-		<< "BLOCK " << usrend - usrbegin << " "
+		<< blocksize << " " << usrend - usrbegin << " "
 		<< sysend - sysbegin;
       } else {
 	*outstr << "Sleeptime (us) = " << sleeptime_us << endl;
 	*outstr << "Wavelet type = " << wt << endl;
 	*outstr << "Number stages = " << numstages << endl;
 	*outstr << "Transform type = " << tt << endl;
-	*outstr << "Operation type = " << "BLOCK" << endl;
+	*outstr << "Block size (1 = sample op) = " << blocksize << endl;
 	*outstr << "User time = " << usrend - usrbegin << endl;
 	*outstr << "System time = " << sysend - sysbegin << endl;
       }
