@@ -359,24 +359,42 @@ void WaveletBlock::GetFromMeasurement(const Measurement &m)
 
 void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const
 {
-  // WRITE THIS
+  assert(rinfo.rtype==TIME_DOMAIN);
+  m.SetBlockIndex(0);
+  m.SetSamples(series, serlen);
 }
 
 void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m)
 {
-  // WRITE THIS
+  assert(rinfo.rtype==TIME_DOMAIN);
+  tag=m.GetBlockIndex();
+  rinfo=WaveletRepresentationInfo(TIME_DOMAIN,DAUB2,0,0);
+  btype=INORDER;
+  serlen=m.GetBlockSize();
+  Resize(serlen);
+  m.GetSamples(series);
 }
 
 void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const
 {
-  // WRITE THIS
+  assert(rinfo.rtype==WAVELET_DOMAIN_APPROX || 
+	 rinfo.rtype==WAVELET_DOMAIN_DETAIL || 
+	 rinfo.rtype==WAVELET_DOMAIN_TRANSFORM);
+  m.SetSamples(series, serlen);
 }
 
 void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m)
 {
-  // WRITE THIS
+  assert(rinfo.rtype==WAVELET_DOMAIN_APPROX || 
+	 rinfo.rtype==WAVELET_DOMAIN_DETAIL || 
+	 rinfo.rtype==WAVELET_DOMAIN_TRANSFORM);
+  tag=m.GetBlockIndex();
+  rinfo=WaveletRepresentationInfo(rinfo.rtype,DAUB2,0,0);
+  btype=INORDER;
+  serlen=m.GetBlockSize();
+  Resize(serlen);
+  m.GetSamples(series);
 }
-
 
 int WaveletBlock::GetPackedSize() const
 {
