@@ -35,11 +35,16 @@ public:
 			     const SampleBlock<INSAMPLE> &in);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+template <class SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const FIRFilter<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-FIRFilter(const unsigned numcoefs=0)
+FIRFilter(const unsigned numcoefs)
 {
   this->numcoefs = numcoefs;
   
@@ -165,5 +170,10 @@ Print(ostream &os) const
   }
   return os;
 }
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & FIRFilter<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator<<(ostream &os) const 
+{ return Print(os);}
 
 #endif

@@ -72,7 +72,7 @@ public:
  *******************************************************************************/
 template <class SAMPLETYPE>
 WaveletOutputSampleBlock<SAMPLETYPE>::
-WaveletOutputSampleBlock(const int level=0) :
+WaveletOutputSampleBlock(const int level) :
   OutputSampleBlock<SAMPLETYPE>()
 {
   this->level = level;

@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+using namespace std;
+
 class IndexManager {
 private:
   bool index_set;
@@ -21,6 +23,7 @@ public:
   IndexManager & operator=(const IndexManager &rhs) {
     this->index_set = rhs.index_set;
     this->index = rhs.index;
+    return *this;
   };
 
   bool InOrder(unsigned nxt_index) {
@@ -50,6 +53,12 @@ public:
     os << "Index: " << index << endl;
     return os;
   };
+  
+  ostream & operator<<(ostream &os) const {
+    return Print(os);
+  }
 };
+
+inline ostream & operator<<(ostream &os, const IndexManager &rhs) { return rhs.operator<<(os);}
 
 #endif

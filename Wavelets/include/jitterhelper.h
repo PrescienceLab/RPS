@@ -68,14 +68,20 @@ public:
     return (current_backlog > backlog_thresh);
   };
 
-  ostream & Print(ostream &os) {
+  ostream & Print(ostream &os) const {
     os << "Backlog threshold (in samples): " << backlog_thresh << endl;
     os << "Current backlog (in samples):   " << current_backlog << endl;
     return os;
   };
+  
+  ostream & operator<<(ostream &os) const { return Print(os);}
+
 };
 
-const unsigned MAX_INDEX=4294967295;  // This is 2^32-1
+inline ostream & operator<<(ostream &os, const JitterHelper &rhs) { return rhs.operator<<(os);}
+
+
+const unsigned MAX_INDEX=4294967295U;  // This is 2^32-1
 
 template <class INSAMPLE>
 class DefaultJitterAction {

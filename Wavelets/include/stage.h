@@ -72,7 +72,12 @@ public:
 			  const SampleBlock<INSAMPLE>  &in);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const WaveletStageHelper<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
 
 /********************************************************************************
  *
@@ -135,7 +140,11 @@ public:
 				 const SampleBlock<INSAMPLE> &in);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
 
 
 /********************************************************************************
@@ -190,7 +199,12 @@ public:
 				 const SampleBlock<INSAMPLE> &in_h);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const ReverseWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
 
 
 /********************************************************************************
@@ -200,8 +214,8 @@ public:
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-WaveletStageHelper(const WaveletType wavetype=DAUB2, 
-		   const StageType stagetype=FORWARD) :
+WaveletStageHelper(const WaveletType wavetype, 
+		   const StageType stagetype) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
@@ -421,6 +435,11 @@ Print(ostream &os) const
   return os;
 }
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & WaveletStageHelper<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator<<(ostream &os) const
+{ return Print(os);}
+
 /********************************************************************************
  *
  * Member functions for the ForwardWaveletStage Class
@@ -428,7 +447,7 @@ Print(ostream &os) const
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ForwardWaveletStage(const WaveletType wavetype=DAUB2) : 
+ForwardWaveletStage(const WaveletType wavetype) : 
   stagehelp(wavetype, FORWARD), rate_l(2), rate_h(2),
   outlevel_l(-1), outlevel_h(-1), downsampler_l(rate_l), downsampler_h(rate_h)
 {
@@ -640,6 +659,12 @@ Print(ostream &os) const
   return os;
 }
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator<<(ostream &os) const
+{ return Print(os);}
+
+
 
 /********************************************************************************
  *
@@ -648,7 +673,7 @@ Print(ostream &os) const
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ReverseWaveletStage(const WaveletType wavetype=DAUB2) : 
+ReverseWaveletStage(const WaveletType wavetype) : 
   stagehelp(wavetype, REVERSE), rate_l(2), rate_h(2), 
   upsampler_l(rate_l), upsampler_h(rate_h)
 {
@@ -834,5 +859,11 @@ Print(ostream &os) const
   os << "  " << upsampler_l << endl;
   return os;
 }
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator<<(ostream &os) const
+{ return Print(os);}
+
 
 #endif

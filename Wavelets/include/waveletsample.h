@@ -35,14 +35,19 @@ public:
     os << "index: " << index << "\tvalue: " << value << "\tlevel: " << level << endl;
     return os;
   };
+  virtual ostream & operator<<(ostream &os) const { return Print(os);}
 };
+
+template <class SAMPLETYPE>
+inline ostream & operator<<(ostream &os, const WaveletOutputSample<SAMPLETYPE> &rhs) { return rhs.operator<<(os);};
+
 
 /********************************************************************************
  * Wavelet input samples
  *******************************************************************************/
 template <class SAMPLETYPE>
 WaveletInputSample<SAMPLETYPE>::
-WaveletInputSample(const SAMPLETYPE value=0, const unsigned index=0) : 
+WaveletInputSample(const SAMPLETYPE value, const unsigned index) : 
   InputSample<SAMPLETYPE>(value,index)
 {}
 

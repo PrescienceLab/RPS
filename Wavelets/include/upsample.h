@@ -30,11 +30,15 @@ public:
 		      const SampleBlock<SAMPLE> &input);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
 
 template <class SAMPLE>
+inline ostream & operator<<(ostream &os, const UpSample<SAMPLE> &rhs) { return rhs.operator<<(os);};
+
+template <class SAMPLE>
 UpSample<SAMPLE>::
-UpSample(unsigned rate=1) : 
+UpSample(unsigned rate) : 
   rate(rate), samplecount(0)
 {
 }

@@ -15,6 +15,7 @@
 
 #define MOREWORK 1
 
+
 struct SignalSpec {
   vector<int> approximations;
   vector<int> details;
@@ -118,7 +119,11 @@ public:
 					const SignalSpec &spec);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const StaticForwardWaveletTransform<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
 
 
 /********************************************************************************
@@ -214,7 +219,11 @@ public:
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &detail_block);
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const StaticReverseWaveletTransform<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
 
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -233,7 +242,12 @@ public:
 		unsigned    rate_h);
 		
   bool RemoveStage();
+  ostream & operator<<(ostream &os) const { return (os << "DynamicForwardWaveletTransform...");}
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const DynamicForwardWaveletTransform<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class DynamicReverseWaveletTransform : public 
@@ -250,7 +264,13 @@ public:
 		unsigned    rate_h);
 
   bool RemoveStage();
+  ostream & operator<<(ostream &os) const { return (os << "DynamicReverseWaveletTransform...");}
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const DynamicReverseWaveletTransform<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
+
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ForwardDiscreteWaveletTransform {
@@ -279,7 +299,13 @@ public:
 
   bool DiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
 				SampleBlock<INSAMPLE>  &inblock);
+
+  ostream & operator<<(ostream &os) const { return (os << "ForwardDiscreteWaveletTransform...");}
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const ForwardDiscreteWaveletTransform<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 class ReverseDiscreteWaveletTransform {
@@ -304,7 +330,12 @@ public:
 
   bool InverseDiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
 				       SampleBlock<INSAMPLE>  &inblock);
+  ostream & operator<<(ostream &os) const { return (os << "ReverseDiscreteWaveletTransform...");}
 };
+
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+inline ostream & operator<<(ostream &os, const ReverseDiscreteWaveletTransform<SAMPLETYPE,OUTSAMPLE,INSAMPLE> &rhs) { return rhs.operator<<(os);};
+
 
 /********************************************************************************
  * 
@@ -313,8 +344,8 @@ public:
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StaticForwardWaveletTransform(const unsigned numstages=1,
-			      const int lowest_outlvl=0)
+StaticForwardWaveletTransform(const unsigned numstages,
+			      const int lowest_outlvl)
 {
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     this->numstages = 1;
@@ -852,6 +883,11 @@ Print(ostream &os) const
   return os;
 }
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator <<(ostream &os) const
+{ return Print(os);}
+
 /********************************************************************************
  * 
  * Member functions for the StaticReverseWaveletTransform class
@@ -859,8 +895,8 @@ Print(ostream &os) const
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StaticReverseWaveletTransform(const unsigned numstages=1,
-			      const int lowest_inlvl=0)
+StaticReverseWaveletTransform(const unsigned numstages,
+			      const int lowest_inlvl)
 {
   if ( (numstages == 0) || (numstages > MAX_STAGES) ) {
     this->numstages = 1;
@@ -1407,6 +1443,12 @@ Print(ostream &os) const
   return os;
 }
 
+template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
+ostream & StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
+operator <<(ostream &os) const
+{ return Print(os);}
+
+
 /*******************************************************************************
  * Private member functions
  *******************************************************************************/
@@ -1663,7 +1705,7 @@ RemoveStage()
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ForwardDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ForwardDiscreteWaveletTransform(WaveletType wavetype=DAUB2, int lowest_outlvl=0) :
+ForwardDiscreteWaveletTransform(WaveletType wavetype, int lowest_outlvl) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
@@ -1878,7 +1920,7 @@ DiscreteWaveletTransform(SampleBlock<OUTSAMPLE> &outblock,
  *******************************************************************************/
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 ReverseDiscreteWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-ReverseDiscreteWaveletTransform(WaveletType wavetype=DAUB2) :
+ReverseDiscreteWaveletTransform(WaveletType wavetype) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;

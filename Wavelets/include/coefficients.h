@@ -36,6 +36,9 @@ public:
   void GetInverseCoefsHPF(vector<double> & coefs) const;   // h(n)  -> H(z)
 
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletCoefficients &rhs) { return rhs.operator<<(os);}
 
 #endif

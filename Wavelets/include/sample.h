@@ -74,7 +74,14 @@ public:
     os << "index:" << index << "\tvalue:" << value << endl;
     return os;
   };
+
+  virtual ostream & operator<<(ostream &os) const { return Print(os);}
+    
 };
+
+template <class SAMPLETYPE>
+inline ostream & operator<<(ostream &os, const Sample<SAMPLETYPE> &rhs) { return rhs.operator<<(os);};
+
 
 template <typename SAMPLETYPE>
 class InputSample : public Sample<SAMPLETYPE> {

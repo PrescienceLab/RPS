@@ -11,7 +11,8 @@ using namespace std;
 #define CHK_DEL(x) if ((x)!=0) { delete (x); (x)=0;}
 #endif
 
-#include "ioutil.h"
+//#include "ioutil.h"
+// Avoid using this -PAD
 
 template <typename T>
 T MAX(const T &lhs, const T &rhs)
