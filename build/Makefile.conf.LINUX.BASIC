@@ -1,0 +1,276 @@
+####################################################################################
+#
+# General Configuration Options
+#
+####################################################################################
+
+# The directory in which we are installed
+RPS_DIR  = /home/pdinda/RPS-development
+
+# which tools to use to build
+CC      = g++
+F77     = g77
+AR      = ar 
+RANLIB  = ranlib
+LD      = g++
+STRIP   = strip
+JAVA    = java
+JAVAH   = javah
+
+# Whether to compile and optimized version: YES, NO
+OPTIMIZE = NO
+
+# Whether to include debug symbols: YES, NO
+DEBUG    = YES
+
+# Architecture of this machine: ALPHA, SUN, I386
+ARCH     = I386
+
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD
+OS       = LINUX
+
+
+####################################################################################
+#
+# Options that determine what gets built
+#
+####################################################################################
+
+# Whether to build the GetLoadAvg Library
+HAVE_GETLOADAVG = YES
+
+# Whether to build the GetFlowBW Library (depends on Remos)
+HAVE_GETFLOWBW = YES
+
+# Whether to include the WatchTower sensor for RPS (Only works on WIN32 and CYGWIN)
+HAVE_WATCHTOWER = YES
+
+# Whether to include the /proc sensors for RPS (Only works on LINUX)
+HAVE_PROC = YES
+
+# Whether to build the Time Series Prediction Library (TS)
+HAVE_TIMESERIES = YES
+
+# This provides the wavelet library
+#
+HAVE_WAVELETS = YES
+
+# Whether to build the FracDiff library (used to implement ARFIMA models)
+# Notice that you need a fortran 77 compiles (f77) to build this
+HAVE_FRACDIFF = YES
+
+# Whether to build the Mirror template library and tools
+HAVE_MIRROR = YES
+
+# Whether to build the RPS interface library
+HAVE_RPSINT = YES
+
+# Whether to build the Remos interface library
+HAVE_REMOSINT = YES
+
+# This provides the various prediction components listed in the tech report
+#
+HAVE_PREDCOMP = YES
+
+# This provides the java GUI
+#
+HAVE_JAVAGUI = NO
+
+# Whether to build the Spin library and tools
+# This provides components for constructing scheduling experiments,
+# including a cycle server, scheduling tools, load playback tool, etc.
+HAVE_SPIN = YES
+
+# Whether to build the load trace access tools and playback tool
+HAVE_TRACE = YES
+
+# Whether to build the Running Time Advisor and testing tools
+HAVE_RTA = YES
+
+# Whether to build the Real-time Scheduling Advisor and testing tools
+HAVE_RTSA = YES
+
+# Whether to build the Component finder library
+HAVE_FINDER = YES
+
+# Whether to build various research tools
+HAVE_RESEARCHTOOLS = YES
+
+
+####################################################################################
+#
+# Configuration Options for the GetLoadAvg library
+#
+####################################################################################
+
+# Whether the GetLoadAvg library should use uptime: YES, NO
+# If you set USE_UPTIME to YES, then load will be collected by running the
+# /usr/bin/uptime tool.  This is considerably higher overhead than the 
+# direct kernel symbol lookups or linux's /proc, or dux's registry.
+# however, it means you can measure load on any machine without 
+# special permissions.
+USE_UPTIME = NO
+
+####################################################################################
+#
+# Configuration Options for the GetFlowBW library
+#
+####################################################################################
+
+#
+# To build and use the GetFlowBW library, you need REMOS built and installed
+#
+HAVE_REMOS = NO
+REMOS_DIR = /home/Remos/Remos
+
+####################################################################################
+#
+# Configuration Options for WatchTowerRPS
+#
+####################################################################################
+#
+# Currently none
+#
+
+
+####################################################################################
+#
+# Configuration Options for /proc sensors
+#
+####################################################################################
+#
+# Currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the Time Series Prediction Library (TS)
+#
+####################################################################################
+
+
+#
+# PVM is required to build the parallel cross validation system
+# It is normal for a make depend to complain about missing pvm includes
+# if this is set to NO, even if you aren't building the crossval* stuff
+#
+# if you are in doubt, say NO
+#
+HAVE_PVM = NO
+PVM_DIR  = /usr/share/pvm3
+PVM_ARCH = LINUX
+
+####################################################################################
+#
+# Configuration Options for the FracDiff Library 
+#
+####################################################################################
+#
+# Currently none
+#
+#
+
+####################################################################################
+#
+# Configuration Options for the Mirror Template Library and tools
+#
+####################################################################################
+#
+# Currently none
+#
+#
+
+####################################################################################
+#
+# Configuration Options for the RPS interface library
+#
+####################################################################################
+#
+# Currently none
+
+
+####################################################################################
+#
+# Configuration Options for the prediction components
+#
+####################################################################################
+#
+# Currently none
+
+####################################################################################
+#
+# Configuration Options for the prediction components
+#
+####################################################################################
+#
+# Currently none
+
+####################################################################################
+#
+# Configuration Options for the Java GUI
+#
+####################################################################################
+JDK_CFLAGS=-I/usr/local/jdk/include -I/usr/local/jdk/include/linux
+
+
+
+####################################################################################
+#
+# Configuration Options for the Spin Library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the Trace library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the RTA library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the RTSA library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the Finder library and tools
+#
+####################################################################################
+#
+# currently none
+#
+
+####################################################################################
+#
+# Configuration Options for the Research TOols
+#
+####################################################################################
+#
+# currently none
+#
+
+
+#
+# DO NOT REMOVE THE FOLLOWING
+#
+
+include $(RPS_DIR)/build/Makefile.conf.shared

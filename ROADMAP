@@ -7,14 +7,21 @@ README     - overall readme file for RPS
 LICENSE    - license terms for RPS
 ROADMAP    - this file
 
-doc/rps-techreport.pdf - a technical report on RPS
+doc/CONTRIBUTORS       - the contributors to RPS
 
-doc/STRUCTURE   - the structure of the RPS code
+doc/rps-techreport.pdf - a technical report on RPS
+doc/tsunami-tr.pdf     - a technical report on Tsunami, the Wavelet Toolkit
+doc/proc-tr.pdf        - a report on the /proc sensor
+
+doc/COMPONENTS  - the packages of RPS explained
+doc/STRUCTURE   - the structure of an RPS package
 doc/ENDPOINTS   - describes how communication in RPS is described
 
 doc/REMOS       - how to use RPS with CMU's Remos system
 
 doc/BUILD       - how to build RPS
+doc/CONFIGURATION - how to configure RPS
+doc/ENVIRONMENT   - more on the RPS environment
 doc/RUN         - how to run RPS components
 doc/USE         - how to use the tools in RPS
 
