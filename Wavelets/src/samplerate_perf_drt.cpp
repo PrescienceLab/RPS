@@ -99,22 +99,22 @@ int main(int argc, char *argv[])
   unsigned numtests = atoi(argv[6]);
 
   bool flat=true;
-  if (toupper(argv[4][0])=='N') {
+  if (toupper(argv[7][0])=='N') {
     flat = false;
-  } else if (toupper(argv[4][0])!='F') {
+  } else if (toupper(argv[7][0])!='F') {
     cerr << "samplerate_perf_drt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
   ostream *outstr = &cout;
   ofstream outfile;
-  if (!strcasecmp(argv[5],"stdout")) {
-  } else if (!strcasecmp(argv[5],"stderr")) {
+  if (!strcasecmp(argv[8],"stdout")) {
+  } else if (!strcasecmp(argv[8],"stderr")) {
     outstr = &cerr;
   } else {
-    outfile.open(argv[5]);
+    outfile.open(argv[8]);
     if (!outfile) {
-      cerr << "samplerate_perf_drt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "samplerate_perf_drt: Cannot open output file " << argv[8] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
@@ -159,6 +159,9 @@ int main(int argc, char *argv[])
 
     GetRusage(sysbegin, usrbegin);
     for (i=0; i<waveletcoefblocks.size(); i++) {
+      if (sleep) {
+	usleep(sleeptime_us);
+      }
       rdwt.DiscreteWaveletTransformOperation(reconst, waveletcoefblocks[i]);
       finaloutput.AppendBlockBack(reconst);
       reconst.ClearBlock();
