@@ -13,9 +13,6 @@ LIBNAME = spin
 LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
 
-CC     = c++
-LD     = c++ 
-
 ifeq ($(OPTIMIZE),YES) 
   CFLAGS = -O
   LD1FLAGS = -O

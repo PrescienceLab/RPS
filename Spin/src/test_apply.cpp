@@ -31,7 +31,7 @@ void main()
   
   if ((pid=fork())) {
       for (i=0;i<DUR;i++) {
-	getloadavg(&load,1);
+	RPSgetloadavg(&load,1);
 	printf("%lf\n",load);
 	fflush(stdout);
 	sleep(1);

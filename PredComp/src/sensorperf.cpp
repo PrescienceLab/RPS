@@ -14,7 +14,7 @@
 void loadavgwrapper()
 {
   double junk[3];
-  getloadavg(junk,3);
+  RPSgetloadavg(junk,3);
 }
 
 void flowbwwrapper()

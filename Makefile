@@ -115,12 +115,12 @@ Spin: $(HMT_DEP) force
 
 clean:
 	$(foreach m,$(PROJS),(cd $(m);$(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) clean); )
-	(cd TS/FracDiff; $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) clean)
+	(cd $(HTS_DEP)/$(HFD_DEP); $(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) clean)
 	rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/*.a
 	rm -f $(RPS_DIR)/bin/$(ARCH)/$(OS)/*
 
 depend:
 	$(foreach m,$(PROJS),(cd $(m);$(MAKE) $(MAKEFLAGS)  RPS_DIR=$(RPS_DIR) depend) ; )
-	(cd TS/FracDiff; $(MAKE) $(MAKEFLAGS) depend)
+	(cd $(HTS_DEP)/$(HFD_DEP); $(MAKE) $(MAKEFLAGS) RPS_DIR=$(RPS_DIR) depend)
 
 force: ;

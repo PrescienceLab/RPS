@@ -28,7 +28,7 @@ double EstimateTau(double sample_period, double sample_interval)
 #endif
   ApplyLoad(1.0,sample_period);
   GetCurrentTime(&inittime);
-  getloadavg(&initload,1);
+  RPSgetloadavg(&initload,1);
   prevload=initload;
   prevtime=inittime;
   compare=(1/exp(1))*initload;
@@ -38,7 +38,7 @@ double EstimateTau(double sample_period, double sample_interval)
   for (i=1;i<numsamples;i++) {
     Sleep(sample_interval);
     GetCurrentTime(&curtime);
-    getloadavg(&curload,1);
+    RPSgetloadavg(&curload,1);
     if (curload <= compare) {
       double timetoprev,timetocur,frac,est;
       

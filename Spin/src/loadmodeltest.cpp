@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
   while (totalt<comptime) {
     TimeStamp start(0);
-    getloadavg(avgs,3);
+    RPSgetloadavg(avgs,3);
     s.SpinFor(delta,wall,sys,usr);
     syst+=sys;
     usrt+=usr;

@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
       for (j=0;j<=((int)requestlevel);j++) {
 	read(inpipes[j],&rc,1);
       }
-      getloadavg(&curloadavg,1);
+      RPSgetloadavg(&curloadavg,1);
       error=curloadavg-desiredlevel;
       sum+=error;
       sum2+=(error*error);
