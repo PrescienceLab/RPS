@@ -5,6 +5,10 @@
 #include <strings.h>
 #endif
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+#define bcopy(from,to,bytes) memcpy(to,from,bytes);
+#endif
+
 #include "PredComp.h"
 
 
@@ -62,4 +66,5 @@ int main()
 	  NUMBYTES/((double)stoploop-(double)startloop),
 	  NUMBYTES/((double)stopmemcpy-(double)startmemcpy),
 	  NUMBYTES/((double)stopbcopy-(double)startbcopy));
+  return 0;
 }

@@ -111,5 +111,6 @@ int main(int argc, char *argv[])
   }
 
   pred.Run();
+  return 0;
 }
 

@@ -37,6 +37,15 @@ void usage()
 }
 
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+int main()
+{
+	fprintf(stderr,"predserver is not currently available on the windows native build of RPS.\n");
+	return -1;
+}
+
+#else
+
 class Prediction {
 public:
   static int RestartChild() {
@@ -336,5 +345,8 @@ int main(int argc, char *argv[])
 
   fprintf(stderr,"predserver running.\n");
   mirror.Run();
+  return 0;
 }
 
+
+#endif

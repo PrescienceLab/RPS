@@ -35,4 +35,5 @@ int main(int argc, char *argv[])
 
   fprintf(stderr,"predbuffer running.\n");
   mirror.Run();
+  return 0;
 }

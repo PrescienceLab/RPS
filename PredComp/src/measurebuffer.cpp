@@ -37,4 +37,5 @@ int main(int argc, char *argv[])
 
   fprintf(stderr,"measurebuffer running.\n");
   mirror.Run();
+  return 0;
 }

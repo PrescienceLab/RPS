@@ -148,5 +148,6 @@ int main(int argc, char *argv[])
 
   CHK_DEL(model);
   CHK_DEL(pred);
+  return 0;
 }
 

@@ -102,4 +102,5 @@ int main(int argc, char *argv[])
    }
 
    ref.Disconnect();
+   return 0;
 }

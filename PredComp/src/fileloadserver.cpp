@@ -199,5 +199,6 @@ int main(int argc, char *argv[])
   }
   fprintf(stderr,"fileloadserver running.\n");
   server->Run();
+  return 0;
 }
 

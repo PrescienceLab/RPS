@@ -1,13 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
 #include <assert.h>
-#include <sys/resource.h>
 #include <math.h>
+#include <sys/select.h>
+#include <unistd.h>
 
 #include "random.h"
 

@@ -1,0 +1,1034 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "GetFlowBW"=".\Sensors\GetFlowBW\GetFlowBW.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "GetLoadAvg"=".\Sensors\GetLoadAvg\GetLoadAvg.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "Mirror"=".\Mirror\Mirror.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "RPSInterface"=".\RPSInterface\RPSInterface.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "RemosInterface"=".\RemosInterface\RemosInterface.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "TimeSeries"=".\TimeSeries\TimeSeries.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "crossval_generic"=".\TimeSeries\crossval_generic.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "evalfit"=".\PredComp\evalfit.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "evaluate"=".\TimeSeries\evaluate.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "fileloadserver"=".\PredComp\fileloadserver.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "flowbw2measure"=".\PredComp\flowbw2measure.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "flowbwbuffer"=".\PredComp\flowbwbuffer.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "flowbwbufferclient"=".\PredComp\flowbwbufferclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "flowbwclient"=".\PredComp\flowbwclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "flowbwreconfig"=".\PredComp\flowbwreconfig.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "gfnn"=".\TimeSeries\gfnn.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "impulseresp"=".\TimeSeries\impulseresp.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "load2measure"=".\PredComp\load2measure.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "loadbuffer"=".\PredComp\loadbuffer.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "loadbufferclient"=".\PredComp\loadbufferclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "loadclient"=".\PredComp\loadclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "loadlatclient"=".\PredComp\loadlatclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "loadreconfig"=".\PredComp\loadreconfig.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "loadserver"=".\PredComp\loadserver.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "measurebuffer"=".\PredComp\measurebuffer.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "measurebufferclient"=".\PredComp\measurebufferclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "measureclient"=".\PredComp\measureclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "memperf"=".\PredComp\memperf.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mi"=".\TimeSeries\mi.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "pred_reqresp_client"=".\PredComp\pred_reqresp_client.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "pred_reqresp_server"=".\PredComp\pred_reqresp_server.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predbuffer"=".\PredComp\predbuffer.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predbufferclient"=".\PredComp\predbufferclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predclient"=".\PredComp\predclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predlatclient"=".\PredComp\predlatclient.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predreconfig"=".\PredComp\predreconfig.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predserver"=".\PredComp\predserver.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "predserver_core"=".\PredComp\predserver_core.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RemosInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name RPSInterface
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_generic"=".\TimeSeries\test_generic.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_getflowbw"=".\Sensors\GetFlowBW\test_getflowbw.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetFlowBW
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "test_getloadavg"=".\Sensors\GetLoadAvg\test_getloadavg.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name GetLoadAvg
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ts_example"=".\TimeSeries\ts_example.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TimeSeries
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 
   fprintf(stderr,"load2measure running.\n");
   mirror.Run();
+  return 0;
 }
 
 

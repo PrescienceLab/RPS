@@ -1,7 +1,9 @@
 #ifndef _predcomp_env
 #define _predcomp_env
 
+#if defined(WIN32) && !defined(__CYGWIN__)
 #pragma warning( disable: 4786)  //stop msvc from spewing crap about long template instaniations
+#endif
 
 #include "Sensors.h"
 #include "TimeSeries.h"

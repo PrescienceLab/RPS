@@ -1,9 +1,6 @@
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/time.h>
 #include <errno.h>
-#include <sys/select.h>
 
 #include "PredComp.h"
 

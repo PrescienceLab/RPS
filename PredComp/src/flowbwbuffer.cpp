@@ -36,4 +36,5 @@ int main(int argc, char *argv[])
 
   fprintf(stderr,"flowbuffer running.\n");
   mirror.Run();
+  return 0;
 }

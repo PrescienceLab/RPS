@@ -1,4 +1,5 @@
 #include "Spin.h"
+#include <sys/resource.h>
 
 SpinRequest::SpinRequest(int tag, double secs)
 {
@@ -136,8 +137,6 @@ int SpinCompute::Compute(const SpinRequest &req, SpinReply &repl)
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <unistd.h>
 #include <iostream.h>
 #include <sys/types.h>
