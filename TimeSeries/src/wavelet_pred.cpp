@@ -20,15 +20,10 @@
 void usage() 
 {
    fprintf(stderr,
-      "wavelet_pred [inputfile]  [REFIT interval] \n"
-      "                                                 MEAN\n"
-      "                                               | LAST\n"
-      "                                               | AR [p]\n"
-      "                                               | MA [q]\n"
-      "                                               | ARMA [p] [q]\n"
-      "                                               | ARIMA [p] [d] [q]\n"
-      "                                               | ARFIMA [p] [d] [q]\n"
-      "                                               | BM [p] \n"   );
+	   "wavelet_pred [inputfile]  [model]\n");
+   char *s=GetAvailableModels();
+   fprintf(stderr,s);
+   delete [] s;
 }
 
 

@@ -11,6 +11,8 @@
 
 struct ModelTemplate;
 
+char *GetAvailableModels();
+
 ModelTemplate *ParseModel(int argc, char *argv[]);
 ModelTemplate *ParseModel(char *buf);
 

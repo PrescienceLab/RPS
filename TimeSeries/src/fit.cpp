@@ -19,6 +19,7 @@
 #include "arima.h"
 #include "arfima.h"
 #include "bestmean.h"
+#include "bestmedian.h"
 #include "none.h"
 #include "mean.h"
 #include "last.h"
@@ -249,6 +250,53 @@ int ModelTemplate::_Unpack(ByteStream &bs)
   return 0;
 }
 
+char *GetAvailableModels()
+{
+  char *s = new char [10000];
+
+  snprintf(s,10000,
+	   "A Model is in the form [optional modifier] [required underlying model]\n\n"
+	   "Optional Modifiers That Affect Predictors Produced From the Underlying Model\n"
+	   "----------------------------------------------------------------------------\n"
+	   "REFIT r\n"
+	   " predictor will refit itself every r data elements\n"
+	   "AWAIT a\n"
+	   " predictor will wait for a data elements before fitting\n"
+	   "MANAGED a r m e v\n"
+	   " predictor will wait for a data elements before fitting\n"
+	   " predictor will refit after r data elements\n"
+	   " predictor will refit if, after m samples, the relative error of one-step\n"
+	   "  ahead predictions exceeds e (avg(abs(obs-pred)/abs(pred)) > e)\n"
+	   " predictor will refit if, after m samples, the actual error variance of\n"
+	   "  one-step ahead predictions exceeds their predicted variance by \n"
+	   "  a factor of v (variance(error)/predictedvariance > v)\n"
+	   "\n"
+	   "Underlying Models\n"
+	   "-----------------\n"
+	   "MEAN\n"
+	   " Long-term mean\n"
+	   "LAST\n"
+	   " Last value seen\n"
+	   "BM p | BESTMEAN p\n"
+	   " Windowed average, window length chosen to minimize msqerr\n"
+	   "BMED p | BESTMEDIAN p\n"
+	   " Windowed median, window length chosen to minimize msqerr\n"
+	   "AR p\n"
+	   " Autoregressive model of order p\n"
+	   "MA q\n"
+	   " Moving average model of order q\n"
+	   "ARMA p q\n"
+	   " Autoregressive moving average model of order p+q\n"
+	   "ARIMA p d q\n"
+	   " Autoregressive integrated moving average model of order p+q with\n"
+	   "  d-order difference\n"
+	   "ARFIMA p d q\n"
+	   " Fractionally integrated ARIMA model of order p+q.  d is ignored and\n"
+	   "  and determined by the model fitting process\n\n" );
+  return s;
+}
+	   
+
 Model *FitThis(ModelType mclass,
 	       double *seq,
 	       int numsamples,
@@ -272,6 +320,9 @@ Model *FitThis(ModelType mclass,
      break;
    case BESTMEAN:
      return BestMeanModeler::Fit(seq,numsamples,params);
+     break;
+   case BESTMEDIAN:
+     return BestMedianModeler::Fit(seq,numsamples,params);
      break;
    case MEAN:
      return MeanModeler::Fit(seq,numsamples,params);
@@ -325,6 +376,9 @@ Model *FitThis(ModelType mclass,
    case BESTMEAN:
      return RefittingModeler<BestMeanModeler>::Fit(seq,numsamples,params,refitinterval);
      break;
+   case BESTMEDIAN:
+     return RefittingModeler<BestMedianModeler>::Fit(seq,numsamples,params,refitinterval);
+     break;
    case MEAN:
      return RefittingModeler<MeanModeler>::Fit(seq,numsamples,params,refitinterval);
      break;
@@ -341,8 +395,7 @@ Model *FitThis(ModelType mclass,
 
 
 Model *FitThis(ModelType mclass,
-	       double *seq, int numsamples, 
-	       int p, double d, int q, int refitinterval)
+	       double *seq, int numsamples, 	       int p, double d, int q, int refitinterval)
 {
   RefittingPDQParameterSet ps(p,(int)d,q,refitinterval);
   return FitThis(mclass,seq,numsamples,ps);
@@ -372,6 +425,9 @@ Model *FitThis(ModelType mclass,
      break;
    case BESTMEAN:
      return AwaitingModeler<BestMeanModeler>::Fit(params,await);
+     break;
+   case BESTMEDIAN:
+     return AwaitingModeler<BestMedianModeler>::Fit(params,await);
      break;
    case MEAN:
      return AwaitingModeler<MeanModeler>::Fit(params,await);
@@ -429,6 +485,9 @@ Model *FitThis(ModelType mclass,
      break;
    case BESTMEAN:
      return ManagedModeler<BestMeanModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
+     break;
+   case BESTMEDIAN:
+     return ManagedModeler<BestMedianModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
      break;
    case MEAN:
      return ManagedModeler<MeanModeler>::Fit(params,await,refit,mintest,errlimit,varlimit);
@@ -534,6 +593,15 @@ ModelTemplate *ParseModel(int argc, char *argv[])
       }
       p=atoi(argv[first_model+1]);
       mclass=BESTMEAN;
+      goto done;
+   }
+  if (!strcasecmp(argv[first_model],"BESTMEDIAN") ||
+      !strcasecmp(argv[first_model],"BMED") ) {
+      if (argc!=first_model+2) {
+	return 0;
+      }
+      p=atoi(argv[first_model+1]);
+      mclass=BESTMEDIAN;
       goto done;
    }
   if (!strcasecmp(argv[first_model],"NONE")) {
@@ -732,7 +800,10 @@ char *ModelTemplate::GetName() const
     sprintf(&(name[strlen(name)]), "MEAN");
     break;
   case BESTMEAN:
-    sprintf(&(name[strlen(name)]), "BM(%d)",p);
+    sprintf(&(name[strlen(name)]), "BESTMEAN(%d)",p);
+    break;
+  case BESTMEDIAN:
+    sprintf(&(name[strlen(name)]), "BESTMEDIAN(%d)",p);
     break;
   case AR:
     sprintf(&(name[strlen(name)]), "AR(%d)",p);

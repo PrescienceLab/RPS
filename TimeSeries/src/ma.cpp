@@ -9,7 +9,9 @@ extern "C" {
 #include "nr.h"
 #include "nrutil.h"
 }
-
+#else 
+#include "nr-internal.h"
+using namespace nrc;
 #endif
 
 #include "pdqparamsets.h"
@@ -278,10 +280,6 @@ double MAUnConditionalSumOfSquares(double *seq, int len,
 
 MAModel *MAModeler::Fit(double *seq, int len, int maxord)
 {
-#ifndef HAVE_NUMERICAL_RECIPES
-  fprintf(stderr,"Attempt to fit MA model with no numerical recipes.\n");
-  return (MAModel *) 0;
-#else
   int i,j;
   float *p = vector(1,maxord);
   float **xi = matrix(1,maxord,1,maxord);
@@ -357,19 +355,13 @@ MAModel *MAModeler::Fit(double *seq, int len, int maxord)
 
   return model;
 #endif
-#endif //HAVE_NUMERICAL_RECIPES
 }
 
 // NOTE: DO NOT USE THIS
 MAModel *MAModeler::Fit(double mean, double *acovf, int len, int maxord)
 {
-#ifndef HAVE_NUMERICAL_RECIPES
-  fprintf(stderr,"Attempt to fit MA model with no numerical recipes.\n");
-  return (MAModel*) 0;
-#else 
   MAModel *model;
   int i,j,k;
-  double akk;
 
   if (len<=0 || len<maxord) { 
     return 0;	
@@ -434,7 +426,6 @@ MAModel *MAModeler::Fit(double mean, double *acovf, int len, int maxord)
   }
   CHK_DEL_MAT(omega);
   return model;
-#endif //HAVE_NUMERICAL_RECIPES
 }
 			  
 

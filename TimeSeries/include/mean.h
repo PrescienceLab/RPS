@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "abstract.h"
-#include "etathetapred.h"
 
 // last value is next value
 

@@ -10,6 +10,9 @@ extern "C" {
 #include "nr.h"
 #include "nrutil.h"
 }
+#else
+#include "nr-internal.h"
+using namespace nrc;
 #endif //HAVE_NUMERICAL_RECIPES
 
 ARMAModel::ARMAModel()
@@ -284,10 +287,6 @@ float  ARMAConditionalSumOfSquaresWrapper(float p[])
 				   
 ARMAModel *ARMAModeler::Fit(double *seq, int len, int P, int Q)
 {
-#ifndef HAVE_NUMERICAL_RECIPES
-  fprintf(stderr,"Attempt to fit ARMA model with no numerical recipes.\n");
-  return (ARMAModel *) 0;
-#else
   int numparam = P+Q;
   int i,j;
   float *p = vector(1,numparam);
@@ -374,20 +373,14 @@ ARMAModel *ARMAModeler::Fit(double *seq, int len, int P, int Q)
   return model;
 #endif
 
-#endif //HAVE_NUMERICAL_RECIPES
-
 }
 
 // NOTE: DO NOT USE THIS
 ARMAModel *ARMAModeler::Fit(double mean, double *acovf, int len, 
 			    int P, int Q)
 {
-#ifndef HAVE_NUMERICAL_RECIPES
-  return (ARMAModel*)0;
-#else
   ARMAModel *model;
   int i,j,k;
-  double akk;
 
   if (len<=0 || len<(P+Q+1)) { 
     return 0;	
@@ -457,7 +450,6 @@ ARMAModel *ARMAModeler::Fit(double mean, double *acovf, int len,
   delete mamodel;
   CHK_DEL_MAT(omega);
   return model;
-#endif //HAVE_NUMERICAL_RECIPES
 }
 
 

@@ -13,7 +13,8 @@ enum ModelType {NONE=0,
 		MA=5,	
 		ARMA=6, 
 		ARIMA=7, 
-		ARFIMA=8};
+		ARFIMA=8,
+		BESTMEDIAN=9};
 
 enum ParameterSetType {PDQ, RefittingPDQ, AwaitingPDQ, ManagedPDQ};
 

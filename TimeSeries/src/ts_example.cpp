@@ -20,17 +20,11 @@
 void usage() 
 {
    fprintf(stderr,
-      "example [inputfile] [fitfirst] [fitnum] [testnum] [numahead] [REFIT interval] \n"
-      "                                                 MEAN\n"
-      "                                               | LAST\n"
-      "                                               | AR [p]\n"
-      "                                               | MA [q]\n"
-      "                                               | ARMA [p] [q]\n"
-      "                                               | ARIMA [p] [d] [q]\n"
-      "                                               | ARFIMA [p] [d] [q]\n"
-      "                                               | BM [p] \n"   );
+	   "ts_example [inputfile] [fitfirst] [fitnum] [testnum] [numahead] [Model]\n");
+   char *s=GetAvailableModels();
+   fprintf(stderr,s);
+   delete [] s;
 }
-
 
 
   
@@ -218,7 +212,7 @@ int main(int argc, char *argv[])
      pred->Predict(numahead,predictions);
      // We could step the prediction to the evaluator here
      eval.Step(seq[i],predictions);
-     fprintf(stdout,"%d",i);
+     fprintf(stdout,"%d\t%f",i,seq[i]);
      for (j=0;j<numahead;j++) {
        fprintf(stdout,"\t%f",predictions[j]);
      }
