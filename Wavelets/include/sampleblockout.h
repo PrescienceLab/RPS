@@ -8,19 +8,27 @@
 #include "sampleout.h"
 #include "util.h"
 
-class SampleBlockOut {
+template <class structType>
+class OutputSampleBlock {
 private:
-  vector<SampleOut> coefs;
+  structType coefs;
 
 public:
-  SampleBlockOut();
-  SampleBlockOut(const SampleBlockOut &rhs);
-  SampleBlockOut(vector<SampleOut> &coefs);
-  virtual ~SampleBlockOut();
+  OutputSampleBlock() : coefs() {};
+  OutputSampleBlock(const OutputSampleBlock &rhs) {
+    coefs = rhs.coefs;
+  };
+  OutputSampleBlock(structType &coefs) {
+    this->coefs = coefs;
+  };
+  virtual ~OutputSampleBlock() {};
 
-  SampleBlockOut & operator=(const SampleBlockOut &rhs);
+  OutputSampleBlock & operator=(const OutputSampleBlock &rhs) {
+    coefs = rhs.coefs;
+  };
 
-  void AddCoefs(vector<SampleOut> &coefs);
+  virtual void SetCoefs(structType &coefs)=0;
+  virtual void GetCoefs(structType &buf)=0;
   const unsigned GetBlockSize();
 
   ostream & Print(ostream &os) const;

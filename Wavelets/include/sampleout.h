@@ -4,25 +4,36 @@
 #include <iostream>
 #include "util.h"
 
-class SampleOut {
+template <class sampleType>
+class OutputSample {
 private:
-  double coef;
-  int    level;
+  sampleType coef;
+  int        level;
 
 public:
-  SampleOut();
-  SampleOut(const SampleOut &rhs);
-  SampleOut(double coef, int level);
-  virtual ~SampleOut();
+  OutputSample() : coef(0), level(-1) {};
+  OutputSample(const OutputSample &rhs) {
+    coef = rhs.coef;
+    level = rhs.level;
+  };
+  OutputSample(double coef, int level) {
+    this->coef = coef;
+    this->level = level;
+  };
+  virtual ~OutputSample() {};
 
-  SampleOut & operator=(const SampleOut &rhs);
+  OutputSample & operator=(const OutputSample &rhs) {
+    coef = rhs.coef;
+    level = rhs.level;
+    return *this;
+  };
 
-  inline void SetSampleOutValue(double coef);
-  double GetSampleOutValue();
-  inline void SetSampleOutLevel(int level);
-  inline int GetSampleOutLevel();
+  virtual inline void SetOutputSampleValue(sampleType coef)=0;
+  virtual inline sampleType GetOutputSampleValue()=0;
+  virtual inline void SetOutputSampleLevel(int level)=0;
+  virtual inline int GetOutputSampleLevel()=0;
 
-  ostream & Print(ostream &os) const;
+  ostream & Print(ostream &os) const=0;
 };
 
 #endif

@@ -3,14 +3,20 @@
 
 #include "util.h"
 
-template <sampleType>
+template <class sampleType>
 class InputSample {
-public:
-  Sample();
-  Sample(const Sample &rhs);
-  virtual ~Sample();
+protected:
+  sampleType value;
 
-  virtual Sample & operator=(const Sample &rhs)=0;
+public:
+  InputSample() : value(0) {};
+  inline InputSample(const InputSample &rhs) { value = rhs.value;};
+  virtual ~InputSample() {};
+
+  InputSample & operator=(const InputSample &rhs) {
+    value = rhs.value;
+    return *this;
+  };
 
   virtual void SetSampleValue(sampleType sample)=0;
   virtual sampleType GetSampleValue()=0;
