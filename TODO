@@ -1,34 +1,46 @@
 Sensors
 
 Wavelets
+  => Give peter copy of compression paper
+  => URL for tsunami bannder (tsunami.cs.northwestern.edu)
+  => Web page!
+  => TR
   => Jason
+  => Discrete reverse
   => ostream bug with newest g++ compiler.
 
 TimeSeries
   => Wavelet Predictor (sanity check)
+      We don't know yet whether there is any more efficient way to do 
+      multistep predictions than just instantiating the structure repeatedly
+      currently, the predictor is simply the code that we used in the delay
+      amelioration experiments.
 
 Add RPS Banner to all codes
+  => perl scripts
 
 PredComp
   => New tools
     => Low pass (Measurement->Measurement
-    => look at wavelet_streaming_denoise
+    => look at wavelet_streaming_denoise 
     => Wavelet tools to build
       => wavelet_interval_query
       => wavelet_reqresp_server
-            Written, compiled, but buggy.  Looks like discrete transforms could also use some work.
-            After above converters are written, fixing this should be easy.
-      => move generate*delay, etc from ResearchTools/ and ResarchTools/scripts to Wavelets
-      => Fix wavelet_reqresp_server - discrete wavelet transform
-
+            Works for forward.  Reverse waiting on tsunami bug.
+            We believe it will work for reverse
 
 Windows build env
+  => Decided to only support cygwin
   => Add new components
      PredComp/wavelet*.cpp; 
    
 Test
-  => build on windows, cygwin, linux, 
+  => build on  cygwin, linux, 
 
 
 Include Windows GUI?
+  => No
+
+Include Web interface?
+  => ?
 

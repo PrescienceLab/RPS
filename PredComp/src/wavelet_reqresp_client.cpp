@@ -11,7 +11,7 @@ void usage(const char *n)
 
   fprintf(stdout, 
 	  "Client for one-off wavelet transforms\n\n"
-	  "usage: %s client wavelettype forward|reverse details|approx  inputfile\n\n"
+	  "usage: %s client wavelettype forward|reverse details|approx|transform  inputfile\n\n"
 	  "client                    = client endpoint for server\n"
 	  "wavelettype               = wavelet type to use\n"
           "forward|reverse           = direction of transform\n"
@@ -118,8 +118,10 @@ int main(int argc, char *argv[])
        fprintf(stderr,"Warning: number of samples is not a power of two.\n");
        fprintf(stderr,"         Only the first %d samples will be used.\n",numsamples);
      }
+     if (wtype==WAVELET_DOMAIN_TRANSFORM) { req.ttype.rinfoout.levels++; }
      req.block.Resize(numsamples);
      memcpy(req.block.series,temp,sizeof(double)*numsamples);
+	 
    } else {
      req.ttype.direction=WAVELET_REVERSE;
      req.ttype.rinfoin=WaveletRepresentationInfo(wtype,DAUB2,0,1);
@@ -133,6 +135,7 @@ int main(int argc, char *argv[])
        fprintf(stderr,"Warning: number of samples is not a power of two.\n");
        fprintf(stderr,"         Only the first %d samples will be used.\n",numsamples);
      }
+     if (wtype==WAVELET_DOMAIN_TRANSFORM) { req.ttype.rinfoout.levels++; }
      req.block.Resize(numsamples);
      memcpy(req.block.series,temp,sizeof(double)*numsamples);
    }

@@ -32,14 +32,14 @@ typedef WaveletOutputSample<double> WOSD;
 // output is the approximations and details
 // breadth-first traversal of wavelet details/approxs
 // DC|top-level|top-level-1-left-to-right|...
-int WaveletForwardDiscreteTransform(const WaveletType               wtype,
-				    const WaveletRepresentationType rtype,
-				    const double  *input,
-				    const unsigned num,
-				    double        *output)
+//
+static int WaveletForwardDiscreteTransform(const WaveletType               wtype,
+					   const WaveletRepresentationType rtype,
+					   const double  *input,
+					   const unsigned num,
+					   double        *output,
+					   unsigned *numlevels)
 {
-  unsigned numlevels = (unsigned) LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
-
   // assume that the input block is time domain and make a sampleblock from it
   SampleBlock<WISD> inblock;
   for (unsigned i=0;i<num;i++) {
@@ -65,18 +65,10 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
     assert(0);
   }
 
-  unsigned n = outblock.GetBlockSize();
+  *numlevels = outblock.GetNumberLevels();
 
-#if 0
-  // FX
-  for (unsigned i=0, level=numlevels-1;level>=0;level--) { 
-    deque<WOSD> levelout;
-    outblock.GetSamplesAtLevel(levelout,level);
-    for (;i<pow;i++) {
-      output[i]=levelout[i];
-    }
-  }
-#endif
+  // this assumes that the samples will be delivered in preorder
+  outblock.GetSamples(output);
 
   return 0;
 }
@@ -89,11 +81,11 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 // breadth-first traversal of wavelet details/approxs
 // DC|top-level|top-level-1-left-to-right|...
 // Either of approximations or details can be empty
-int WaveletReverseDiscreteTransform(const WaveletType               wtype,
-				    const WaveletRepresentationType rtype,
-				    const double *input,
-				    const unsigned num,
-				    double        *output)
+static int WaveletReverseDiscreteTransform(const WaveletType               wtype,
+					   const WaveletRepresentationType rtype,
+					   const double *input,
+					   const unsigned num,
+					   double        *output)
 {
   // assume that the input block is time domain and make a sampleblock from it
   DiscreteWaveletOutputSampleBlock<WOSD> inblock;
@@ -102,42 +94,16 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
 
   SampleBlock<WISD> outblock;
 
-  unsigned numlevels = (unsigned) LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
+  inblock.SetSamples(input,num);
 
-  unsigned curlevel;
-
-#if 0 // FIX
-  for (unsigned i=0, level=numlevels-1;level>=0;level--) { 
-    deque<WOSD> levelout;
-    for (;;i++) {
-      levelout[i]=input[i];
-    }
-    outblock.GetSamplesAtLevel(levelout,level);
-  }
-#endif
-
-  for (unsigned i=0,prevpow2=0,nextpow2=1;i<num;i++) {
-    //
-    // PROBABLY WRONG
-    //
-    inblock.PushSampleBack(WOSD(input[i],curlevel,i-prevpow2));
-    if ((i+1)==nextpow2) {
-      curlevel--;
-      prevpow2=nextpow2;
-      nextpow2*=2;
-    }
-  }
-  
 
   switch (rtype) {
-#if 0
   case WAVELET_DOMAIN_DETAIL:
-    trans.InverseDiscreteWaveletDetailOperation(outblock,inblock);
+    assert(1);
     break;
   case WAVELET_DOMAIN_APPROX:
-    trans.InverseDiscreteWaveletApproxOperation(outblock,inblock);
+    assert(1);
     break;
-#endif
   case WAVELET_DOMAIN_TRANSFORM:
     trans.DiscreteWaveletTransformOperation(outblock,inblock);
     break;
@@ -145,11 +111,8 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
     assert(0);
   }
 
-  unsigned n = outblock.GetBlockSize();
+  outblock.GetSamples(output);
 
-  for (unsigned i=0;i<MIN(num,n);i++) {
-    output[i]=outblock[i].GetSampleValue();
-  }
   return 0;
 }
 
@@ -189,9 +152,8 @@ public:
 				      resp.ttype.rinfoout.rtype,
 				      req.block.series,
 				      req.block.serlen,
-				      resp.block.series);
-
-      resp.ttype.rinfoout.levels=(unsigned)LOG2(req.block.serlen) + 1 ;
+				      resp.block.series,
+				      &(resp.ttype.rinfoout.levels));
 
       resp.block.timestamp=resp.timeout=TimeStamp();
       
