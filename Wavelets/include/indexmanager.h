@@ -41,6 +41,10 @@ public:
     index_set=true;
   };
 
+  inline unsigned GetIndex() {
+    return index;
+  };
+
   ostream & Print(ostream &os) const {
     os << "IndexInitialized? " << index_set << endl;
     os << "Index: " << index << endl;

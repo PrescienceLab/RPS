@@ -13,17 +13,15 @@ WaveletOutputSample::WaveletOutputSample() :
 }
 
 WaveletOutputSample::WaveletOutputSample(const WaveletOutputSample &rhs) :
-  OutputSample<double>(rhs), level(rhs.level), index(rhs.index)
+  OutputSample<double>(rhs), level(rhs.level)
 {
 }
 
 WaveletOutputSample::WaveletOutputSample
-(const double value, const int level, const int index)
-  //  OutputSample<double>(value)
+(const double value, const int level, const unsigned index) :
+  OutputSample<double>(value,index)
 {
-  this->value = value;
   this->level = level;
-  this->index = index;
 }
 
 WaveletOutputSample::~WaveletOutputSample()
@@ -42,7 +40,6 @@ WaveletOutputSample & WaveletOutputSample::operator=(const WaveletOutputSample &
 {
   this->Sample<double>::operator=(rhs);
   this->level = rhs.level;
-  this->index = rhs.index;
   return *this;
 }
 
@@ -54,14 +51,4 @@ void WaveletOutputSample::SetSampleLevel(int level)
 int WaveletOutputSample::GetSampleLevel() const
 {
   return level;
-}
-
-void WaveletOutputSample::SetSampleIndex(int index)
-{
-  this->index = index;
-}
-
-int WaveletOutputSample::GetSampleIndex() const
-{
-  return index;
 }

@@ -14,6 +14,12 @@ WaveletInputSampleBlock::WaveletInputSampleBlock
 {
 }
 
+WaveletInputSampleBlock::WaveletInputSampleBlock
+(const vector<WaveletInputSample> &input, const unsigned index) : 
+  InputSampleBlock<WaveletInputSample>(input,index)
+{
+}
+
 WaveletInputSampleBlock::WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs) :
   InputSampleBlock<WaveletInputSample>(rhs)
 {

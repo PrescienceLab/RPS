@@ -177,7 +177,7 @@ public:
 
   // Takes two inputs and produces a vector of outputs, depending on upsample
   //  rates
-  bool PerformSampleOperation(vector<OUTSAMPLE> &out,
+  bool PerformSampleOperation(vector<OUTSAMPLE>  &out,
 			      Sample<SAMPLETYPE> &in_l,
 			      Sample<SAMPLETYPE> &in_h);
 

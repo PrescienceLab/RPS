@@ -10,22 +10,31 @@ template <class SAMPLETYPE>
 class SampleBlock {
 protected:
   vector<SAMPLETYPE> samples;
+  unsigned           blockindex;
 
 public:
-  SampleBlock() {};
+  SampleBlock(const unsigned blockindex=0) { this->blockindex = blockindex; };
 
   SampleBlock(const SampleBlock &rhs) {
     samples = rhs.samples;
+    blockindex = rhs.blockindex;
   };
 
   SampleBlock(const vector<SAMPLETYPE> &input) {
     samples = input;
+    blockindex = 0;
+  };
+
+  SampleBlock(const vector<SAMPLETYPE> &input, const unsigned blockindex) {
+    samples = input;
+    this->blockindex = blockindex;
   };
 
   virtual ~SampleBlock() {};
   
   virtual SampleBlock & operator=(const SampleBlock &rhs) {
     samples = rhs.samples;
+    blockindex = rhs.blockindex;
     return *this;
   };
 
@@ -55,21 +64,29 @@ public:
     return *this;
   };
     
-  void SetSamples(const vector<SAMPLETYPE> &input) {
+  inline void SetSamples(const vector<SAMPLETYPE> &input) {
     samples = input;
   };
 
-  void GetSamples(vector<SAMPLETYPE> &buf) const {
+  inline void GetSamples(vector<SAMPLETYPE> &buf) const {
     buf = samples;
   };
 
-  void SetSample(SAMPLETYPE &input) {
+  inline void SetSample(SAMPLETYPE &input) {
     samples.push_back(input);
   };
 
-  void GetSample(SAMPLETYPE *samp, unsigned i) const {
+  inline void GetSample(SAMPLETYPE *samp, unsigned i) const {
     if (i < samples.size())
       *samp = samples[i];
+  };
+
+  inline void SetBlockIndex(const unsigned index) {
+    this->blockindex = index;
+  };
+
+  inline unsigned GetBlockIndex() {
+    return blockindex;
   };
 
   void AppendBlock(SampleBlock &block) {
@@ -80,11 +97,11 @@ public:
     }
   };
 
-  void ClearBlock() {
+  inline void ClearBlock() {
     samples.clear();
   };
 
-  unsigned GetBlockSize() const {
+  inline unsigned GetBlockSize() const {
     return samples.size();
   };
 
@@ -112,6 +129,8 @@ public:
     SampleBlock<SAMPLETYPE>(rhs) {};
   InputSampleBlock(const vector<SAMPLETYPE> &input) : 
     SampleBlock<SAMPLETYPE>(input) {};
+  InputSampleBlock(const vector<SAMPLETYPE> &input, const unsigned index) :
+    SampleBlock<SAMPLETYPE>(input,index) {};
   virtual ~InputSampleBlock() {};
 };
 
@@ -123,6 +142,8 @@ public:
     SampleBlock<SAMPLETYPE>(rhs) {};
   OutputSampleBlock(const vector<SAMPLETYPE> &input) : 
     SampleBlock<SAMPLETYPE>(input) {};
+  OutputSampleBlock(const vector<SAMPLETYPE> &input, const unsigned index) : 
+    SampleBlock<SAMPLETYPE>(input,index) {};
   virtual ~OutputSampleBlock() {};
 };
 

@@ -8,14 +8,20 @@ template <typename SAMPLETYPE>
 class Sample {
 protected:
   SAMPLETYPE value;
+  unsigned   index;
 
 public:
-  Sample(const SAMPLETYPE value=0) { this->value = value;};
-  inline Sample(const Sample &rhs) { value = rhs.value;};
+  Sample(const SAMPLETYPE value=0, const unsigned index=0) { 
+    this->value = value;
+    this->index = index;
+  };
+
+  inline Sample(const Sample &rhs) { value = rhs.value; index = rhs.index; };
   virtual ~Sample() {};
 
   virtual Sample<SAMPLETYPE> & operator=(const Sample &rhs) {
     value = rhs.value;
+    index = rhs.index;
     return *this;
   };
 
@@ -56,12 +62,19 @@ public:
     return value;
   };
 
+  virtual inline void SetSampleIndex(const unsigned index) { 
+    this->index = index; 
+  };
+
+  virtual inline unsigned GetSampleIndex() const {
+    return index;
+  };
+
   virtual void SetSampleLevel(int level) {};
   virtual int GetSampleLevel() const { return -1; };
 
-
   virtual ostream & Print(ostream &os) const {
-    os << value << endl;
+    os << "index:" << index << "\tvalue:" << value << endl;
     return os;
   };
 };
@@ -69,7 +82,8 @@ public:
 template <typename SAMPLETYPE>
 class InputSample : public Sample<SAMPLETYPE> {
 public:
-  InputSample(const SAMPLETYPE value=0) : Sample<SAMPLETYPE>(value) {};
+  InputSample(const SAMPLETYPE value=0, const unsigned index=0) : 
+    Sample<SAMPLETYPE>(value,index) {};
   InputSample(const InputSample &rhs) : Sample<SAMPLETYPE>(rhs) {};
   virtual ~InputSample() {};
 
@@ -84,7 +98,8 @@ public:
 template <typename SAMPLETYPE>
 class OutputSample : public Sample<SAMPLETYPE> {
 public:
-  OutputSample(const SAMPLETYPE value=0) : Sample<SAMPLETYPE>(value) {};
+  OutputSample(const SAMPLETYPE value=0, const unsigned index=0) : 
+    Sample<SAMPLETYPE>(value,index) {};
   OutputSample(const OutputSample &rhs) : Sample<SAMPLETYPE>(rhs) {};
   virtual ~OutputSample() {};
 };

@@ -9,12 +9,11 @@ typedef InputSample<double> WaveletInputSample;
 class WaveletOutputSample : public OutputSample<double> { 
 protected:
   int level;
-  int index;
 
 public:
   WaveletOutputSample();
   WaveletOutputSample(const WaveletOutputSample &rhs);
-  WaveletOutputSample(const double value, const int level, const int index);
+  WaveletOutputSample(const double value, const int level, const unsigned index);
   virtual ~WaveletOutputSample();
 
   virtual WaveletOutputSample & operator=(const Sample<double> &rhs);
@@ -22,11 +21,9 @@ public:
 
   virtual inline void SetSampleLevel(int level);
   virtual inline int GetSampleLevel() const;
-  virtual inline void SetSampleIndex(int index);
-  virtual inline int GetSampleIndex() const;
 
   virtual ostream & Print(ostream &os) const {
-    os << "level: " << level << "\tvalue: " << value << "\tindex: " << index << endl;
+    os << "index: " << index << "\tvalue: " << value << "\tlevel: " << level << endl;
     return os;
   };
 };

@@ -12,6 +12,8 @@ public:
   WaveletInputSampleBlock();
   WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs);
   WaveletInputSampleBlock(const vector<WaveletInputSample> &input);
+  WaveletInputSampleBlock(const vector<WaveletInputSample> &input, 
+			  const unsigned index);
   virtual ~WaveletInputSampleBlock();
   virtual WaveletInputSampleBlock* clone();
 };

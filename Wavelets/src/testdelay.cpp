@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
   // Create a delay block to delay the high frequency information
   unsigned wtcoefnum = numcoefs[type];
   int *delay = new int[numstages+1];
-  unsigned sample_backlog = 0; // Not expecting jitter
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
 
   // Print the delay components
@@ -95,7 +94,7 @@ int main(int argc, char *argv[])
   }
 
   DelayBlock<double, WaveletOutputSample, WaveletOutputSample>
-    dlyblk(numstages+1, delay, sample_backlog);
+    dlyblk(numstages+1, delay);
 
   // Create a buffer for the delay samples
   vector<WaveletOutputSample> delaysamples;

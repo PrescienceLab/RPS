@@ -2,6 +2,10 @@
 #define _jitter
 
 #include <iostream>
+#include <vector>
+
+#include "sample.h"
+#include "sampleblock.h"
 
 const unsigned DEFAULT_BACKLOG_THRESH=5;
 
@@ -10,37 +14,42 @@ const unsigned DEFAULT_BACKLOG_THRESH=5;
 //  system manageable.
 //--------------------------------------------------------------------
 class JitterHelper {
-private:
-  unsigned backlog_thresh;
-  unsigned current_backlog;
+protected:
+  unsigned backlog_thresh, current_backlog;
 
 public:
-  JitterHelper(unsigned backlog_thresh=DEFAULT_BACKLOG_THRESH) {
+  JitterHelper(const unsigned backlog_thresh=DEFAULT_BACKLOG_THRESH) {
     this->backlog_thresh = backlog_thresh;
-    current_backlog = 0;
   };
 
-  JitterHelper(const JitterHelper &rhs) :
-    backlog_thresh(rhs.backlog_thresh), current_backlog(rhs.current_backlog) {};
+  JitterHelper(const JitterHelper &rhs) {
+    this->backlog_thresh = rhs.backlog_thresh;
+    this->current_backlog = rhs.current_backlog;
+  };
 
   ~JitterHelper() {};
 
   JitterHelper & operator=(const JitterHelper &rhs) {
-    backlog_thresh = rhs.backlog_thresh;
-    current_backlog = rhs.current_backlog;
+    this->backlog_thresh = rhs.backlog_thresh;
+    this->current_backlog = rhs.current_backlog;
     return *this;
   };
 
+  // Sample operations
   inline unsigned GetBacklogThreshold() const {
     return backlog_thresh;
+  };
+
+  inline void SetBacklogThreshold(const unsigned backlog_thresh) {
+    this->backlog_thresh = backlog_thresh;
   };
 
   inline unsigned GetCurrentBacklog() const {
     return current_backlog;
   };
 
-  inline void SetBacklogThreshold(unsigned backlog_thresh) {
-    this->backlog_thresh = backlog_thresh;
+  inline void SetCurrentBacklog(const unsigned new_backlog) {
+    this->current_backlog = new_backlog;
   };
 
   inline void ClearCurrentBacklog() {
@@ -60,11 +69,53 @@ public:
   };
 
   ostream & Print(ostream &os) {
-    os << "Backlog threshold (in sample times): " << backlog_thresh << endl;
-    os << "Current backlog (in sample times):   " << current_backlog << endl;
+    os << "Backlog threshold (in samples): " << backlog_thresh << endl;
+    os << "Current backlog (in samples):   " << current_backlog << endl;
     return os;
   };
 };
 
-#endif
+const unsigned MAX_INDEX=4294967295;  // This is 2^32-1
 
+template <class INSAMPLE>
+class DefaultJitterAction {
+public:
+
+
+  // This default class simply zeros the missing samples - assumes samples
+  //  ordered by indices
+  static void CreateMissingSamples(unsigned current_index,
+				   vector<INSAMPLE> &buffer) {
+    unsigned i, j, gapsize;
+    unsigned sampleindex, index=current_index;
+
+    vector<INSAMPLE> zeros;
+    for (i=0; i<buffer.size(); i++, index++) {
+
+      sampleindex = buffer[i].GetSampleIndex();
+      if (sampleindex == index) {
+	index++;
+      } else if (sampleindex > index) {
+	gapsize = sampleindex - index - 1;
+	for (j=0; j<gapsize; j++) {
+	  index++;
+	  INSAMPLE zerosample;
+	  zerosample.SetSampleIndex(index);
+	  zeros.push_back(zerosample);
+	}
+      } else {
+	gapsize = MAX_INDEX - index;
+	for (j=0; j<gapsize; j++) {
+	  index++;
+	  INSAMPLE zerosample;
+	  zerosample.SetSampleIndex(index);
+	  zeros.push_back(zerosample);
+	}
+      }
+    }
+    // Merge the two vectors, zeros and buffer, in order of index (TODO)
+  
+  };
+};
+
+#endif

@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
   unsigned wtcoefnum = numcoefs[type];
   cout << "The number of levels: " << numstages+1 << endl;
   int *delay = new int[numstages+1];
-  unsigned backlog = 0; // Not expecting jitter
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
 
   // Print the delay components
@@ -96,12 +95,12 @@ int main(int argc, char *argv[])
 
   // Instantiate a delay block
   DelayBlock<double, WaveletOutputSample, WaveletOutputSample>
-    dlyblk(numstages+1, delay, backlog);
+    dlyblk(numstages+1, delay);
 
   // Instantiate a static forward wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
   StaticReverseWaveletTransform<double, WaveletInputSample, WaveletOutputSample>
-    srwt(numstages,wt,2,2,backlog);
+    srwt(numstages,wt,2,2);
 
 
   // Create result buffers
