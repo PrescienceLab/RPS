@@ -100,7 +100,7 @@ public:
   };
 
   virtual ostream & Print(ostream &os) const {
-    os << value;
+    os << value << endl;
     return os;
   };
 };
