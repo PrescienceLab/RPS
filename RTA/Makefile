@@ -48,8 +48,6 @@ endif
 
 EXECLIST = find_tau         \
            rta_play         \
-           test_pred        \
-           test_pred_vartau \
            test_rta
 
 APPOBJSLIST = $(EXECLIST:=.o)

@@ -78,9 +78,21 @@ else
   HRTSA_DEP =
 endif
 
+ifeq ($(HAVE_FINDER),YES)
+  HFIN_DEP = Finder
+else
+  HFIN_DEP =
+endif
+
+ifeq ($(HAVE_RESEARCHTOOLS),YES)
+  HRT_DEP = ResearchTools
+else
+  HRT_DEP =
+endif
+
 HSE_DEP = Sensors
 
-PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP)
+PROJS = $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) $(HREMOS_DEP) $(HPC_DEP) $(HJG_DEP) $(HSP_DEP) $(HT_DEP) $(HRTA_DEP) $(HRTSA_DEP) $(HFIN_DEP) $(HRT_DEP)
 
 all:  $(PROJS)
 
@@ -163,13 +175,25 @@ Trace: $(HGLA_DEP) $(HSP_DEP) force
 	cp `find $(TRACE_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp `find $(TRACE_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-RTA: $(HSP_DEP) $(HT_DEP) $(HPC_DEP) force
+RTA: $(HSP_DEP) $(HT_DEP) $(HPC_DEP) $(HFIN_DEP) force
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(RTA_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(RTA_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp `find $(RTA_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 RTSA: $(HRTA_DEP) force
+	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(RTSA_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(RTSA_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RTSA_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+Finder: $(HRPSI_DEP) $(HMT_DEP) force
+	cd $(FINDER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(FINDER_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(FINDER_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+#	cp `find $(FINDER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+
+ResearchTools: $(HRTSA_DEP) force
 	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(RTSA_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(RTSA_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -188,7 +212,9 @@ clean:
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
-	#cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(FINDER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
+	cd $(RESEARCHTOOLS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	rm -f `find $(RPS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS`
 	rm -f `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS`
 
@@ -205,6 +231,8 @@ depend:
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
-	#cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(FINDER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
+	cd $(RESEARCHTOOLS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend;
 
 force: ;

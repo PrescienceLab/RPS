@@ -84,6 +84,9 @@ HAVE_RTSA = NO
 # Whether to build the Component finder library
 HAVE_FINDER = YES
 
+# Whether to build various research tools
+HAVE_RESEARCHTOOLS = YES
+
 
 ####################################################################################
 #
@@ -240,6 +243,15 @@ JDK_CFLAGS=-I/usr/local/jdk1.3/include -I/usr/local/jdk1.3/include/linux
 # currently none
 #
 
+####################################################################################
+#
+# Configuration Options for the Research TOols
+#
+####################################################################################
+#
+# currently none
+#
+
 # These should figure themselves out
 #
 #
@@ -256,6 +268,7 @@ TRACE_DIR         = $(RPS_DIR)/Trace
 RTA_DIR           = $(RPS_DIR)/RTA
 RTSA_DIR          = $(RPS_DIR)/RTSA
 FINDER_DIR        = $(RPS_DIR)/Finder
+RESEARCHTOOLS_DIR = $(RPS_DIR)/ResearchTools
 
 
 FRACDIFF_DIR      = $(TS_DIR)/FracDiff
@@ -310,6 +323,9 @@ RTSA_LIB_DIR = $(RTSA_DIR)/lib/$(ARCH)/$(OS)
 
 FINDER_INC_DIR = $(FINDER_DIR)/include
 FINDER_LIB_DIR = $(FINDER_DIR)/lib/$(ARCH)/$(OS)
+
+RESEARCHTOOLS_INC_DIR = $(RESEARCHTOOLS_DIR)/include
+RESEARCHTOOLS_LIB_DIR = $(RESEARCHTOOLS_DIR)/lib/$(ARCH)/$(OS)
 
 JAVAGUI_INC_DIR = $(JAVAGUI_DIR)
 JAVAGUI_LIB_DIR = $(JAVAGUI_DIR)
@@ -429,6 +445,14 @@ ifeq ($(HAVE_FINDER),YES)
 else
    FINDER_LDFLAGS =
    FINDER_CFLAGS =
+endif
+
+ifeq ($(HAVE_RESEARCHTOOLS),YES) 
+   RESEARCHTOOLS_LDFLAGS = 
+   RESEARCHTOOLS_CFLAGS = -DHAVE_RESEARCHTOOLS -I$(RESEARCHTOOLS_INC_DIR)
+else
+   RESEARCHTOOLS_LDFLAGS =
+   RESEARCHTOOLS_CFLAGS =
 endif
 
 

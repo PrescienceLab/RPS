@@ -8,10 +8,6 @@ BINDIR = $(ROOT)/bin/$(ARCH)/$(OS)
 SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
-LIBNAME = RTSA
-
-LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
-
 
 ifeq ($(OPTIMIZE),YES) 
   CFLAGS = -O
@@ -28,10 +24,9 @@ CFLAGS += -I$(INCDIR) \
           $(SPIN_CFLAGS) \
           $(RTA_CFLAGS) \
           $(MIRROR_CFLAGS) \
-          $(TIMESERIES_CFLAGS) 
+          $(TIMESERIES_CFLAGS) \
 
-LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
-	   $(FINDER_LDFLAGS) \
+LD2FLAGS = $(FINDER_LDFLAGS) \
            $(RTA_LDFLAGS) \
            $(RPSINT_LDFLAGS) \
            $(MIRROR_LDFLAGS) \
@@ -44,11 +39,14 @@ else
   LD3FLAGS = 
 endif
 
-EXECLIST = test_rtsa
+EXECLIST = test_pred     \
+           test_pred_vartau \
+           test_sched \
+           test_sched_aggressive
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
-LIBOBJSLIST = RTSA.o
+LIBOBJSLIST =
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
 LIBOBJS = $(foreach m, $(LIBOBJSLIST),$(OBJDIR)/$(m))
