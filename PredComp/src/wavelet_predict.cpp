@@ -85,7 +85,7 @@ int ReadSpecFile(const char *file)
 
   state=LEVELS;
   while (!feof(in) && fgets(buf,MAXBUF,in)) { 
-    for (int i=0;i<strlen(buf);i++) { 
+    for (unsigned i=0;i<strlen(buf);i++) { 
       if (buf[i]=='\n') {
 	buf[i]=' ';
       }
@@ -144,7 +144,7 @@ class Prediction {
 public:
   static int Compute(WaveletIndividualSample &in, WaveletIndividualSample &out) {
     assert(in.rinfo.rtype==WAVELET_DOMAIN_TRANSFORM || in.rinfo.rtype==WAVELET_DOMAIN_APPROX || in.rinfo.rtype==WAVELET_DOMAIN_DETAIL);
-    assert(in.rinfo.levels==numlevels);
+    assert(in.rinfo.levels==(unsigned)numlevels);
 
     cerr << "Input:" <<in <<endl;
     

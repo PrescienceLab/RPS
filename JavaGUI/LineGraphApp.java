@@ -4,7 +4,7 @@
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
-import LineGraph;
+//import LineGraph;
 
 public class LineGraphApp extends JFrame implements ActionListener
 {

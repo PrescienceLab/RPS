@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 	cerr << "Sample is <<"<<s<<endl;
 	xform = new StaticReverseWaveletTransform<double,WISD,WOSD>(inputrep.levels-1,inputrep.wtype,2,2,0);
 	int *d = new int[inputrep.levels];
-	CalculateWaveletDelayBlock(WaveletCoefficients(inputrep.wtype).GetNumCoefs(),inputrep.levels,d);
+	CalculateWaveletDelayBlock(CQFWaveletCoefficients(inputrep.wtype).GetNumCoefs(),inputrep.levels,d);
 	delay=new DelayBlock<WOSD>(inputrep.levels,0,d);
 	delete [] d;
 	}

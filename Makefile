@@ -148,7 +148,7 @@ final_fixup: $(PROJS) shared
 	-rm -f $(RPS_DIR)/lib/$(ARCH)/$(OS)/libRPS.a
 	$(AR) ruv $(RPS_DIR)/lib/$(ARCH)/$(OS)/libRPS.a $(RPS_DIR)/obj/$(ARCH)/$(OS)/*.o
 	$(RANLIB) $(RPS_DIR)/lib/$(ARCH)/$(OS)/libRPS.a
-	$(STRIP) `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS`
+	$(STRIP) `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS | grep -v "class"`
 
 shared: $(PROJS)
 	cp `find $(SHARED_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
