@@ -288,7 +288,8 @@ int Evaluator::Dump(FILE *out) const
 {
   fprintf(out,"Evaluator:  numpred=%d, numsamples=%d, seensamples=%d, residbufsize=%d rows follow\n",
 	  numpred,numsamples,seensamples,residbufsize);
-  for (int i=0;i<numpred+1;i++) {
+  int i;
+  for (i=0;i<numpred+1;i++) {
     for (int j=0;j<numpred+1;j++) {
       if (j>0) {
 	fprintf(out,", ");
@@ -298,27 +299,27 @@ int Evaluator::Dump(FILE *out) const
     fprintf(out,"\n");
   }
   fprintf(out,"maxerror data follows\n");
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     fprintf(out,"%f\n",maxerr[i]);
   }
   fprintf(out,"minerror data follows\n");
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     fprintf(out,"%f\n",minerr[i]);
   }
   fprintf(out,"msqerror data follows\n");
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     fprintf(out,"%f\n",msqerr[i]);
   }
   fprintf(out,"meanabserror data follows\n");
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     fprintf(out,"%f\n",meanabserr[i]);
   }
   fprintf(out,"meanerror data follows\n");
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     fprintf(out,"%f\n",meanerr[i]);
   }
   fprintf(out,"residuals follow");
-  for (int i=0;i<numsamples;i++) {
+  for (i=0;i<numsamples;i++) {
     fprintf(out,"%f\n",resids[i]);
   }
   return 0;
@@ -329,7 +330,8 @@ ostream & Evaluator::operator<<(ostream &os) const
 {
   os << "Evaluator(numpred="<<numpred<<", numsamples="<<numsamples<<", seensamples="<<seensamples;
   os << "residbufsize="<<residbufsize<<"rows=(";
-  for (int i=0;i<numpred+1;i++) {
+  int i;
+  for (i=0;i<numpred+1;i++) {
     if (i>0) {
       os <<", ";
     }
@@ -343,42 +345,42 @@ ostream & Evaluator::operator<<(ostream &os) const
     os << ")";
   }
   os <<"), maxerror=(";
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }
     os << maxerr[i];
   }
   os <<"), minerror=(";
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     if (i>0) {
       os <<", ";
     }
     os << minerr[i];
   }
   os <<"), msqerror=(";
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     if (i>0) {
       os <<", ";
     }
     os << msqerr[i];
   }
   os <<"), meanabserror=(";
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     if (i>0) {
       os <<", ";
     }
     os << meanabserr[i];
   }
   os <<"), meanerror=(";
-  for (int i=0;i<numpred;i++) {
+  for (i=0;i<numpred;i++) {
     if (i>0) {
       os <<", ";
     }
     os << meanerr[i];
   }
   os <<"), resids=(";
-  for (int i=0;i<numsamples;i++) {
+  for (i=0;i<numsamples;i++) {
     if (i>0) {
       os <<", ";
     }
@@ -582,7 +584,8 @@ ostream & PredictionStats::operator<<(ostream &os) const
     <<medianresid<<", sigacffrac="<<sigacffrac<<", tpfrac="<<tpfrac<<", scfrac="<<scfrac
     <<", portmanteauQ="<<portmanteauQ<<", r2normfit="<<r2normfit;
   os <<", msqerr=(";
-  for (int i=0; i<numpred;i++) {
+  int i;
+  for (i=0; i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }
@@ -590,7 +593,7 @@ ostream & PredictionStats::operator<<(ostream &os) const
   }
   os <<")";
   os <<", msqerr=(";
-  for (int i=0; i<numpred;i++) {
+  for (i=0; i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }
@@ -598,7 +601,7 @@ ostream & PredictionStats::operator<<(ostream &os) const
   }
   os <<")";
   os <<", meanabserr=(";
-  for (int i=0; i<numpred;i++) {
+  for (i=0; i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }
@@ -606,7 +609,7 @@ ostream & PredictionStats::operator<<(ostream &os) const
   }
   os <<")";
   os <<", meanerr=(";
-  for (int i=0; i<numpred;i++) {
+  for (i=0; i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }
@@ -614,7 +617,7 @@ ostream & PredictionStats::operator<<(ostream &os) const
   }
   os <<")";
   os <<", minerr=(";
-  for (int i=0; i<numpred;i++) {
+  for (i=0; i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }
@@ -622,7 +625,7 @@ ostream & PredictionStats::operator<<(ostream &os) const
   }
   os <<")";
   os <<", maxerr=(";
-  for (int i=0; i<numpred;i++) {
+  for (i=0; i<numpred;i++) {
     if (i>0) {
       os << ", ";
     }

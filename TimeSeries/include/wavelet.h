@@ -9,9 +9,11 @@
 #include "abstract.h"
 #include "fit.h"
 
+#ifdef HAVE_WAVELETS
 // Disgusting FIX FIX FIX
 #include "../../Wavelets/include/util.h"
 #include "Wavelets.h"
+#endif
 
 using namespace std;
 
@@ -90,18 +92,20 @@ inline ostream & operator<< (ostream &os, const WaveletModel &p) {
 class WaveletPredictor : public Predictor {
 private:
   string          specfile;
+  unsigned        curindex;
+  double          nextval;
+#ifdef HAVE_WAVELETS
   WaveletType     wtype;
   unsigned        numlevels;
   WaveletLevelOp *levelop;
-  unsigned        curindex;
-  double          nextval;
-
 
   typedef WaveletInputSample<double> WISD;
   typedef WaveletOutputSample<double> WOSD;
   
   StaticForwardWaveletTransform<double,WOSD,WISD> *xform;
   StaticReverseWaveletTransform<double,WISD,WOSD> *xformrev;
+
+#endif
   
   int ReadSpecFileAndConfigure();
 

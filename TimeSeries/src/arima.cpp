@@ -169,14 +169,15 @@ void ARIMAModel::Dump(FILE *out) const
 ostream & ARIMAModel::operator<<(ostream &os) const 
 {
   os <<"ARIMAModel(p="<<p<<", d="<<d<<", q="<<q<<", mean="<<mean<<", variance="<<variance<<", phis=(";
-  for (int i=0;i<p;i++) {
+  int i;
+  for (i=0;i<p;i++) {
     if (i>0) { 
       os <<", ";
     }
     os << phis[i];
   }
   os <<"), thetas=(";
-  for (int i=0;i<q;i++) {
+  for (i=0;i<q;i++) {
     if (i>0) { 
       os <<", ";
     } 

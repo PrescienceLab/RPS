@@ -333,7 +333,7 @@ MAModel *MAModeler::Fit(const double *seq, const int len, const int maxord)
     }
   }
 
-  float ftol=1e-5;
+  float ftol=(float)1e-5;
   float fret;
   int iter;
 

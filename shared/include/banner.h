@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 inline char *GetTsunamiBanner()
 {
   char *b = new char [1000];

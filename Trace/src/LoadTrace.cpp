@@ -29,6 +29,7 @@
 #endif
 #endif
 
+#ifndef WIN32
 #if defined(IEEE_FLOAT_LSB)
 #warning This is a IEEE_FLOAT_LSB machine
 #endif
@@ -40,6 +41,7 @@
 #endif
 #if defined(IEEE_DOUBLE_MSB)
 #warning This is a IEEE_DOUBLE_MSB machine
+#endif
 #endif
 
 float htonf(const float x) 

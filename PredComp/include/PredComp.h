@@ -12,7 +12,9 @@
 #include "banner.h"
 
 #if defined(WIN32) && !defined(__CYGWIN__)
+extern "C" {
 #include <windows.h>
+}
 #else
 #include <unistd.h>
 #include <sys/time.h>

@@ -169,7 +169,8 @@ void ARFIMAModel::Dump(FILE *out) const
 ostream &ARFIMAModel::operator<<(ostream &os) const
 {
   os << "ARFIMAModel(p="<<p<<", d="<<d<<", q="<<q<<", noisevariance="<<variance<<", phis=(";
-  for (int i=0;i<p;i++) {
+  int i;
+  for (i=0;i<p;i++) {
     if (i>0) { 
       os << "," << phis[i];
     } else {
@@ -177,7 +178,7 @@ ostream &ARFIMAModel::operator<<(ostream &os) const
     }
   }
   os << "), thetas=(";
-  for (int i=0;i<q;i++) {
+  for (i=0;i<q;i++) {
     if (i>0) { 
       os << "," << thetas[i];
     } else {

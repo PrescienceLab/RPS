@@ -5,6 +5,7 @@
 #include <string.h>
 #if defined(WIN32) && !defined(__CYGWIN__)
 #define strcasecmp stricmp
+#define snprintf _snprintf
 #include <winsock.h>
 #else
 #include <strings.h>

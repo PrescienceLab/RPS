@@ -174,8 +174,8 @@ void NewtonPredictor::Dump(FILE *out) const
     fprintf(out, "%f\n",*i);
   }
   fprintf(out,"coeffs are:\n");
-  for (vector<double>::const_iterator i=coeffs.begin(); i!=coeffs.end(); ++i) {
-    fprintf(out, "%f\n",*i);
+  for (vector<double>::const_iterator j=coeffs.begin(); j!=coeffs.end(); ++j) {
+    fprintf(out, "%f\n",*j);
   }
 }
 
@@ -190,11 +190,11 @@ ostream & NewtonPredictor::operator<<(ostream &os) const
     os << *i;
   }
   os << "), coeffs=(";
-  for (vector<double>::const_iterator i=coeffs.begin(); i!=coeffs.end(); ++i) {
-    if (i!=coeffs.begin()) { 
+  for (vector<double>::const_iterator j=coeffs.begin(); j!=coeffs.end(); ++j) {
+    if (j!=coeffs.begin()) { 
       os <<", ";
     } 
-    os << *i;
+    os << *j;
   }
   os << "))";
   return os;

@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "./include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "I386" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "./include" /I "../shared/include" /I "../Wavelets/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "I386" /YX /FD /Zm200 /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "./include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "I386" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "./include" /I "../shared/include" /I "../Wavelets/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "I386" /YX /FD /GZ /Zm200 /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -86,70 +86,366 @@ LIB32=link.exe -lib
 # Begin Source File
 
 SOURCE=.\src\ar.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\arfima.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\arima.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\arma.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\await.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\bestmean.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\bestmedian.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\crossval_core.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\etathetapred.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\evaluate_core.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\fileparameterset.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\fit.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\it.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\last.cpp
-# End Source File
-# Begin Source File
 
-SOURCE=.\src\linear.cpp
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\ma.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\managed.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\mean.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\newton.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\none.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=".\src\nr-internal.cpp"
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\pdqparamsets.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\poly.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\refit.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\src\tools.cpp
+
+!IF  "$(CFG)" == "TimeSeries - Win32 Release"
+
+# ADD CPP /I "../shared/include"
+
+!ELSEIF  "$(CFG)" == "TimeSeries - Win32 Debug"
+
+# ADD CPP /I "./include" /I "../shared/include"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\src\wavelet.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

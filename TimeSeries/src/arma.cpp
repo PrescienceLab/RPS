@@ -175,14 +175,15 @@ void ARMAModel::Dump(FILE *out) const
 ostream & ARMAModel::operator<<(ostream &os) const 
 {
   os << "ARMAModel(p="<<p<<", q="<<q<<", mean="<<mean<<", variance="<<variance<<", phis=(";
-  for (int i=0;i<p;i++) {
+  int i;
+  for (i=0;i<p;i++) {
     if (i>0) {
       os <<", ";
     }
     os << phis[i];
   }
   os << "), thetas=(";
-  for (int i=0;i<q;i++) {
+  for (i=0;i<q;i++) {
     if (i>0) {
       os <<", ";
     } 
@@ -343,7 +344,7 @@ ARMAModel *ARMAModeler::Fit(const double *seq, const int len, const int P, const
     }
   }
 
-  float ftol=1e-5;
+  float ftol=(float)1e-5;
   float fret;
   int iter;
 

@@ -111,6 +111,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "Trace"=".\Trace\Trace.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "crossval_generic"=".\TimeSeries\crossval_generic.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -121,6 +133,9 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -151,6 +166,9 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name Mirror
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 
@@ -1126,6 +1144,9 @@ Package=<4>
 {{{
     Begin Project Dependency
     Project_Dep_Name TimeSeries
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name Trace
     End Project Dependency
 }}}
 

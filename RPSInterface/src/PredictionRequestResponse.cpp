@@ -320,14 +320,15 @@ ostream & PredictionResponse::Print(ostream &os) const
      <<", datatimestamp="<<datatimestamp<<", predtimestamp="<<predtimestamp
      <<", modelinfo="<<modelinfo<<", period_usec="<<period_usec
      <<", numsteps="<<numsteps<<", preds=(";
-  for (int i=0;i<numsteps;i++) {
+  int i;
+  for (i=0;i<numsteps;i++) {
     if (i!=0) { 
       os << ", ";
     }
     os << preds[i];
   }
   os <<"), errs=(";
-  for (int i=0;i<numsteps;i++) {
+  for (i=0;i<numsteps;i++) {
     if (i!=0) { 
       os << ", ";
     }

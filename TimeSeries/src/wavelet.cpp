@@ -11,7 +11,6 @@
 //
 
 
-
 #include "wavelet.h"
 #include "util.h"
 #include "tools.h"
@@ -171,7 +170,11 @@ Predictor * WaveletModel::MakePredictor() const
   return new WaveletPredictor(configfile);
 }
 
+#ifdef HAVE_WAVELETS
 WaveletPredictor::WaveletPredictor() :  wtype(DAUB2), numlevels(0), levelop(0), xform(0), xformrev(0)
+#else
+WaveletPredictor::WaveletPredictor() 
+#endif
 {}
 
 WaveletPredictor::WaveletPredictor(const WaveletPredictor &rhs) : 
@@ -192,9 +195,11 @@ WaveletPredictor::WaveletPredictor(const char *f) : specfile(f)
 
 WaveletPredictor::~WaveletPredictor()
 {
+#ifdef HAVE_WAVELETS
   CHK_DEL_MAT(levelop);
   CHK_DEL(xform);
   CHK_DEL(xformrev);
+#endif
 }
 
 WaveletPredictor & WaveletPredictor::operator=(const WaveletPredictor &rhs)
@@ -226,6 +231,7 @@ static const int MAXBUF=1024;
  */
 int WaveletPredictor::ReadSpecFileAndConfigure()
 {
+#if HAVE_WAVELETS
   CHK_DEL_MAT(levelop);
   CHK_DEL(xform);
   CHK_DEL(xformrev);
@@ -306,18 +312,29 @@ int WaveletPredictor::ReadSpecFileAndConfigure()
     }
   }
   return 0;
+#else
+  return -1;
+#endif
 }
 
 
 int WaveletPredictor::Begin()
 {
+#ifdef HAVE_WAVELETS
   curindex=0;
   return 0;
+#else
+  return -1;
+#endif
 }
 
 int WaveletPredictor::StepsToPrime() const
 {
+#ifdef HAVE_WAVELETS
   return 0;
+#else
+  return -1;
+#endif
 }
  
 
@@ -326,6 +343,7 @@ int WaveletPredictor::StepsToPrime() const
 //
 double WaveletPredictor::Step(const double obs)
 {
+#ifdef HAVE_WAVELETS
   vector <WOSD> output;
   vector <WOSD> predoutput;
   vector <WISD> finalout;
@@ -357,6 +375,9 @@ double WaveletPredictor::Step(const double obs)
   }
 
   return 0.0;
+#else
+  return 0.0;
+#endif
 }
 
 //
@@ -407,6 +428,7 @@ int WaveletPredictor::ComputeVariances(const int maxahead, double *vars,
 
 void WaveletPredictor::Dump(FILE *out) const
 {
+#ifdef HAVE_WAVELETS
   fprintf(out,"WaveletPredictor: specfile=%s, wtype=%d, numlevels=%u, forward and reverse transforms and levelops follow\n",
 	  specfile.c_str(), wtype, numlevels);
   strstream s1,s2;
@@ -415,10 +437,14 @@ void WaveletPredictor::Dump(FILE *out) const
   for (unsigned i=0;i<numlevels;i++) {
     levelop[i].Dump(out);
   }
+#else
+  fprintf(out,"FAIL");
+#endif
 }
 
 ostream & WaveletPredictor::operator<<(ostream &os) const
 {
+#ifdef HAVE_WAVELETS
   os<<"WaveletPredictor(specfile="<<specfile<<", wtype="<<wtype
     <<", numlevels="<<numlevels<<", xform="<<(*xform)
     <<", xformrev="<<(*xformrev)<<", levelops=(";
@@ -430,6 +456,10 @@ ostream & WaveletPredictor::operator<<(ostream &os) const
   }
   os << "))";
   return os;
+#else
+  os << "FAIL";
+  return os;
+#endif
 }
 
 WaveletModeler::WaveletModeler()
@@ -451,7 +481,11 @@ WaveletModeler & WaveletModeler::operator=(const WaveletModeler &rhs)
 
 WaveletModel * WaveletModeler::Fit(const double *sequence, const int len, const string &config)
 {
+#ifdef HAVE_WAVELETS
   return new WaveletModel(config);
+#else
+  return 0;
+#endif
 }
 
 
