@@ -46,7 +46,7 @@ EXECLIST = test_apply       \
            calibrate        \
            testspin         \
            spinserver       \
-           spinclient       
+           spinclient
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

@@ -36,7 +36,7 @@ LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
            $(RPSINT_LDFLAGS) \
            $(MIRROR_LDFLAGS) \
            $(SPIN_LDFLAGS) \
-           $(TIMESERIES_LDFLAGS) -lm
+           $(TIMESERIES_LDFLAGS) 
 
 ifeq ($(OS),SOLARIS)
   LD3FLAGS = -lnsl -lsocket -lkvm -lelf

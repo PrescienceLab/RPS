@@ -3,11 +3,13 @@
 #include "util.h"
 #include <string.h>
 
+
 #ifdef HAVE_NUMERICAL_RECIPES
 extern "C" {
 #include "nr.h"
 #include "nrutil.h"
 }
+
 #endif
 
 #include "pdqparamsets.h"

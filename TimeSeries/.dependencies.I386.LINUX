@@ -17,6 +17,28 @@
   include/evaluate_core.h include/random.h
 ./obj/I386/LINUX/gfnn.o: ./src/gfnn.cpp include/it.h
 ./obj/I386/LINUX/mi.o: ./src/mi.cpp include/it.h include/util.h
+./obj/I386/LINUX/crossval_wavelet.o: ./src/crossval_wavelet.cpp include/fit.h \
+  include/abstract.h include/pdqparamsets.h include/util.h \
+  include/bestmean.h include/linear.h include/etathetapred.h \
+  include/poly.h include/tools.h include/evaluate_core.h include/random.h
+./obj/I386/LINUX/wavelet_pred.o: ./src/wavelet_pred.cpp include/tools.h \
+  include/evaluate_core.h include/random.h include/util.h include/fit.h \
+  include/abstract.h include/pdqparamsets.h
+./obj/I386/LINUX/crossval_master.o: ./src/crossval_master.cpp \
+  /usr/share/pvm3/include/pvm3.h /usr/share/pvm3/include/pvmtev.h \
+  include/crossval_core.h include/ar.h include/abstract.h \
+  include/linear.h include/etathetapred.h include/poly.h \
+  include/pdqparamsets.h include/ma.h include/arma.h include/arima.h \
+  include/util.h include/arfima.h include/bestmean.h include/tools.h \
+  include/evaluate_core.h include/random.h include/fit.h \
+  include/crossval_pvm.h
+./obj/I386/LINUX/crossval_slave.o: ./src/crossval_slave.cpp /usr/share/pvm3/include/pvm3.h \
+  include/crossval_core.h include/ar.h include/abstract.h \
+  include/linear.h include/etathetapred.h include/poly.h \
+  include/pdqparamsets.h include/ma.h include/arma.h include/arima.h \
+  include/util.h include/arfima.h include/bestmean.h include/tools.h \
+  include/evaluate_core.h include/random.h include/fit.h \
+  include/crossval_pvm.h
 ./obj/I386/LINUX/linear.o: ./src/linear.cpp include/linear.h
 ./obj/I386/LINUX/poly.o: ./src/poly.cpp include/poly.h include/maths.h
 ./obj/I386/LINUX/ar.o: ./src/ar.cpp include/ar.h include/abstract.h include/linear.h \
@@ -34,10 +56,13 @@
   include/random.h
 ./obj/I386/LINUX/ma.o: ./src/ma.cpp include/ma.h include/abstract.h include/linear.h \
   include/etathetapred.h include/poly.h include/tools.h include/util.h \
-  include/pdqparamsets.h
+  /home/RPS/recipes_c-ansi/include/nr.h \
+  /home/RPS/recipes_c-ansi/include/nrutil.h include/pdqparamsets.h
 ./obj/I386/LINUX/arma.o: ./src/arma.cpp include/arma.h include/abstract.h include/linear.h \
   include/etathetapred.h include/poly.h include/tools.h include/util.h \
-  include/ar.h include/pdqparamsets.h include/ma.h
+  include/ar.h include/pdqparamsets.h include/ma.h \
+  /home/RPS/recipes_c-ansi/include/nr.h \
+  /home/RPS/recipes_c-ansi/include/nrutil.h
 ./obj/I386/LINUX/bestmean.o: ./src/bestmean.cpp include/bestmean.h include/abstract.h \
   include/linear.h include/etathetapred.h include/poly.h include/tools.h \
   include/util.h include/pdqparamsets.h include/ar.h

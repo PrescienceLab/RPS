@@ -1,4 +1,4 @@
-./obj/I386/LINUX/cloadbufferint.o: ./src/cloadbufferint.cpp \
+./obj/I386/LINUX/cloadbufferint.o: src/cloadbufferint.cpp \
   /home/pdinda/RPS-development/Mirror/include/socks.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \

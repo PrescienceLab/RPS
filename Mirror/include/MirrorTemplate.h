@@ -132,7 +132,7 @@ typedef SearchableQueue<ComparableMirrorData,ComparableMirrorDataCompare> Compar
 struct name : public ComparableMirrorData {			\
   int fd;							\
   name(int thefd, AbstractMirror *mir) :			\
-     ComparableMirrorData(ComparableMirrorData::##name,mir),	\
+     ComparableMirrorData(ComparableMirrorData::name,mir),	\
 			  fd(thefd) {}				\
   virtual int Compare(ComparableMirrorData &other) {		\
     if (datatype==other.datatype) {				\
@@ -155,7 +155,7 @@ struct name : public ComparableMirrorData {					\
   ptrtype *ptrname;								\
   Handler *handler;								\
   name(ptrtype *theptrname, Handler *h,AbstractMirror *mir)  :			\
-    ComparableMirrorData(ComparableMirrorData::##name,mir),			\
+    ComparableMirrorData(ComparableMirrorData::name,mir),			\
     ptrname(theptrname), handler(h) {}						\
   virtual int Compare(ComparableMirrorData &other) {				\
     if (datatype==other.datatype) {						\
@@ -184,13 +184,13 @@ struct name : public ComparableMirrorData {				     \
     CHK_DEL_MAT(pathname);						     \
   }									     \
   name(char *path, bool isunixdom,AbstractMirror *mir) :		     \
-	  ComparableMirrorData(ComparableMirrorData::##name,mir),	     \
+	  ComparableMirrorData(ComparableMirrorData::name,mir),	     \
           adx(0), port(0), fd(-1) {					     \
           if (isunixdom) {addresstype=UNIXDOM;} else {addresstype=AFILE;}    \
 	  pathname=new char [strlen(path)+1];				     \
   }									     \
   name(unsigned theadx, int theport, bool isudp,AbstractMirror *mir):	     \
-	  ComparableMirrorData(ComparableMirrorData::##name,mir),	     \
+	  ComparableMirrorData(ComparableMirrorData::name,mir),	     \
           adx(theadx), port(theport), pathname(0), fd(-1) {                  \
           if (isudp) {addresstype=UDP;} else {addresstype=TCP;}              \
   }									     \
