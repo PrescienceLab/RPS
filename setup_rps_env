@@ -1,3 +1,5 @@
+#!/bin/sh
+
 export RPSDIR=$RPS_DIR
 export PPSDIR=$RPSDIR
 
