@@ -1,6 +1,7 @@
 #include "ma.h"
 #include "tools.h"
 #include "util.h"
+#include <string.h>
 
 #ifdef HAVE_NUMERICAL_RECIPES
 extern "C" {

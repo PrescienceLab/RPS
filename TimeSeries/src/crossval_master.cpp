@@ -22,17 +22,15 @@ extern "C" {
 
 void usage() 
 {
-   fprintf(stderr,"crossval_master [numslaves] [cmdfile] [binarytracefile] [tag] [old|new]\n");
+   fprintf(stderr,"crossval_master [numslaves] [cmdfile] [binarytracefile|+asciitracefile] [tag] [old|new]\n");
 }
 
 
 const int xpvmtrace=0;
 void SetupForTrace();
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-  int i;
-
   if (argc<5){
     usage();
     exit(-1);
@@ -59,7 +57,13 @@ void main(int argc, char *argv[])
   }
 
   int numsamples;
-  double *seq = LoadBinaryTraceFile(tracefile,&numsamples);
+  double *seq;
+
+  if (tracefile[0]=='+') {
+    seq=LoadAsciiTraceFile(tracefile+1,&numsamples);
+  } else {
+    seq=LoadBinaryTraceFile(tracefile,&numsamples);
+  }
   if (seq==0) {
     fprintf(stderr,"Can't load trace file %s\n",tracefile);
     exit(-1);
@@ -280,21 +284,21 @@ void SetupForTrace()
       pvm_setopt( PvmOutputTid, xpvm_tid ); 
       pvm_setopt( PvmOutputCode, 667 ); 
       /* Generate Default Trace Mask */ 
-      TEV_INIT_MASK( trace_mask ); 
+      TEV_MASK_INIT( trace_mask ); 
 #if 1
 	for (i=TEV_FIRST;i<=TEV_MAX;i++) 
-	  TEV_SET_MASK(trace_mask,i);
+	  TEV_MASK_SET(trace_mask,i);
 #else
-	TEV_SET_MASK( trace_mask, TEV_MCAST0 ); 
-	TEV_SET_MASK( trace_mask, TEV_SEND0 ); 
-	TEV_SET_MASK( trace_mask, TEV_RECV0 ); 
-	TEV_SET_MASK( trace_mask, TEV_NRECV0 ); 
-	TEV_SET_MASK( trace_mask, TEV_BCAST0);
-	TEV_SET_MASK( trace_mask, TEV_INITSEND0);
-	TEV_SET_MASK( trace_mask, TEV_PRECV0 ); 
-	TEV_SET_MASK( trace_mask, TEV_PRECV1 ); 
-	TEV_SET_MASK( trace_mask, TEV_PSEND0 ); 
-	TEV_SET_MASK( trace_mask, TEV_PSEND1 ); 
+	TEV_MASK_SET( trace_mask, TEV_MCAST0 ); 
+	TEV_MASK_SET( trace_mask, TEV_SEND0 ); 
+	TEV_MASK_SET( trace_mask, TEV_RECV0 ); 
+	TEV_MASK_SET( trace_mask, TEV_NRECV0 ); 
+	TEV_MASK_SET( trace_mask, TEV_BCAST0);
+	TEV_MASK_SET( trace_mask, TEV_INITSEND0);
+	TEV_MASK_SET( trace_mask, TEV_PRECV0 ); 
+	TEV_MASK_SET( trace_mask, TEV_PRECV1 ); 
+	TEV_MASK_SET( trace_mask, TEV_PSEND0 ); 
+	TEV_MASK_SET( trace_mask, TEV_PSEND1 ); 
 #endif
 	/* Add Other Desired Events Here */ 
 	/* Set Self Trace Mask */ 

@@ -15,7 +15,7 @@ void usage()
 }
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
   if (argc>1) {
@@ -23,7 +23,7 @@ void main(int argc, char *argv[])
     exit(-1);
   }
 
-  int mytid=pvm_mytid();
+  int mytid= pvm_mytid();
   int mastertid=pvm_parent();
 
   //pvm_advise(PvmRouteDirect);
@@ -33,11 +33,6 @@ void main(int argc, char *argv[])
 
   double *seq=0;
   int numsamples;
-
-  int testcasenum, numahead;
-  int testfirst,testnum, fitfirst, fitnum;
-  int p,d,q,bmlimit;
-
   int bmp;
 
 

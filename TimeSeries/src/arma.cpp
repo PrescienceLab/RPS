@@ -3,6 +3,7 @@
 #include "util.h"
 #include "ar.h"
 #include "ma.h"
+#include <string.h>
 
 #ifdef HAVE_NUMERICAL_RECIPES
 extern "C" {

@@ -1,4 +1,4 @@
-####################################################################################
+####################################################################################VE
 #
 # General Configuration Options
 #
@@ -64,7 +64,7 @@ HAVE_PREDCOMP = YES
 
 # This provides the java GUI
 #
-HAVE_JAVAGUI = YES
+HAVE_JAVAGUI = NO
 
 # Whether to build the Spin library and tools
 # This provides components for constructing scheduling experiments,
@@ -139,9 +139,9 @@ RECIPES_DIR = /home/RPS/recipes_c-ansi
 #
 # if you are in doubt, say NO
 #
-HAVE_PVM = NO
-PVM_DIR  = /killdeer/usr3/pdinda/pvm
-PVM_ARCH = I386
+HAVE_PVM = YES
+PVM_DIR  = /usr/share/pvm3
+PVM_ARCH = LINUX
 
 ####################################################################################
 #

@@ -112,8 +112,6 @@ void OutputTestcaseResults(FILE *out,
 Command *GetCommand(FILE *cmd);
 
 double *LoadBinaryTraceFile(char *name, int *num, int perversion=0);
-
-
-
+double *LoadAsciiTraceFile(char *name, int *num);
 
 #endif

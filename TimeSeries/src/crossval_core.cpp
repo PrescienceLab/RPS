@@ -600,6 +600,48 @@ double *LoadBinaryTraceFile(char *name, int *num, int perversion)
 }
 
 
+
+double *LoadAsciiTraceFile(char *name, int *num)
+{
+  FILE *inp = fopen(name,"r");
+  double junk;
+  char buf[80];
+  int i;
+
+  if (inp==0) {
+    fprintf(stderr,"%s not found.\n",name);
+    return 0;
+  }
+  
+  int numsamples=0;
+  
+  while (fgets(buf,80,inp)) {
+    ++numsamples;
+  }
+  rewind(inp);
+  
+  double *seq = new double [numsamples];
+  if (seq==0) {
+    fprintf(stderr,"insufficient memory to read %s\n",name);
+    exit(-1);
+  }
+
+
+  for (i=0;i<numsamples;i++) { 
+    fgets(buf,80,inp);
+    if (sscanf(buf,"%lf %lf",&junk,&(seq[i]))==1) {
+      seq[i]=junk;
+    }
+  }
+  
+  fclose(inp);
+
+  *num=numsamples;
+  
+  return seq;
+}
+
+
 Testcase *TestcaseGenerator::GenerateRandomTestcase()
 {
   Testcase *t = new Testcase;

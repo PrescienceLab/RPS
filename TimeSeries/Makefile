@@ -13,8 +13,8 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 LIB_TS = $(LIBFILE)
 
 
-CFLAGS = -I$(INCDIR) $(RECIPES_INCOPTS) $(FRACDIFF_INCOPTS) \
-         $(PVM_INCOPTS)
+CFLAGS = -I$(INCDIR) $(RECIPES_CFLAGS) $(FRACDIFF_CFLAGS) \
+         $(PVM_CFLAGS)
 
 ifeq ($(OPTIMIZE),YES)
    CFLAGS += -O
@@ -25,9 +25,9 @@ endif
 
 LDFLAGS = -L$(TS_LIB_DIR) \
           -l$(LIBNAME) \
-          $(RECIPES_LIBOPTS) \
-          $(FRACDIFF_LIBOPTS) \
-          $(PVM_LIBOPTS) \
+          $(RECIPES_LDFLAGS) \
+          $(FRACDIFF_LDFLAGS) \
+          $(PVM_LDFLAGS) \
           -lm
 
 ifeq ($(OPTIMIZE),YES)
@@ -59,7 +59,9 @@ EXECLIST = ts_example 	    \
            impulseresp      \
            perftest         \
            gfnn             \
-           mi
+           mi               \
+           crossval_wavelet \
+           wavelet_pred
 
 ifeq ($(HAVE_PVM),YES)
    EXECLIST +=  crossval_master crossval_slave
