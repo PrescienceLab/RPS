@@ -12,8 +12,16 @@
 #include "waveletinfo.h"
 #include "util.h"
 
-class Stage {
-private:
+// AbstractStage is used simply for multi-methods on the operator= member
+class AbstractStage {
+  virtual void set(const AbstractStage *astage)=0;
+  virtual void set(const Stage *stage)=0;
+  virtual void set(const TransformStage *tstage)=0;
+  virtual void set(const InverseStage *istage)=0;
+};
+
+class Stage : public AbstractStage {
+protected:
   WaveletType         wavetype;
   WaveletCoefficients wavecoefs;
   FIRFilter           lowpass;
@@ -24,7 +32,10 @@ public:
   Stage(const Stage &rhs);
   virtual ~Stage();
 
-  virtual Stage & operator=(const Stage &rhs) = 0;
+  virtual Stage & operator=(const AbstractStage &rhs);
+  virtual Stage & operator=(const Stage &rhs);
+  virtual Stage & operator=(const TransformStage &rhs);
+  virtual Stage & operator=(const InverseStage &rhs);
 
   void     ChangeWaveletType(WaveletType wavetype);
   string   GetWaveletName();
@@ -37,16 +48,7 @@ public:
   unsigned GetNumCoefsHPF();
   void     PrintCoefsHPF();
 
-  // Returns true if there is an output sample
-  virtual bool PerformSampleOperation(SampleOut &out_in_l,
-				      SampleOut &out_in_h,
-				      Sample    &in_out) = 0;
-
-  // Returns output buffer length
-  virtual unsigned PerformBlockOperation(SampleBlockOut &out_in,
-					 SampleBlock    &in_out) = 0;
-
-  virtual ostream & Print(ostream &os) const = 0;
+  virtual ostream & Print(ostream &os) const;
 };
 
 
@@ -67,7 +69,10 @@ public:
 		 int         outlevel_h);
   virtual ~TransformStage();
 
+  virtual TransformStage & operator=(const AbstractStage &rhs);
+  virtual TransformStage & operator=(const Stage &rhs);
   virtual TransformStage & operator=(const TransformStage &rhs);
+  virtual TransformStage & operator=(const InverseStage &rhs);
 
   void     SetDownSampleRateLPF(unsigned rate);
   unsigned GetDownSampleRateLPF();
@@ -82,13 +87,13 @@ public:
   int      GetOutputLevelHigh();
 
   // Returns true if there is an output sample
-  virtual bool PerformSampleOperation(SampleOut &output_l,
-				      SampleOut &output_h,
-				      Sample    &input);
+  bool PerformSampleOperation(SampleOut &output_l,
+			      SampleOut &output_h,
+			      Sample    &input);
 
   // Returns output buffer length
-  virtual unsigned PerformBlockOperation(SampleBlockOut &output, 
-					 SampleBlock    &input);
+  unsigned PerformBlockOperation(SampleBlockOut &output, 
+				 SampleBlock    &input);
 
   virtual ostream & Print(ostream &os) const;
 };
@@ -104,6 +109,9 @@ public:
   InverseStage(WaveletType wavetype, unsigned rate_l, unsigned rate_h);
   virtual ~InverseStage();
 
+  virtual InverseStage & operator=(const AbstractStage &rhs);
+  virtual InverseStage & operator=(const Stage &rhs);
+  virtual InverseStage & operator=(const TransformStage &rhs);
   virtual InverseStage & operator=(const InverseStage &rhs);
 
   void     SetUpSampleRateLPF(unsigned rate);
@@ -113,13 +121,13 @@ public:
   unsigned GetUpSampleRateHPF();
 
   // Returns true if a sample is output
-  virtual void PerformSampleOperation(SampleOut &input_l,
-				      SampleOut &input_h,
-				      Sample    &output);
+  void PerformSampleOperation(Sample    &output
+			      SampleOut &input_l,
+			      SampleOut &input_h);
 
   // Returns output buffer length
-  virtual unsigned PerformBlockOperation(SampleBlockOut &input,
-					 SampleBlock    &output);
+  unsigned PerformBlockOperation(SampleBlock    &output,
+				 SampleBlockOut &input);
 
   virtual ostream & Print(ostream &os) const;
 };

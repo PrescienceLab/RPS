@@ -1,68 +1,62 @@
 ./obj/I386/LINUX/ts_example.o: ./src/ts_example.cpp include/tools.h \
- include/evaluate_core.h include/random.h include/util.h include/fit.h \
- include/abstract.h include/pdqparamsets.h
-./obj/I386/LINUX/test_generic.o: ./src/test_generic.cpp include/fit.h \
- include/abstract.h include/pdqparamsets.h include/util.h \
- include/tools.h
+  include/evaluate_core.h include/random.h include/util.h include/fit.h \
+  include/abstract.h include/pdqparamsets.h
+./obj/I386/LINUX/test_generic.o: ./src/test_generic.cpp include/fit.h include/abstract.h \
+  include/pdqparamsets.h include/util.h include/tools.h
 ./obj/I386/LINUX/evaluate.o: ./src/evaluate.cpp include/evaluate_core.h include/util.h
 ./obj/I386/LINUX/crossval_generic.o: ./src/crossval_generic.cpp include/fit.h \
- include/abstract.h include/pdqparamsets.h include/util.h \
- include/bestmean.h include/linear.h include/etathetapred.h \
- include/poly.h include/tools.h include/evaluate_core.h \
- include/random.h
+  include/abstract.h include/pdqparamsets.h include/util.h \
+  include/bestmean.h include/linear.h include/etathetapred.h \
+  include/poly.h include/tools.h include/evaluate_core.h include/random.h
 ./obj/I386/LINUX/impulseresp.o: ./src/impulseresp.cpp include/fit.h include/abstract.h \
- include/pdqparamsets.h include/util.h include/tools.h \
- include/evaluate_core.h include/random.h
+  include/pdqparamsets.h include/util.h include/tools.h \
+  include/evaluate_core.h include/random.h
 ./obj/I386/LINUX/perftest.o: ./src/perftest.cpp include/fit.h include/abstract.h \
- include/pdqparamsets.h include/util.h include/bestmean.h \
- include/linear.h include/etathetapred.h include/poly.h \
- include/tools.h include/evaluate_core.h include/random.h
+  include/pdqparamsets.h include/util.h include/bestmean.h \
+  include/linear.h include/etathetapred.h include/poly.h include/tools.h \
+  include/evaluate_core.h include/random.h
 ./obj/I386/LINUX/gfnn.o: ./src/gfnn.cpp include/it.h
 ./obj/I386/LINUX/mi.o: ./src/mi.cpp include/it.h include/util.h
 ./obj/I386/LINUX/linear.o: ./src/linear.cpp include/linear.h
 ./obj/I386/LINUX/poly.o: ./src/poly.cpp include/poly.h include/maths.h
 ./obj/I386/LINUX/ar.o: ./src/ar.cpp include/ar.h include/abstract.h include/linear.h \
- include/etathetapred.h include/poly.h include/pdqparamsets.h \
- include/tools.h include/util.h
+  include/etathetapred.h include/poly.h include/pdqparamsets.h \
+  include/tools.h include/util.h
 ./obj/I386/LINUX/arima.o: ./src/arima.cpp include/arima.h include/abstract.h \
- include/util.h include/linear.h include/ar.h include/etathetapred.h \
- include/poly.h include/pdqparamsets.h include/tools.h include/arma.h
+  include/util.h include/linear.h include/ar.h include/etathetapred.h \
+  include/poly.h include/pdqparamsets.h include/tools.h include/arma.h
 ./obj/I386/LINUX/arfima.o: ./src/arfima.cpp include/arfima.h include/abstract.h \
- include/util.h include/linear.h include/ar.h include/etathetapred.h \
- include/poly.h include/pdqparamsets.h include/maths.h include/tools.h
+  include/util.h include/linear.h include/ar.h include/etathetapred.h \
+  include/poly.h include/pdqparamsets.h include/maths.h include/tools.h
 ./obj/I386/LINUX/etathetapred.o: ./src/etathetapred.cpp include/etathetapred.h \
- include/abstract.h include/poly.h include/util.h
-./obj/I386/LINUX/tools.o: ./src/tools.cpp include/tools.h include/util.h \
- include/maths.h include/random.h
+  include/abstract.h include/poly.h include/util.h
+./obj/I386/LINUX/tools.o: ./src/tools.cpp include/tools.h include/util.h include/maths.h \
+  include/random.h
 ./obj/I386/LINUX/ma.o: ./src/ma.cpp include/ma.h include/abstract.h include/linear.h \
- include/etathetapred.h include/poly.h include/tools.h include/util.h \
- include/pdqparamsets.h
-./obj/I386/LINUX/arma.o: ./src/arma.cpp include/arma.h include/abstract.h \
- include/linear.h include/etathetapred.h include/poly.h \
- include/tools.h include/util.h include/ar.h include/pdqparamsets.h \
- include/ma.h
+  include/etathetapred.h include/poly.h include/tools.h include/util.h \
+  include/pdqparamsets.h
+./obj/I386/LINUX/arma.o: ./src/arma.cpp include/arma.h include/abstract.h include/linear.h \
+  include/etathetapred.h include/poly.h include/tools.h include/util.h \
+  include/ar.h include/pdqparamsets.h include/ma.h
 ./obj/I386/LINUX/bestmean.o: ./src/bestmean.cpp include/bestmean.h include/abstract.h \
- include/linear.h include/etathetapred.h include/poly.h \
- include/tools.h include/util.h include/pdqparamsets.h include/ar.h
-./obj/I386/LINUX/it.o: ./src/it.cpp include/util.h include/tools.h \
- include/NewHashTable.h include/NewQueues.h include/it.h
+  include/linear.h include/etathetapred.h include/poly.h include/tools.h \
+  include/util.h include/pdqparamsets.h include/ar.h
+./obj/I386/LINUX/it.o: ./src/it.cpp include/util.h include/tools.h include/NewHashTable.h \
+  include/NewQueues.h include/it.h
 ./obj/I386/LINUX/evaluate_core.o: ./src/evaluate_core.cpp include/evaluate_core.h \
- include/util.h include/maths.h include/random.h include/tools.h
+  include/util.h include/maths.h include/random.h include/tools.h
 ./obj/I386/LINUX/crossval_core.o: ./src/crossval_core.cpp include/crossval_core.h \
- include/ar.h include/abstract.h include/linear.h \
- include/etathetapred.h include/poly.h include/pdqparamsets.h \
- include/ma.h include/arma.h include/arima.h include/util.h \
- include/arfima.h include/bestmean.h include/tools.h \
- include/evaluate_core.h include/random.h include/fit.h
-./obj/I386/LINUX/mean.o: ./src/mean.cpp include/mean.h include/abstract.h \
- include/linear.h include/etathetapred.h include/poly.h include/util.h \
- include/tools.h
-./obj/I386/LINUX/last.o: ./src/last.cpp include/last.h include/abstract.h \
- include/linear.h include/etathetapred.h include/poly.h \
- include/bestmean.h
+  include/ar.h include/abstract.h include/linear.h include/etathetapred.h \
+  include/poly.h include/pdqparamsets.h include/ma.h include/arma.h \
+  include/arima.h include/util.h include/arfima.h include/bestmean.h \
+  include/tools.h include/evaluate_core.h include/random.h include/fit.h
+./obj/I386/LINUX/mean.o: ./src/mean.cpp include/mean.h include/abstract.h include/linear.h \
+  include/etathetapred.h include/poly.h include/util.h include/tools.h
+./obj/I386/LINUX/last.o: ./src/last.cpp include/last.h include/abstract.h include/linear.h \
+  include/etathetapred.h include/poly.h include/bestmean.h
 ./obj/I386/LINUX/none.o: ./src/none.cpp include/none.h include/abstract.h
 ./obj/I386/LINUX/fit.o: ./src/fit.cpp include/ar.h include/abstract.h include/linear.h \
- include/etathetapred.h include/poly.h include/pdqparamsets.h \
- include/ma.h include/arma.h include/arima.h include/util.h \
- include/arfima.h include/bestmean.h include/none.h include/mean.h \
- include/last.h include/refit.h include/fit.h
+  include/etathetapred.h include/poly.h include/pdqparamsets.h \
+  include/ma.h include/arma.h include/arima.h include/util.h \
+  include/arfima.h include/bestmean.h include/none.h include/mean.h \
+  include/last.h include/refit.h include/fit.h
