@@ -43,6 +43,9 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  typedef WaveletInputSample<double> wisd;
+  typedef WaveletOutputSample<double> wosd;
+
   cout << "WaveletType: " << type;
 
   ifstream infile(argv[2]);
@@ -68,20 +71,20 @@ int main(int argc, char *argv[])
 
 
   // Read the data from file into an input vector
-  deque<WaveletInputSample<double> > wisamples;
+  deque<wisd> wisamples;
   double sample;
   while (infile >> sample) {
-    WaveletInputSample<double> wavesample;
+    wisd wavesample;
     wavesample.SetSampleValue(sample);
     wisamples.push_back(wavesample);
   }
   infile.close();
 
-  WaveletInputSampleBlock<WaveletInputSample<double> > input(wisamples);
-  WaveletOutputSampleBlock<WaveletOutputSample<double> > output;
+  WaveletInputSampleBlock<wisd> input(wisamples);
+  WaveletOutputSampleBlock<wosd> output;
 
   // Create a filter
-  FIRFilter<double, WaveletOutputSample<double>, WaveletInputSample<double> > 
+  FIRFilter<double, wosd, wisd> 
     lpfilter(wc.GetNumCoefs());
   lpfilter.SetFilterCoefs(translpf);
   

@@ -64,7 +64,7 @@ public:
     --current_backlog;
   };
 
-  inline bool ThresholdExceeded() {
+  inline bool ThresholdExceeded() const {
     return (current_backlog > backlog_thresh);
   };
 
@@ -90,8 +90,8 @@ public:
 
   // This default class simply zeros the missing samples - assumes samples
   //  ordered by indices
-  static void CreateMissingSamples(unsigned current_index,
-				   vector<INSAMPLE> &buffer) {
+  static void CreateMissingSamples(const unsigned current_index,
+				   const vector<INSAMPLE> &buffer) {
     unsigned i, j, gapsize;
     unsigned sampleindex, index=current_index;
 

@@ -80,8 +80,9 @@ public:
 
   bool StreamingSampleOperation(vector<SAMPLE> &out, const vector<SAMPLE> &in);
 
-  unsigned StreamingBlockOperation(vector<WaveletOutputSampleBlock<SAMPLE> > &outblock,
-				   const vector<WaveletOutputSampleBlock<SAMPLE> > &inblock);
+  unsigned StreamingBlockOperation
+    (vector<WaveletOutputSampleBlock<SAMPLE> > &outblock,
+     const vector<WaveletOutputSampleBlock<SAMPLE> > &inblock);
 
   ostream & Print(ostream &os) const;
   ostream & operator<<(ostream &os) const;
@@ -92,7 +93,9 @@ inline ostream & operator<<(ostream &os, const DelayBlock<SAMPLE> &rhs) { return
 
 template<class SAMPLE>
 DelayBlock<SAMPLE>::
-DelayBlock(const unsigned numlevels, const int lowest_level, int* delay_vals)
+DelayBlock(const unsigned numlevels=2,
+	   const int lowest_level=0,
+	   int* delay_vals=0)
 {
   if ((numlevels == 0) || (numlevels > MAX_STAGES+1)) {
     // Need at least one level
@@ -226,7 +229,9 @@ SetDelayValueOfLevel(const int level, const unsigned delay)
 
 template<class SAMPLE>
 bool DelayBlock<SAMPLE>::
-ChangeDelayConfig(const unsigned numlevels, const int lowest_level, int* delay_vals)
+ChangeDelayConfig(const unsigned numlevels,
+		  const int lowest_level,
+		  int* delay_vals)
 {
   if ((numlevels == 0) || (numlevels > MAXSTAGES + 1) || (delay_vals == 0)) {
     return false;
@@ -367,10 +372,10 @@ operator<<(ostream &os) const
 // Private functions
 template<class SAMPLE>
 unsigned DelayBlock<SAMPLE>::
-StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out, const WaveletOutputSampleBlock<SAMPLE> &in)
+StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out, 
+	    const WaveletOutputSampleBlock<SAMPLE> &in)
 {
   unsigned sampleindex;
-  deque<SAMPLE> inbuf, outbuf;
   SAMPLE outsamp;
 
   unsigned block_indx = in.GetBlockIndex();
@@ -378,18 +383,14 @@ StreamBlock(WaveletOutputSampleBlock<SAMPLE> &out, const WaveletOutputSampleBloc
 
   assert((level_indx >= 0) || (level_indx <= (int) numlevels));
 
-  in.GetSamples(inbuf);
-  for (unsigned i=0; i<inbuf.size(); i++) {
-    sampleindex = inbuf[i].GetSampleIndex();
-
-    dbanks[level_indx]->push_front(inbuf[i]);
+  for (unsigned i=0; i<in.GetBlockSize(); i++) {
+    sampleindex = in[i].GetSampleIndex();
+    dbanks[level_indx]->push_front(in[i]);
     outsamp = dbanks[level_indx]->back();
     dbanks[level_indx]->pop_back();
     outsamp.SetSampleIndex(sampleindex);
-    outbuf.push_back(outsamp);
+    out.PushSampleBack(outsamp);
   }
-
-  out.SetSamples(outbuf);
   out.SetBlockIndex(block_indx);
   return out.GetBlockSize();
 }

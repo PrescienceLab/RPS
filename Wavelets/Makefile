@@ -33,7 +33,9 @@ EXECLIST = testcoefs  \
            testdelay  \
            teststream \
            testblock  \
-           testSFWTapprox
+           testSFWTapprox \
+	   testSFWTblock \
+	   testSFWTmixed
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

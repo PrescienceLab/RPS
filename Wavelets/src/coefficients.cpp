@@ -202,7 +202,8 @@ WaveletCoefficients::~WaveletCoefficients()
   CHK_DEL(h_coefs);
 }
 
-WaveletCoefficients & WaveletCoefficients::operator=(const WaveletCoefficients &rhs)
+WaveletCoefficients & WaveletCoefficients::operator=
+(const WaveletCoefficients &rhs)
 {
   wt = rhs.wt;
   waveletname = rhs.waveletname;

@@ -15,15 +15,15 @@ private:
   unsigned samplecount;
 
 public:
-  UpSample(unsigned rate=1);
+  UpSample(const unsigned rate=1);
   UpSample(const UpSample &rhs);
   virtual ~UpSample();
 
   UpSample & operator=(const UpSample &rhs);
 
-  inline void     SetUpSampleRate(unsigned rate) { this->rate = rate;};
-  inline unsigned GetUpSampleRate() { return rate;};
-  inline void     ResetState() { samplecount=0;};
+  inline void SetUpSampleRate(const unsigned rate) { this->rate = rate;};
+  inline unsigned GetUpSampleRate() const { return rate;};
+  inline void ResetState() { samplecount=0;};
 
   bool ZeroSample();
   void UpSampleBuffer(SampleBlock<SAMPLE> &output,
@@ -38,7 +38,7 @@ inline ostream & operator<<(ostream &os, const UpSample<SAMPLE> &rhs) { return r
 
 template <class SAMPLE>
 UpSample<SAMPLE>::
-UpSample(unsigned rate) : 
+UpSample(const unsigned rate=1) : 
   rate(rate), samplecount(0)
 {
 }
@@ -92,7 +92,7 @@ UpSampleBuffer(SampleBlock<SAMPLE> &output, const SampleBlock<SAMPLE> &input)
     while (ZeroSample()) {
       output.PushSampleBack(newin);
     }
-    input.GetSample(&newin,i);
+    newin = input[i];
     output.PushSampleBack(newin);
   }
 

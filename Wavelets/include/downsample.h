@@ -92,7 +92,7 @@ DownSampleBuffer(SampleBlock<SAMPLE> &output,
   for (unsigned i=0; i<input.GetBlockSize(); i++) {
     if (KeepSample()) {
       SAMPLE newin;
-      input.GetSample(&newin,i);
+      newin = input[i];
       output.PushSampleBack(newin);
     }
   }

@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <iostream>
+#include <cassert>
 
 #include "util.h"
 
@@ -45,7 +46,7 @@ public:
     for (unsigned i=0; i<minsize; i++) {
       SAMPLETYPE left, right;
       left = samples[i];
-      rhs.GetSample(&right, i);
+      right = rhs[i];
       samples[i] = left+right;
     }
     return *this;
@@ -58,7 +59,7 @@ public:
     for (unsigned i=0; i<minsize; i++) {
       SAMPLETYPE left, right;
       left = samples[i];
-      rhs.GetSample(&right, i);
+      right = rhs[i];
       samples[i] = left+right;
     }
     return *this;
@@ -85,16 +86,24 @@ public:
     }
   };
 
+  inline SAMPLETYPE Front() const {
+    return samples.front();
+  };
+
   inline void PushSampleFront(const SAMPLETYPE &input) {
     samples.push_front(input);
   };
 
-  inline void PushSampleBack(const SAMPLETYPE &input) {
-    samples.push_back(input);
-  };
-
   inline void PopSampleFront() {
     samples.pop_front();
+  };
+
+  inline SAMPLETYPE Back() const {
+    return samples.back();
+  };
+
+  inline void PushSampleBack(const SAMPLETYPE &input) {
+    samples.push_back(input);
   };
 
   inline void PopSampleBack() {
@@ -102,9 +111,9 @@ public:
   };
 
   // This is equivalent to random access []
-  inline void GetSample(SAMPLETYPE *samp, const unsigned i) const {
-    if (i < samples.size())
-      *samp = samples[i];
+  inline SAMPLETYPE operator[](const unsigned i) const {
+    assert(i < samples.size());
+    return samples[i];
   };
 
   inline void SetBlockIndex(const unsigned index) {
@@ -118,7 +127,7 @@ public:
   void AppendBlockBack(const SampleBlock &block) {
     SAMPLETYPE newsamp;
     for (unsigned i=0; i<block.GetBlockSize(); i++) {
-      block.GetSample(&newsamp,i);
+      newsamp = block[i];
       samples.push_back(newsamp);
     }
   };
@@ -126,13 +135,37 @@ public:
   void AppendBlockFront(const SampleBlock &block) {
     SAMPLETYPE newsamp;
     for (int i=block.GetBlockSize()-1; i>=0; i--) {
-      block.GetSample(&newsamp,i);
+      newsamp = block[i];
       samples.push_front(newsamp);
+    }
+  };
+
+  void RemoveSamplesFront(const unsigned numsamples) {
+    if (numsamples == samples.size()) {
+      samples.clear();
+    } else {
+      for (unsigned i=0; i<numsamples; i++) {
+	samples.pop_front();
+      }
+    }
+  };
+
+  void RemoveSamplesBack(const unsigned numsamples) {
+    if (numsamples == samples.size()) {
+      samples.clear();
+    } else {
+      for (unsigned i=0; i<numsamples; i++) {
+	samples.pop_back();
+      }
     }
   };
 
   inline void ClearBlock() {
     samples.clear();
+  };
+
+  inline bool Empty() const {
+    return samples.empty();
   };
 
   inline unsigned GetBlockSize() const {

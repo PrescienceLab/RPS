@@ -153,7 +153,7 @@ GetFilterBufferOutput(SampleBlock<OUTSAMPLE> &out,
   for (unsigned i=0; i<in.GetBlockSize(); i++) {
     OUTSAMPLE newout;
     INSAMPLE  newin;
-    in.GetSample(&newin,i);
+    newin = in[i];
     GetFilterOutput(newout,newin);
     out.PushSampleBack(newout);
   }

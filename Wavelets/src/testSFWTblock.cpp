@@ -10,18 +10,18 @@
 
 void usage()
 {
-  cerr << "testSFWT [wavelet-type]   [numstages]   [infile]\n";
-  cerr << "         --------------   -----------   --------\n";
-  cerr << "         D2 (Haar)= 0     # stages in   file formatted\n";
-  cerr << "         D4       = 1       decomp       as sample per\n";
-  cerr << "         D6       = 2       ( > 0 )      line\n";
-  cerr << "         D8       = 3\n";
-  cerr << "         D10      = 4\n";
-  cerr << "         D12      = 5\n";
-  cerr << "         D14      = 6\n";
-  cerr << "         D16      = 7\n";
-  cerr << "         D18      = 8\n";
-  cerr << "         D20      = 9\n";
+  cerr << "testSFWTblock [wavelet-type]   [numstages]   [infile]\n";
+  cerr << "              --------------   -----------   --------\n";
+  cerr << "              D2 (Haar)= 0     # stages in   file formatted\n";
+  cerr << "              D4       = 1       decomp       as sample per\n";
+  cerr << "              D6       = 2       ( > 0 )      line\n";
+  cerr << "              D8       = 3\n";
+  cerr << "              D10      = 4\n";
+  cerr << "              D12      = 5\n";
+  cerr << "              D14      = 6\n";
+  cerr << "              D16      = 7\n";
+  cerr << "              D18      = 8\n";
+  cerr << "              D20      = 9\n";
 }
 
 void print() {
@@ -60,16 +60,10 @@ int main(int argc, char *argv[])
 
   WaveletType wt = (WaveletType) type;
 
-  // Instantiate a static forward wavelet transform
-  cerr << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform
-    <double, wosd, wisd>
-    sfwt(numstages,wt,2,2,0);
-
-  vector<wosd> outsamples;
+  unsigned i, numlevels=numstages+1;
 
   // Read the data from file into an input vector
-  vector<wisd> samples;
+  deque<wisd> samples;
   double sample;
   while (infile >> sample) {
     wisd wavesample;
@@ -78,8 +72,9 @@ int main(int argc, char *argv[])
   }
   infile.close();
 
-  unsigned numlevels=numstages+1;
-  unsigned i;
+  // Instantiate a static forward wavelet transform
+  cerr << "StaticForwardWaveletTransform instantiation" << endl;
+  StaticForwardWaveletTransform<double, wosd, wisd> sfwt(numstages,wt,2,2,0);
 
   // Create vectors for the level outputs
   vector<deque<wosd> *> levels;
@@ -95,24 +90,18 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  for (i=0; i<samples.size(); i++) {
-    sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+  // Since we are working in block transforms, create an input block of samples
+  WaveletInputSampleBlock<wisd> inputblock(samples);
 
-    // Print the new samples
-    cerr << "Output for input sample " << i << ":" << endl;
-    for (unsigned j=0; j<outsamples.size(); j++) {
-      cerr << outsamples[j];
+  vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
 
-      int samplelevel = outsamples[j].GetSampleLevel();
-      levels[samplelevel]->push_front(outsamples[j]);
-    }
+  sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
 
-    outsamples.clear();
-  }
-
+  // Print the outputs
   cerr << "The size of each level:" << endl;
   for (i=0; i<numlevels; i++) {
-    cerr << "\tLevel " << i << " size = " << levels[i]->size() << endl;
+    cerr << "\tLevel " << i << " size = " 
+	 << forwardoutput[i].GetBlockSize() << endl;
   }
   cerr << endl;
 
@@ -126,25 +115,20 @@ int main(int argc, char *argv[])
   }
   cout << endl;
 
-  unsigned loopsize = levels[0]->size();
+  unsigned loopsize = forwardoutput[0].GetBlockSize();
   for (i=0; i<loopsize; i++) {
     cout << i << "\t";
 
     for (unsigned j=0; j<numlevels; j++) {
-      if (!levels[j]->empty()) {
+      if (!forwardoutput[j].Empty()) {
 	wosd wos;
-	wos = levels[j]->back();
+	wos = forwardoutput[j].Front();
 	cout << wos.GetSampleValue() << "\t";
-	levels[j]->pop_back();
+	forwardoutput[j].PopSampleFront();
       }
     }
     cout << endl;
   }
-
-  for (i=0; i<numlevels; i++) {
-    CHK_DEL(levels[i]);
-  }
-  levels.clear();
 
   return 0;
 }

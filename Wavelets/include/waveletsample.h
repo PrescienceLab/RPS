@@ -11,7 +11,8 @@ public:
   WaveletInputSample(const WaveletInputSample &rhs);
   virtual ~WaveletInputSample();
 
-  virtual WaveletInputSample<SAMPLETYPE> & operator=(const Sample<SAMPLETYPE> &rhs);
+  virtual WaveletInputSample<SAMPLETYPE> & operator=
+    (const Sample<SAMPLETYPE> &rhs);
 };
 
 template <class SAMPLETYPE>
@@ -22,7 +23,9 @@ protected:
 public:
   WaveletOutputSample();
   WaveletOutputSample(const WaveletOutputSample &rhs);
-  WaveletOutputSample(const SAMPLETYPE value, const int level, const unsigned index);
+  WaveletOutputSample(const SAMPLETYPE value,
+		      const int level,
+		      const unsigned index);
   virtual ~WaveletOutputSample();
 
   virtual WaveletOutputSample & operator=(const Sample<SAMPLETYPE> &rhs);
@@ -32,7 +35,8 @@ public:
   inline int GetSampleLevel() const;
 
   virtual ostream & Print(ostream &os) const {
-    os << "index: " << index << "\tvalue: " << value << "\tlevel: " << level << endl;
+    os << "index: " << index << "\tvalue: " << value << "\tlevel: " 
+       << level << endl;
     return os;
   };
   virtual ostream & operator<<(ostream &os) const { return Print(os);}
@@ -91,7 +95,9 @@ WaveletOutputSample(const WaveletOutputSample &rhs) :
 
 template <class SAMPLETYPE>
 WaveletOutputSample<SAMPLETYPE>::
-WaveletOutputSample(const SAMPLETYPE value, const int level, const unsigned index) :
+WaveletOutputSample(const SAMPLETYPE value,
+		    const int level,
+		    const unsigned index) :
   OutputSample<SAMPLETYPE>(value,index)
 {
   this->level = level;

@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  typedef WaveletInputSample<double> wisd;
+  typedef WaveletOutputSample<double> wosd;
+
   cerr << "WaveletType: " << type << endl;
 
   int numstages = atoi(argv[2]);
@@ -59,16 +62,16 @@ int main(int argc, char *argv[])
 
   // Instantiate a static forward wavelet transform
   cerr << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform<double, WaveletOutputSample<double>, WaveletInputSample<double> >
+  StaticForwardWaveletTransform<double, wosd, wisd>
     sfwt(numstages,wt,2,2,0);
 
-  vector<WaveletOutputSample<double> > outsamples;
+  vector<wosd> outsamples;
 
   // Read the data from file into an input vector
-  vector<WaveletInputSample<double> > samples;
+  vector<wisd> samples;
   double sample;
   while (infile >> sample) {
-    WaveletInputSample<double> wavesample;
+    wisd wavesample;
     wavesample.SetSampleValue(sample);
     samples.push_back(wavesample);
   }
@@ -78,9 +81,9 @@ int main(int argc, char *argv[])
   unsigned i;
 
   // Create vectors for the level outputs
-  vector<deque<WaveletOutputSample<double> > *> levels;
+  vector<deque<wosd> *> levels;
   for (i=0; i<numlevels; i++) {
-    deque<WaveletOutputSample<double> >* pwos = new deque<WaveletOutputSample<double> >();
+    deque<wosd>* pwos = new deque<wosd>();
     levels.push_back(pwos);
   }
 
@@ -93,7 +96,7 @@ int main(int argc, char *argv[])
 
   for (i=0; i<samples.size(); i++) {
     // Copy the input signal to the level 0 approximation signal
-    WaveletOutputSample<double> tempsamp(samples[i].GetSampleValue(),0,i);
+    wosd tempsamp(samples[i].GetSampleValue(),0,i);
     levels[0]->push_front(tempsamp);
 
     sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
@@ -132,7 +135,7 @@ int main(int argc, char *argv[])
 
     for (unsigned j=0; j<numlevels; j++) {
       if (!levels[j]->empty()) {
-	WaveletOutputSample<double> wos;
+	wosd wos;
 	wos = levels[j]->back();
 	cout << wos.GetSampleValue() << "\t";
 	levels[j]->pop_back();

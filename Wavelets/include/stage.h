@@ -622,15 +622,14 @@ PerformBlockOperation(WaveletOutputSampleBlock<OUTSAMPLE> &out_l,
 		      const SampleBlock<INSAMPLE> &in)
 {
   // Need a temporary output block for filter operations
-  WaveletOutputSampleBlock<OUTSAMPLE>* tempblock_l = out_l.clone();
-  WaveletOutputSampleBlock<OUTSAMPLE>* tempblock_h = out_h.clone();
+  WaveletOutputSampleBlock<OUTSAMPLE> tempblock_l, tempblock_h;
 
   // Block filter and downsample the new input buffer
-  stagehelp.LPFBufferOperation(*tempblock_l, in);
-  stagehelp.HPFBufferOperation(*tempblock_h, in);  
+  stagehelp.LPFBufferOperation(tempblock_l, in);
+  stagehelp.HPFBufferOperation(tempblock_h, in);  
 
-  downsampler_l.DownSampleBuffer(out_l, *tempblock_l);
-  downsampler_h.DownSampleBuffer(out_h, *tempblock_h);
+  downsampler_l.DownSampleBuffer(out_l, tempblock_l);
+  downsampler_h.DownSampleBuffer(out_h, tempblock_h);
 
   out_l.SetBlockLevel(outlevel_l);
   out_h.SetBlockLevel(outlevel_h);

@@ -11,7 +11,7 @@ private:
   unsigned index;
 
 public:
-  IndexManager(bool index_set=false, unsigned index=0) {
+  IndexManager(const bool index_set=false, const unsigned index=0) {
     this->index_set = index_set; this->index = index;
   };
 
@@ -26,7 +26,7 @@ public:
     return *this;
   };
 
-  bool InOrder(unsigned nxt_index) {
+  bool InOrder(const unsigned nxt_index) {
     if (nxt_index == index+1) {
       index++;
       return true;
@@ -39,12 +39,12 @@ public:
   inline void ClearIndexSetFlag() { index_set=false; };
   inline void SetIndexSetFlag() { index_set=true; };
 
-  inline void SetIndex(unsigned index) { 
+  inline void SetIndex(const unsigned index) { 
     this->index=index; 
     index_set=true;
   };
 
-  inline unsigned GetIndex() {
+  inline unsigned GetIndex() const {
     return index;
   };
 

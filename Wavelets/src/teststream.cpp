@@ -58,14 +58,17 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  typedef WaveletInputSample<double> wisd;
+  typedef WaveletOutputSample<double> wosd;
+
   WaveletType wt = (WaveletType) type;
 
   // Read the data from file into an input vector
-  vector<WaveletInputSample<double> > samples;
+  vector<wisd> samples;
   double sample;
   unsigned index=0;
   while (infile >> sample) {
-    WaveletInputSample<double> wavesample;
+    wisd wavesample;
     wavesample.SetSampleValue(sample);
     wavesample.SetSampleIndex(index++);
     samples.push_back(wavesample);
@@ -80,7 +83,7 @@ int main(int argc, char *argv[])
 
   // Instantiate a static forward wavelet transform
   cout << "StaticForwardWaveletTransform instantiation" << endl;
-  StaticForwardWaveletTransform<double, WaveletOutputSample<double>, WaveletInputSample<double> >
+  StaticForwardWaveletTransform<double, wosd, wisd>
     sfwt(numstages,wt,2,2,0);
 
   // Parameterize the delay block
@@ -96,28 +99,29 @@ int main(int argc, char *argv[])
   }
 
   // Instantiate a delay block
-  DelayBlock<WaveletOutputSample<double> >
+  DelayBlock<wosd>
     dlyblk(numstages+1, 0, delay);
 
   // Instantiate a static forward wavelet transform
   cout << "StaticReverseWaveletTransform instantiation" << endl;
-  StaticReverseWaveletTransform<double, WaveletInputSample<double>, WaveletOutputSample<double> >
+  StaticReverseWaveletTransform<double, wisd, wosd>
     srwt(numstages,wt,2,2,0);
 
 
   // Create result buffers
-  vector<WaveletOutputSample<double> > outsamples;
-  vector<WaveletOutputSample<double> > delaysamples;
-  vector<WaveletInputSample<double> >  finaloutput;
-  vector<WaveletInputSample<double> >  outsamp;
+  vector<wosd> outsamples;
+  vector<wosd> delaysamples;
+  vector<wisd> finaloutput;
+  vector<wisd> outsamp;
 
 
   for (i=0; i<samples.size(); i++) {
+    cout << endl << "Sample time: " << i << endl;
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
     
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
 
-    if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
+    if (srwt.StreamingTransformSampleOperation(outsamp, delaysamples)) {
       for (unsigned j=0; j<outsamp.size(); j++) {
 	finaloutput.push_back(outsamp[j]);
       }

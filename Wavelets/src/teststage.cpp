@@ -47,21 +47,24 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  typedef WaveletInputSample<double> wisd;
+  typedef WaveletOutputSample<double> wosd;
+
   WaveletType wt = (WaveletType) type;
 
   // Instantiate a forward stage
   cout << "ForwardWaveletStage instantiation" << endl;
-  ForwardWaveletStage<double, WaveletOutputSample<double>, WaveletInputSample<double> > 
-    fwd_stage(wt,2,2,0,1);
+  ForwardWaveletStage<double, wosd, wisd> 
+    fwd_stage(wt,2,2,1,0);
 
-  WaveletOutputSampleBlock<WaveletOutputSample<double> > output_l, output_h;
+  WaveletOutputSampleBlock<wosd> output_l, output_h;
 
   // Read the data from file into an input vector
-  deque<WaveletInputSample<double> > samples;
+  deque<wisd> samples;
   double sample;
   unsigned index=0;
   while (infile >> sample) {
-    WaveletInputSample<double> wavesample(sample, index++);
+    wisd wavesample(sample, index++);
     samples.push_back(wavesample);
   }
   infile.close();
@@ -71,7 +74,7 @@ int main(int argc, char *argv[])
     cout << "\t" << samples[i];
   }
 
-  WaveletInputSampleBlock<WaveletInputSample<double> > input(samples);
+  WaveletInputSampleBlock<wisd> input(samples);
   cout << "The WaveletInputSampleBlock: " << endl;
   cout << input;
 
@@ -95,10 +98,10 @@ int main(int argc, char *argv[])
 
   // Instantiate a reverse stage
   cout << "ReverseWaveletStage instantiation" << endl;
-  ReverseWaveletStage<double, WaveletInputSample<double>, WaveletOutputSample<double> > 
+  ReverseWaveletStage<double, wisd, wosd> 
     rev_stage(wt,2,2);
 
-  WaveletInputSampleBlock<WaveletInputSample<double> > reverseout;
+  WaveletInputSampleBlock<wisd> reverseout;
 
   rev_stage.PerformBlockOperation(reverseout, output_l, output_h);
 
