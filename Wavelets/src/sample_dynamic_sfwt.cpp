@@ -167,118 +167,64 @@ int main(int argc, char *argv[])
 
   // Create vectors for the level outputs
   vector<deque<wosd> *> levels;
-  for (i=0; i<numlevels; i++) {
+  for (i=0; i<MAX(numlevels,numlevels_new); i++) {
     deque<wosd>* pwos = new deque<wosd>();
     levels.push_back(pwos);
   }
 
   bool orig_struct=true;
   int current_interval=0;
-  switch(tt) {
-  case APPROX: {
-    for (i=0; i<samples.size(); i++) {
-      if (++current_interval == change_interval) {
-	// Toggle the structure
-	bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
-	  dfwt.ChangeStructure(numstages, wt);
-	if (!success) {
-	  cerr << "sample_dynamic_sfwt: Structure failure.\n";
-	}
-	current_interval=0;
-	(orig_struct) ? (orig_struct=false) : (orig_struct=true);
+  for (i=0; i<samples.size(); i++) {
+
+    // Toggle the structure if change interval expired
+    if (++current_interval == change_interval) {
+      bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
+	dfwt.ChangeStructure(numstages, wt);
+      if (!success) {
+	cerr << "sample_dynamic_sfwt: Structure failure.\n";
       }
+      current_interval=0;
+      (orig_struct) ? (orig_struct=false) : (orig_struct=true);
+    }
+
+    switch(tt) {
+    case APPROX: {
       dfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
-
-      if (flat) {
-	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
-      }
-
-      for (unsigned j=0; j<outsamples.size(); j++) {
-	int samplelevel = outsamples[j].GetSampleLevel();
-	levels[samplelevel]->push_front(outsamples[j]);
-	if (flat) {
-	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-	}
-      }
-      if (flat) {
-	*outstr.tie() << endl;
-      }
-      outsamples.clear();
+      break;
     }
-    numlevels = (orig_struct) ? numlevels - 1 : numlevels_new - 1;
-  }
-  break;
-
-  case DETAIL: {
-    for (i=0; i<samples.size(); i++) {
-      if (++current_interval == change_interval) {
-	// Toggle the structure
-	bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
-	  dfwt.ChangeStructure(numstages, wt);
-	if (!success) {
-	  cerr << "sample_dynamic_sfwt: Structure failure.\n";
-	}
-	current_interval=0;
-	(orig_struct) ? (orig_struct=false) : (orig_struct=true);
-      }
+    case DETAIL: {
       dfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
-
-      if (flat) {
-	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
-      }
-
-      for (unsigned j=0; j<outsamples.size(); j++) {
-	int samplelevel = outsamples[j].GetSampleLevel();
-	levels[samplelevel]->push_front(outsamples[j]);
-	if (flat) {
-	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-	}
-      }
-      if (flat) {
-	*outstr.tie() << endl;
-      }
-      outsamples.clear();
+      break;
     }
-    numlevels = (orig_struct) ? numlevels - 1 : numlevels_new - 1;
-  }
-  break;
-
-  case TRANSFORM: {
-    for (i=0; i<samples.size(); i++) {
-      if (++current_interval == change_interval) {
-	// Toggle the structure
-	bool success = (orig_struct) ? dfwt.ChangeStructure(numstages_new, wtnew) :
-	  dfwt.ChangeStructure(numstages, wt);
-	if (!success) {
-	  cerr << "sample_dynamic_sfwt: Structure failure.\n";
-	}
-	current_interval=0;
-	(orig_struct) ? (orig_struct=false) : (orig_struct=true);
-      }
+    case TRANSFORM: {
       dfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-
-      if (flat) {
-	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
-      }
-
-      for (unsigned j=0; j<outsamples.size(); j++) {
-	int samplelevel = outsamples[j].GetSampleLevel();
-	levels[samplelevel]->push_front(outsamples[j]);
-	if (flat) {
-	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
-	}
-      }
-      if (flat) {
-	*outstr.tie() << endl;
-      }
-
-      outsamples.clear();
+      break;
     }
-  }
-  break;
+    default:
+      break;
+    }
 
-  default:
-    break;
+    if (flat) {
+      *outstr.tie() << i << "\t" << outsamples.size() << "\t";
+    }
+
+    for (unsigned j=0; j<outsamples.size(); j++) {
+      int samplelevel = outsamples[j].GetSampleLevel();
+      levels[samplelevel]->push_front(outsamples[j]);
+      if (flat) {
+	*outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
+      }
+    }
+    if (flat) {
+      *outstr.tie() << endl;
+    }
+    outsamples.clear();
+  }
+
+  if (tt==APPROX || tt==DETAIL) {
+    numlevels = MAX(numlevels-1, numlevels_new-1);
+  } else {
+    numlevels = MAX(numlevels, numlevels_new);
   }
 
   // Human readable output
@@ -288,7 +234,7 @@ int main(int argc, char *argv[])
       *outstr.tie() << "\tLevel " << i << " size = " << levels[i]->size() << endl;
     }
     *outstr.tie() << endl;
-
+    
     *outstr.tie() << "Index     ";
     for (i=0; i<numlevels; i++) {
       *outstr.tie() << "Level " << i << "        " ;

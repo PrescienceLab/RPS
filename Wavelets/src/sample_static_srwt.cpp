@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <map>
 
 #include "banner.h"
 #include "waveletsample.h"
@@ -11,6 +10,7 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
@@ -133,23 +133,8 @@ int main(int argc, char *argv[])
   vector<wisd> currentoutput;
   vector<wisd> reconst;
 
-  unsigned sampletime, numsamples;
-  int levelnum;
-  double sampvalue;
-  map<int, unsigned, less<int> > indices;
-  while (!cin.eof()) {
-    cin >> sampletime >> numsamples;
-    for (unsigned i=0; i<numsamples; i++) {
-      cin >> levelnum >> sampvalue;
-      if (indices.find(levelnum) == indices.end()) {
-	indices[levelnum] = 0;
-      } else {
-	indices[levelnum] += 1;
-      }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      waveletcoefs.push_back(sample);
-    }
-
+  FlatParser fp;
+  while ( fp.ParseWaveletCoefsSample(waveletcoefs, cin) ) {
     dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs);
     if (srwt.StreamingTransformSampleOperation(currentoutput, delaysamples)) {
       for (unsigned j=0; j<currentoutput.size(); j++) {

@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <map>
 #include <limits.h>
 
 #include "banner.h"
@@ -12,6 +11,7 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
@@ -142,30 +142,8 @@ int main(int argc, char *argv[])
   vector<wisd> currentoutput;
   vector<wisd> reconst;
 
-  unsigned sampletime, numsamples;
-  char mratype;
-  int levelnum;
-  double sampvalue;
-  map<int, unsigned, less<int> > indices;
-  while (!cin.eof()) {
-    cin >> sampletime >> mratype >> numsamples;
-    for (unsigned i=0; i<numsamples; i++) {
-      cin >> levelnum >> sampvalue;
-      if (indices.find(levelnum) == indices.end()) {
-	indices[levelnum] = 0;
-      } else {
-	indices[levelnum] += 1;
-      }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      if (mratype == 'A') {
-	approxcoefs.push_back(sample);
-      } else if (mratype == 'D') {
-	detailcoefs.push_back(sample);
-      } else {
-	cerr << "sample_static_mixed_srwt: Invalid MRA type.\n";
-      }
-    }
-
+  FlatParser fp;
+  while ( fp.ParseMRACoefsSample(approxcoefs, detailcoefs, cin) ) {
     approx_dlyblk.StreamingSampleOperation(approx_dlysamples, approxcoefs);
     detail_dlyblk.StreamingSampleOperation(detail_dlysamples, detailcoefs);
 

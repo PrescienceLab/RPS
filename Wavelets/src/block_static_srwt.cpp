@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <map>
 
 #include "banner.h"
 #include "waveletsample.h"
@@ -11,6 +10,7 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
@@ -117,23 +117,8 @@ int main(int argc, char *argv[])
   }
 
   // Read in the wavelet coefficients
-  unsigned indextime, numsamples;
-  int levelnum;
-  double sampvalue;
-  map<int, unsigned, less<int> > indices;
-  while (!cin.eof()) {
-    cin >> indextime >> numsamples;
-    for (unsigned i=0; i<numsamples; i++) {
-      cin >> levelnum >> sampvalue;
-      if (indices.find(levelnum) == indices.end()) {
-	indices[levelnum] = 0;
-      } else {
-	indices[levelnum] += 1;
-      }
-      wosd sample(sampvalue, levelnum, indices[levelnum]);
-      waveletcoefs[levelnum].PushSampleBack(sample);
-    }
-  }
+  FlatParser fp;
+  fp.ParseWaveletCoefsBlock(waveletcoefs, cin);
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];

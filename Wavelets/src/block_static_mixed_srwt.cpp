@@ -3,7 +3,6 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
-#include <map>
 
 #include "banner.h"
 #include "waveletsample.h"
@@ -11,6 +10,7 @@
 #include "transforms.h"
 #include "delay.h"
 #include "cmdlinefuncs.h"
+#include "flatparser.h"
 
 void usage()
 {
@@ -123,41 +123,8 @@ int main(int argc, char *argv[])
   }
 
   // Read in the MRA coefficients
-  unsigned indextime, numsamples;
-  char mratype;
-  int levelnum;
-  double sampvalue;
-  map<int, unsigned, less<int> > approx_indices;
-  map<int, unsigned, less<int> > detail_indices;
-  while (!cin.eof()) {
-    cin >> indextime >> mratype >> numsamples;
-    
-    if (mratype == 'A') {
-      for (unsigned i=0; i<numsamples; i++) {
-	cin >> levelnum >> sampvalue;
-	if (approx_indices.find(levelnum) == approx_indices.end()) {
-	  approx_indices[levelnum] = 0;
-	} else {
-	  approx_indices[levelnum] += 1;
-	}
-	wosd sample(sampvalue, levelnum, approx_indices[levelnum]);
-	approxcoefs[levelnum].PushSampleBack(sample);
-      }
-    } else if (mratype == 'D') {
-      for (unsigned i=0; i<numsamples; i++) {
-	cin >> levelnum >> sampvalue;
-	if (detail_indices.find(levelnum) == detail_indices.end()) {
-	  detail_indices[levelnum] = 0;
-	} else {
-	  detail_indices[levelnum] += 1;
-	}
-	wosd sample(sampvalue, levelnum, detail_indices[levelnum]);
-	detailcoefs[levelnum].PushSampleBack(sample);
-      }
-    } else {
-      cerr << "block_static_mixed_srwt: Invalid MRA type.\n";
-    }
-  }
+  FlatParser fp;
+  fp.ParseMRACoefsBlock(approxcoefs, detailcoefs, cin);
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];

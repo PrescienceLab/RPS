@@ -1948,7 +1948,7 @@ AddStage()
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, OUTSAMPLE>* pfws = 
     (stages.back())->clone();
   pfws->ClearAllState();
-  pfws->SetOutputLevelLow(lowest_outlvl+numstages);
+  pfws->SetOutputLevelLow(lowest_outlvl+numstages-1);
   pfws->SetOutputLevelHigh(lowest_outlvl+numstages-1);
   stages.push_back(pfws);
 

@@ -61,7 +61,8 @@ LIBOBJSLIST = coefficients.o       \
               stage.o              \
               transforms.o         \
               delay.o              \
-	      cmdlinefuncs.o
+	      cmdlinefuncs.o	   \
+	      flatparser.o
 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
