@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
     cerr << "block_static_mixed_srwt: stdin is not allowed in this utility.\n";
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
       cerr << "block_static_mixed_srwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -92,19 +93,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[6],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[6]);
     if (!outfile) {
       cerr << "block_static_mixed_srwt: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   SignalSpec sigspec;
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 
   // Read in the MRA coefficients
   FlatParser fp;
-  fp.ParseMRACoefsBlock(optim_spec, approxcoefs, detailcoefs, cin);
+  fp.ParseMRACoefsBlock(optim_spec, approxcoefs, detailcoefs, *is);
 
   // Transform the coefficients into wavecoefs and change level of approx
   for (unsigned i=0; i<optim_stages; i++) {
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
   }
 
   if (!flat) {
-    OutputLevelMetaData(outstr, wavecoefs, optim_stages+1);
+    OutputLevelMetaData(*outstr, wavecoefs, optim_stages+1);
   }
 
   // The operations
@@ -174,16 +174,16 @@ int main(int argc, char *argv[])
 
   if (!flat) {
     unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,optim_stages)-1;
-    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
+    *outstr << "The real-time system delay is " << sampledelay << endl;
+    *outstr << endl;
+    *outstr << "Index\tValue\n" << endl;
+    *outstr << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
-    *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
+    *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   if (delay != 0) {
     delete[] delay;

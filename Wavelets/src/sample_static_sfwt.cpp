@@ -103,16 +103,15 @@ int main(int argc, char *argv[])
   ostream *outstr=&cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
-    //    outstr.tie(&cout);
   } else if (!strcasecmp(argv[6],"stderr")) {
-    outstr->tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[6]);
     if (!outfile) {
       cerr << "sample_static_sfwt: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
-    outstr->tie(&outfile);
+    outstr = &outfile;
   }
 
   unsigned i;
@@ -120,7 +119,7 @@ int main(int argc, char *argv[])
   // Get the samples from stream
   vector<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   // Instantiate a static forward wavelet transform

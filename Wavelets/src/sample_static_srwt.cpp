@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -65,7 +66,7 @@ int main(int argc, char *argv[])
       cerr << "sample_static_srwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -89,19 +90,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[6],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[6]);
     if (!outfile) {
       cerr << "sample_static_srwt: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   // Parameterize and instantiate the delay block
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   vector<wisd> reconst;
 
   FlatParser fp;
-  while ( fp.ParseWaveletCoefsSample(waveletcoefs, cin) ) {
+  while ( fp.ParseWaveletCoefsSample(waveletcoefs, *is) ) {
     dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs);
     if (srwt.StreamingTransformSampleOperation(currentoutput, delaysamples)) {
       for (unsigned j=0; j<currentoutput.size(); j++) {
@@ -133,16 +133,16 @@ int main(int argc, char *argv[])
 
   if (!flat) {
     unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
-    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
+    *outstr << "The real-time system delay is " << sampledelay << endl;
+    *outstr << endl;
+    *outstr << "Index\tValue\n" << endl;
+    *outstr << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.size(); i++) {
-    *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
+    *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   if (delay != 0) {
     delete[] delay;

@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
       cerr << "sample_static_streaming_test: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -77,25 +78,24 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[5],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[5],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
       cerr << "sample_static_streaming_test: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   // Read the data from file into an input vector
   vector<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   // Instantiate a static forward wavelet transform
@@ -131,10 +131,10 @@ int main(int argc, char *argv[])
   }
 
   for (unsigned i=0; i<MIN(finaloutput.size(), samples.size()); i++) {
-    *outstr.tie() << i << "\t" << samples[i].GetSampleValue() << "\t"
+    *outstr << i << "\t" << samples[i].GetSampleValue() << "\t"
 		  << finaloutput[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   // Calculate the error between input and output
   double error=0;
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
     error += samples[i].GetSampleValue() - finaloutput[j].GetSampleValue();
   }
   
-  *outstr.tie() << "Mean error: " << error/(double)i << endl;
+  *outstr << "Mean error: " << error/(double)i << endl;
 
   if (delay != 0) {
     delete[] delay;

@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
       cerr << "block_static_streaming_test: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -67,26 +68,25 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[4],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[4],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[4]);
     if (!outfile) {
       cerr << "block_static_streaming_test: Cannot open output file " << argv[4] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   unsigned i;
 
   deque<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   WaveletInputSampleBlock<wisd> inputblock(samples);
@@ -107,10 +107,10 @@ int main(int argc, char *argv[])
 
 
   for (i=0; i<MIN(inputblock.GetBlockSize(), reconst.GetBlockSize()); i++) {
-    *outstr.tie() << i << "\t" << inputblock[i].GetSampleValue() << "\t"
+    *outstr << i << "\t" << inputblock[i].GetSampleValue() << "\t"
 	    << reconst[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   // Calculate the error between input and output
   double error=0;
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     error += inputblock[i].GetSampleValue() - reconst[i].GetSampleValue();
   }
   
-  *outstr.tie() << "Mean error: " << error/(double)i << endl;
+  *outstr << "Mean error: " << error/(double)i << endl;
 
   return 0;
 }

@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
       cerr << "block_dynamic_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -121,19 +122,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[9],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[9],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[9]);
     if (!outfile) {
       cerr << "block_dynamic_mixed_sfwt: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   unsigned i;
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
   // Read the data from file into an input vector
   deque<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   WaveletInputSampleBlock<wisd> inputblock(samples);
@@ -216,18 +216,18 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "APPROXIMATIONS" << endl;
-    *outstr.tie() << "--------------" << endl;
-    OutputLevelMetaData(outstr, a_levelsize, levelcnt);
+    *outstr << "APPROXIMATIONS" << endl;
+    *outstr << "--------------" << endl;
+    OutputLevelMetaData(*outstr, a_levelsize, levelcnt);
 
-    *outstr.tie() << endl << "DETAILS" << endl;
-    *outstr.tie() << "-------" << endl;
-    OutputLevelMetaData(outstr, d_levelsize, levelcnt);
+    *outstr << endl << "DETAILS" << endl;
+    *outstr << "-------" << endl;
+    OutputLevelMetaData(*outstr, d_levelsize, levelcnt);
   }
 
   unsigned count=0;
   for (i=0; i<MIN(approxlevels.size(), detaillevels.size()); i++) {
-    count=OutputMRACoefs(outstr, approxlevels[i], detaillevels[i], count);
+    count=OutputMRACoefs(*outstr, approxlevels[i], detaillevels[i], count);
   }
 
   if (a_levelsize != 0) {

@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is=&cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
       cerr << "sample_static_mixed_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -92,19 +93,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr=&cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[6],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[6]);
     if (!outfile) {
       cerr << "sample_static_mixed_sfwt: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   unsigned i;
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   // Read the data from file into an input vector
   vector<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   // Instantiate a static forward wavelet transform
@@ -142,16 +142,16 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    *outstr.tie() << "APPROXIMATIONS" << endl;
-    *outstr.tie() << "--------------" << endl;
-    OutputLevelMetaData(outstr, approxlevels, numstages);
+    *outstr << "APPROXIMATIONS" << endl;
+    *outstr << "--------------" << endl;
+    OutputLevelMetaData(*outstr, approxlevels, numstages);
 
-    *outstr.tie() << endl << "DETAILS" << endl;
-    *outstr.tie() << "-------" << endl;
-    OutputLevelMetaData(outstr, detaillevels, numstages);
+    *outstr << endl << "DETAILS" << endl;
+    *outstr << "-------" << endl;
+    OutputLevelMetaData(*outstr, detaillevels, numstages);
   }
 
-  OutputMRACoefs(outstr, approxlevels, detaillevels);
+  OutputMRACoefs(*outstr, approxlevels, detaillevels);
 
   return 0;
 }

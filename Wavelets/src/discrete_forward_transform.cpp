@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
       cerr << "discrete_forward_transform: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -86,24 +87,23 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[5],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[5],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
       cerr << "discrete_forward_transform: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   deque<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   WaveletInputSampleBlock<wisd> inputblock(samples);
@@ -135,10 +135,10 @@ int main(int argc, char *argv[])
 
   // Human readable output
   if (!flat) {
-    OutputLevelMetaData(outstr, forwardoutput, tt);
+    OutputLevelMetaData(*outstr, forwardoutput, tt);
   }
 
-  OutputWaveletCoefs(outstr, forwardoutput, tt, flat);
+  OutputWaveletCoefs(*outstr, forwardoutput, tt, flat);
 
   return 0;
 }

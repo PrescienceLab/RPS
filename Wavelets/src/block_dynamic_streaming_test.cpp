@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
       cerr << "block_dynamic_streaming_test: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -101,19 +102,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[7],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[7],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[7]);
     if (!outfile) {
       cerr << "block_dynamic_streaming_test: Cannot open output file " << argv[7] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   unsigned i;
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
   // Read a block of data from file into an input vector
   deque<wisd> samples;
   FlatParser fp;
-  fp.ParseTimeDomain(samples, cin);
+  fp.ParseTimeDomain(samples, *is);
   infile.close();
 
   WaveletInputSampleBlock<wisd> inputblock(samples);
@@ -193,19 +193,19 @@ int main(int argc, char *argv[])
 
   unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
   if (sampledelay <= (unsigned)change_interval) {
-    *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
+    *outstr << "The real-time system delay is " << sampledelay << endl;
   } else {
-    *outstr.tie() << "The real-time system delay cannot be calculated." << endl;
+    *outstr << "The real-time system delay cannot be calculated." << endl;
   }
-  *outstr.tie() << endl;
-  *outstr.tie() << "Index\tValue\n" << endl;
-  *outstr.tie() << "-----\t-----\n" << endl << endl;
+  *outstr << endl;
+  *outstr << "Index\tValue\n" << endl;
+  *outstr << "-----\t-----\n" << endl << endl;
 
   for (i=0; i<MIN(finaloutput.GetBlockSize(), inputblock.GetBlockSize()); i++) {
-    *outstr.tie() << i << "\t" << inputblock[i].GetSampleValue() << "\t"
+    *outstr << i << "\t" << inputblock[i].GetSampleValue() << "\t"
 		  << finaloutput[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   // Calculate the error between input and output
   double error=0;
@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
     error += inputblock[i].GetSampleValue() - finaloutput[j].GetSampleValue();
   }
   
-  *outstr.tie() << "Mean error: " << error/(double)i << endl;
+  *outstr << "Mean error: " << error/(double)i << endl;
 
   if (delay != 0) {
     delete[] delay;

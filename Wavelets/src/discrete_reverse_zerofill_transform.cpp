@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
       cerr << "discrete_reverse_zerofill_transform: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -89,19 +90,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[6],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[6],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[6]);
     if (!outfile) {
       cerr << "discrete_reverse_zerofill_transform: Cannot open output file " << argv[6] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   vector<int> zerospec;
@@ -112,10 +112,10 @@ int main(int argc, char *argv[])
 
   // Read in the wavelet coefficients
   FlatParser fp;
-  fp.ParseWaveletCoefsBlock(waveletcoefs, cin);
+  fp.ParseWaveletCoefsBlock(waveletcoefs, *is);
 
   if (!flat) {
-    OutputLevelMetaData(outstr, waveletcoefs, TRANSFORM);
+    OutputLevelMetaData(*outstr, waveletcoefs, TRANSFORM);
   }
 
   // Instantiate a reverse discrete wavelet transform
@@ -128,17 +128,17 @@ int main(int argc, char *argv[])
   rdwt.DiscreteWaveletTransformZeroFillOperation(reconst, waveletcoefs, zerospec);
 
   if (!flat) {
-    *outstr.tie() << "The real-time system delay is no less than "
+    *outstr << "The real-time system delay is no less than "
 		  << waveletcoefs.GetBlockSize() << endl;
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
+    *outstr << endl;
+    *outstr << "Index\tValue\n" << endl;
+    *outstr << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
-    *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
+    *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   return 0;
 }

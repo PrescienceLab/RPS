@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
   } else {
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
       cerr << "sample_dynamic_mixed_srwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -122,19 +123,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[9],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[9],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[9]);
     if (!outfile) {
       cerr << "sample_dynamic_mixed_srwt: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   SignalSpec sigspec;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
   int current_interval=0;
 
   FlatParser fp;
-  while (fp.ParseMRACoefsSample(optim_spec, approxcoefs, detailcoefs, cin)) {
+  while (fp.ParseMRACoefsSample(optim_spec, approxcoefs, detailcoefs, *is)) {
 
     // Transfer the coefficients into wavecoefs and change level of approx
     if (approxcoefs.size()) {
@@ -235,19 +235,19 @@ int main(int argc, char *argv[])
   if (!flat) {
     unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,optim_stages)-1;
     if (sampledelay <= (unsigned)change_interval) {
-      *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
+      *outstr << "The real-time system delay is " << sampledelay << endl;
     } else {
-      *outstr.tie() << "The real-time system delay cannot be calculated." << endl;
+      *outstr << "The real-time system delay cannot be calculated." << endl;
     }
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
+    *outstr << endl;
+    *outstr << "Index\tValue\n" << endl;
+    *outstr << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.size(); i++) {
-    *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
+    *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   if (delay != 0) {
     delete[] delay;

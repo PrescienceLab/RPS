@@ -92,35 +92,35 @@ void OutputWaveletCoefsNonFlat(ostream &os,
 {
   unsigned i;
 
-  *os.tie() << "The size of each level:" << endl;
+  os << "The size of each level:" << endl;
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "\tLevel " << i << " size = " << levels[i]->size() << endl;
+    os << "\tLevel " << i << " size = " << levels[i]->size() << endl;
   }
-  *os.tie() << endl;
+  os << endl;
   
-  *os.tie() << "Index     ";
+  os << "Index     ";
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "Level " << i << "        " ;
+    os << "Level " << i << "        " ;
   }
-  *os.tie() << endl << "-----     ";
+  os << endl << "-----     ";
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "-------        ";
+    os << "-------        ";
   }
-  *os.tie() << endl;
+  os << endl;
   
   unsigned loopsize = levels[0]->size();
   for (i=0; i<loopsize; i++) {
-    *os.tie() << i << "\t";
+    os << i << "\t";
     
     for (unsigned j=0; j<numlevels; j++) {
       if (!levels[j]->empty()) {
 	wosd wos;
 	wos = levels[j]->back();
-	*os.tie() << wos.GetSampleValue() << "\t";
+	os << wos.GetSampleValue() << "\t";
 	levels[j]->pop_back();
       }
     }
-    *os.tie() << endl;
+    os << endl;
   }
 }
 
@@ -129,26 +129,26 @@ void OutputWaveletCoefsNonFlat(ostream &os,
 			       const unsigned numlevels)
 {
   unsigned i;
-  *os.tie() << "The size of each level:" << endl;
+  os << "The size of each level:" << endl;
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "\tLevel " << i << " size = " 
+    os << "\tLevel " << i << " size = " 
 	      << fwdout[i].GetBlockSize() << endl;
   }
-  *os.tie() << endl;
+  os << endl;
 
-  *os.tie() << "Index     ";
+  os << "Index     ";
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "Level " << i << "        " ;
+    os << "Level " << i << "        " ;
   }
-  *os.tie() << endl << "-----     ";
+  os << endl << "-----     ";
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "-------        ";
+    os << "-------        ";
   }
-  *os.tie() << endl;
+  os << endl;
 
   unsigned loopsize = fwdout[0].GetBlockSize();
   for (i=0; i<loopsize; i++) {
-    *os.tie() << i << "\t";
+    os << i << "\t";
 
     // Find number of samples for this line
     unsigned numsamples=0;
@@ -163,11 +163,11 @@ void OutputWaveletCoefsNonFlat(ostream &os,
 	wosd wos;
 	wos = fwdout[j].Front();
 
-	*os.tie() << wos.GetSampleValue() << "\t";
+	os << wos.GetSampleValue() << "\t";
 	fwdout[j].PopSampleFront();
       }
     }
-    *os.tie() << endl;
+    os << endl;
   }
 }
 
@@ -177,7 +177,7 @@ void OutputWaveletCoefsFlat(ostream &os,
 {
   unsigned loopsize = fwdout[0].GetBlockSize();
   for (unsigned i=0; i<loopsize; i++) {
-    *os.tie() << i << "\t";
+    os << i << "\t";
 
     // Find number of samples for this line
     unsigned numsamples=0;
@@ -187,18 +187,18 @@ void OutputWaveletCoefsFlat(ostream &os,
       }
     }
 
-    *os.tie() << numsamples << "\t";
+    os << numsamples << "\t";
 
     for (unsigned j=0; j<numsamples; j++) {
       if (!fwdout[j].Empty()) {
 	wosd wos;
 	wos = fwdout[j].Front();
-	*os.tie() << wos.GetSampleLevel() << " ";
-	*os.tie() << wos.GetSampleValue() << "\t";
+	os << wos.GetSampleLevel() << " ";
+	os << wos.GetSampleValue() << "\t";
 	fwdout[j].PopSampleFront();
       }
     }
-    *os.tie() << endl;
+    os << endl;
   }
 }
 
@@ -217,7 +217,7 @@ void OutputMRACoefsFlat(ostream &os,
   }
 
   for (i=0; i<loopsize; i++) {
-    *os.tie() << i << "\t";
+    os << i << "\t";
 
     // Find number of samples for this line
     unsigned numsamples=0;
@@ -227,18 +227,18 @@ void OutputMRACoefsFlat(ostream &os,
       }
     }
 
-    *os.tie() << ch << " " << numsamples << "\t";
+    os << ch << " " << numsamples << "\t";
 
     for (unsigned j=0; j<numsamples; j++) {
       if (!mraout[j].Empty()) {
 	wosd wos;
 	wos = mraout[j].Front();
-	*os.tie() << wos.GetSampleLevel() << " ";
-	*os.tie() << wos.GetSampleValue() << "\t";
+	os << wos.GetSampleLevel() << " ";
+	os << wos.GetSampleValue() << "\t";
 	mraout[j].PopSampleFront();
       }
     }
-    *os.tie() << endl;
+    os << endl;
   }
 }
 
@@ -247,13 +247,13 @@ void OutputMRACoefsFlat(ostream &os,
 void OutputWaveletCoefs(ostream &os, vector<vector<wosd> > &levels)
 {
   for (unsigned i=0; i<levels.size(); i++) {
-    *os.tie() << i << "\t" << levels[i].size() << "\t";
+    os << i << "\t" << levels[i].size() << "\t";
     vector<wosd> &sampleout = levels[i];
     for (unsigned j=0; j<sampleout.size(); j++) {
-      *os.tie() << sampleout[j].GetSampleLevel() << " "
+      os << sampleout[j].GetSampleLevel() << " "
 		<< sampleout[j].GetSampleValue() << "\t";
     }
-    *os.tie() << endl;
+    os << endl;
   }
 }
 
@@ -276,7 +276,7 @@ void OutputWaveletCoefs(ostream &os,
   
   vector<unsigned> indices;
   for (i=0; i<maxblock*(2<<level); i++) {
-    *os.tie() << i << "\t";
+    os << i << "\t";
 
     unsigned numsamples=0;
     if (tt==TRANSFORM) {
@@ -300,15 +300,15 @@ void OutputWaveletCoefs(ostream &os,
       }
     }
 
-    *os.tie() << numsamples << "\t";
+    os << numsamples << "\t";
     for (k=0; k<indices.size(); k++) {
       wosd wos;
       wos = levels[indices[k]].Front();
-	*os.tie() << wos.GetSampleLevel() << " ";
-	*os.tie() << wos.GetSampleValue() << "\t";
+	os << wos.GetSampleLevel() << " ";
+	os << wos.GetSampleValue() << "\t";
 	levels[indices[k]].PopSampleFront();
     }
-    *os.tie() << endl;
+    os << endl;
     indices.clear();
   }
 }
@@ -325,14 +325,14 @@ void OutputWaveletCoefs(ostream &os,
   for (i=0; i<numlevels; i++) {
     int plevel=lowlevel+numlevels-1-i;
     if (!flat) {
-      *os.tie() << endl;
-      *os.tie() << "Level " << plevel << endl;
-      *os.tie() << "---------\n";
+      os << endl;
+      os << "Level " << plevel << endl;
+      os << "---------\n";
     }
     deque<wosd> leveldata;
     dwosb.GetSamplesAtLevel(leveldata, plevel);
     for (j=0; j<leveldata.size(); j++) {
-      *os.tie() << plevel << " " << leveldata[j].GetSampleValue() << endl;
+      os << plevel << " " << leveldata[j].GetSampleValue() << endl;
     }
   }
 }
@@ -358,7 +358,7 @@ unsigned OutputWaveletCoefs(ostream &os,
   
   vector<unsigned> indices;
   for (i=0; i<maxblock*(2<<level); i++) {
-    *os.tie() << i + start_index << "\t";
+    os << i + start_index << "\t";
 
     unsigned numsamples=0;
     if (tt==TRANSFORM) {
@@ -382,15 +382,15 @@ unsigned OutputWaveletCoefs(ostream &os,
       }
     }
 
-    *os.tie() << numsamples << "\t";
+    os << numsamples << "\t";
     for (k=0; k<indices.size(); k++) {
       wosd wos;
       wos = levels[indices[k]].Front();
-	*os.tie() << wos.GetSampleLevel() << " ";
-	*os.tie() << wos.GetSampleValue() << "\t";
+	os << wos.GetSampleLevel() << " ";
+	os << wos.GetSampleValue() << "\t";
 	levels[indices[k]].PopSampleFront();
     }
-    *os.tie() << endl;
+    os << endl;
     indices.clear();
   }
   return i + start_index;
@@ -402,19 +402,19 @@ void OutputMRACoefs(ostream &os,
 {
   for (unsigned i=0; i<MAX(approxlevels.size(), detaillevels.size()); i++) {
     if (i < approxlevels.size()) {
-      *os.tie() << endl << i << "\tA\t" << approxlevels[i].size();
+      os << endl << i << "\tA\t" << approxlevels[i].size();
       vector<wosd> &approxout = approxlevels[i];
       for (unsigned j=0; j<approxout.size(); j++) {
-	*os.tie() << "\t" << approxout[j].GetSampleLevel() << " "
+	os << "\t" << approxout[j].GetSampleLevel() << " "
 		  << approxout[j].GetSampleValue();
       }
     }
 
     if (i < detaillevels.size()) {
-      *os.tie() << endl << i << "\tD\t" << detaillevels[i].size();
+      os << endl << i << "\tD\t" << detaillevels[i].size();
       vector<wosd> &detailout = detaillevels[i];
       for (unsigned j=0; j<detailout.size(); j++) {
-	*os.tie() << "\t" << detailout[j].GetSampleLevel() << " "
+	os << "\t" << detailout[j].GetSampleLevel() << " "
 		  << detailout[j].GetSampleValue();
       }
     }
@@ -457,15 +457,15 @@ void OutputMRACoefs(ostream &os,
       }
     }
 
-    *os.tie() << i << "\tA\t" << numsamples << "\t";
+    os << i << "\tA\t" << numsamples << "\t";
     for (k=0; k<indices.size(); k++) {
       wosd wos;
       wos = approx[indices[k]].Front();
-      *os.tie() << wos.GetSampleLevel() << " ";
-      *os.tie() << wos.GetSampleValue() << "\t";
+      os << wos.GetSampleLevel() << " ";
+      os << wos.GetSampleValue() << "\t";
       approx[indices[k]].PopSampleFront();
     }
-    *os.tie() << endl;
+    os << endl;
     indices.clear();
 
     // DETAILS
@@ -477,15 +477,15 @@ void OutputMRACoefs(ostream &os,
       }
     }
 
-    *os.tie() << i << "\tD\t" << numsamples << "\t";
+    os << i << "\tD\t" << numsamples << "\t";
     for (k=0; k<indices.size(); k++) {
       wosd wos;
       wos = detail[indices[k]].Front();
-      *os.tie() << wos.GetSampleLevel() << " ";
-      *os.tie() << wos.GetSampleValue() << "\t";
+      os << wos.GetSampleLevel() << " ";
+      os << wos.GetSampleValue() << "\t";
       detail[indices[k]].PopSampleFront();
     }
-    *os.tie() << endl;
+    os << endl;
     indices.clear();
   }
 }
@@ -527,15 +527,15 @@ unsigned OutputMRACoefs(ostream &os,
       }
     }
 
-    *os.tie() << i+index << "\tA\t" << numsamples << "\t";
+    os << i+index << "\tA\t" << numsamples << "\t";
     for (k=0; k<indices.size(); k++) {
       wosd wos;
       wos = approx[indices[k]].Front();
-      *os.tie() << wos.GetSampleLevel() << " ";
-      *os.tie() << wos.GetSampleValue() << "\t";
+      os << wos.GetSampleLevel() << " ";
+      os << wos.GetSampleValue() << "\t";
       approx[indices[k]].PopSampleFront();
     }
-    *os.tie() << endl;
+    os << endl;
     indices.clear();
 
     // DETAILS
@@ -547,15 +547,15 @@ unsigned OutputMRACoefs(ostream &os,
       }
     }
 
-    *os.tie() << i+index << "\tD\t" << numsamples << "\t";
+    os << i+index << "\tD\t" << numsamples << "\t";
     for (k=0; k<indices.size(); k++) {
       wosd wos;
       wos = detail[indices[k]].Front();
-      *os.tie() << wos.GetSampleLevel() << " ";
-      *os.tie() << wos.GetSampleValue() << "\t";
+      os << wos.GetSampleLevel() << " ";
+      os << wos.GetSampleValue() << "\t";
       detail[indices[k]].PopSampleFront();
     }
-    *os.tie() << endl;
+    os << endl;
     indices.clear();
   }
   return i+index;
@@ -579,12 +579,12 @@ void OutputLevelMetaData(ostream &os,
     }
   }
 
-  *os.tie() << "The size of each level:" << endl;
+  os << "The size of each level:" << endl;
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "\tLevel " << i << " size = " 
+    os << "\tLevel " << i << " size = " 
 	      << sizes[i] << endl;
   }
-  *os.tie() << endl;
+  os << endl;
 }
 
 void OutputLevelMetaData(ostream &os,
@@ -598,16 +598,16 @@ void OutputLevelMetaData(ostream &os,
     size.push_back(0);
   }
 
-  *os.tie() << "The size of each level:" << endl;
+  os << "The size of each level:" << endl;
   for (i=0; i<levels.size(); i++) {
     size[levels[i].GetBlockLevel()] = levels[i].GetBlockSize();
   }
 
   for (i=0; i<numlevels; i++) {
-    *os.tie() << "\tLevel " << i << " size = " 
+    os << "\tLevel " << i << " size = " 
 	      << size[i] << endl;
   }
-  *os.tie() << endl;
+  os << endl;
 }
 
 void OutputLevelMetaData(ostream &os,
@@ -616,12 +616,12 @@ void OutputLevelMetaData(ostream &os,
 {
   unsigned i;
 
-  *os.tie() << "The size of each level:" << endl;
+  os << "The size of each level:" << endl;
   for (i=0; i<levelcnt; i++) {
-    *os.tie() << "\tLevel " << i << " size = " 
+    os << "\tLevel " << i << " size = " 
 	      << levelsize[i] << endl;
   }
-  *os.tie() << endl;
+  os << endl;
 }
 
 void OutputLevelMetaData(ostream &os,
@@ -632,7 +632,7 @@ void OutputLevelMetaData(ostream &os,
   unsigned levels=dwosb.GetNumberLevels();
   unsigned M=levels-1;
 
-  *os.tie() << "The size of each level:" << endl;
+  os << "The size of each level:" << endl;
     
   for (i=M; i>=0; i--) {
     unsigned size=1;
@@ -640,8 +640,8 @@ void OutputLevelMetaData(ostream &os,
       size = 0x1 << ((tt!=TRANSFORM) ? (M-i) : (M-i-1));
     }
 
-    *os.tie() << "\tLevel " << i << " size = " 
+    os << "\tLevel " << i << " size = " 
 	      << size << endl;
   }
-  *os.tie() << endl;
+  os << endl;
 }

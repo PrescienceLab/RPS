@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
+  istream *is = &cin;
   ifstream infile;
   if (!strcasecmp(argv[1],"stdin")) {
     cerr << "discrete_reverse_mixed: stdin is not allowed in this utility.\n";
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
       cerr << "discrete_reverse_mixed: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
-    cin = infile;
+    is = &infile;
   }
 
   WaveletType wt = GetWaveletType(argv[2], argv[0]);
@@ -82,19 +83,18 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  ostream outstr;
+  ostream *outstr = &cout;
   ofstream outfile;
   if (!strcasecmp(argv[5],"stdout")) {
-    outstr.tie(&cout);
   } else if (!strcasecmp(argv[5],"stderr")) {
-    outstr.tie(&cerr);
+    outstr = &cerr;
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
       cerr << "discrete_reverse_mixed: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
-    outstr.tie(&outfile);
+    outstr = &outfile;
   }
 
   SignalSpec sigspec;
@@ -128,17 +128,17 @@ int main(int argc, char *argv[])
 
   // Read in the MRA coefficients
   FlatParser fp;
-  fp.ParseMRACoefsBlock(sigspec, approxcoefs, detailcoefs, cin);
+  fp.ParseMRACoefsBlock(sigspec, approxcoefs, detailcoefs, *is);
 
   // Could possible look at available approximation levels and optimize
   // that way, but for now if the one sample approximation is not in
   // the representation, then no approximations are used.
 
   if (!flat) {
-    *outstr.tie() << "APPROX LEVELS:" << endl;
-    OutputLevelMetaData(outstr, approxcoefs, numstages+1);
-    *outstr.tie() << "DETAIL LEVELS:" << endl;
-    OutputLevelMetaData(outstr, detailcoefs, numstages+1);
+    *outstr << "APPROX LEVELS:" << endl;
+    OutputLevelMetaData(*outstr, approxcoefs, numstages+1);
+    *outstr << "DETAIL LEVELS:" << endl;
+    OutputLevelMetaData(*outstr, detailcoefs, numstages+1);
   }
 
   // The operations
@@ -148,17 +148,17 @@ int main(int argc, char *argv[])
 				     numstages+1);
 
   if (!flat) {
-    *outstr.tie() << "The real-time system delay is no less than "
+    *outstr << "The real-time system delay is no less than "
 		  << reconst.GetBlockSize() << endl;
-    *outstr.tie() << endl;
-    *outstr.tie() << "Index\tValue\n" << endl;
-    *outstr.tie() << "-----\t-----\n" << endl << endl;
+    *outstr << endl;
+    *outstr << "Index\tValue\n" << endl;
+    *outstr << "-----\t-----\n" << endl << endl;
   }
 
   for (unsigned i=0; i<reconst.GetBlockSize(); i++) {
-    *outstr.tie() << i << "\t" << reconst[i].GetSampleValue() << endl;
+    *outstr << i << "\t" << reconst[i].GetSampleValue() << endl;
   }
-  *outstr.tie() << endl;
+  *outstr << endl;
 
   return 0;
 }
