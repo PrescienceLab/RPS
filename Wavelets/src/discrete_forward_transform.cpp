@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "block_static_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "discrete_forward_transform: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[3][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "block_static_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "discrete_forward_transform: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     usage();
     exit(-1);
   }
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[4][0])=='N') {
     flat = false;
   } else if (toupper(argv[4][0])!='F') {
-    cerr << "block_static_sfwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "discrete_forward_transform: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "block_static_sfwt: Cannot open output file " << argv[5] << ".\n";
+      cerr << "discrete_forward_transform: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
@@ -109,38 +109,36 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> inputblock(samples);
 
   // Instantiate a static forward wavelet transform
-  DiscreteForwardWaveletTransform<double, wosd, wisd> dfwt(wt,0);
+  ForwardDiscreteWaveletTransform<double, wosd, wisd> fdwt(wt,0);
 
   // Create result buffers
-  DiscretWaveletOutputSampleBlock<wosd> forwardoutput;
+  DiscreteWaveletOutputSampleBlock<wosd> forwardoutput;
 
   switch(tt) {
   case APPROX: {
-    dfwt.StreamingApproxBlockOperation(forwardoutput, inputblock);
-    numlevels -= 1;
+    forwardoutput.SetTransformType(APPROX);
+    fdwt.DiscreteWaveletApproxOperation(forwardoutput, inputblock);
     break;
   }
   case DETAIL: {
-    dfwt.StreamingDetailBlockOperation(forwardoutput, inputblock);
-    numlevels -= 1;
+    forwardoutput.SetTransformType(DETAIL);
+    fdwt.DiscreteWaveletDetailOperation(forwardoutput, inputblock);
     break;
   }
   case TRANSFORM: {
-    dfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
+    fdwt.DiscreteWaveletTransformOperation(forwardoutput, inputblock);
     break;
   }
   default:
     break;
   }
 
-#if 0
   // Human readable output
   if (!flat) {
-    OutputLevelMetaData(outstr, forwardoutput, numlevels);
+    OutputLevelMetaData(outstr, forwardoutput, tt);
   }
 
-  OutputWaveletCoefs(outstr, forwardoutput, tt);
-#endif
+  OutputWaveletCoefs(outstr, forwardoutput, tt, flat);
 
   return 0;
 }

@@ -41,6 +41,11 @@ void OutputWaveletCoefs(ostream &os,
 			vector<WaveletOutputSampleBlock<wosd> > &levels,
 			const TransformType tt);
 
+void OutputWaveletCoefs(ostream &os,
+			const DiscreteWaveletOutputSampleBlock<wosd> &dwosb,
+			const TransformType tt,
+			const bool flat);
+
 unsigned OutputWaveletCoefs(ostream &os,
 			    vector<WaveletOutputSampleBlock<wosd> > &levels,
 			    const TransformType tt,
@@ -70,4 +75,9 @@ void OutputLevelMetaData(ostream &os,
 void OutputLevelMetaData(ostream &os,
 			 const unsigned *levelsize,
 			 const unsigned levelcnt);
+
+void OutputLevelMetaData(ostream &os,
+			 const DiscreteWaveletOutputSampleBlock<wosd> &dwosb,
+			 const TransformType tt);
+
 #endif

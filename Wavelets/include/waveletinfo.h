@@ -10,6 +10,8 @@
 //  numCoefTable with the coefficients and number of coefficients
 const int NUM_WAVELET_TYPES=12;
 
+enum TransformType{APPROX, DETAIL, TRANSFORM};
+
 enum WaveletType {DAUB2,
 		  DAUB4,
 		  DAUB6,

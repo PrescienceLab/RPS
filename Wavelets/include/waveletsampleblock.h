@@ -3,6 +3,7 @@
 
 #include <deque>
 
+#include "waveletinfo.h"
 #include "sampleblock.h"
 #include "waveletsample.h"
 #include "util.h"
@@ -61,16 +62,28 @@ class DiscreteWaveletOutputSampleBlock : public OutputSampleBlock<SAMPLETYPE> {
 private:
   int lowest_level;
   unsigned numlevels;
+  TransformType tt;
 
 public:
   DiscreteWaveletOutputSampleBlock(const unsigned numlevels=2,
-				   const int lowest_level=0);
+				   const int lowest_level=0,
+				   const TransformType tt=TRANSFORM);
   DiscreteWaveletOutputSampleBlock(const DiscreteWaveletOutputSampleBlock &rhs);
   virtual ~DiscreteWaveletOutputSampleBlock();
 
   virtual DiscreteWaveletOutputSampleBlock* clone() const;
-  void SetSamplesAtLevel(const deque<SAMPLETYPE> &samps, const int level);
-  unsigned GetSamplesAtLevel(deque<SAMPLETYPE> &out, const int level) const;
+
+  inline int GetLowestLevel() const;
+  inline void SetLowestLevel(const int lowest_level);
+
+  inline unsigned GetNumberLevels() const;
+  inline void SetNumberLevels(const unsigned numlevels);
+
+  inline TransformType GetTransformType() const;
+  inline void SetTransformType(const TransformType tt);
+
+  bool SetSamplesAtLevel(const deque<SAMPLETYPE> &samps, const int level);
+  bool GetSamplesAtLevel(deque<SAMPLETYPE> &out, const int level) const;
 };
 
 /*******************************************************************************
@@ -221,11 +234,13 @@ GetBlockLevelOfSample(const unsigned index) const
 template <class SAMPLETYPE>
 DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
 DiscreteWaveletOutputSampleBlock(const unsigned numlevels, 
-				 const int lowest_level) :
+				 const int lowest_level,
+				 const TransformType tt=TRANSFORM) :
   OutputSampleBlock<SAMPLETYPE>()
 {
   this->numlevels = numlevels;
   this->lowest_level = lowest_level;
+  this->tt = tt;
 }
 
 template <class SAMPLETYPE>
@@ -235,6 +250,7 @@ DiscreteWaveletOutputSampleBlock(const DiscreteWaveletOutputSampleBlock &rhs) :
 {
   this->numlevels = rhs.numlevels;
   this->lowest_level = rhs.lowest_level;
+  this->tt = rhs.tt;
 }
 
 template <class SAMPLETYPE>
@@ -252,37 +268,99 @@ clone() const
 }
 
 template <class SAMPLETYPE>
-void DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
-SetSamplesAtLevel(const deque<SAMPLETYPE> &samps, const int level)
+int DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+GetLowestLevel() const
 {
-  int level_indx = level - lowest_level;
+  return this->lowest_level;
+}
 
-  // Find the right indice based on the level
-  // Find the size of the level
-  unsigned index, size;
-
-  if ((level_indx >= 0) && (level_indx < numlevels)) {
-    for (unsigned i=0; i<size; i++, index++) {
-      samples[index] = samps[i];
-    }
-  }
+template <class SAMPLETYPE>
+void DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+SetLowestLevel(const int lowest_level)
+{
+  this->lowest_level = lowest_level;
 }
 
 template <class SAMPLETYPE>
 unsigned DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
-GetSamplesAtLevel(deque<SAMPLETYPE> &out, const int level) const
+GetNumberLevels() const
+{
+  return this->numlevels;
+}
+
+template <class SAMPLETYPE>
+void DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+SetNumberLevels(const unsigned numlevels)
+{
+  this->numlevels = numlevels;
+}
+
+template <class SAMPLETYPE>
+TransformType DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+GetTransformType() const
+{
+  return this->tt;
+}
+
+template <class SAMPLETYPE>
+void DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+SetTransformType(const TransformType tt)
+{
+  this->tt = tt;
+}
+
+template <class SAMPLETYPE>
+bool DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+SetSamplesAtLevel(const deque<SAMPLETYPE> &samps, const int level)
 {
   int level_indx = level - lowest_level;
+  if ((level_indx < 0) || (level_indx > (int)numlevels)) {
+    return false;
+  }
 
   // Find the right indice based on the level
   // Find the size of the level
-  unsigned index, size;
+  unsigned M=numlevels-1;
+  unsigned index=0, size=1;
+  if ((unsigned)level_indx != M) {
+    size = index = 0x1 << (M-level_indx-1);
+  }
 
-  if ((level_indx >= 0) && (level_indx < numlevels)) {
-    for (unsigned i=0; i<size; i++, index++) {
-      out.push_back(samples[index]);
+  for (unsigned i=0; i<size; i++, index++) {
+    samples[index] = samps[i];
+  }
+  return true;
+}
+
+template <class SAMPLETYPE>
+bool DiscreteWaveletOutputSampleBlock<SAMPLETYPE>::
+GetSamplesAtLevel(deque<SAMPLETYPE> &out, const int level) const
+{
+  int level_indx = level - lowest_level;
+  if ((level_indx < 0) || (level_indx > (int)numlevels)) {
+    return false;
+  }
+
+  out.clear();
+
+  // Find the right indice based on the level
+  // Find the size of the level
+  // These are dependent on transform type
+  unsigned M=numlevels-1;
+  unsigned index=0, size=1;
+  if ((unsigned)level_indx != M) {
+    if (tt==TRANSFORM) {
+      size = index = 0x1 << (M-level_indx-1);
+    } else {
+      size = 0x1 << (M-level_indx);
+      index = (0x1 << (M-level_indx)) - 1;
     }
   }
+
+  for (unsigned i=0; i<size; i++, index++) {
+    out.push_back(samples[index]);
+  }
+  return true;
 }
 
 #endif

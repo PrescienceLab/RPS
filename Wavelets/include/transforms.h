@@ -14,8 +14,6 @@
 #include "util.h"
 
 const unsigned BITS_PER_BYTE=8;
-enum TransformType{APPROX, DETAIL, TRANSFORM};
-
 
 #define MOREWORK 1
 
@@ -480,7 +478,6 @@ private:
 					 const vector<double> &coefs,
 					 const vector<SAMPLETYPE> &input,
 					 const double scalar);
-
 public:
   ForwardDiscreteWaveletTransform(const WaveletType wavetype=DAUB2,
 				  const int lowest_outlvl=0);
@@ -2578,8 +2575,8 @@ DiscreteWaveletOperation
 	z_vector.push_back(a_vector[index]);
       }
       // Vector multiply lpf*z_vector and hpf*z_vector with 1/2 scalar
-      MultiplyAccumulateVectorsAndScale(approx,lpfcoefs,z_vector,0.5);
-      MultiplyAccumulateVectorsAndScale(detail,hpfcoefs,z_vector,0.5);
+      MultiplyAccumulateVectorsAndScale(approx,lpfcoefs,z_vector,1);
+      MultiplyAccumulateVectorsAndScale(detail,hpfcoefs,z_vector,1);
     }
     // Place outputs in appropriate output blocks with index and level
     for (j=approx.size(); j>0; j--) {
@@ -2608,17 +2605,18 @@ DiscreteWaveletTransformOperation
  const SampleBlock<INSAMPLE> &inblock)
 {
   unsigned J=NumberOfLevels(inblock.GetBlockSize());
-  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> approxblock(J, lowest_outlvl);
-  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> detailblock(J, lowest_outlvl);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> approxblock(J, lowest_outlvl, APPROX);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> detailblock(J, lowest_outlvl, DETAIL);
   unsigned lenofblock=DiscreteWaveletOperation(approxblock,detailblock,inblock);
 
   outblock = detailblock;
-  outblock.PopSampleFront();
 
   // Overwrite the approximation sample and change the level
   OUTSAMPLE approxsample=approxblock[0];
   approxsample.SetSampleLevel(J+lowest_outlvl);
   outblock.PushSampleFront(approxsample);
+  outblock.SetNumberLevels(J+1);
+  outblock.SetTransformType(TRANSFORM);
   return lenofblock;
 }
 
@@ -2629,7 +2627,8 @@ DiscreteWaveletApproxOperation
  const SampleBlock<INSAMPLE> &inblock)
 {
   unsigned J=NumberOfLevels(inblock.GetBlockSize());
-  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> detailblock(J, lowest_outlvl);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> detailblock(J, lowest_outlvl,DETAIL);
+  approxblock.SetNumberLevels(J);
   unsigned lenofblock=DiscreteWaveletOperation(approxblock,detailblock,inblock);
   return lenofblock;
 }
@@ -2641,7 +2640,8 @@ DiscreteWaveletDetailOperation
  const SampleBlock<INSAMPLE> &inblock)
 {
   unsigned J=NumberOfLevels(inblock.GetBlockSize());
-  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> approxblock(J, lowest_outlvl);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> approxblock(J, lowest_outlvl, APPROX);
+  detailblock.SetNumberLevels(J);
   unsigned lenofblock=DiscreteWaveletOperation(approxblock,detailblock,inblock);
   return lenofblock;
 }
@@ -2655,8 +2655,8 @@ DiscreteWaveletMixedOperation
  const SignalSpec &spec)
 {
   unsigned J=NumberOfLevels(inblock.GetBlockSize());
-  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> ablock(J, lowest_outlvl);
-  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> dblock(J, lowest_outlvl);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> ablock(J, lowest_outlvl, APPROX);
+  DiscreteWaveletOutputSampleBlock<OUTSAMPLE> dblock(J, lowest_outlvl, DETAIL);
   unsigned lenofblock=DiscreteWaveletOperation(ablock,dblock,inblock);
 
   OutputDWTBlocksToSpec<OUTSAMPLE>(approxblock,
@@ -2705,8 +2705,9 @@ MultiplyAccumulateVectorsAndScale(vector<SAMPLETYPE> &output,
 				  const double scalar)
 {
   SAMPLETYPE acc=0;
-  for (unsigned i=0; i<coefs.size(); i++) {
-    acc += coefs[i]*input[i];
+  unsigned macs=coefs.size();
+  for (unsigned i=0; i<macs; i++) {
+    acc += coefs[macs-i-1]*input[i];
   }
   acc *= scalar;
   output.push_back(acc);

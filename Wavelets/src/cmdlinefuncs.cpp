@@ -288,6 +288,31 @@ void OutputWaveletCoefs(ostream &os,
   }
 }
 
+void OutputWaveletCoefs(ostream &os,
+			const DiscreteWaveletOutputSampleBlock<wosd> &dwosb,
+			const TransformType tt,
+			const bool flat)
+{
+  unsigned i, j;
+  unsigned numlevels=dwosb.GetNumberLevels();
+  int lowlevel=dwosb.GetLowestLevel();
+
+  for (i=0; i<numlevels; i++) {
+    int plevel=lowlevel+numlevels-1-i;
+    if (!flat) {
+      *os.tie() << endl;
+      *os.tie() << "Level " << plevel << endl;
+      *os.tie() << "---------\n";
+    }
+    deque<wosd> leveldata;
+    dwosb.GetSamplesAtLevel(leveldata, plevel);
+    for (j=0; j<leveldata.size(); j++) {
+      *os.tie() << leveldata[j].GetSampleValue() << endl;
+    }
+  }
+}
+
+
 unsigned OutputWaveletCoefs(ostream &os,
 			    vector<WaveletOutputSampleBlock<wosd> > &levels,
 			    const TransformType tt,
@@ -570,6 +595,28 @@ void OutputLevelMetaData(ostream &os,
   for (i=0; i<levelcnt; i++) {
     *os.tie() << "\tLevel " << i << " size = " 
 	      << levelsize[i] << endl;
+  }
+  *os.tie() << endl;
+}
+
+void OutputLevelMetaData(ostream &os,
+			 const DiscreteWaveletOutputSampleBlock<wosd> &dwosb,
+			 const TransformType tt)
+{
+  int i;
+  unsigned levels=dwosb.GetNumberLevels();
+  unsigned M=levels-1;
+
+  *os.tie() << "The size of each level:" << endl;
+    
+  for (i=M; i>=0; i--) {
+    unsigned size=1;
+    if ((unsigned)i!= M) {
+      size = 0x1 << ((tt!=TRANSFORM) ? (M-i) : (M-i-1));
+    }
+
+    *os.tie() << "\tLevel " << i << " size = " 
+	      << size << endl;
   }
   *os.tie() << endl;
 }

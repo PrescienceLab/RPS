@@ -46,7 +46,12 @@ EXECLIST = setup_wavelet_delay			\
 	   sample_dynamic_mixed_srwt		\
 	   block_dynamic_mixed_srwt		\
 	   sample_dynamic_streaming_test	\
-	   block_dynamic_streaming_test
+	   block_dynamic_streaming_test         \
+	   discrete_forward_transform           \
+	   discrete_reverse_transform           \
+	   discrete_forward_mixed               \
+	   discrete_reverse_mixed               \
+	   discrete_transform_test
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
@@ -92,7 +97,6 @@ $(LIBFILE) : $(LIBOBJS)
 
 $(EXECS):$(BINDIR)/%:$(OBJDIR)/%.o $(LIBFILE)
 	$(MakeExeAction)
-
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) -c $< -o $(OBJDIR)/$(@F)
