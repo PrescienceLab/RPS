@@ -25,13 +25,13 @@ WaveletRepresentationInfo inputrep;
 typedef WaveletInputSample<double> WISD;
 typedef WaveletOutputSample<double> WOSD;
 
-StaticReverseWaveletTransform<double,WISD,WOSD> xform;
-DelayBlock<WOSD> delay;
+StaticReverseWaveletTransform<double,WISD,WOSD> *xform;
+DelayBlock<WOSD> *delay;
 
 
 int main(int argc, char *argv[]) 
 {
-  bool first=true;
+  enum {AWAITFIRST, AWAITLOW, AWAITHIGH,NORMAL} state;
   enum {PRINT, RECONST} action;
   WaveletIndividualSample s;
 
@@ -77,33 +77,74 @@ int main(int argc, char *argv[])
     vector<WOSD> delaysamples;
     vector<WOSD> inputsamples;
     vector<WISD> outputsamples;
+    state=AWAITFIRST;
     while (1) {
       if (source.GetNextItem(s)) { 
 	fprintf(stderr,"wavelet_streaming_client: Connection failed.\n");
 	break;
       }
-      if (first) { 
+      switch (state) {
+      case AWAITFIRST: {
 	inputrep=s.rinfo;
+	state=AWAITLOW;
 	cerr << "Instantiating Reverse Transform And Delay With inputrep="<<inputrep<<endl;
-	xform=StaticReverseWaveletTransform<double,WISD,WOSD>(inputrep.levels-1,inputrep.wtype,2,2,0);
+	cerr << "Sample is <<"<<s<<endl;
+	xform = new StaticReverseWaveletTransform<double,WISD,WOSD>(inputrep.levels-1,inputrep.wtype,2,2,0);
 	int *d = new int[inputrep.levels];
 	CalculateWaveletDelayBlock(WaveletCoefficients(inputrep.wtype).GetNumCoefs(),inputrep.levels,d);
-	delay=DelayBlock<WOSD>(inputrep.levels,0,d);
+	delay=new DelayBlock<WOSD>(inputrep.levels,0,d);
 	delete [] d;
-	first=false;
-      }
-      WOSD w;
-      s.PutAsWaveletOutputSample(w);
-      inputsamples.push_back(w);
-      delay.StreamingSampleOperation(delaysamples, inputsamples);
-      if (xform.StreamingTransformSampleOperation(outputsamples, delaysamples)) {
-	for (unsigned j=0; j<outputsamples.size(); j++) {
-	  cout << outputsamples[j].GetSampleValue()<<endl;
+	}
+	// intentional fallthrough
+      case AWAITLOW: {
+	if (s.level==(s.rinfo.levels-2)) {
+	  WOSD w;
+	  s.PutAsWaveletOutputSample(w);
+	  inputsamples.push_back(w);
+	  state=AWAITHIGH;
 	}
       }
-      delaysamples.clear();
-      inputsamples.clear();
-      outputsamples.clear();
+	break;
+      case AWAITHIGH: {
+	if (s.level==(s.rinfo.levels-1)) {
+	  WOSD w;
+	  s.PutAsWaveletOutputSample(w);
+	  inputsamples.push_back(w);
+	  for (int i=s.rinfo.levels-3; i>=0; i--) {
+	    inputsamples.push_back(WOSD(0.0,i,0));
+	  }
+	  delay->StreamingSampleOperation(delaysamples, inputsamples);
+	  if (xform->StreamingTransformSampleOperation(outputsamples, delaysamples)) {
+	    for (unsigned j=0; j<outputsamples.size(); j++) {
+	      cout <<outputsamples[j].GetSampleValue()<<endl;
+	    }
+	  }
+	  delaysamples.clear();
+	  inputsamples.clear();
+	  outputsamples.clear();
+	  state=NORMAL;
+	} else {
+	  inputsamples.clear();
+	  state=AWAITLOW;
+	}
+      }
+	break;
+      case NORMAL: {
+	  WOSD w;
+	  s.PutAsWaveletOutputSample(w);
+	  inputsamples.push_back(w);
+
+	  delay->StreamingSampleOperation(delaysamples, inputsamples);
+	  if (xform->StreamingTransformSampleOperation(outputsamples, delaysamples)) {
+	    for (unsigned j=0; j<outputsamples.size(); j++) {
+	      cout <<outputsamples[j].GetSampleValue()<<endl;
+	    }
+	  }
+	  delaysamples.clear();
+	  inputsamples.clear();
+	  outputsamples.clear();
+      }
+      }
     }
   }
   source.Disconnect();

@@ -27,6 +27,25 @@ void usage()
 
 const unsigned numcoefs[10] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
 
+#define DEBUG_PRINT(bprint, in, sampletime) \
+  if ((bprint)) {                           \
+    PrintLevelIndex((in), (sampletime));    \
+  }                                         \
+
+template <class SAMPLE>
+void PrintLevelIndex(const vector<SAMPLE> &input, const unsigned sampletime) {
+  cout << "Sampletime: " << sampletime << endl;
+  cout << "  Levels: ";
+  for (unsigned i=0; i<input.size(); i++) {
+    cout << input[i].GetSampleLevel() << " ";
+  }
+  cout << endl << "  Indices: ";
+  for (unsigned i=0; i<input.size(); i++) {
+    cout << input[i].GetSampleIndex() << " ";
+  }
+  cout << endl;
+}
+
 void print() {
 }
 
@@ -43,7 +62,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
 
-  cout << "WaveletType: " << type << endl;
+  cerr << "WaveletType: " << type << endl;
 
   int numstages = atoi(argv[2]);
   if (numstages <= 0) {
@@ -76,41 +95,41 @@ int main(int argc, char *argv[])
   infile.close();
 
   unsigned i;
-  cout << "The Samples of the input file: " << endl;
+  cerr << "The Samples of the input file: " << endl;
   for (i=0; i<samples.size(); i++) {
-    cout << "\t" << samples[i];
+    cerr << "\t" << samples[i];
   }
 
   // Instantiate a static forward wavelet transform
-  cout << "StaticForwardWaveletTransform instantiation" << endl;
+  cerr << "StaticForwardWaveletTransform instantiation" << endl;
   StaticForwardWaveletTransform<double, wosd, wisd>
     sfwt(numstages,wt,2,2,0);
 
   // Parameterize the delay block
   unsigned wtcoefnum = numcoefs[type];
-  cout << "The number of levels: " << numstages+1 << endl;
+  cerr << "The number of levels: " << numstages+1 << endl;
   int *delay = new int[numstages+1];
   CalculateWaveletDelayBlock(wtcoefnum, numstages+1, delay);
 
   // Print the delay components
-  cout << "Delay values: " << endl;
+  cerr << "Delay values: " << endl;
   for (int j=0; j<numstages+1; j++) {
-    cout << "\tLevel " << j << ":\t" << delay[j] << endl;
+    cerr << "\tLevel " << j << ":\t" << delay[j] << endl;
   }
 
   // Instantiate a delay block
-  DelayBlock<wosd> dlyblk;
-  dlyblk = DelayBlock<wosd>(numstages+1,0,delay);
-  //    dlyblk(numstages+1, 0, delay);
+  DelayBlock<wosd> 
+    //  dlyblk = DelayBlock<wosd>(numstages+1,0,delay);
+    dlyblk(numstages+1, 0, delay);
 
-  cout << dlyblk << endl;
+  //  cout << dlyblk << endl;
 
   // Instantiate a static forward wavelet transform
-  cout << "StaticReverseWaveletTransform instantiation" << endl;
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt;
-  srwt = StaticReverseWaveletTransform<double, wisd, wosd>(numstages,wt,2,2,0);
-  //    srwt(numstages,wt,2,2,0);
-  cout << srwt << endl;
+  cerr << "StaticReverseWaveletTransform instantiation" << endl;
+  StaticReverseWaveletTransform<double, wisd, wosd>
+    //  srwt = StaticReverseWaveletTransform<double, wisd, wosd>(numstages,wt,2,2,0);
+    srwt(numstages,wt,2,2,0);
+  //  cout << srwt << endl;
 
 
   // Create result buffers
@@ -122,10 +141,13 @@ int main(int argc, char *argv[])
 
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+    DEBUG_PRINT(0, outsamples, i);
     
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
+    DEBUG_PRINT(1, outsamples, i);
 
     if (srwt.StreamingTransformSampleOperation(outsamp, delaysamples)) {
+      DEBUG_PRINT(0, outsamples, i);
       for (unsigned j=0; j<outsamp.size(); j++) {
 	finaloutput.push_back(outsamp[j]);
       }
@@ -136,10 +158,10 @@ int main(int argc, char *argv[])
     delaysamples.clear();
   }
 
-  cout << "The size of the output: " << finaloutput.size() << endl;
-  cout << "The final output samples: " << endl;
+  cerr << "The size of the output: " << finaloutput.size() << endl;
+  cerr << "The final output samples: " << endl;
   for (i=0; i<finaloutput.size(); i++) {
-    cout << finaloutput[i];
+    cerr << finaloutput[i].GetSampleValue() << endl;
   }
 
   if (delay != 0) {
