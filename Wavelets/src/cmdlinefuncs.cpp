@@ -677,10 +677,9 @@ void GetNextBlock(vector<WaveletOutputSampleBlock<wosd> > &outblock,
   outblock.clear();
   for (unsigned i=0; i<inblock.size(); i++) {
     int lvl = inblock[i].GetBlockLevel();
-    unsigned size = blocksize >> (1+lvl);
-    if (lvl == approxlevel) {
-      size = size << 1;
-    }
+    unsigned size = (lvl == approxlevel) ?
+      (blocksize >> (lvl)) :
+      (blocksize >> (1+lvl));
 
     unsigned start_indx = blocknumber*size;
     deque<wosd> levelbuf;
