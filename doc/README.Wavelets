@@ -1,0 +1,203 @@
+RPS's Wavelets Package
+======================
+
+rps-help@cs.northwestern.edu
+
+The Wavelets package implements wavelet transforms in many different types of
+modes for use in distributed systems research.  The transform types that are
+supported include statically structured streaming transforms in sample and
+block modes, dynamically structured streaming transforms in sample and block
+modes, and discrete transforms.  Each of the featured transforms provide
+multi-resolution analysis where sets of details and approximation signals are
+returned.
+
+For more information read the technical report located on the RPS website.
+
+INCLUDE FILES
+-------------
+
+BINARY UTILITY INCLUDES
+
+cmdlinefuncs.h
+ - General output and helper functions for cmd line utils.
+
+flatparser.h
+ - Functions for parsing utility outputs.
+
+
+
+GENERAL INCLUDES
+
+util.h
+ - Utility functions such as MIN, MAX, DEBUG_PRINT, etc.
+
+Wavelets.h
+ - Include this for using transform classes and sampletypes.
+
+
+
+WAVELET INCLUDES
+
+waveletinfo.h
+ - Constants used in the package.
+
+sample.h
+ - The Sample abstraction with Input and Output samples.
+
+sampleblock.h
+ - The SampleBlock abstraction with Input and Output sample blocks.
+
+waveletsample.h
+ - Wavelet samples which are inherited from Samples.
+
+waveletsampleblock.h
+ - Wavelet sample blocks which are inherited from SampleBlocks.
+
+coefficients.h
+ - The supported wavelet coefficients, CQF, Daubechies 2 through 20.
+
+filter.h
+ - FIRFilter class that can run in sample or block mode.
+
+downsample.h
+ - The downsampler class that can run in sample or block mode.
+
+upsample.h
+ - The upsampler class that can run in sample or block mode.
+
+stage.h
+ - A forward stage contains 2 filters and 2 downsamplers and  a number of
+   operations.  A reverse stage contains 2 filters and 2 upsamplers and a
+   number of operations.
+
+transforms.h
+ - Contains the streaming transforms (static, dynamic) and the discrete
+   transforms.  The streaming transforms use stages chained together to
+   produce the results.
+
+delay.h
+ - The delay blocks are used to properly phase align the streaming
+   transforms to obtain perfect reconstruction.
+
+jitter.h
+ - Jitter classes are used to zero fill or interpolate missed or late arriving
+   samples.
+
+
+LIBRARIES
+---------
+
+libwavelets.a
+
+
+BINARIES
+--------
+
+STREAMING STATIC TRANSFORMS
+
+sample_static_sfwt
+ - Forward static transform that provides approximations, details and transform
+   signals in sample operation.
+
+block_static_sfwt
+ - Same as above utility run in blocks.
+
+sample_static_mixed_sfwt
+ - Forward static transform that provides a mix of approximation and detail
+   signals based on a signal specification.
+
+block_static_mixed_sfwt
+ - Same as above utility run in blocks.
+
+sample_static_srwt
+ - Reverse static transform that reconstructs the time-domain signal from wavelet
+   coefficients.
+
+block_static_srwt
+ - Same as above utility run in blocks.
+
+sample_static_mixed_srwt
+ - Reconstructions using a mix of approximation and detail signals based on a
+   signal specification.
+
+block_static_mixed_srwt
+ - Same as above utility run in blocks.
+
+sample_static_streaming_test
+ - Performs a static forward transform followed by a delay block and static
+   reverse transform and calculates the error between input and output.  For
+   perfect reconstruction the error should be ~0.  All operations are done
+   in sample mode.
+
+block_static_streaming_test
+ - Same as above utility run in blocks.
+
+
+
+STREAMING DYNAMIC TRANSFORMS
+
+sample_dynamic_sfwt
+ - Forward dynamic transform that provides approximation, detail and transform
+   signals in sample operation.  Structure and filter types change
+   dynamically according to the input change interval.
+
+block_dynamic_sfwt
+ - Same as above utility run in blocks.
+
+sample_dynamic_mixed_sfwt
+ - Forward dynamic transform that provides a mix of approximation and detail
+   signals based on a signal specification.  Structure and filter types change
+   dynamically according to the input change interval.
+
+block_dynamic_mixed_sfwt
+ - Same as above utility run in blocks.
+
+sample_dynamic_srwt
+ - Reverse dynamic transform utility that reconstructs the time-domain signal
+   from the forward transform.  The reverse transform structure and filter
+   types should change at the same interval as the sfwt.
+
+block_dynamic_srwt
+ - Same as above utility run in blocks.
+
+sample_dynamic_mixed_srwt
+ - Reconstructions using a mix of approximation and detail signals based on a
+   signal specification.  The structure and filter types change dynamically
+   according to the input change interval.
+
+block_dynamic_mixed_srwt
+ - Same as above utility run in blocks.
+
+sample_dynamic_streaming_test
+ - System test performs a forward dynamic transform followed by the appropriate
+   delay and reverse dynamic transform.  The structures change together at the
+   same interval, and an error is calculated (error should be fairly large
+   due to not implementing transition filters to minimize error).
+
+block_dynamic_streaming_test
+ - Same as above utility run in blocks.
+
+
+
+DISCRETE TRANSFORMS
+
+discrete_forward_transform
+ - Performs the discrete wavelet transform on a block of samples length 2^M.  It
+   can provide approximation, detail and transform signals.
+
+discrete_reverse_transform
+ - Utility converts the encoded block of wavelet coefficients back into the time-
+   domain.
+
+discrete_forward_mixed_transform
+ - Performs the discrete wavelet transform but provides as output a mix of 
+   approximation and detail signals based on the signal specification.
+
+discrete_reverse_mixed_transform
+ - Utility converts back to the time-domain signal using a mix of approximation
+   and detail signals.  Error is usually incurred based on mix of signals.
+
+discrete_transform_test
+ - Performs the forward transform followed by an appropriate reverse transform
+   and outputs the error of the operation.  The error should be ~0 for perfect
+   reconstruction.
