@@ -96,32 +96,43 @@ class ManagedPredictor : public Predictor {
       lastpred=obs;
       return obs;
     } else {
-      // Now update our error metrics
-      err_n++;
-      err_s+=(obs-lastpred);
-      if (lastpred!=0) {
-	err_res+=fabs(obs-lastpred)/fabs(lastpred);
-	err_nres++;
-      }
-      err_s2+=(obs-lastpred)*(obs-lastpred);
-      // If we have enough errors and the errors
-      // are too bad, we'll force a refit.
-      if (err_nres>=min_num_test) { 
-	if (err_res/err_nres > errlimit) {
-	  FitNow();
+      // refit if we have hit the refit interval
+      //      if (!(cur%num_refit) && cur!=num_refit) { 
+      //	fprintf(stderr,"Hit refit interval - refitting\n");
+      //	FitNow();
+      //} else 
+      {
+	// Now update our error metrics
+	err_n++;
+	err_s+=(obs-lastpred);
+	if (lastpred!=0) {
+	  err_res+=fabs(obs-lastpred)/fabs(lastpred);
+	  err_nres++;
 	}
-      } else if (err_n>=min_num_test) {
-	double errmean=err_s/err_n;
-	double errvar=(err_s2-err_n*errmean*errmean)/(err_n-1);
-	double predvar;
-	curpred->ComputeVariances(1,&predvar,POINT_VARIANCES);
-	if (predvar==0) { 
-	  if (errvar>0) {
+	err_s2+=(obs-lastpred)*(obs-lastpred);
+	// If we have enough errors and the errors
+	// are too bad, we'll force a refit.
+	if (err_nres>=min_num_test) { 
+	  if (err_res/err_nres > errlimit) {
+	    fprintf(stderr,"Exceeded error variance limit - refitting\n  (mean relative error is %f but limit is %f)\n",err_res/err_nres,errlimit);
 	    FitNow();
 	  }
-	} else {
-	  if ( fabs(predvar-errvar)/predvar > varlimit) { 
-	    FitNow();
+	} 
+	if (err_n>=min_num_test) {
+	  double errmean=err_s/err_n;
+	  double errvar=(err_s2-err_n*errmean*errmean)/(err_n-1);
+	  double predvar;
+	  curpred->ComputeVariances(1,&predvar,POINT_VARIANCES);
+	  if (predvar==0) { 
+	    if (errvar>0) {
+	      fprintf(stderr,"Exceeded error variance prediction error limit - refitting\n     (predvar=%f, errvar=%f)\n",predvar,errvar);
+	      FitNow();
+	    }
+	  } else {
+	    if ( (errvar-predvar)/predvar > varlimit) { 
+	      fprintf(stderr,"Exceeded error variance prediction error limit - refitting\n     (predvar=%f, errvar=%f, fabs(predvar-errvar)/predvar=%f varlimit=%f)\n",predvar,errvar,fabs(predvar-errvar)/predvar,varlimit);
+	      FitNow();
+	    }
 	  }
 	}
       }

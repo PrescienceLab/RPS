@@ -716,7 +716,7 @@ char *ModelTemplate::GetName() const
   } else if (await) {
     sprintf(name,"AWAIT %d ",a);
   } else if (managed) {
-    sprintf(name,"MANAGED %d %d %d %f %f",a,r,m,errlimit,varlimit);
+    sprintf(name,"MANAGED %d %d %d %f %f ",a,r,m,errlimit,varlimit);
   } else {
     name[0]=0;
   }
