@@ -4,7 +4,8 @@
 # lhs is the package directory
 # rhs, if it exists, is the toggle to turn off in the config files
 #
-%PackagesToRemove = ( "Extra" => "",
+%PackagesToRemove = ( "OLD" => "",
+                      "Extra" => "",
                       "ResearchScripts" => "",
                       "ResearchTools" => "HAVE_RESEARCHTOOLS");
 
