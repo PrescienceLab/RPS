@@ -29,9 +29,6 @@ private:
   int      lowest_outlvl;
   unsigned index[MAX_STAGES+1];
 
-  vector<deque<OUTSAMPLE> *>      outsamples;
-  vector<SampleBlock<OUTSAMPLE> *> outblocks;
-
   vector<ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE> *> stages;
 
 public:
@@ -61,15 +58,10 @@ public:
   inline unsigned GetIndexNumberOfLevel(int level) const;
   inline void SetIndexNumberOfLevel(int level, unsigned newindex);
 
-  bool StreamInSample(Sample<SAMPLETYPE> &in);
   bool StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in);
 
-  unsigned StreamInBlock(SampleBlock<INSAMPLE> &inblock);
   unsigned StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
 				   SampleBlock<INSAMPLE>            &inblock);
-
-  void GetOutputSamples(vector<OUTSAMPLE> &samplebuf);
-  void GetOutputBlocks(vector<SampleBlock<OUTSAMPLE> *> &outblock);
 
   ostream & Print(ostream &os) const;
 };
@@ -186,10 +178,6 @@ StaticForwardWaveletTransform(unsigned numstages=1, int lowest_outlvl=0)
   stages.push_back(pfws);
 
   for (i=0; i<numlevels; i++) {
-    deque<OUTSAMPLE>* pdos = new deque<OUTSAMPLE>();
-    SampleBlock<OUTSAMPLE>* psbo = new SampleBlock<OUTSAMPLE>();
-    outsamples.push_back(pdos);
-    outblocks.push_back(psbo);
     index[i] = 0;
   }
 }
@@ -198,8 +186,7 @@ template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StaticForwardWaveletTransform(const StaticForwardWaveletTransform &rhs) : 
   numstages(rhs.numstages), numlevels(rhs.numlevels), 
-  lowest_outlvl(rhs.lowest_outlvl), outsamples(rhs.outsamples), 
-  outblocks(rhs.outblocks), stages(rhs.stages)
+  lowest_outlvl(rhs.lowest_outlvl), stages(rhs.stages)
 {
 }
 
@@ -242,10 +229,6 @@ StaticForwardWaveletTransform(unsigned    numstages,
   stages.push_back(pfws);
 
   for (i=0; i<numlevels; i++) {
-    deque<OUTSAMPLE>* pdos = new deque<OUTSAMPLE>();
-    SampleBlock<OUTSAMPLE>* psbo = new SampleBlock<OUTSAMPLE>();
-    outsamples.push_back(pdos);
-    outblocks.push_back(psbo);
     index[i] = 0;
   }
 }
@@ -255,20 +238,13 @@ StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 ~StaticForwardWaveletTransform()
 {
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfws;
-  deque<OUTSAMPLE>* pdos;
-  SampleBlock<OUTSAMPLE>* psbo;
 
   unsigned i;
   for (i=0; i<numstages; i++) {
     pfws = stages[i]; CHK_DEL(pfws);
   }
-  for (i=0; i<numlevels; i++) {
-    pdos = outsamples[i]; CHK_DEL(pdos);
-    psbo = outblocks[i]; CHK_DEL(psbo);
-  }
+
   stages.clear();
-  outsamples.clear();
-  outblocks.clear();
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -280,8 +256,6 @@ operator=(const StaticForwardWaveletTransform &rhs)
   numlevels = rhs.numlevels;
   lowest_outlvl = rhs.lowest_outlvl;
   stages = rhs.stages;
-  outsamples = rhs.outsamples;
-  outblocks = rhs.outblocks;
 
   for (unsigned i=0; i<numlevels; i++) {
     index[i] = rhs.index[i];
@@ -305,20 +279,13 @@ ChangeNumberStages(unsigned numstages)
   }
   
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfws;
-  deque<OUTSAMPLE>* pdos;
-  SampleBlock<OUTSAMPLE>* psbo;
 
   unsigned i;
   for (i=0; i<this->numstages; i++) {
     pfws = stages[i]; CHK_DEL(pfws);
   }
-  for (i=0; i<this->numlevels; i++) {
-    pdos = outsamples[i]; CHK_DEL(pdos);
-    psbo = outblocks[i]; CHK_DEL(psbo);
-  }
+
   stages.clear();
-  outsamples.clear();
-  outblocks.clear();
 
   this->numstages = numstages;
   this->numlevels = numstages + 1;
@@ -338,10 +305,6 @@ ChangeNumberStages(unsigned numstages)
   stages.push_back(pfws);
 
   for (i=0; i<numlevels; i++) {
-    pdos = new deque<OUTSAMPLE>();
-    psbo = new SampleBlock<OUTSAMPLE>;
-    outsamples.push_back(pdos);
-    outblocks.push_back(psbo);
     index[i] = 0;
   }
 
@@ -361,20 +324,12 @@ ChangeNumberStages(unsigned    numstages,
   }
   
   ForwardWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* pfws;
-  deque<OUTSAMPLE>* pdos;
-  SampleBlock<OUTSAMPLE>* psbo;
 
   unsigned i;
   for (i=0; i<this->numstages; i++) {
     pfws = stages[i]; CHK_DEL(pfws);
   }
-  for (i=0; i<this->numlevels; i++) {
-    pdos = outsamples[i]; CHK_DEL(pdos);
-    psbo = outblocks[i]; CHK_DEL(psbo);
-  }
   stages.clear();
-  outsamples.clear();
-  outblocks.clear();
 
   this->numstages = numstages;
   this->numlevels = numstages + 1;
@@ -399,10 +354,6 @@ ChangeNumberStages(unsigned    numstages,
   stages.push_back(pfws);
 
   for (i=0; i<numlevels; i++) {
-    pdos = new deque<OUTSAMPLE>();
-    psbo = new SampleBlock<OUTSAMPLE>();
-    outsamples.push_back(pdos);
-    outblocks.push_back(psbo);
     index[i] = 0;
   }
 
@@ -437,36 +388,6 @@ SetIndexNumberOfLevel(int level, unsigned newindex)
   index[level] = newindex;
 }
 
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-bool StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamInSample(Sample<SAMPLETYPE> &in)
-{
-  bool result = false;
-  ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* pfws;
-  deque<OUTSAMPLE>* pdos;
-  OUTSAMPLE out_l, out_h;
-
-  for (unsigned i=0; i<numstages; i++) {
-    pfws = stages[i];
-    pdos = outsamples[i];
-
-    if (!pfws->PerformSampleOperation(out_l, out_h, in)) {
-      break;
-    } else {
-      out_h.SetSampleIndex(index[i]++);
-      pdos->push_back(out_h);
-      in.SetSampleValue(out_l.GetSampleValue());
-      if (i == numstages-1) {
-	out_l.SetSampleIndex(index[i+1]++);
-	pdos->push_back(out_l);
-      }
-      result = true;
-    }
-  }
-  return result;
-}
-
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 bool StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
@@ -498,37 +419,6 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, Sample<SAMPLETYPE> &in)
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-StreamInBlock(SampleBlock<INSAMPLE> &inblock)
-{
-  ForwardWaveletStage<SAMPLETYPE,OUTSAMPLE,INSAMPLE>* pfws;
-  SampleBlock<OUTSAMPLE> out_l, out_h;
-  SampleBlock<OUTSAMPLE>* psbo;
-
-  unsigned blocklen;
-  pfws = stages[0];
-  psbo = outblocks[0];
-  blocklen = pfws->PerformBlockOperation(out_l, out_h, inblock);
-  *psbo->AppendBlock(out_h);
-
-  for (unsigned i=1; i<numstages; i++) {
-    SampleBlock<OUTSAMPLE> newinput(out_l);
-    pfws = stages[i];
-    psbo = outblocks[i];
-
-    blocklen += pfws->PerformBlockOperation(out_l, out_h, newinput);
-    *psbo->AppendBlock(out_h);
-    if (i == numstages-1) {
-      psbo = outblocks[i+1];
-      *psbo->AppendBlock(out_l);
-      break;
-    }
-  } 
-  return blocklen;
-}
-
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-unsigned StaticForwardWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
 			SampleBlock<INSAMPLE>            &inblock)
 {
@@ -550,7 +440,7 @@ StreamingBlockOperation(vector<SampleBlock<OUTSAMPLE> *> &outblock,
     blocklen += pfws->PerformBlockOperation(out_l, out_h, newinput);
     *psbo->AppendBlock(out_h);
     if (i == numstages-1) {
-      psbo = outblocks[i+1];
+      psbo = outblock[i+1];
       *psbo->AppendBlock(out_l);
       break;
     }
@@ -878,7 +768,7 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
     if (jitter) {
       jitterhelp.IncCurrentBacklog();
       if (jitterhelp.ThresholdExceeded()) {
-	// May want to execute an interpolater here
+	// Should execute a generic routine here
 	ClearAllDelayLines();
 	jitterhelp.ClearCurrentBacklog();
 	for (unsigned j=0; j<indexmgrs.size(); j++) {

@@ -7,7 +7,7 @@ const unsigned DEFAULT_BACKLOG_THRESH=5;
 
 //--------------------------------------------------------------------
 // This class makes dealing with jitter associated with a distributed
-//  system easier to deal with.
+//  system manageable.
 //--------------------------------------------------------------------
 class JitterHelper {
 private:
