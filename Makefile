@@ -263,6 +263,7 @@ JavaGUI:  $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP)
 	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp $(JAVAGUI_DIR)/*.so $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(JAVAGUI_DIR)/*.class $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp $(JAVAGUI_DIR)/*.sh $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 Spin: $(HMT_DEP) $(HTS_DEP) $(HWA_DEP) $(HRPSI_DEP) force
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all

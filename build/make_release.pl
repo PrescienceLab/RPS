@@ -7,7 +7,8 @@
 %PackagesToRemove = ( "OLD" => "",
                       "Extra" => "",
                       "ResearchScripts" => "",
-                      "ResearchTools" => "HAVE_RESEARCHTOOLS");
+                      "ResearchTools" => "HAVE_RESEARCHTOOLS",
+                      "WinClient" => "");
 
 #
 #

@@ -3,8 +3,122 @@ RPS Web Interface
 
 pdinda@cs.northwestern.edu
 
-This is a web CGI interface for accessing RPS components.  
+This is a web CGI interface for accessing RPS components.  It was
+written by Alex Shoykhet.  A more detailed description of code is
+included as doc/webint-tr.pdf.
+
+The assumption made here is that you have done a make install, and the
+RPS web interface has been copied to $RPS_INSTALL_DIR/web.  If that is
+not the case, you can find the web interface code in
+$RPS_DIR/Web/rpsinterface. 
+
+The web interface needs to keep track of sensors, predictors, and
+other RPS servers.  It can do this using a text file or an Oracle
+database. 
+
+Initializing the Oracle database
+
+sqlplus you/passwd web/db/createtables.sql
+
+Initializing the text database
+
+No initialization of the text database is needed.
+
+
+Copying or linking the web directory
+
+The web directory must be placed somewhere where the web server can
+find it.  For example:
+
+ln -s $RPS_INSTALL_DIR/web ~/public_html/RPS
+
+or
+
+cp -r $RPS_INSTALL_DIR/web ~/public_html/RPS
+
+
+Your web server must support CGI and it treat .pl extensions as CGI
+scripts.  We have tested the interface using Apache on Linux.  You
+will also need perl 5.8 or better with CGI installed.  You will also
+need DBI and DBD::Oracle if you use the Oracle database to store
+state.
+
+Your perl scripts must be executable when executed as the uid and gid
+of that the web server will use.  If the web server uses setuid, then
+this will be the same as your uid and gid.  However, servers like
+apache often are configured to execute CGI scripts as their own uid
+and gid.  In that case, you MUST set the permissions on the perl
+scripts so that they can be executed by, say, the Apache user.
+
+The scripts will run various RPS tools.  It must be possible for
+programs in the RPS/bin directory to be executed by the uid and gid
+that executes the script.
+
+It is also critical that the scripts be able to read and write
+db/streamclients and db/bufferclients if you're using the text
+configuration method.  In addition, it must be possible for them to
+create files in the directories gnuplot and temp. 
+
+Configuring the web interface
+
+To configure the web interface, you must edit web/RPS/rps_env.pm.
+The comments in the file should be relatively self-explanatory.
+
+
+Starting one-off services
+
+The web interface supports "one-off" prediction and wavelet
+transformation services.  This means you can upload a file or type a
+sequence and get predictions or a transform of it quickly.  
+
+This functionality is provided by corresponding RPS servers.  These
+need to be configured (their port specified) in rps_env.pm.  Then
+started: 
+
+pred_reqresp_server server:tcp:7777 &
+wavelet_reqresp_server server:tcp:7778 &
+
+Starting sensors
+
+To incorporate measurements and predictions, you have to start the RPS
+tools first and then add them to the web interface.  For example,
+suppose you are starting host load measurement and prediction on the
+machine foo.cs.nwu.edu:
+
+start_hostloadmeasure_on.pl foo.cs.nwu.edu
+start_hostloadpred_on.pl foo.cs.nwu.edu
+
+You would then go to the "Add Resources" part of the web site and
+enter the endpoint information for the measurement source and
+prediction source.  They would then be available under the
+Measure/Predict panel.
+
+When you shutdown a sensor or predictor, you can remove it using the
+Delete Resources panel.
+
+
+Using sensors and predictors
+
+To use host load measurement and prediction, you can use the RTSA
+panel (real-time scheduling advice), RTA (running time predictions),
+and Measure/Predict.  Measure/Predict gives you a matched display of
+measurements and predictions for a resource, provided both are
+available.  You can run it in autoupdate mode for continuous display.
+
+To use any other kind of sensor, you can currently only go to the
+Measure/Predict panel.
+
+One-off predictions and one-off wavelet transforms are available
+provided the corresponding RPS one-off servers are running.
 
 
 
-cd publc
+
+
+
+
+
+
+
+
+

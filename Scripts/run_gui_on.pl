@@ -62,7 +62,9 @@ if (!$nopred) {
 
 $line = "$mode $line";
 
-$CMD = "(export CLASSPATH=.; export LD_LIBRARY_PATH=.; cd \$RPS_DIR/JavaGUI; ./show_pred.sh $line ) & ";
+#$CMD = "(export CLASSPATH=.; export LD_LIBRARY_PATH=.; cd \$RPS_DIR/JavaGUI; ./show_pred.sh $line ) & ";
+
+$CMD = "show_pred.sh $line &";
 
 #print "$CMD\n";
 
