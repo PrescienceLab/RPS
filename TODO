@@ -1,12 +1,9 @@
 Sensors
 
 Wavelets
-  => Give peter copy of compression paper
   => URL for tsunami bannder (tsunami.cs.northwestern.edu)
   => Web page!
   => TR
-  => Jason
-  => Discrete reverse
   => ostream bug with newest g++ compiler.
 
 TimeSeries
@@ -43,4 +40,3 @@ Include Windows GUI?
 
 Include Web interface?
   => ?
-
