@@ -1,4 +1,4 @@
-#include <algo.h>
+#include <algorithm>
 #include <string.h>
 
 #include "bestmedian.h"
@@ -241,7 +241,7 @@ Model *BestMedianModeler::Fit(const double *seq, const int len, const ParameterS
 }
 
 
-void BestMedianModeler::Dump(FILE *out=stdout) const
+void BestMedianModeler::Dump(FILE *out) const
 {
   fprintf(out,"BestMedianModeler()\n");
 }

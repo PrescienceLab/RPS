@@ -468,7 +468,7 @@ Model *ARMAModeler::Fit(const double *seq, const int len, const ParameterSet &ps
 }
 			  
 
-void ARMAModeler::Dump(FILE *out=stdout) const
+void ARMAModeler::Dump(FILE *out) const
 {
   fprintf(out,"ARMAModeler()\n");
 }

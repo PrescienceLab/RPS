@@ -188,7 +188,7 @@ class AwaitingModeler : public Modeler {
     assert(0);
   }
   static AwaitingModel<MODELER> *Fit(const ParameterSet &ps,
-				     cosnt int awaitinterval) {
+				     const int awaitinterval) {
     return new AwaitingModel<MODELER>(ps,awaitinterval);
   }
   void Dump(FILE *out=stdout) const {

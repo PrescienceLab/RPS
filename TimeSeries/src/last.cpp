@@ -92,7 +92,7 @@ Model *LastModeler::Fit(const double *seq, const int len, const ParameterSet &ps
   return Fit(seq,len);
 }
 
-void LastModeler::Dump(FILE *out=stdout) const
+void LastModeler::Dump(FILE *out) const
 {
   fprintf(out,"LastModeler\n");
 }

@@ -207,7 +207,7 @@ Model *MeanModeler::Fit(const double *seq, const int len, const ParameterSet &ps
 }
 
 
-void MeanModeler::Dump(FILE *out=stdout) const
+void MeanModeler::Dump(FILE *out) const
 {
   fprintf(out,"MeanModeler\n");
 }

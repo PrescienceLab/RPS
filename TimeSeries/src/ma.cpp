@@ -466,7 +466,7 @@ Model *MAModeler::Fit(const double *seq, const int len, const ParameterSet &ps)
 }
 
 
-void   MAModeler::Dump(FILE *out=stdout) const
+void   MAModeler::Dump(FILE *out) const
 {
   fprintf(out,"MAModeler()");
 }

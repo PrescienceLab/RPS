@@ -424,7 +424,7 @@ int Polynomial::RaiseTo(const int power)
    }
 
    int i;
-   int numexp = (int) floor(log(ppower-1)/log(2));
+   int numexp = (int) floor(log((double)(ppower-1))/log(2.0));
    Polynomial *original = Clone();
 
    for (i=0;i<numexp;i++) {

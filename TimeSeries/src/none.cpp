@@ -120,7 +120,7 @@ Model *NoneModeler::Fit(const double *sequence, const int len, const ParameterSe
   return Fit();
 }
 
-void NoneModeler::Dump(FILE *out=stdout) const
+void NoneModeler::Dump(FILE *out) const
 {
   fprintf(out,"NoneModeler\n");
 }

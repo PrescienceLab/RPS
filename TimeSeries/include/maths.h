@@ -131,12 +131,12 @@ static inline double ErfInv(double x)
 
 static inline double ConfToSigmas(double conf)
 {
-  return sqrt(2)*ErfInv(conf);
+  return sqrt(2.0)*ErfInv(conf);
 }
 
 static inline double SigmasToConf(double sigmas)
 {
-  return Erf(sigmas/sqrt(2));
+  return Erf(sigmas/sqrt(2.0));
 }
 
 
