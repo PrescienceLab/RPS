@@ -51,7 +51,7 @@ system "clean_loadserver.pl 1000000 10000 > $OUTDIR/loadmonitor.out &";
 # capture combined behavior
 sleep(30);
 
-if (1) {
+if (0) {
 
   #-----------------------------------------------------------------------------
 
@@ -70,25 +70,24 @@ if (1) {
   system "perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null";
 }
 
-if (0) {
+if (1) {
 
   #-----------------------------------------------------------------------------
 
   #SAMPLE PROCESSING, REVERSE
 
   $datasize = $initsize;
-  for (;$hz<=$maxhz;$hz*=10) {
-    if ($hz > 100) {
-      $usec = 0;
-      $datasize = 4194304;
-    } else {
-      $usec = int(1000000/$hz);
-    }
-    print STDERR "$hz\t$usec\n";
-    system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null\"";
-    system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null";
-    $datasize*=4;
+  $blk = $initblocksize;
+
+  $numblks = $datasize / $blk;
+  if ($hz > 100) {
+    $usec = 0;
+  } else {
+    $usec = int(1000000/$hz);
   }
+  print STDERR "$hz\t$usec\n";
+  system "echo \"perf_srwt1 $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null\"";
+  system "perf_srwt1 $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $blk $numblks $usec $FLAT stdout > /dev/null";
 }
 
 if (0) {

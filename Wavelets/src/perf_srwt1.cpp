@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
     infile.close();
 
     // Find the number of tests
-    unsigned numblocks = waveletcoefs.size() / blocksize;
+    //    unsigned numblocks = waveletcoefs.size() / blocksize;
     unsigned datasize = waveletcoefs.size();
     const unsigned MINBLOCKS = 32;
 
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
     while (numblocks >= MINBLOCKS) {
       numtests++;
       blocksize *= 2;
-      numblocks = waveletcoefs.size() / blocksize;
+      numblocks = datasize / blocksize;
     }
 
     //  datasize = datasize >> (numtests-1);
