@@ -1,9 +1,9 @@
-./obj/I386/LINUX/timing.o: src/timing.cpp \
+./obj/I386/LINUX/timing.o: ./src/timing.cpp \
   /home/pdinda/RPS-development/Mirror/include/Timers.h include/timing.h
-./obj/I386/LINUX/apply.o: src/apply.cpp \
+./obj/I386/LINUX/apply.o: ./src/apply.cpp \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
   include/timing.h include/apply.h
-./obj/I386/LINUX/SpinCore.o: src/SpinCore.cpp include/Spin.h \
+./obj/I386/LINUX/SpinCore.o: ./src/SpinCore.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -45,7 +45,7 @@
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
   /home/pdinda/RPS-development/TimeSeries/include/tools.h
-./obj/I386/LINUX/test_apply.o: src/test_apply.cpp include/Spin.h \
+./obj/I386/LINUX/test_apply.o: ./src/test_apply.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -86,7 +86,7 @@
   /home/pdinda/RPS-development/Wavelets/include/upsample.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/calibrate.o: src/calibrate.cpp include/Spin.h \
+./obj/I386/LINUX/calibrate.o: ./src/calibrate.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -127,7 +127,7 @@
   /home/pdinda/RPS-development/Wavelets/include/upsample.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/testspin.o: src/testspin.cpp include/Spin.h \
+./obj/I386/LINUX/testspin.o: ./src/testspin.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -168,7 +168,7 @@
   /home/pdinda/RPS-development/Wavelets/include/upsample.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/spinserver.o: src/spinserver.cpp include/Spin.h \
+./obj/I386/LINUX/spinserver.o: ./src/spinserver.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -209,7 +209,7 @@
   /home/pdinda/RPS-development/Wavelets/include/upsample.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/spinclient.o: src/spinclient.cpp include/Spin.h \
+./obj/I386/LINUX/spinclient.o: ./src/spinclient.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \

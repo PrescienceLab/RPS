@@ -15,7 +15,7 @@ $#ARGV>=4 or die
 "Copyright (c) 1999-2002 by Peter A. Dinda\n".
 "Use subject to license (\$RPS_DIR/LICENSE)\n\n".
 "http://www.cs.northwestern.edu/~RPS\n".
-"rps-help@cs.northwestern.edu\n";
+"rps-help\@cs.northwestern.edu\n";
 
 $stream_port = shift;
 $buffer_port = shift;

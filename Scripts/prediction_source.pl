@@ -2,12 +2,13 @@
 
 use Getopt::Long;
 
-$#ARGV>=5 or die 
+$#ARGV>=6 or die 
 "Run text measurements through a prediction server and make the\n".
 "predictions available via TCP streaming and request/response interface\n\n".
-"usage: prediction_source.pl [--model='MANAGED ...'] ctrl_port stream_port|none buffer_port|none numitems period text-generator\n\n".
+"usage: prediction_source.pl [--model='MANAGED ...'] numpred ctrl_port stream_port|none buffer_port|none numitems period text-generator\n\n".
 "MANAGED ...    = a managed model. Default is \n".
 "                  MANAGED 300 300 100 0.25 0.25 AR 16\n".
+"numpred        = prediction horizon (steps ahead)\n".
 "ctrl_port      = server port for configuring prediction\n".
 "stream_port    = listening port number for streaming connections\n".
 "buffer_port    = listening port number for request/response connections\n".
@@ -20,12 +21,13 @@ $#ARGV>=5 or die
 "Copyright (c) 1999-2002 by Peter A. Dinda\n".
 "Use subject to license (\$RPS_DIR/LICENSE)\n\n".
 "http://www.cs.northwestern.edu/~RPS\n".
-"rps-help@cs.northwestern.edu\n";
+"rps-help\@cs.northwestern.edu\n";
 
 $model = "MANAGED 300 300 100 0.25 0.25 AR 16";
 
 &GetOptions("model=s"=>\$model ) ;
 
+$numpred=shift;
 $ctrl_port = shift;
 $stream_port = shift;
 $buffer_port = shift;
@@ -42,7 +44,7 @@ if (!($stream_port =~/n|N/)) {
 if (!($buffer_port =~/n|N/)) {
   $cmd .= " target:stdio:stdout ";
 }
-$cmd .= " $model ";
+$cmd .= " $numpred $model ";
 
 if (!($buffer_port =~/n|N/)) {
   $cmd .= " | predbuffer $numitems source:stdio:stdin server:tcp:$buffer_port ";

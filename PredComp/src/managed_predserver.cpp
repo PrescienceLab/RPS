@@ -35,8 +35,6 @@ class Prediction {
 public:
   static int Compute(Measurement &measure, PredictionResponse &pred) {
     
-    cerr << measure <<endl;
-
     for (int i=0;i<measure.serlen;i++) {
       predictor->Step(measure.series[i]);
     }
@@ -49,8 +47,6 @@ public:
     predictor->Predict(pred.numsteps,pred.preds);
     predictor->ComputeVariances(pred.numsteps,pred.errs,SUM_VARIANCES);
     pred.predtimestamp=TimeStamp();
-
-    cerr << pred << endl;
 
     return 0;
   }

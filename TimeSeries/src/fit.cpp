@@ -232,12 +232,12 @@ int ModelTemplate::_Unpack(ByteStream &bs)
     ps = new AwaitingPDQParameterSet(p,d,q,r);
     break;
   case ManagedPDQ:
-    bs.Get((char*)&(bi[2]),12*4);
+    bs.Get((char*)&(bi[2]),10*4);
     p=ntohl(bi[2]);
     d=ntohl(bi[3]);
     q=ntohl(bi[4]);
     a=ntohl(bi[5]);
-    r=htonl(bi[6]);
+    r=ntohl(bi[6]);
     m=ntohl(bi[7]);
     ntohd((const char*)&(bi[8]),&errlimit);
     ntohd((const char*)&(bi[10]),&varlimit);
