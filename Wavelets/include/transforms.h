@@ -826,7 +826,7 @@ SamplePairReady(unsigned level1, unsigned level2, bool topstage)
     if ((level1 > numlevels-1) || (level2 > numlevels-1)) {
       return false;
     }
-    result = !(insignals[level1]->empty() || intersignals[level2]->empty());
+    result = !(intersignals[level1]->empty() || insignals[level2]->empty());
   }
   return result;
 }
@@ -906,7 +906,6 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
 	in_h = insignals[numstages-1]->back();
 	insignals[numstages-1]->pop_back();
 
-	topstage=false;
       } else {
 	in_l = intersignals[j+1]->back();
 	intersignals[j+1]->pop_back();
@@ -926,6 +925,7 @@ StreamingSampleOperation(vector<OUTSAMPLE> &out, vector<INSAMPLE> &in)
 	out.clear();
       }
     }
+    topstage=false;
   }
   return out.size();
 }

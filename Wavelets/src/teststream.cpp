@@ -110,7 +110,6 @@ int main(int argc, char *argv[])
   vector<WaveletInputSample>  finaloutput;
   vector<WaveletInputSample>  outsamp;
 
-  cout << "The final output samples: " << endl;
   for (i=0; i<samples.size(); i++) {
     sfwt.StreamingSampleOperation(outsamples, samples[i]);
 
@@ -118,15 +117,20 @@ int main(int argc, char *argv[])
 
     if (srwt.StreamingSampleOperation(outsamp, delaysamples)) {
       for (unsigned j=0; j<outsamp.size(); j++) {
-	finaloutput.push_back(outsamp[i]);
+	finaloutput.push_back(outsamp[j]);
       }
     }
 
+    outsamp.clear();
     outsamples.clear();
     delaysamples.clear();
   }
-
-
+  
+  cout << "The size of the output: " << finaloutput.size() << endl;
+  cout << "The final output samples: " << endl;
+  for (i=0; i<finaloutput.size(); i++) {
+    cout << finaloutput[i];
+  }
 
   if (delay != 0) {
     delete[] delay;
