@@ -167,39 +167,31 @@ int main(int argc, char *argv[])
 
     // Find the number of tests
     unsigned datasize = numblocks * blocksize;
-    const unsigned MINBLOCKS = 512;
 
-    // Find number of tests
-    unsigned numtests=0;
-    unsigned blocksize_save = blocksize;
-    while (numblocks >= MINBLOCKS) {
-      numtests++;
-      blocksize *= 2;
-      numblocks = datasize / blocksize;
-    }
-
-    blocksize = blocksize_save;
-    numblocks = MINBLOCKS;
+    const unsigned NUMTESTS = 10;
+    const unsigned BLOCKS_IN_TEST = 1024;
 
     // Sleep 50 seconds
     usleep(1000000*50);
 
-    for (unsigned j=0; j<numtests; j++) {
+    for (unsigned j=0; j<NUMTESTS; j++) {
 
-      if (j == numtests-1) {
+      if (j == NUMTESTS-1) {
 	sleep = false;
       }
 
-      for (unsigned i=0; i<numblocks; i++) {
+      for (unsigned i=0; i<BLOCKS_IN_TEST; i++) {
 	if (sleep) {
 	  usleep(sleeptime_us);
 	}
 	for (unsigned k=0; k<blocksize; k++) {
-	  dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs[i*blocksize+k]);
+	  dlyblk.StreamingSampleOperation(delaysamples,
+					  waveletcoefs[(i % numblocks)*blocksize+k]);
 	  srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
 	}
       }
       blocksize *= 2;
+      numblocks = datasize / blocksize;
     }
   } else { //Block mode
 

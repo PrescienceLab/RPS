@@ -37,7 +37,7 @@ system "kill_matching.pl loadserver";
 system "kill_matching.pl measureclient";
 system "kill_matching.pl vmstat";
 
-for ($type=0; $type<4; $type++) {
+for ($type=0; $type<1; $type++) {
 
   # start up the vmstat monitor
   print STDERR "Start vmstat monitor\n";

@@ -174,37 +174,28 @@ int main(int argc, char *argv[])
 
     WaveletInputSampleBlock<wisd> inputblock(samples);
     WaveletInputSampleBlock<wisd> block;
+
+    const unsigned NUMTESTS = 10;
+    const unsigned BLOCKS_IN_TEST = 1024;
+
     unsigned numblocks = samples.size() / blocksize;
-    const unsigned MINBLOCKS = 512;
-
-    // Find number of tests
-    unsigned numtests=0;
-    unsigned blocksize_save = blocksize;
-    while (numblocks >= MINBLOCKS) {
-      numtests++;
-      blocksize *= 2;
-      numblocks = samples.size() / blocksize;
-    }
-
-    blocksize = blocksize_save;
-    numblocks = MINBLOCKS;
 
     // Sleep 50 seconds
     usleep(1000000*50);
 
-    for (unsigned j=0; j<numtests; j++) {
+    for (unsigned j=0; j<NUMTESTS; j++) {
 
-      if (j == numtests-1) {
+      if (j == NUMTESTS-1) {
 	sleep = false;
       }
 
       switch(tt) {
       case APPROX: {
-	for (i=0; i<numblocks; i++) {
+	for (i=0; i<BLOCKS_IN_TEST; i++) {
 	  if (sleep) {
 	    usleep(sleeptime_us);
 	  }
-	  GetNextBlock(block, inputblock, i, blocksize);
+	  GetNextBlock(block, inputblock, i % numblocks, blocksize);
 	  for (unsigned k=0; k<blocksize; k++) {
 	    sfwt.StreamingApproxSampleOperation(outsamples, block[k]);
 	    outsamples.clear();
@@ -213,11 +204,11 @@ int main(int argc, char *argv[])
 	break;
       }
       case DETAIL: {
-	for (i=0; i<numblocks; i++) {
+	for (i=0; i<BLOCKS_IN_TEST; i++) {
 	  if (sleep) {
 	    usleep(sleeptime_us);
 	  }
-	  GetNextBlock(block, inputblock, i, blocksize);
+	  GetNextBlock(block, inputblock, i % numblocks, blocksize);
 	  for (unsigned k=0; k<blocksize; k++) {
 	    sfwt.StreamingDetailSampleOperation(outsamples, block[k]);
 	    outsamples.clear();
@@ -226,15 +217,30 @@ int main(int argc, char *argv[])
 	break;
       }
       case TRANSFORM: {
-	for (i=0; i<numblocks; i++) {
+	unsigned long proctime = 0;
+	for (i=0; i<BLOCKS_IN_TEST; i++) {
 	  if (sleep) {
-	    usleep(sleeptime_us);
+	    unsigned long sleepduration = (sleeptime_us > proctime) ?
+	      sleeptime_us - proctime : 0;
+	    usleep(sleepduration);
 	  }
-	  GetNextBlock(block, inputblock, i, blocksize);
+	  timeval sproc, eproc;
+
+	  if (gettimeofday(&sproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  GetNextBlock(block, inputblock, i % numblocks, blocksize);
 	  for (unsigned k=0; k<blocksize; k++) {
 	    sfwt.StreamingTransformSampleOperation(outsamples, block[k]);
 	    outsamples.clear();
 	  }
+	  if (gettimeofday(&eproc, 0) < 0) {
+	    cerr << "Can't obtain the current time.\n";
+	    exit(-1);
+	  }
+	  proctime =
+	    (eproc.tv_sec - sproc.tv_sec) * 100000 + (eproc.tv_usec - sproc.tv_usec);
 	}
 	break;
       }
@@ -242,6 +248,7 @@ int main(int argc, char *argv[])
 	break;
       }
       blocksize *= 2;
+      numblocks = samples.size() / blocksize;
     }
   } else { // block modes
 
