@@ -9,17 +9,17 @@ public:
   SelectionMirrorInputHandler(AbstractMirror *m) : MirrorHandler(m) {
     SetHandlesRead();
   }
-  Handler *Clone() {
+  Handler *Clone() const {
     return new SelectionMirrorInputHandler(*this);
   }
-  int HandleRead(int fd, Selector &sel) {
+  int HandleRead(const int fd, Selector &sel) {
     // Unserialize a wavelet input sample, see 
     // check to see if it is one we will let through
     // and call forward if it is.
     WaveletIndividualSample s;
     s.Unserialize(fd);
     cerr << s << ":";
-    if (s.rinfo.rtype==WAVELET_DOMAIN) { 
+    if (s.rinfo.rtype==WAVELET_DOMAIN_DETAIL) { 
       if (s.level>=levellow && s.level<=levelhigh) { 
 	Buffer b;
 	s.Serialize(b);
@@ -31,11 +31,11 @@ public:
     }
     return 0;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }

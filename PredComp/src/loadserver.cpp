@@ -4,6 +4,7 @@
 #include <signal.h>
 #include <math.h>
 
+#include "Sensors.h"
 #include "PredComp.h"
 
 #if defined(__osf__)

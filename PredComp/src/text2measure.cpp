@@ -12,10 +12,10 @@ class TextHandler : public MirrorHandler {
   TextHandler(AbstractMirror *m) : MirrorHandler(m) {
     SetHandlesRead();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new TextHandler(*this);
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     char buf[N];
     int i;
     int num;
@@ -52,11 +52,11 @@ class TextHandler : public MirrorHandler {
       return 0;
     }
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }

@@ -11,10 +11,10 @@ public:
   StreamingWaveletServerMirrorInputHandler(AbstractMirror *m) : MirrorHandler(m) {
     SetHandlesRead();
   }
-  Handler *Clone() {
+  Handler *Clone() const {
     return new StreamingWaveletServerMirrorInputHandler(*this);
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     // The expectation is that the input is a measurement.
     // The output is 0 or more WaveletIndividualSamples
     // Since this is currently doing nothing, wavelet-wise, 
@@ -30,7 +30,7 @@ public:
     cerr << m << endl;
     WaveletIndividualSample w(tag,TimeStamp(0),outputrep,curindex,curlevel,m.serlen>0 ? m.series[0] : 0);
     curindex++;
-    curlevel=(unsigned)LOG2(curindex);
+    curlevel=(unsigned)LOG2((double)curindex);
     unsigned num=UnsignedRandom()%10;
     cerr << "Forwarding "<<num<<" copies of "<<w<<endl;
     Buffer b;
@@ -40,11 +40,11 @@ public:
     }
     return 0;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }

@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
 
    InitRandom();
    
-   req.ttype.direction=FORWARD;
+   req.ttype.direction=WAVELET_FORWARD;
    req.ttype.rinfoin=WaveletRepresentationInfo(TIME_DOMAIN, DAUB2, 0, 1);
    req.ttype.bin=INORDER;
-   req.ttype.rinfoout=WaveletRepresentationInfo(WAVELET_DOMAIN,DAUB2,0,1);
+   req.ttype.rinfoout=WaveletRepresentationInfo(WAVELET_DOMAIN_DETAIL,DAUB2,0,1);
    req.ttype.bout=POSTORDER;
    
    if (!strcasecmp(argv[2],"DAUB2")) {
@@ -85,10 +85,10 @@ int main(int argc, char *argv[])
    }
    rewind(inp);
 
-   req.ttype.rinfoout.levels=(int)LOG2(numsamples);
+   req.ttype.rinfoout.levels=(int)LOG2(((double)numsamples));
    
-   if (((int)pow(2,req.ttype.rinfoout.levels))!=numsamples) { 
-     numsamples=(int)pow(2,req.ttype.rinfoout.levels);
+   if (((int)pow(2.0,(double)(req.ttype.rinfoout.levels)))!=numsamples) { 
+     numsamples=(int)pow(2.0,(double)(req.ttype.rinfoout.levels));
      fprintf(stderr,"Warning: number of samples is not a power of two.\n");
      fprintf(stderr,"         Only the first %d samples will be used.\n",numsamples);
    }

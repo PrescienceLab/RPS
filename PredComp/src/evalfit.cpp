@@ -1,9 +1,29 @@
 #include "PredComp.h"
+#include "TimeSeries.h"
+#include "banner.h"
 
 
-void usage()
+void usage(const char *n)
 {
-  fprintf(stderr,"usage: evalfit measuresource predsource predreconfigport mintestsamples maxtestsamples maxabserr maxerrmissestpercent numfit numpred MODELSTUFF\n");
+  char *b=GetRPSBanner();
+  char *m=GetAvailableModels();
+
+  fprintf(stdout, 
+	  "Evaluate a running predserver and force it to refit when\n"
+	  "error is too large.\n\n"
+	  "usage: %s measuresource predsource predreconfig mintestsamples maxtestsamples maxmsqerr maxerrmissest numfit numpred MODEL\n\n"
+	  "measuresource   = source endpoint for measurements\n"
+	  "predsource      = source endpoint for predictions\n"
+	  "predreconfig    = client endpoint for predserver's config\n"
+	  "mintestsamples  = minimum samples before evaluation\n"
+	  "maxtestsamples  = maximum samples before refit is forced\n"
+	  "maxmsqerr       = maximum allowed msqerr for +1 predictions\n"
+	  "maxerrmisest    = maximum percentage error for predicted +1 msqerr\n"
+	  "numfit          = number of samples to fit the model to\n"
+	  "numpred         = number of steps ahead to predict\n"
+	  "MODEL           = a model (see below)\n\n%s\n%s",n,m,b);
+  delete [] b;
+  delete [] m;
 }
 
 #define DEFAULT_PERIOD 1000000
@@ -21,7 +41,7 @@ int main(int argc, char *argv[])
   int maxtestsamples, mintestsamples;
 
   if (argc<first_model+1) {
-    usage();
+    usage(argv[0]);
     exit(0);
   }
 
@@ -55,7 +75,7 @@ int main(int argc, char *argv[])
 
   ModelTemplate *mt = ParseModel(argc-first_model,&(argv[first_model]));
   if (mt==0) { 
-    usage();
+    usage(argv[0]);
     return 0;
   }
   ModelInfo mi(*mt);
