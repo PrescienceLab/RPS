@@ -1,0 +1,35 @@
+To build:
+
+0. export RPS_DIR=your rps directory
+1. edit setup_rps_env as appropriate
+2. source setup_rps_env
+3. cp build/Makefile.conf.most_appropriate Makefile.conf
+4. edit Makefile.conf as needed
+5. make rebuild_all
+
+To run:
+
+0. export RPS_DIR=your rps directory
+1. edit setup_rps_env as appropriate
+2. source setup_rps_env
+3. start_hostloadmeasure.pl
+4. start_hostloadpred.pl
+5. use loadbufferclient and predbufferclient 
+
+
+
+For Windows:
+
+0. set RPS_DIR to be your rps directory from my computer->...
+1. load RPS.dsw in visual studio
+2. build all
+
+
+More information to come.  
+
+More information in this technical report: 
+  http://reports-archive.adm.cs.cmu.edu/anon/1999/abstracts/99-138.html
+
+
+Peter A. Dinda
+pdinda@cs.nwu.edu

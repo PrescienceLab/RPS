@@ -1,35 +1,43 @@
+RPS: The Resource Prediction System Toolkit
+
+Copyright (c) 1999 by Peter A. Dinda
+
+Dr. Peter A. Dinda
+Department of Computer Science
+Northwestern University
+1890 Maple Avenue
+Evanston, IL 60201
+
+pdinda@cs.nwu.edu
+http://www.cs.nwu.edu/~pdinda
+
+This is RPS, a toolkit for building resource prediction systems.  It
+is software designed to support the author's research in predicting
+the dynamic behavior of distributed computing environments. It is
+offered with no guarantees.  RPS is described in considerable detail
+in this technical report:
+http://reports-archive.adm.cs.cmu.edu/anon/1999/abstracts/99-138.html.
+There are a number of papers on the author's home page that present
+research results derived from using RPS.
+
+Licensing (this is not "free" software):
+
+Read the file ./LICENSE
+
 To build:
 
-0. export RPS_DIR=your rps directory
-1. edit setup_rps_env as appropriate
-2. source setup_rps_env
-3. cp build/Makefile.conf.most_appropriate Makefile.conf
-4. edit Makefile.conf as needed
-5. make rebuild_all
+Read the file build/BUILD.
 
 To run:
 
-0. export RPS_DIR=your rps directory
-1. edit setup_rps_env as appropriate
-2. source setup_rps_env
-3. start_hostloadmeasure.pl
-4. start_hostloadpred.pl
-5. use loadbufferclient and predbufferclient 
+Read the file build/RUN.
 
+To extend:
 
+Read the technical report noted above
 
-For Windows:
+To get help:
 
-0. set RPS_DIR to be your rps directory from my computer->...
-1. load RPS.dsw in visual studio
-2. build all
+send mail to rps-help@cs.nwu.edu.  Please do not send mail directly to
+the author.  It will likely be ignored.
 
-
-More information to come.  
-
-More information in this technical report: 
-  http://reports-archive.adm.cs.cmu.edu/anon/1999/abstracts/99-138.html
-
-
-Peter A. Dinda
-pdinda@cs.nwu.edu

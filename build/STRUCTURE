@@ -1,0 +1,56 @@
+Structure of RPS
+================
+
+Structure of a Package
+----------------------
+
+   .                  Makefile, .dependencies.ARCH.OS, .dsp files for windows
+   ./src              sources
+   ./include          include files
+   ./bin/ARCH/OS      executables
+   ./lib/ARCH/OS      libraries
+   ./obj/ARCH/OS      object files
+   ./Debug            Visual studio outputs
+   ./Release          Visual studio outputs
+
+Package Structure
+-----------------
+
+All releases contain the following:
+
+   $RPS_DIR            Makefile, RPS.dsw for Windows, README
+     JavaGUI           simple Java GUI
+     Mirror            Mirror Template Library
+     PredComp          Prediction Components
+     RPSInterface      Objects that are communicated by prediction components
+     RemosInterface    A simple C interface to RPSInterface objects
+     Scripts           Scripts
+     Sensors           Sensor libraries
+      GetLoadAvg       Load Average Sensor
+      GetFlowBW        Flow Bandwidth Sensor
+     TimeSeries        Time Series Prediction Library
+      FracDiff         ARFIMA models
+     Trace             Load trace access tools
+     Spin              Spin Server and other tools
+
+In addition, your distribution may also include these:
+
+     Extra             Extra components *
+     RTA               Running Time Advisor *
+     RTSA              Real-time Scheduling Advisor *
+     Research          Research components *
+
+
+Outputs
+-------
+
+    $RPS_DIR
+      include          Include files from ALL packages
+      bin/ARCH/OS      Executables from ALL packages
+      lib/ARCH/OS      Libraries from ALL packages
+      shared           Assorted shared files
+
+On a native windows build using visual studio, the final executables
+and libraries from all the packages are copied to ARCH=I386 and
+OS=WIN32.  There are no Debug or Release directories at the top.
+
