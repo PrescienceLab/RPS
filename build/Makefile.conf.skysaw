@@ -45,6 +45,9 @@ HAVE_GETFLOWBW = YES
 # Whether to include the WatchTower sensor for RPS (Only works on WIN32 and CYGWIN)
 HAVE_WATCHTOWER = YES
 
+# Whether to include the /proc sensors for RPS (Only works on LINUX)
+HAVE_PROC = YES
+
 # Whether to build the Time Series Prediction Library (TS)
 HAVE_TIMESERIES = YES
 
@@ -65,20 +68,18 @@ HAVE_RPSINT = YES
 # Whether to build the Remos interface library
 HAVE_REMOSINT = YES
 
-
 # This provides the various prediction components listed in the tech report
 #
 HAVE_PREDCOMP = YES
 
 # This provides the java GUI
 #
-HAVE_JAVAGUI = NO
+HAVE_JAVAGUI = YES
 
 # Whether to build the Spin library and tools
 # This provides components for constructing scheduling experiments,
 # including a cycle server, scheduling tools, load playback tool, etc.
 HAVE_SPIN = YES
-
 
 # Whether to build the load trace access tools and playback tool
 HAVE_TRACE = YES
@@ -125,6 +126,16 @@ REMOS_DIR = /home/Remos/Remos
 ####################################################################################
 #
 # Configuration Options for WatchTowerRPS
+#
+####################################################################################
+#
+# Currently none
+#
+
+
+####################################################################################
+#
+# Configuration Options for /proc sensors
 #
 ####################################################################################
 #

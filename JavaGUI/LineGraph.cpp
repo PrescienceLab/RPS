@@ -11,7 +11,7 @@
 #include "glarp.h" 
 
 
-#define DEBUG_PRINT 0
+#define DEBUG_PRINT 1
 #define DEBUG_PRINT_START if (DEBUG_PRINT) {
 #define DEBUG_PRINT_END   }
 

@@ -18,6 +18,7 @@ CFLAGS = -I$(INCDIR) \
          $(GETLOADAVG_CFLAGS) \
          $(GETFLOWBW_CFLAGS) \
          $(TIMESERIES_CFLAGS) \
+	 $(WAVELETS_CFLAGS) \
          $(FRACDIFF_CFLAGS) \
          $(RECIPES_CFLAGS) \
          $(RPSINT_CFLAGS) \
@@ -42,6 +43,7 @@ LD1FLAGS+=  $(GETLOADAVG_LDFLAGS) \
             $(LISTPACK_LDFLAGS)
 LD2FLAGS =  $(RPSINT_LDFLAGS) \
             $(TIMESERIES_LDFLAGS) \
+            $(WAVELETS_LDFLAGS) \
             $(FRACDIFF_LDFLAGS)  \
             $(RECIPES_LDFLAGS) \
             $(MIRROR_LDFLAGS) \

@@ -6,7 +6,11 @@
 #Libraries
 use Getopt::Long;
 use Time::HiRes qw(usleep gettimeofday);
+use FileHandle;
 #End of Libraries
+
+STDOUT->autoflush(1);
+STDERR->autoflush(1);
 
 #Arguments passed by user
 $Getopt::Long::ignorecase = 0;

@@ -67,6 +67,8 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 
   unsigned n = outblock.GetBlockSize();
 
+#if 0
+  // FX
   for (unsigned i=0, level=numlevels-1;level>=0;level--) { 
     deque<WOSD> levelout;
     outblock.GetSamplesAtLevel(levelout,level);
@@ -74,6 +76,7 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
       output[i]=levelout[i];
     }
   }
+#endif
 
   return 0;
 }
@@ -101,6 +104,9 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
 
   unsigned numlevels = (unsigned) LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
 
+  unsigned curlevel;
+
+#if 0 // FIX
   for (unsigned i=0, level=numlevels-1;level>=0;level--) { 
     deque<WOSD> levelout;
     for (;;i++) {
@@ -108,6 +114,7 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
     }
     outblock.GetSamplesAtLevel(levelout,level);
   }
+#endif
 
   for (unsigned i=0,prevpow2=0,nextpow2=1;i<num;i++) {
     //
