@@ -151,13 +151,16 @@ int main(int argc, char *argv[])
   const unsigned MINBLOCKS = 32;
 
   // Find number of tests
-  unsigned numtests;
+  unsigned numtests=0;
+  unsigned blocksize_save = blocksize;
   while (numblocks >= MINBLOCKS) {
     numtests++;
     blocksize *= 2;
     numblocks = samples.size() / blocksize;
   }
-  datasize = datasize >> numtests;
+
+  //  datasize = datasize >> (numtests-1);
+  blocksize = blocksize_save;
   numblocks = datasize / blocksize;
 
   for (unsigned j=0; j<numtests; j++) {
@@ -203,8 +206,7 @@ int main(int argc, char *argv[])
       break;
     }
     blocksize *= 2;
-    datasize *=2;
-    numblocks = datasize / blocksize;
+    numblocks = datasize/blocksize;
   }
 
   // Print the output with appropriate tag

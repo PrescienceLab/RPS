@@ -51,25 +51,23 @@ system "clean_loadserver.pl 1000000 10000 > $OUTDIR/loadmonitor.out &";
 # capture combined behavior
 sleep(30);
 
-if (0) {
+if (1) {
 
   #-----------------------------------------------------------------------------
 
   #SAMPLE PROCESSING, FORWARD
 
   $datasize = $initsize;
-  for (;$hz<=$maxhz;$hz*=10) {
-    if ($hz > 100) {
-      $usec = 0;
-      $datasize = 4194304;
-    } else {
-      $usec = int(1000000/$hz);
-    }
-    print STDERR "$hz\t$usec\n";
-    system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null\"";
-    system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null";
-    $datasize *= 4;
+  $blk = $initblocksize;
+
+  if ($hz > 100) {
+    $usec = 0;
+  } else {
+    $usec = int(1000000/$hz);
   }
+  print STDERR "$hz\t$usec\n";
+  system "echo \"perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null\"";
+  system "perf_sfwt1 $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $blk $usec $FLAT stdout > /dev/null";
 }
 
 if (0) {
@@ -93,7 +91,7 @@ if (0) {
   }
 }
 
-if (1) {
+if (0) {
 
   #DISCRETE BLOCK PROCESSING, FORWARD
 
@@ -116,21 +114,15 @@ if (0) {
 
   $datasize = $initsize;
   $blk = $initblocksize;
-  for (;$hz<=$maxhz;$hz*=10) {
-    if ($hz > 100) {
-      $usec = 0;
-      $datasize = 4194304;
-      $blk = 4096;
-    } else {
-      $usec = int(1000000/$hz);
-      $usec*=$blk;
-    }
-    print STDERR "$hz\t$usec\n";
-    system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
-    system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
-    $datasize*=4;
-    $blk*=4;
+
+  if ($hz > 100) {
+    $usec = 0;
+  } else {
+    $usec = int(1000000/$hz);
   }
+  print STDERR "$hz\t$usec\n";
+  system "echo \"perf_drt1 $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
+  system "perf_drt1 $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
 }
 
 sleep(240);

@@ -18,7 +18,7 @@ void usage()
   char *tb=GetTsunamiBanner();
   char *b=GetRPSBanner();
 
-  cerr << " perf_sfwt [input-file] [wavelet-type-init]\n";
+  cerr << " perf_sfwt1 [input-file] [wavelet-type-init]\n";
   cerr << "  [numstages-init] [transform-type] [sample-or-block]\n";
   cerr << "  [blocksize] [sleeprate] [flat] [output-file]\n\n";
   cerr << "----------------------------------------------------------------\n";
@@ -60,6 +60,17 @@ void usage()
   delete [] b;
 }
 
+void GetNextBlock(WaveletInputSampleBlock<wisd> &block,
+		  WaveletInputSampleBlock<wisd> &inputsamples,
+		  const unsigned blknum,
+		  const unsigned blocksize)
+{
+  block.ClearBlock();
+  deque<wisd> dwisd;
+  inputsamples.GetSamples(dwisd, blknum*blocksize, blknum*blocksize+blocksize);
+  block.SetSamples(dwisd);
+}
+
 int main(int argc, char *argv[])
 {
   if (argc!=10) {
@@ -73,7 +84,7 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "perf_sfwt: Cannot open input file " << argv[1] << ".\n";
+      cerr << "perf_sfwt1: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     is = &infile;
@@ -83,7 +94,7 @@ int main(int argc, char *argv[])
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "perf_sfwt: Number of stages must be positive.\n";
+    cerr << "perf_sfwt1: Number of stages must be positive.\n";
     exit(-1);
   }
 
@@ -95,7 +106,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[4][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "perf_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
+    cerr << "perf_sfwt1: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     exit(-1);
   }
 
@@ -105,13 +116,13 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[5][0])=='B') {
     sample=false;
   } else {
-    cerr << "perf_sfwt: Operation type.  Choose SAMPLE | BLOCK.\n";
+    cerr << "perf_sfwt1: Operation type.  Choose SAMPLE | BLOCK.\n";
     exit(-1);
   }
 
   unsigned blocksize = atoi(argv[6]);
   if (blocksize == 0) {
-    cerr << "perf_sfwt: Must be greater than 0.\n";
+    cerr << "perf_sfwt1: Must be greater than 0.\n";
     exit(-1);
   }
 
@@ -125,7 +136,7 @@ int main(int argc, char *argv[])
   if (toupper(argv[8][0])=='N') {
     flat = false;
   } else if (toupper(argv[8][0])!='F') {
-    cerr << "perf_sfwt: Need to choose flat or noflat for human readable.\n";
+    cerr << "perf_sfwt1: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
 
@@ -137,7 +148,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[9]);
     if (!outfile) {
-      cerr << "perf_sfwt: Cannot open output file " << argv[9] << ".\n";
+      cerr << "perf_sfwt1: Cannot open output file " << argv[9] << ".\n";
       exit(-1);
     }
     outstr = &outfile;
@@ -158,40 +169,79 @@ int main(int argc, char *argv[])
   vector<wosd> outsamples;
   vector<WaveletOutputSampleBlock<wosd> > forwardoutput;
 
+
   if (sample) {
-    switch(tt) {
-    case APPROX: {
-      for (i=0; i<samples.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
-	}
-	sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
-	outsamples.clear();
-      }
-      break;
+
+    WaveletInputSampleBlock<wisd> inputblock(samples);
+    WaveletInputSampleBlock<wisd> block;
+    unsigned numblocks = samples.size() / blocksize;
+    unsigned datasize = samples.size();
+    const unsigned MINBLOCKS = 32;
+
+    // Find number of tests
+    unsigned numtests=0;
+    unsigned blocksize_save = blocksize;
+    while (numblocks >= MINBLOCKS) {
+      numtests++;
+      blocksize *= 2;
+      numblocks = samples.size() / blocksize;
     }
-    case DETAIL: {
-      for (i=0; i<samples.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
-	}
-	sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
-	outsamples.clear();
+
+    //  datasize = datasize >> (numtests-1);
+    blocksize = blocksize_save;
+    numblocks = datasize / blocksize;
+
+    for (unsigned j=0; j<numtests; j++) {
+
+      if (j == numtests-1) {
+	sleep = false;
       }
-      break;
-    }
-    case TRANSFORM: {
-      for (i=0; i<samples.size(); i++) {
-	if (sleep) {
-	  usleep(sleeptime_us);
+
+      switch(tt) {
+      case APPROX: {
+	for (i=0; i<numblocks; i++) {
+	  if (sleep) {
+	    usleep(sleeptime_us);
+	  }
+	  GetNextBlock(block, inputblock, i, blocksize);
+	  for (unsigned k=0; k<blocksize; k++) {
+	    sfwt.StreamingApproxSampleOperation(outsamples, block[k]);
+	    outsamples.clear();
+	  }
 	}
-	sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
-	outsamples.clear();
+	break;
       }
-      break;
-    }
-    default:
-      break;
+      case DETAIL: {
+	for (i=0; i<numblocks; i++) {
+	  if (sleep) {
+	    usleep(sleeptime_us);
+	  }
+	  GetNextBlock(block, inputblock, i, blocksize);
+	  for (unsigned k=0; k<blocksize; k++) {
+	    sfwt.StreamingDetailSampleOperation(outsamples, block[k]);
+	    outsamples.clear();
+	  }
+	}
+	break;
+      }
+      case TRANSFORM: {
+	for (i=0; i<numblocks; i++) {
+	  if (sleep) {
+	    usleep(sleeptime_us);
+	  }
+	  GetNextBlock(block, inputblock, i, blocksize);
+	  for (unsigned k=0; k<blocksize; k++) {
+	    sfwt.StreamingTransformSampleOperation(outsamples, block[k]);
+	    outsamples.clear();
+	  }
+	}
+	break;
+      }
+      default:
+	break;
+      }
+      blocksize *= 2;
+      numblocks = datasize/blocksize;
     }
   } else { // block modes
 
