@@ -71,7 +71,8 @@ EXECLIST = setup_wavelet_delay			\
 	   perf_drt				\
 	   perf_dft1                            \
 	   perf_drt1				\
-	   perf_sfwt1
+	   perf_sfwt1				\
+	   perf_srwt1
 
 
 

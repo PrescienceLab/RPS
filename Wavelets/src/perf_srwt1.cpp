@@ -155,6 +155,8 @@ int main(int argc, char *argv[])
 
     vector<wosd> samplecoefs;
     vector<vector<wosd> > waveletcoefs;
+    vector<wosd> delaysamples;
+    vector<wisd> currentoutput;
 
     FlatParser fp;
     while ( fp.ParseWaveletCoefsSample(samplecoefs, *is) ) {
@@ -163,15 +165,41 @@ int main(int argc, char *argv[])
     }
     infile.close();
 
-    vector<wosd> delaysamples;
-    vector<wisd> currentoutput;
+    // Find the number of tests
+    unsigned numblocks = waveletcoefs.size() / blocksize;
+    unsigned datasize = waveletcoefs.size();
+    const unsigned MINBLOCKS = 32;
 
-    for (unsigned i=0; i<waveletcoefs.size(); i++) {
-      if (sleep) {
-	usleep(sleeptime_us);
+    // Find number of tests
+    unsigned numtests=0;
+    unsigned blocksize_save = blocksize;
+    while (numblocks >= MINBLOCKS) {
+      numtests++;
+      blocksize *= 2;
+      numblocks = waveletcoefs.size() / blocksize;
+    }
+
+    //  datasize = datasize >> (numtests-1);
+    blocksize = blocksize_save;
+    numblocks = datasize / blocksize;
+
+    for (unsigned j=0; j<numtests; j++) {
+
+      if (j == numtests-1) {
+	sleep = false;
       }
-      dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs[i]);
-      srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
+
+      for (unsigned i=0; i<numblocks; i++) {
+	if (sleep) {
+	  usleep(sleeptime_us);
+	}
+	for (unsigned k=0; k<blocksize; k++) {
+	  dlyblk.StreamingSampleOperation(delaysamples, waveletcoefs[i*blocksize+k]);
+	  srwt.StreamingTransformSampleOperation(currentoutput, delaysamples);
+	}
+      }
+      blocksize *= 2;
+      numblocks = datasize/blocksize;
     }
   } else { //Block mode
 
