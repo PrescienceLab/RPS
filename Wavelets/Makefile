@@ -14,7 +14,7 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 
 CFLAGS = -I$(INCDIR)
 
-OPTIMIZE = NO
+OPTIMIZE = YES
 
 ifeq ($(OPTIMIZE),YES)
   CFLAGS +=  -O2 -funroll-all-loops -ffast-math
@@ -50,15 +50,27 @@ EXECLIST = setup_wavelet_delay			\
 	   sample_dynamic_streaming_test	\
 	   block_dynamic_streaming_test         \
 	   discrete_forward_transform           \
+	   discrete_forward_transform_blocks    \
 	   discrete_reverse_transform           \
+	   discrete_reverse_transform_blocks    \
 	   discrete_forward_mixed               \
 	   discrete_reverse_mixed               \
 	   discrete_reverse_zerofill_transform  \
 	   discrete_transform_test              \
-           samplerate_perf_srwt                 \
-           samplerate_perf_sfwt                 \
-	   samplerate_perf_dft                  \
-	   samplerate_perf_drt
+	   scal_perf_sfwt                       \
+	   scal_perf_srwt                       \
+	   scal_perf_dft                        \
+	   scal_perf_drt                        \
+           lat_perf_sfwt                        \
+	   lat_perf_srwt                        \
+           lat_perf_dft                         \
+	   lat_perf_drt                         \
+           perf_sfwt                            \
+	   perf_srwt                            \
+           perf_dft                             \
+	   perf_drt
+
+
 
 APPOBJSLIST = $(EXECLIST:=.o)
 

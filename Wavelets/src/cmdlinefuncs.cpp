@@ -660,3 +660,35 @@ void GetRusage(double &systime, double &usrtime)
   systime=x.ru_stime.tv_sec + x.ru_stime.tv_usec/1.0e6;
   usrtime=x.ru_utime.tv_sec + x.ru_utime.tv_usec/1.0e6;
 }
+
+double GetTimeDuration(const timeval &stime, const timeval &etime)
+{
+  double start = ((double)(stime.tv_sec)) + ((double)(stime.tv_usec)/1e6);
+  double end = ((double)(etime.tv_sec)) + ((double)(etime.tv_usec)/1e6);
+  return start - end;
+}
+
+void GetNextBlock(vector<WaveletOutputSampleBlock<wosd> > &outblock,
+		  const unsigned blocknumber,
+		  const vector<WaveletOutputSampleBlock<wosd> > &inblock,
+		  const int approxlevel,
+		  const unsigned blocksize)
+{
+  outblock.clear();
+  for (unsigned i=0; i<inblock.size(); i++) {
+    int lvl = inblock[i].GetBlockLevel();
+    unsigned size = blocksize >> (1+lvl);
+    if (lvl == approxlevel) {
+      size = size << 1;
+    }
+
+    unsigned start_indx = blocknumber*size;
+    deque<wosd> levelbuf;
+    inblock[i].GetSamples(levelbuf, start_indx, start_indx+size);
+
+    WaveletOutputSampleBlock<wosd> block(levelbuf, start_indx);
+    block.SetBlockLevel(lvl);
+
+    outblock.push_back(block);
+  }
+}

@@ -88,4 +88,12 @@ void OutputLevelMetaData(ostream &os,
 // Performance routines
 void GetRusage(double &systime, double &usrtime);
 
+double GetTimeDuration(const timeval &stime, const timeval &etime);
+
+void GetNextBlock(vector<WaveletOutputSampleBlock<wosd> > &outblock,
+		  const unsigned blocknumber,
+		  const vector<WaveletOutputSampleBlock<wosd> > &inblock,
+		  const int approxlevel,
+		  const unsigned blocksize);
+
 #endif

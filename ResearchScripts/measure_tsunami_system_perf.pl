@@ -1,0 +1,102 @@
+#!/usr/bin/env perl
+
+# This script performs full out tests, running each utility as fast as possible.
+#
+# Arguments:
+#
+#  inputfile -> A file consisting of time-series samples.  This should be quite
+#               a big number of samples (~1million)
+#  blocksize -> The blocksize used for block tests
+#  numtests  -> The number of tests to run, which will be averaged finally.
+
+$usage = "measure_tsunami_system_perf.pl inputfile blocksize numtests\n";
+
+$#ARGV==2 or die $usage;
+
+$file = shift;;
+$blocksize = shift;
+$numtests = shift;
+
+$maxhz=1024;
+
+$NOT_USED=1;
+$FLAT="flat";
+
+use FileHandle;
+
+autoflush STDOUT 1;
+
+$OUTDIR="/home/jskitz/RPS-development/Wavelets/bin/I386/LINUX/outfiles";
+
+system "kill_matching.pl clean_vmstat";
+system "kill_matching.pl clean_loadserver";
+system "kill_matching.pl measureclient";
+system "kill_matching.pl load2measure";
+system "kill_matching.pl loadserver";
+system "kill_matching.pl measureclient";
+system "kill_matching.pl vmstat";
+
+# start up the vmstat monitor
+print STDERR "Start vmstat monitor\n";
+system "clean_vmstat.pl > $OUTDIR/vmstat.out &";
+
+# capture quiescent behavior
+sleep(12);
+
+# start up a load monitor
+print STDERR "Start loadserver monitor\n";
+system "clean_loadserver.pl 1000000 10000 > $OUTDIR/loadmonitor.out &";
+
+# capture combined behavior
+sleep(12);
+
+# Performance tests
+if (1) {
+
+  # now use my utilities to sweep the sleeprates (lat_perf_TTYPE)
+  print STDERR "Sweep Hz for performance\n";
+  system "echo \"blocksize=1024 10 stages 8192 samples DAUB10\" > $OUTDIR/latency.out";
+#  for ($hz=1;$hz<=$maxhz;$hz*=2) {
+#    $usec = int(1000000/$hz);
+    $usec = 0;
+    print STDERR "$hz\t$usec\n";
+    system "echo \"$hz Hertz\" >> $OUTDIR/latency.out";
+    system "echo \"perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null\"";
+#    system "perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null";
+    system "perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $usec $numtests $FLAT stdout > /dev/null";
+    #system "perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout > /dev/null";
+    #system "perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $usec $numtests $FLAT stdout > /dev/null";
+    #system "perf_dft $file DAUB10 TRANSFORM $blocksize $usec $numtests $FLAT stdout > /dev/null";
+    #system "perf_drt $file DAUB10 TRANSFORM $blocksize $usec $numtests $FLAT stdout > /dev/null";
+#  }
+}
+
+
+# Latency tests
+if (0) {
+
+  # now use my utility to sweep the sleeprates (lat_perf_TTYPE)
+  print STDERR "Sweep Hz for latency\n";
+  system "echo \"blocksize=1024 10 stages 8192 samples DAUB10\" > $OUTDIR/latency.out";
+#  for ($hz=1;$hz<=$maxhz;$hz*=2) {
+    $usec = int(1000000/$hz); 
+    print STDERR "$hz\t$usec\n";
+    system "echo \"$hz Hertz\" >> $OUTDIR/latency.out";
+    system "lat_perf_sfwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.sfwt.sample.DAUB10.t.$usec.out";
+    #system "lat_perf_sfwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.sfwt.sample.DAUB10.t.$usec.out";
+    #system "lat_perf_srwt $file DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.srwt.sample.DAUB10.t.max.out";
+    #system "lat_perf_srwt $file DAUB10 10 TRANSFORM BLOCK $blocksize $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.srwt.sample.DAUB10.t.max.out";
+    #system "lat_perf_dft $file DAUB10 TRANSFORM $blocksize $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.dft.DAUB10.t.max.out";
+    #system "lat_perf_drt $file DAUB10 TRANSFORM $blocksize $usec $numtests $FLAT stdout >> $OUTDIR/perf.lat.drt.DAUB10.t.max.out";
+#  }
+}
+
+sleep(6);
+
+system "kill_matching.pl clean_vmstat";
+system "kill_matching.pl clean_loadserver";
+system "kill_matching.pl measureclient";
+system "kill_matching.pl load2measure";
+system "kill_matching.pl loadserver";
+system "kill_matching.pl measureclient";
+system "kill_matching.pl vmstat";

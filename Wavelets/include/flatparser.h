@@ -46,6 +46,10 @@ public:
 				  istream &in,
 				  const unsigned parsenum);
 
+  unsigned ParseWaveletCoefsBlock(DiscreteWaveletOutputSampleBlock<wosd> &wavecoefs,
+			      istream &in,
+			      const unsigned parsenum);
+
   bool ParseMRACoefsSample(const SignalSpec &spec,
 			   vector<wosd> &acoefs,
 			   vector<wosd> &dcoefs,

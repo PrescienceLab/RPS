@@ -149,6 +149,42 @@ ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
   return parsecount;
 }
 
+unsigned FlatParser::
+ParseWaveletCoefsBlock(DiscreteWaveletOutputSampleBlock<wosd> &wavecoefs,
+		       istream &in,
+		       const unsigned parsenum)
+{
+  int levelnum, lowlevel=0;
+  double sampvalue;
+  unsigned parsecount=0;
+  while(in >> levelnum) {
+    if (lowlevel > levelnum) {
+      lowlevel = levelnum;
+    }
+    in >> sampvalue;
+    if (indices.find(levelnum) == indices.end()) {
+      indices[levelnum] = 0;
+    } else {
+      indices[levelnum] += 1;
+    }
+    wosd sample(sampvalue, levelnum, indices[levelnum]);
+    wavecoefs.PushSampleBack(sample);
+
+    parsecount++;
+    if (parsecount == parsenum) {
+      break;
+    }
+  }
+
+  // Fill in meta data for the discrete block
+  if (parsecount != 0) {
+    wavecoefs.SetLowestLevel(lowlevel);
+    wavecoefs.SetNumberLevels(NumberOfLevels(wavecoefs.GetBlockSize())+1);
+    wavecoefs.SetTransformType(TRANSFORM);
+  }
+  return parsecount;
+}
+
 bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
 				     vector<wosd> &acoefs,
 				     vector<wosd> &dcoefs,
