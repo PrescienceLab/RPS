@@ -109,6 +109,11 @@ int main(int argc, char *argv[])
   vector<WaveletOutputSampleBlock<wosd> > delayoutput;
   WaveletInputSampleBlock<wisd> reverseoutput;
 
+  int len=10;
+  double *foo = new double[len];
+  WaveletOutputSampleBlock<wosd> bar;
+  bar.SetSamples(foo,len);
+
   sfwt.StreamingTransformBlockOperation(forwardoutput, inputblock);
   dlyblk.StreamingBlockOperation(delayoutput, forwardoutput);
   srwt.StreamingTransformBlockOperation(reverseoutput, delayoutput);

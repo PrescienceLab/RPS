@@ -69,9 +69,23 @@ public:
     samples = input;
   };
 
+  void SetSamples(const double* series, const int serlen) {
+    int i;
+    for (i=0; i<serlen; i++) {
+      SAMPLETYPE samp(series[i], blockindex+i);
+      samples.push_back(samp);
+    }
+  };
+
   // This routine gets all of the samples
   inline void GetSamples(deque<SAMPLETYPE> &buf) const {
     buf = samples;
+  };
+
+  void GetSamples(double *series) const {
+    for (unsigned i=0; i<samples.size(); i++) {
+      series[i] = samples[i];
+    }
   };
 
   // This routine gets a range of values from the buffer
