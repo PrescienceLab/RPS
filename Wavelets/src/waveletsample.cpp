@@ -50,8 +50,8 @@ WaveletOutputSample::WaveletOutputSample(const WaveletOutputSample &rhs) :
 {
 }
 
-WaveletOutputSample::WaveletOutputSample(double value, int level) :
-  OutputSample<double>(value,level)
+WaveletOutputSample::WaveletOutputSample(double value, int level, int index) :
+  OutputSample<double>(value,level,index)
 {
 }
 

@@ -19,7 +19,7 @@ class WaveletOutputSample : public OutputSample<double> {
 public:
   WaveletOutputSample();
   WaveletOutputSample(const WaveletOutputSample &rhs);
-  WaveletOutputSample(double value, int level);
+  WaveletOutputSample(double value, int level, int index);
   virtual ~WaveletOutputSample();
 
   virtual WaveletOutputSample & operator=(const Sample<double> &rhs);

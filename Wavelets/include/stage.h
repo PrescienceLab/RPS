@@ -136,7 +136,7 @@ public:
  * class:   ReverseWaveletStage
  * purpose: The purpose of this class is to model the inverse operation of the
  *  wavelet transform.  This class models one stage of the inverse wavelet
- *  transform.  It essentiall contains 2 filters, 2 upsamplers and operations
+ *  transform.  It essentially contains 2 filters, 2 upsamplers and operations
  *  for peforming the inverse wavelet transform in a streaming or block fashion.
  *
  *******************************************************************************/

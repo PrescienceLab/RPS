@@ -5,6 +5,7 @@
 
 #include "stage.h"
 #include "sampleblock.h"
+#include "util.h"
 
 // This is to limit static transforms to 20 stages
 #define ALLOWED_MAX_STAGES 20

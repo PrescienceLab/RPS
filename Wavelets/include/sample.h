@@ -78,15 +78,18 @@ template <typename SAMPLETYPE>
 class OutputSample : public Sample<SAMPLETYPE> {
 protected:
   int level;
+  int index;
 
 public:
-  OutputSample() : level(-1) {};
+  OutputSample() : level(-1), index(-1) {};
   OutputSample(const OutputSample &rhs) : 
-    Sample<SAMPLETYPE>(rhs.value), level(rhs.level) {};
+    Sample<SAMPLETYPE>(rhs.value), level(rhs.level), index(rhs.index) {};
 
-  OutputSample(SAMPLETYPE value) : Sample<SAMPLETYPE>(value), level(-1) {};
-  OutputSample(SAMPLETYPE value, int level) : Sample<SAMPLETYPE>(value) {
+  OutputSample(SAMPLETYPE value) : 
+    Sample<SAMPLETYPE>(value), level(-1), index(-1) {};
+  OutputSample(SAMPLETYPE value, int level, int index) : Sample<SAMPLETYPE>(value) {
     this->level = level;
+    this->index = index;
   };
 
   virtual ~OutputSample() {};
@@ -94,6 +97,7 @@ public:
   virtual OutputSample & operator=(const OutputSample &rhs) {
     value = rhs.value;
     level = rhs.level;
+    index = rhs.index;
     return *this;
   };
 
@@ -105,8 +109,16 @@ public:
     return level;
   };
 
+  virtual inline void SetSampleIndex(int index) {
+    this->index = index;
+  };
+
+  virtual inline int GetSampleIndex() {
+    return index;
+  };
+
   virtual ostream & Print(ostream &os) const {
-    os << "level: " << level << "\tvalue: " << value << endl;
+    os << "level: " << level << "\tvalue: " << value << "\tindex: " << index << endl;
     return os;
   };
 };
