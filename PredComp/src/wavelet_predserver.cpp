@@ -27,7 +27,19 @@ int sampletime;
 
 
 WaveletType wavelettype;
+WaveletRepresentationInfo intermediaterep;
 
+typedef WaveletInputSample<double> WISD;
+typedef WaveletOutputSample<double> WOSD;
+
+StaticForwardWaveletTransform<double,WOSD,WISD> *xform;
+StaticReverseWaveletTransform<double,WISD,WOSD> *xformrev;
+
+DelayBlock<WOSD> *delay;
+bool firsttime=true;
+unsigned curindex=0;
+
+const unsigned numcoefs[10] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20};
 
 
 class Delay {
@@ -56,6 +68,8 @@ public:
   }
 };
 
+
+
 struct LevelOp {
   ModelTemplate *mt;
   Model         *model;
@@ -80,12 +94,15 @@ int ReadSpecFile(const char *file)
   if ((in=fopen(file,"r"))==NULL) {
     return -1;
   }
+
+  intermediaterep.rtype=WAVELET_DOMAIN_DETAIL;
+
   
   enum {LEVELS,WAVELET,STAGES} state;
 
   state=LEVELS;
   while (!feof(in) && fgets(buf,MAXBUF,in)) { 
-    for (int i=0;i<strlen(buf);i++) { 
+    for (unsigned i=0;i<strlen(buf);i++) { 
       if (buf[i]=='\n') {
 	buf[i]=' ';
       }
@@ -95,11 +112,13 @@ int ReadSpecFile(const char *file)
       switch (state) {
       case LEVELS:
 	sscanf(buf,"%d",&numlevels);
+	intermediaterep.levels=numlevels;
 	cerr << "numlevels: "<<numlevels<<endl;
 	state=WAVELET;
 	break;
       case WAVELET:
 	sscanf(buf,"%d",(int*)&wavelettype);
+	intermediaterep.wtype=wavelettype;
 	cerr << "wavelettype: "<<(int)wavelettype<<endl;
 	state=STAGES;
 	break;
@@ -143,35 +162,77 @@ int maxpred;
 
 class Prediction {
 public:
-  static int Compute(Measurement &in, PredictionResponse &out) {
+  static int Compute(Measurement &m, PredictionResponse &p) {
 
-    cerr << "Input:" <<in <<endl;
+    cerr << "Input:" <<m <<endl;
     
-    int level=in.level;
-    double inval=in.value;
-    double outval;
+    p.tag=m.tag;
+    p.datatimestamp=m.timestamp;
+    p.predtimestamp=TimeStamp();
+    // model?
+    p.period_usec=m.period_usec;
     
-    if (levelop[level].ahead<=0) { 
-      outval=levelop[level].delay->PopPush(inval);
-    } else {
-      double preds[levelop[level].ahead];
-      levelop[level].pred->Step(inval);
-      levelop[level].pred->Predict(levelop[level].ahead,preds);
-      outval=preds[levelop[level].ahead-1];
+
+    if (firsttime) { 
+      
+      // Construct the tools we need - the transform and the delay block.
+      
+      intermediaterep.period_usec=m.period_usec;
+      
+      xform = new StaticForwardWaveletTransform<double,WOSD,WISD>(intermediaterep.levels-1,
+								  intermediaterep.wtype,
+								  2,
+								  2,
+								  0);
+      xformrev = new StaticReverseWaveletTransform<double,WISD,WOSD>(intermediaterep.levels-1,
+								     intermediaterep.wtype,
+								     2,
+								     2,
+								     0);
+
+      int *d = new int[intermediaterep.levels];
+      CalculateWaveletDelayBlock(CQFWaveletCoefficients(intermediaterep.wtype).GetNumCoefs(),
+				 intermediaterep.levels,d);
+      delay=new DelayBlock<WOSD>(intermediaterep.levels,0,d);
+      delete [] d;
+      
+      firsttime=false;
+    }
+    
+    vector<WOSD> waveoutput;
+    
+    for (int i=0; i<m.serlen; i++) {
+      xform->StreamingTransformSampleOperation(waveoutput, WISD(m.series[i],curindex));
+      
+      curindex++;
+
+      // predict here
+
+      vector<WOSD> predoutput;
+      vector<WOSD> delayoutput;
+      vector<WISD> waveoutput2;
+
+      predoutput=waveoutput;
+      
+      unsigned size;
+
+      delay->StreamingSampleOperation(delayoutput,predoutput);
+
+      size=xformrev->StreamingTransformSampleOperation(waveoutput2, delayoutput);
+      
+      if (waveoutput2.size()>0) {
+	p.Resize(waveoutput2.size(),false);
+	for (unsigned j=0;j<waveoutput2.size();j++) {
+	  p.preds[j]=waveoutput2[j].GetSampleValue();;
+	  p.errs[j]=0;
+	}
+      }
     }
 
-    out=in;
-    double outtime = ((double) in.timestamp ) + (levelop[level].ahead*in.rinfo.period_usec)/1e6;
-    out.timestamp=TimeStamp((int)outtime, (int)((outtime-((int)outtime))*1e6));
-    out.index+=levelop[level].ahead;
-    out.value=outval;
-    
-    cerr << "Output:" << out <<endl;
-    
     return 0;
   }
 };
-
+  
 
 
 
@@ -191,7 +252,7 @@ void usage(const char *n)
 
 
 
-typedef GenericSerializeableInputComputeOutputMirror<Measurement,PredictionResponse> WaveletPredictionMirror;
+typedef GenericSerializeableInputComputeOutputMirror<Measurement,Prediction,PredictionResponse> WaveletPredictionMirror;
 
 
 

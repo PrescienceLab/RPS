@@ -82,14 +82,18 @@ EXECLIST = loadclient 				\
 
 ifeq ($(HAVE_WAVELETS),YES) 
   EXECLIST += \
+	wavelet_reqresp_server			\
 	wavelet_reqresp_client			\
 	wavelet_streaming_server		\
 	wavelet_streaming_selection             \
+	wavelet_streaming_denoise		\
 	wavelet_streaming_client                \
         wavelet_buffer                          \
         wavelet_bufferclient                    \
 	wavelet_streaming_query                 \
-        wavelet_predict                         
+	wavelet_interval_query			\
+        wavelet_predict                         \
+	wavelet_predserver
 endif
 
 ifeq ($(HAVE_GETLOADAVG),YES)

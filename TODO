@@ -1,5 +1,6 @@
 Sensors
   => Document WatchTowerRPS sensor in readme
+  => Document proc sensors in readme
 
 Wavelets
   => Need README.Wavelets
@@ -12,9 +13,11 @@ TimeSeries
 PredComp
   => New tools
     => Wavelet tools to build
-      => wavelet_streaming_denoise
       => wavelet_interval_query
       => wavelet_predserver
+      => wavelet_reqresp_server
+            Written, compiled, but buggy.  Looks like discrete transforms could also use some work.
+
     => pred tools
       => managed_predserver
          wavelet_buffer, bufferclient
@@ -24,19 +27,9 @@ PredComp
          wavelet_predict
 
 
-
-
-
-Tsunami TR
-  => Clarify block oriented in RPS section
-
-
-
 Windows build env
   => Add new components
      PredComp/wavelet*.cpp; 
    
-
-
 Test
   => build on windows, cygwin, linux, 

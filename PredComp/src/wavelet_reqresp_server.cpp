@@ -8,6 +8,8 @@
 #include "Wavelets.h"
 #include "PredComp.h"
 
+#define LOG2(x) (log(x)/log(2.0))
+
 void usage(const char *n)
 {
   char *b=GetRPSBanner();
@@ -33,28 +35,29 @@ typedef WaveletOutputSample<double> WOSD;
 int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 				    const WaveletRepresentationType rtype,
 				    const double  *input,
-				    const int      num,
+				    const unsigned num,
 				    double        *output)
 {
   // assume that the input block is time domain and make a sampleblock from it
   SampleBlock<WISD> inblock;
-  for (int i=0;i<num;i++) {
-    insample.PushSampleBack(WISD(input[i],i));
+  for (unsigned i=0;i<num;i++) {
+    inblock.PushSampleBack(WISD(input[i],i));
   }
 
-  DiscreteWaveletOutputSampleBlock<WOSD> outblock
+  DiscreteWaveletOutputSampleBlock<WOSD> outblock;
+  
 
   ForwardDiscreteWaveletTransform<double,WOSD,WISD> trans(wtype);
 
   switch (rtype) {
   case WAVELET_DOMAIN_DETAIL:
-    trans.DiscreteWaveletTransformDetails(outblock,inblock);
+    trans.DiscreteWaveletDetailOperation(outblock,inblock);
     break;
   case WAVELET_DOMAIN_APPROX:
-    trans.DiscreteWaveletTransformApproximations(outblock,inblock);
+    trans.DiscreteWaveletApproxOperation(outblock,inblock);
     break;
   case WAVELET_DOMAIN_TRANSFORM:
-    trans.DiscreteWaveletTransform(outblock,inblock);
+    trans.DiscreteWaveletTransformOperation(outblock,inblock);
     break;
   default:
     assert(0);
@@ -62,7 +65,7 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 
   unsigned n = outblock.GetBlockSize();
 
-  for (unsigned i=0;i<num;i++) {
+  for (unsigned i=0;i<MIN(num,n);i++) {
     output[i]=outblock[i].GetSampleValue();
   }
   return 0;
@@ -79,21 +82,25 @@ int WaveletForwardDiscreteTransform(const WaveletType               wtype,
 int WaveletReverseDiscreteTransform(const WaveletType               wtype,
 				    const WaveletRepresentationType rtype,
 				    const double *input,
-				    const int     num,
+				    const unsigned num,
 				    double        *output)
 {
   // assume that the input block is time domain and make a sampleblock from it
   DiscreteWaveletOutputSampleBlock<WOSD> inblock;
 
-  int numlevels = LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
+  unsigned numlevels = (unsigned) LOG2(num) + (rtype==WAVELET_DOMAIN_TRANSFORM ? 1 : 0);
 
 
   int curlevel=numlevels-1;
   
-  for (int i=0,nextpow2=1;i<num;i++) {
-    inblock.PushSampleBack(WOSD(input[i],curlevel));
+  for (unsigned i=0,prevpow2=0,nextpow2=1;i<num;i++) {
+    //
+    // PROBABLY WRONcG
+    //
+    inblock.PushSampleBack(WOSD(input[i],curlevel,i-prevpow2));
     if ((i+1)==nextpow2) {
       curlevel--;
+      prevpow2=nextpow2;
       nextpow2*=2;
     }
   }
@@ -103,14 +110,16 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
   SampleBlock<WISD> outblock;
 
   switch (rtype) {
+#if 0
   case WAVELET_DOMAIN_DETAIL:
-    trans.InverseDiscreteWaveletTransformDetails(outblock,inblock);
+    trans.InverseDiscreteWaveletDetailOperation(outblock,inblock);
     break;
   case WAVELET_DOMAIN_APPROX:
-    trans.InverseDiscreteWaveletTransformApproximations(outblock,inblock);
+    trans.InverseDiscreteWaveletApproxOperation(outblock,inblock);
     break;
+#endif
   case WAVELET_DOMAIN_TRANSFORM:
-    trans.InverseDiscreteWaveletTransform(outblock,inblock);
+    trans.DiscreteWaveletTransformOperation(outblock,inblock);
     break;
   default:
     assert(0);
@@ -118,7 +127,7 @@ int WaveletReverseDiscreteTransform(const WaveletType               wtype,
 
   unsigned n = outblock.GetBlockSize();
 
-  for (unsigned i=0;i<num;i++) {
+  for (unsigned i=0;i<MIN(num,n);i++) {
     output[i]=outblock[i].GetSampleValue();
   }
   return 0;
@@ -138,57 +147,57 @@ public:
     fprintf(stderr,"In Compute\n");
 
     if (req.ttype.direction==WAVELET_FORWARD) {
-      if (!(req.rinfoin.rtype==TIME_DOMAIN && req.bin.btype==INORDER &&
-	    (req.rinfoout.rtype==WAVELET_DOMAIN_APPROX||
-	     req.rinfoout.rtype==WAVELET_DOMAIN_DETAIL||
-	     req.rinfoout.rtype==WAVELET_DOMAIN_TRANSFORM) &&
-	    req.bout==PREORDER)) {
+      if (!(req.ttype.rinfoin.rtype==TIME_DOMAIN && req.ttype.bin==INORDER &&
+	    (req.ttype.rinfoout.rtype==WAVELET_DOMAIN_APPROX||
+	     req.ttype.rinfoout.rtype==WAVELET_DOMAIN_DETAIL||
+	     req.ttype.rinfoout.rtype==WAVELET_DOMAIN_TRANSFORM) &&
+	    req.ttype.bout==PREORDER)) {
 	resp=req;
 	return -1;
       }
 
       resp=req;
 
-      resp.block.rinfo=req.rinfoout;
-      resp.block.btype=req.bout;
+      resp.block.rinfo=req.ttype.rinfoout;
+      resp.block.btype=req.ttype.bout;
       
-      if (req.rinfoout.rtype!=WAVLET_DOMAIN_TRANSFORM) {
+      if (req.ttype.rinfoout.rtype!=WAVELET_DOMAIN_TRANSFORM) {
 	resp.block.Resize(resp.block.serlen-1,false);
       }
       
-      WaveletForwardDiscreteTransform(resp.rinfoout.wtype,
-				      resp.rinfoout.rtype,
+      WaveletForwardDiscreteTransform(resp.ttype.rinfoout.wtype,
+				      resp.ttype.rinfoout.rtype,
 				      req.block.series,
 				      req.block.serlen,
 				      resp.block.series);
 
-      resp.rinfoout.levels=LOG2(req.block.serlen) + 1 ;
+      resp.ttype.rinfoout.levels=(unsigned)LOG2(req.block.serlen) + 1 ;
 
       resp.block.timestamp=resp.timeout=TimeStamp();
       
       return 0;
     } else if  (req.ttype.direction==WAVELET_REVERSE) {
-      if (!(req.rinfoout.rtype==TIME_DOMAIN && req.bout.btype==INORDER &&
-	    (req.rinfoin.rtype==WAVELET_DOMAIN_APPROX||
-	     req.rinfoin.rtype==WAVELET_DOMAIN_DETAIL||
-	     req.rinfoin.rtype==WAVELET_DOMAIN_TRANSFORM) &&
-	    req.bin==PREORDER)) {
+      if (!(req.ttype.rinfoout.rtype==TIME_DOMAIN && req.ttype.bout==INORDER &&
+	    (req.ttype.rinfoin.rtype==WAVELET_DOMAIN_APPROX||
+	     req.ttype.rinfoin.rtype==WAVELET_DOMAIN_DETAIL||
+	     req.ttype.rinfoin.rtype==WAVELET_DOMAIN_TRANSFORM) &&
+	    req.ttype.bin==PREORDER)) {
 	resp=req;
 	return -1;
       }
 
       resp=req;
 
-      resp.block.rinfo=req.rinfoout;
-      resp.block.btype=req.bout;
+      resp.block.rinfo=req.ttype.rinfoout;
+      resp.block.btype=req.ttype.bout;
       
-      if (req.rinfoout.rtype!=WAVLET_DOMAIN_TRANSFORM) {
+      if (req.ttype.rinfoout.rtype!=WAVELET_DOMAIN_TRANSFORM) {
 	resp.block.Resize(resp.block.serlen+1,false);
       }
       
 
-      WaveletReverseDiscreteTransform(req.rinfoout.wtype,
-				      req.rinfoout.rtype,
+      WaveletReverseDiscreteTransform(req.ttype.rinfoout.wtype,
+				      req.ttype.rinfoout.rtype,
 				      req.block.series,
 				      req.block.serlen,
 				      resp.block.series);
@@ -197,6 +206,7 @@ public:
       
       return 0;
     }
+    return -1;
   }
 };
 

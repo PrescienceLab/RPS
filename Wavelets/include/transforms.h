@@ -2539,13 +2539,16 @@ DiscreteWaveletTransformOperation
 	  r1 += lpfcoefs[j][k]*inputl[k];
 	  r2 += hpfcoefs[j][k]*inputh[k];
 	}
-	lowout[2*i+j-2](r1);
-	highout[2*i+j-2](r2);
+	lowout[2*i+j-2]=(r1);
+	highout[2*i+j-2]=(r2);
 	r1=0; r2=0;
       }
     }
 
+    
+
     // Add the two outputs together
+
   }
   return true;
 #endif
