@@ -11,8 +11,10 @@ using namespace std;
 #define CHK_DEL(x) if ((x)!=0) { delete (x); (x)=0;}
 #endif
 
+#ifndef _ioutil
 template <class T> 
 inline ostream & operator<< (ostream &lhs, const T &rhs) { return rhs.Print(lhs);} ;
+#endif
 
 template <typename T>
 T MAX(const T &lhs, const T &rhs)

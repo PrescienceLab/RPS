@@ -2,7 +2,7 @@
 #define _ioutil
 
 template <class T> 
-ostream & operator<<(ostream &os, const T &x) 
+inline ostream & operator<<(ostream &os, const T &x) 
 {
   x.Print(os);
   return os;
