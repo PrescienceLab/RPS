@@ -81,6 +81,8 @@ if (1) {
     $datasize*=2;
   }
 
+  sleep(10);
+
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of sfwt, block\n";
   $datasize = $initsize;
@@ -94,9 +96,7 @@ if (1) {
     $blk*=2;
   }
 
-  sleep(120);
-
-  sleep(120);
+  sleep(10);
 
   # now use my utilities to sweep the sleeprates (lat_perf_TTYPE)
   print STDERR "Sweep Hz for performance of srwt, block\n";
@@ -112,7 +112,7 @@ if (1) {
     $blk*=2;
   }
 
-  sleep(120);
+  sleep(10);
 
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of dft\n";
@@ -127,7 +127,7 @@ if (1) {
     $blk*=2;
   }
 
-  sleep(120);
+  sleep(10);
 
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of drt\n";
@@ -162,7 +162,7 @@ if (0) {
 #  }
 }
 
-sleep(60);
+sleep(30);
 
 system "kill_matching.pl clean_vmstat";
 system "kill_matching.pl clean_loadserver";
