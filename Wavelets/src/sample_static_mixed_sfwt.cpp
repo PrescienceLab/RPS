@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
 	if (!approxlevels[j]->empty()) {
 	  wosd wos;
 	  wos = approxlevels[j]->back();
-	  *outstr.tie() << wos.GetSampleValue() << "\t";
+	  *outstr.tie() << wos.GetSampleLevel() << " " << wos.GetSampleValue() << "\t";
 	  approxlevels[j]->pop_back();
 	}
       }
@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
 	if (!detaillevels[j]->empty()) {
 	  wosd wos;
 	  wos = detaillevels[j]->back();
-	  *outstr.tie() << wos.GetSampleValue() << "\t";
+	  *outstr.tie() << wos.GetSampleLevel() << " " << wos.GetSampleValue() << "\t";
 	  detaillevels[j]->pop_back();
 	}
       }
