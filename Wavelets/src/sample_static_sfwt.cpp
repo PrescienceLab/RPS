@@ -34,8 +34,7 @@ void usage()
   cerr << "                      equal to the number of stages + 1.\n";
   cerr << "\n";
   cerr << "[transform-type]    = The transform type may be of type\n";
-  cerr << "                      APPROX | DETAIL | TRANSFORM for this\n";
-  cerr << "                      test.\n";
+  cerr << "                      APPROX | DETAIL | TRANSFORM.\n";
   cerr << "\n";
   cerr << "[output-file]       = Which file to write the output.  This may\n";
   cerr << "                      also be stdout or stderr.\n\n";
@@ -49,7 +48,7 @@ void usage()
   delete [] b;
 }
 
-WaveletType GetWaveletType(const char *x)
+WaveletType GetWaveletType(const char *x, const char *filename)
 {
    if (!strcasecmp(x,"DAUB2")) {
      return DAUB2;
@@ -72,7 +71,7 @@ WaveletType GetWaveletType(const char *x)
    } else if (!strcasecmp(x,"DAUB20")) { 
      return DAUB20;
    } else {
-     fprintf(stderr,"sample_static_sfwt: Unknown wavelet type\n");
+     fprintf(stderr,"%s: Unknown wavelet type\n", filename);
      exit(-1);
    }
 }
@@ -89,19 +88,17 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "Cannot open input file " << argv[1] << ".\n";
-      usage();
+      cerr << "sample_static_sfwt: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
   }
 
-  WaveletType wt = GetWaveletType(argv[2]);
+  WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "Number of stages must be positive.\n";
-    usage();
+    cerr << "sample_static_sfwt: Number of stages must be positive.\n";
     exit(-1);
   }
   unsigned numlevels = numstages + 1;
@@ -114,7 +111,7 @@ int main(int argc, char *argv[])
   } else if (toupper(argv[4][0])=='T') {
     tt = TRANSFORM;
   } else {
-    cerr << "For streaming tests, only TRANSFORM type allowed.\n";
+    cerr << "sample_static_sfwt: Invalid transform type.  Choose APPROX | DETAIL | TRANSFORM.\n";
     usage();
     exit(-1);
   }
@@ -128,8 +125,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "Cannot open output file " << argv[5] << ".\n";
-      usage();
+      cerr << "sample_static_sfwt: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
@@ -139,11 +135,9 @@ int main(int argc, char *argv[])
   if (toupper(argv[6][0])=='N') {
     flat = false;
   } else if (toupper(argv[6][0])!='F') {
-    cerr << "Need to choose flat or noflat for human readable.\n";
-    usage();
+    cerr << "sample_static_sfwt: Need to choose flat or noflat for human readable.\n";
     exit(-1);
   }
-
 
   unsigned i;
   typedef WaveletInputSample<double> wisd;
@@ -179,9 +173,19 @@ int main(int argc, char *argv[])
     for (i=0; i<samples.size(); i++) {
       sfwt.StreamingApproxSampleOperation(outsamples, samples[i]);
 
+      if (flat) {
+	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
+      }
+
       for (unsigned j=0; j<outsamples.size(); j++) {
 	int samplelevel = outsamples[j].GetSampleLevel();
 	levels[samplelevel]->push_front(outsamples[j]);
+	if (flat) {
+	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
+	}
+      }
+      if (flat) {
+	*outstr.tie() << endl;
       }
 
       outsamples.clear();
@@ -194,9 +198,19 @@ int main(int argc, char *argv[])
     for (i=0; i<samples.size(); i++) {
       sfwt.StreamingDetailSampleOperation(outsamples, samples[i]);
 
+      if (flat) {
+	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
+      }
+
       for (unsigned j=0; j<outsamples.size(); j++) {
 	int samplelevel = outsamples[j].GetSampleLevel();
 	levels[samplelevel]->push_front(outsamples[j]);
+	if (flat) {
+	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
+	}
+      }
+      if (flat) {
+	*outstr.tie() << endl;
       }
 
       outsamples.clear();
@@ -209,9 +223,19 @@ int main(int argc, char *argv[])
     for (i=0; i<samples.size(); i++) {
       sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
 
+      if (flat) {
+	*outstr.tie() << i << "\t" << outsamples.size() << "\t";
+      }
+
       for (unsigned j=0; j<outsamples.size(); j++) {
 	int samplelevel = outsamples[j].GetSampleLevel();
 	levels[samplelevel]->push_front(outsamples[j]);
+	if (flat) {
+	  *outstr.tie() << samplelevel << " " << outsamples[j].GetSampleValue() << "\t";
+	}
+      }
+      if (flat) {
+	*outstr.tie() << endl;
       }
 
       outsamples.clear();
@@ -252,18 +276,6 @@ int main(int argc, char *argv[])
 	  *outstr.tie() << wos.GetSampleValue() << "\t";
 	  levels[j]->pop_back();
 	}
-      }
-      *outstr.tie() << endl;
-    }
-  } else {  // Machine readable output
-    *outstr.tie() << "Level     Size     Coefs (in order)" << endl;
-    for (i=0; i<numlevels; i++) {
-      *outstr.tie() << i << "\t" << levels[i]->size() << "\t";
-      for (unsigned j=0; j<levels[i]->size(); j++) {
-	wosd wos;
-	wos = levels[i]->back();
-	*outstr.tie() << wos.GetSampleValue() << "\t";
-	levels[i]->pop_back();
       }
       *outstr.tie() << endl;
     }

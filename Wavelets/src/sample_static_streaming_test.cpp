@@ -44,7 +44,7 @@ void usage()
   delete [] b;
 }
 
-WaveletType GetWaveletType(const char *x)
+WaveletType GetWaveletType(const char *x, const char *filename)
 {
    if (!strcasecmp(x,"DAUB2")) {
      return DAUB2;
@@ -67,7 +67,7 @@ WaveletType GetWaveletType(const char *x)
    } else if (!strcasecmp(x,"DAUB20")) { 
      return DAUB20;
    } else {
-     fprintf(stderr,"sample_static_streaming_test: Unknown wavelet type\n");
+     fprintf(stderr,"%s: Unknown wavelet type\n", filename);
      exit(-1);
    }
 }
@@ -84,25 +84,22 @@ int main(int argc, char *argv[])
   } else {
     infile.open(argv[1]);
     if (!infile) {
-      cerr << "Cannot open input file " << argv[1] << ".\n";
-      usage();
+      cerr << "sample_static_streaming_test: Cannot open input file " << argv[1] << ".\n";
       exit(-1);
     }
     cin = infile;
   }
 
-  WaveletType wt = GetWaveletType(argv[2]);
+  WaveletType wt = GetWaveletType(argv[2], argv[0]);
 
   int numstages = atoi(argv[3]);
   if (numstages <= 0) {
-    cerr << "Number of stages must be positive.\n";
-    usage();
+    cerr << "sample_static_streaming_test: Number of stages must be positive.\n";
     exit(-1);
   }
 
   if (toupper(argv[4][0])!='T') {
-    cerr << "For streaming tests, only TRANSFORM type allowed.\n";
-    usage();
+    cerr << "sample_static_streaming_test: For streaming tests, only TRANSFORM type allowed.\n";
     exit(-1);
   }
 
@@ -115,8 +112,7 @@ int main(int argc, char *argv[])
   } else {
     outfile.open(argv[5]);
     if (!outfile) {
-      cerr << "Cannot open output file " << argv[5] << ".\n";
-      usage();
+      cerr << "sample_static_streaming_test: Cannot open output file " << argv[5] << ".\n";
       exit(-1);
     }
     outstr.tie(&outfile);
