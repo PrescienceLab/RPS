@@ -11,12 +11,12 @@
 #include "waveletinfo.h"
 #include "waveletsample.h"
 #include "waveletsampleblock.h"
-
+#include "transforms.h"
 
 #define WAVELET_MAX_BLOCK_LEN 65536
 
 
-enum WaveletRepresentationType { WAVELET_DOMAIN, TIME_DOMAIN, FREQUENCY_DOMAIN };
+enum WaveletRepresentationType { WAVELET_DOMAIN_APPROX, WAVELET_DOMAIN_DETAIL, TIME_DOMAIN, FREQUENCY_DOMAIN };
 enum WaveletTransformDirection { FORWARD, REVERSE };
 enum WaveletBlockEncodingType  { PREORDER, INORDER, POSTORDER};
 
@@ -112,6 +112,43 @@ struct WaveletIndividualSample : public SerializeableInfo {
   ostream & Print(ostream &os) const;
 };
 
+//
+// For use in streaming 
+//
+//
+//
+struct WaveletStreamingBlock : public SerializeableInfo {
+  unsigned tag;
+  TimeStamp timestamp;
+  unsigned numsamples;
+  WaveletIndividualSample *samples;
+  
+  WaveletStreamingBlock();
+  WaveletStreamingBlock(const unsigned tagval,
+			const TimeStamp &ts);
+  WaveletStreamingBlock(const WaveletStreamingBlock &rhs);
+    
+  virtual ~WaveletStreamingBlock();
+  virtual WaveletStreamingBlock & operator= (const WaveletStreamingBlock &rhs);
+  
+  int Resize(int len, bool copy=true);
+  int SetSeries(double *ser, int len);
+
+  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock &m) const;
+  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock &m);
+
+  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock &m) const;
+  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock &m);
+
+  int GetPackedSize() const;
+  int GetMaxPackedSize() const;
+  int Pack(Buffer &buf) const;
+  int Unpack(Buffer &buf);
+
+  void Print(FILE *out=stdout) const ;
+  ostream & Print(ostream &os) const;
+};
+
 
 //
 // This is a block of samples.  One must look at rinfo to understand how to interpret it.
@@ -125,6 +162,7 @@ struct WaveletBlock : public SerializeableInfo {
   TimeStamp timestamp;
   WaveletRepresentationInfo rinfo;
   WaveletBlockEncodingType  btype;
+  
   int       serlen;
   double    *series;
   
@@ -198,6 +236,7 @@ struct WaveletTransformBlockRequestResponse : public SerializeableInfo {
   WaveletTransformRequestType ttype;
   TimeStamp            timein;
   TimeStamp            timeout;
+  double               dc;
   WaveletBlock         block;
 
   WaveletTransformBlockRequestResponse();
