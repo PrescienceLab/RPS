@@ -588,7 +588,7 @@ RPSgetloadavg (double loadavg[], int nelem)
     for (i=0;i<nelem;i++) {
       loadavg[i]=ldav[i];
     }
-    return nr;
+    return nelem < nr ? nelem : nr ;
   } else {
     close(pipes[0]);
     dup2(pipes[1],fileno(stdout)); 

@@ -87,64 +87,64 @@ all:  $(PROJS)
 rebuild_all: clean depend all
 
 shared: $(PROJS)
-	cp `find $(SHARED_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
+	cp `find $(SHARED_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
 GetLoadAvg: force
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(GETLOADAVG_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(GETLOADAVG_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(GETLOADAVG_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(GETLOADAVG_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(GETLOADAVG_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 GetFlowBW: force
 	cd $(GETFLOWBW_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(GETFLOWBW_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(GETFLOWBW_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(GETFLOWBW_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 Sensors : $(HGLA_DEP) $(HGFB_DEP) force
-	cp `find $(SENSORS_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
+	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
 TimeSeries: $(HFD_DEP)
 	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
-	cp `find $(TS_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(TS_DIR)/lib/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(TS_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(TS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(TS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(TS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 FracDiff: force
 	cd $(FRACDIFF_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(FRACDIFF_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(FRACDIFF_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(FRACDIFF_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(FRACDIFF_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(FRACDIFF_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(FRACDIFF_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 Mirror:  force
 	cd $(MIRROR_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(MIRROR_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(MIRROR_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(MIRROR_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(MIRROR_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 # No binaries for the Mirror
-#	cp `find $(MIRROR_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+#	cp `find $(MIRROR_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 RPSInterface:  $(HSE_DEP) $(HTS_DEP) $(HMT_DEP) force
 	cd $(RPSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(RPSINT_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(RPSINT_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RPSINT_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(RPSINT_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 # No binaries for RPSInterface
-#	cp `find $(RPSINT_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+#	cp `find $(RPSINT_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 RemosInterface:  $(HRPSI_DEP) force
 	cd $(REMOSINT_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(REMOSINT_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(REMOSINT_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(REMOSINT_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(REMOSINT_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 # No binaries for RemosInterface
-#	cp `find $(REMOSINT_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+#	cp `find $(REMOSINT_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 
 PredComp: $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
 
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(PREDCOMP_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
+	cp `find $(PREDCOMP_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 # No predcomp libraries
-#	cp `find $(PREDCOMP_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+#	cp `find $(PREDCOMP_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(PREDCOMP_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 JavaGUI:  $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP) 
 	cd $(JAVAGUI_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
@@ -153,27 +153,27 @@ JavaGUI:  $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP)
 
 Spin: $(HMT_DEP) $(HRPSI_DEP) force
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(SPIN_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(SPIN_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(SPIN_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(SPIN_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(SPIN_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(SPIN_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 Trace: $(HGLA_DEP) $(HSP_DEP) force
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(TRACE_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(TRACE_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(TRACE_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(TRACE_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(TRACE_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(TRACE_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 RTA: $(HSP_DEP) $(HT_DEP) $(HPC_DEP) force
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(RTA_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(RTA_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(RTA_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(RTA_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(RTA_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RTA_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 RTSA: $(HRTA_DEP) force
 	cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
-	cp `find $(RTSA_DIR)/include -type f -not -path "*CVS*"` $(RPS_DIR)/include
-	cp `find $(RTSA_DIR)/lib/$(ARCH)/$(OS)/ -type f -not -path "*CVS*"` $(RPS_DIR)/lib/$(ARCH)/$(OS)
-	cp `find $(RTSA_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(RTSA_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(RTSA_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(RTSA_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
 clean:
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean ;
@@ -189,8 +189,8 @@ clean:
 	cd $(TRACE_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	cd $(RTA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
 	#cd $(RTSA_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean;
-	rm -f `find $(RPS_DIR)/lib/$(ARCH)/$(OS) -type f -not -path "*CVS*"`
-	rm -f `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f -not -path "*CVS*"`
+	rm -f `find $(RPS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS`
+	rm -f `find $(RPS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS`
 
 depend:
 	cd $(GETLOADAVG_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend ;
