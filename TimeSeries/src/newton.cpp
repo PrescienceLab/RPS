@@ -84,8 +84,7 @@ void NewtonPredictor::ComputeCoeffs()
   int n=window.size();
   int i,j;
 
-  // window from 0..n-1 corresponds to values -n-1, -n+2, ... 0
-  //                                           0, 1, 2, 3, 3, 4, .. n-1
+  // window from 0..n-1 corresponds to values  1, 2, 3, 3, 4, .. n
 
   for (i=0;i<n;i++) { 
     coeffs[i]=window[i];
@@ -93,7 +92,7 @@ void NewtonPredictor::ComputeCoeffs()
 
   for (j=0;j<(n-1);j++) { 
     for (i=n-1;i>=(j+1);i--) { 
-      coeffs[i]=(coeffs[i]-coeffs[i-1])/(i-(i-j));
+      coeffs[i]=(coeffs[i]-coeffs[i-1])/((i+1)-((i+1)-(j+1)));
     }
   }
 }
@@ -108,7 +107,7 @@ double NewtonPredictor::ComputePrediction(const int step) const
   int loc=n+step;
 
   for (int i=n-2;i>=0;i--) { 
-    x =  x*((loc - i ))  + coeffs[i];
+    x =  x*((loc - (i+1) ))  + coeffs[i];
   }
   
   return x;
