@@ -133,10 +133,22 @@ DelayBlock<SAMPLE>::
 DelayBlock(const DelayBlock &rhs) : 
   numlevels(rhs.numlevels), lowest_level(rhs.lowest_level), dbanks(rhs.dbanks)
 {
-  // Initialize the delay value vector
-  this->delay_vals = new int[rhs.numlevels];
-  for (int i=0; i<rhs.numlevels; i++) {
-    this->delay_vals[i] = rhs.delay_vals[i];
+  if ((rhs.numlevels == 0) || (rhs.numlevels > MAX_STAGES+1)) {
+    // Need at least one level
+    this->numlevels = 1;
+    dbanks.clear();
+
+    deque<SAMPLE>* pdis = new deque<SAMPLE>(0);
+    dbanks.push_back(pdis);
+
+    this->delay_vals = new int[1];
+    this->delay_vals[0] = 0;
+  } else {
+    // Initialize the delay value vector
+    this->delay_vals = new int[rhs.numlevels];
+    for (unsigned i=0; i<rhs.numlevels; i++) {
+      this->delay_vals[i] = rhs.delay_vals[i];
+    }
   }
 }
 
@@ -160,20 +172,8 @@ DelayBlock<SAMPLE> &
 DelayBlock<SAMPLE>::
 operator=(const DelayBlock &rhs)
 {
-  numlevels = rhs.numlevels;
-  lowest_level = rhs.lowest_level;
-
-  if (delay_vals != 0) {
-    delete[] delay_vals;
-    delay_vals=0;
-  }
-  this->delay_vals = new int[numlevels];
-
-  for (unsigned i=0; i<numlevels; i++) {
-    this->delay_vals[i] = rhs.delay_vals[i];
-  }
-  dbanks = rhs.dbanks;
-  return *this;
+  this->~DelayBlock();
+  return *(new (this) DelayBlock(rhs));
 }
 
 template<class SAMPLE>
@@ -312,9 +312,10 @@ StreamingSampleOperation(vector<SAMPLE> &out, const vector<SAMPLE> &in)
   out.clear();
 
   // Check input buffer for new inputs
+  int level_indx;
   for (i=0; i<in.size(); i++) {
     samplelevel = in[i].GetSampleLevel();
-    int level_indx = samplelevel - lowest_level;
+    level_indx = samplelevel - lowest_level;
     assert((level_indx >= 0) || (level_indx <= (int) numlevels));
 
     sampleindex = in[i].GetSampleIndex();

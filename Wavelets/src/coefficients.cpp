@@ -185,15 +185,32 @@ WaveletCoefficients::WaveletCoefficients(const WaveletCoefficients &rhs)
   wt = rhs.wt;
   waveletname = rhs.waveletname;
   numcoefs = rhs.numcoefs;
-  g_coefs = rhs.g_coefs;
-  h_coefs = rhs.h_coefs;
+
+  g_coefs = new double[numcoefs];
+  h_coefs = new double[numcoefs];
+
+  for (unsigned i=0; i<numcoefs; ++i) {
+    const double *coefptr = coefTable[wt];
+    g_coefs[i] = coefptr[i];
+    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+  }
 }
 
 WaveletCoefficients::WaveletCoefficients(const WaveletType wt)
 {
   assert(wt<=NUM_WAVELET_TYPES);
   this->wt = wt;
-  init(wt);
+  numcoefs = numCoefTable[wt];
+  waveletname = waveletNames[wt];
+
+  g_coefs = new double[numcoefs];
+  h_coefs = new double[numcoefs];
+
+  for (unsigned i=0; i<numcoefs; ++i) {
+    const double *coefptr = coefTable[wt];
+    g_coefs[i] = coefptr[i];
+    h_coefs[i] = coefptr[numcoefs-1-i]*pow(-1.0,(double)(i+1));
+  }
 }
 
 WaveletCoefficients::~WaveletCoefficients()
@@ -206,10 +223,9 @@ WaveletCoefficients & WaveletCoefficients::operator=
 (const WaveletCoefficients &rhs)
 {
   wt = rhs.wt;
-  waveletname = rhs.waveletname;
-  numcoefs = rhs.numcoefs;
-  g_coefs = rhs.g_coefs;
-  h_coefs = rhs.h_coefs;
+  CHK_DEL(g_coefs);
+  CHK_DEL(h_coefs);
+  init(wt);
   return *this;
 }
 
@@ -276,7 +292,7 @@ void WaveletCoefficients::GetInverseCoefsHPF(vector<double> &coefs) const
 
 ostream & WaveletCoefficients::Print(ostream &os) const
 {
-  os << waveletname << ", " << numcoefs << " coefficients" << endl;
+  os << "Daubechies, " << numcoefs << " coefficients" << endl;
   os << "LPF Coefficients,\tHPF Coefficients" << endl;
   for (unsigned i=0; i<numcoefs; i++) {
     os << "  " << g_coefs[i] << ",\t\t" << h_coefs[i] << endl;

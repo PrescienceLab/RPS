@@ -960,7 +960,7 @@ Print(ostream &os) const
   for (unsigned i=0; i<numstages; i++) {
     os << "STAGE " << i << ":" << endl;
     pfws = stages[i];
-    os << *pfws << endl;
+    pfws->Print(os);
   }
   return os;
 }
@@ -1017,7 +1017,7 @@ StaticReverseWaveletTransform(const StaticReverseWaveletTransform &rhs) :
   numstages(rhs.numstages), numlevels(rhs.numlevels),
   lowest_inlvl(rhs.lowest_inlvl), index(rhs.index), sampletime(rhs.sampletime),
   insignals(rhs.insignals), intersignals(rhs.intersignals),
-  last_stage(rhs.last_stage), stages(rhs.stages)
+  stages(rhs.stages), last_stage(rhs.last_stage)
 {}
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -1086,16 +1086,8 @@ StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE> &
 StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 operator=(const StaticReverseWaveletTransform &rhs)
 {
-  numstages = rhs.numstages;
-  numlevels = rhs.numlevels;
-  lowest_inlvl = rhs.lowest_inlvl;
-  index = rhs.index;
-  sampletime = rhs.sampletime;
-  insignals = rhs.insignals;
-  intersignals = rhs.intersignals;
-  last_stage = rhs.last_stage;
-  stages = rhs.stages;
-  return *this;
+  this->~StaticReverseWaveletTransform();
+  return *(new (this) StaticReverseWaveletTransform(rhs));
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
@@ -1303,9 +1295,6 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
     r_iter++;
     for (i=numstages-2; r_iter != stages.rend(); r_iter++, i--) {
       tempout.clear();
-      cerr << "Stage: "<< *r_iter << endl;
-      cerr << "Intersignal blocksize: " << intersignals[i]->GetBlockSize() << endl;
-      cerr << "Insignal blocksize: " << insignals[i]->GetBlockSize() << endl;
       RUN_STAGE_SAMPLE_OPERATION(*r_iter,
 				 tempout,
 				 *intersignals[i],
@@ -1624,8 +1613,8 @@ Print(ostream &os) const
     }
   }
 
-  ReverseWaveletStage<SAMPLETYPE, OUTSAMPLE, INSAMPLE>* prws;
-       for (i=0; i<numstages; i++) {
+  ReverseWaveletStage<SAMPLETYPE, INSAMPLE, INSAMPLE>* prws;
+  for (i=0; i<numstages; i++) {
     os << "STAGE " << i << ":" << endl;
     prws = stages[i];
     os << *prws << endl;
@@ -2141,6 +2130,7 @@ DiscreteWaveletTransform
 
   return true;
 #endif
+  return true;
 }
 
 /********************************************************************************
@@ -2317,7 +2307,7 @@ InverseDiscreteWaveletTransform
   }
   return true;
 #endif
-
+  return true;
 }
 
 #endif
