@@ -53,12 +53,12 @@ sleep(60);
 # Performance tests
 if (1) {
 
-  #SAMPLE, PROCESSING, FORWARD THEN REVERSE
+  #-----------------------------------------------------------------------------
+
+  #SAMPLE PROCESSING, FORWARD THEN REVERSE
 
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of sfwt, sample\n";
-  system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout\" >> $OUTDIR/vmstat.out";
-  system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout\" >> $OUTDIR/loadmonitor.out";
   $datasize = $initsize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
     $usec = int(1000000/$hz);
@@ -67,6 +67,8 @@ if (1) {
     system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED $usec $FLAT stdout > /dev/null";
     $datasize*=2;
   }
+  system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $FLAT stdout > /dev/null\"";
+  system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM SAMPLE $NOT_USED 0 $FLAT stdout > /dev/null";
 
   sleep(10);
 
@@ -80,21 +82,29 @@ if (1) {
     system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED $usec $FLAT stdout > /dev/null";
     $datasize*=2;
   }
+  system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED 0 $FLAT stdout > /dev/null\"";
+  system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM SAMPLE $NOT_USED $NOT_USED 0 $FLAT stdout > /dev/null";
 
   sleep(10);
+
+  #-----------------------------------------------------------------------------
+
+  #BLOCK PROCESSING, FORWARD THEN REVERSE
 
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of sfwt, block\n";
   $datasize = $initsize;
   $blk = $initblocksize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000/$hz);
+    $usec = int(1000000*$blk/$hz);
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
+  system "echo \"perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk 0 $FLAT stdout > /dev/null\"";
+  system "perf_sfwt $file.$datasize.in DAUB10 10 TRANSFORM BLOCK $blk 0 $FLAT stdout > /dev/null";
 
   sleep(10);
 
@@ -104,28 +114,36 @@ if (1) {
   $blk = $initblocksize;
   $numblocks = $datasize / $blk;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000/$hz);
+    $usec = int(1000000*$blk/$hz);
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks $usec $FLAT stdout > /dev/null\"";
     system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
+  system "echo \"perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks 0 $FLAT stdout > /dev/null\"";
+  system "perf_srwt $file.$datasize.sfwt.DAUB10.10.t.out DAUB10 10 TRANSFORM BLOCK $blk $numblocks 0 $FLAT stdout > /dev/null";
 
   sleep(10);
+
+  #-----------------------------------------------------------------------------
+
+  #DISCRETE BLOCK PROCESSING, FORWARD THEN REVERSE
 
   # now use my utilities to sweep the sleeprates
   print STDERR "Sweep Hz for performance of dft\n";
   $datasize = $initsize;
   $blk = $initblocksize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000/$hz);
+    $usec = int(1000000*$blk/$hz);
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
+  system "echo \"perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk 0 $FLAT stdout > /dev/null\"";
+  system "perf_dft $file.$datasize.in DAUB10 TRANSFORM $blk 0 $FLAT stdout > /dev/null";
 
   sleep(10);
 
@@ -134,13 +152,18 @@ if (1) {
   $datasize = $initsize;
   $blk = $initblocksize;
   for ($hz=1;$hz<=$maxhz;$hz*=2) {
-    $usec = int(1000000/$hz);
+    $usec = int(1000000*$blk/$hz);
     print STDERR "$hz\t$usec\n";
     system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null\"";
     system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk $usec $FLAT stdout > /dev/null";
     $datasize*=2;
     $blk*=2;
   }
+  system "echo \"perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk 0 $FLAT stdout > /dev/null\"";
+  system "perf_drt $file.$datasize.dft.DAUB10.$blk.t.out DAUB10 TRANSFORM $blk 0 $FLAT stdout > /dev/null";
+
+  #-----------------------------------------------------------------------------
+
 }
 
 # Latency tests
