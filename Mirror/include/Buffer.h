@@ -1,7 +1,7 @@
 #ifndef _Buffer
 #define _Buffer
 
-#include "Mirror.h"
+#include "MirrorTemplate.h"
 #include "Queues.h"
 #include "TimeStamp.h"
 

@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 #define M_PI       3.1415926535897932385E0  /*Hex  2^ 1 * 1.921FB54442D18 */
 #endif
 

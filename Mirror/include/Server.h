@@ -30,7 +30,7 @@ class SimpleTCPServerNewConnectionHandler : public Handler {
     assert(0);
   }
   virtual int HandleException(int fd, Selector &s) {
-    close(fd);
+    CLOSE(fd);
     s.RemoveHandler(this);
     return 0;
   }

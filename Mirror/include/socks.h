@@ -1,8 +1,10 @@
 #ifndef _socks
 #define _socks
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
+#warning "including windows"
 #include <windows.h>
+#include <winsock.h>
 #else
 extern "C" {
 #include <sys/types.h>
@@ -26,6 +28,22 @@ extern "C" {
 #ifndef INADDR_NONE
 #define INADDR_NONE             0xffffffff
 #endif
+
+
+#if defined(WIN32) && !defined(__CYGWIN__)
+#include <io.h>
+#define WRITE(fd,buf,len) send(fd,buf,len,0)
+#define READ(fd,buf,len) recv(fd,buf,len,0)
+#define CLOSE(x) closesocket(x)
+#define IOCTL(x,y,z) ioctlsocket((SOCKET)x,(long)y,(unsigned long *)z)
+#else
+#define WRITE(fd,buf,len) write(fd,buf,len)
+#define READ(fd,buf,len) read(fd,buf,len)
+#define CLOSE(x) close(x)
+#define IOCTL(x,y,z) ioctl(x,y,z)
+#endif
+
+
 int CreateAndSetupTcpSocket(int bufsize=SND_RCV_SOCKET_BUF_SIZE, 
 			    bool nodelay=true,
 			    bool nonblocking=false);
