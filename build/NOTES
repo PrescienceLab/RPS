@@ -1,4 +1,4 @@
-RPS/shared/include
+S/shared/include
    overall RPS include files
 
 
@@ -31,5 +31,13 @@ RPSInterface
    remove maths.h - in mirror
 
 
+
+
+
+
+
+Fix Endpoints source:file:...
+
+client and source should not map to the same thing.
 
 
