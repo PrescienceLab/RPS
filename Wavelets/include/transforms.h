@@ -2375,9 +2375,11 @@ ChangeStructure(const unsigned new_numstages, const WaveletType new_wavetype)
   bool result=false;
   unsigned delta;
 
-  if (new_numstages == this->numstages || new_numstages == 0) {
+  if (new_numstages == 0) {
     return result;
-  } else if (this->numstages > new_numstages) {
+  }
+
+  if (this->numstages >= new_numstages) {
     // Remove stages
     delta = this->numstages - new_numstages;
     for (unsigned i=0; i<delta; i++) {

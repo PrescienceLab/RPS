@@ -22,8 +22,7 @@ void usage()
   cerr << "--------------------------------------------------------------\n";
   cerr << "\n";
   cerr << "[input-file]         = The name of the file containing wavelet\n";
-  cerr << "                       coefficients.  Can NOT be stdin because\n";
-  cerr << "                       a particular file format is expected.\n";
+  cerr << "                       coefficients.  Can also be stdin.\n";
   cerr << "\n";
   cerr << "[wavelet-type-init]  = The type of wavelet.  The choices are\n";
   cerr << "                       {DAUB2 (Haar), DAUB4, DAUB6, DAUB8,\n";

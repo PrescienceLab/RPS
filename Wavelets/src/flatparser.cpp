@@ -237,6 +237,64 @@ void FlatParser::ParseMRACoefsBlock(const SignalSpec &spec,
   }
 }
 
+unsigned
+FlatParser::ParseMRACoefsBlock(const SignalSpec &spec,
+			       vector<WaveletOutputSampleBlock<wosd> > &acoefs,
+			       vector<WaveletOutputSampleBlock<wosd> > &dcoefs,
+			       istream &in,
+			       const unsigned parsenum)
+{
+  unsigned indextime, numsamples;
+  char mratype;
+  int levelnum;
+  double sampvalue;
+  unsigned parsecount=0;
+  while (in >> indextime) {
+    parsecount++;
+    in >> mratype;
+
+    if (mratype == 'A') {
+      in >> numsamples;
+      for (unsigned i=0; i<numsamples; i++) {
+	in >> levelnum >> sampvalue;
+
+	if (LevelInSpec(spec.approximations, levelnum)) {
+	  if (a_indices.find(levelnum) == a_indices.end()) {
+	    a_indices[levelnum] = 0;
+	  } else {
+	    a_indices[levelnum] += 1;
+	  }
+	  wosd sample(sampvalue, levelnum, a_indices[levelnum]);
+	  acoefs[levelnum].PushSampleBack(sample);
+	}
+      }
+    } else if (mratype == 'D') {
+      in >> numsamples;
+      for (unsigned i=0; i<numsamples; i++) {
+	in >> levelnum >> sampvalue;
+	if (LevelInSpec(spec.details, levelnum)) {
+	  if (d_indices.find(levelnum) == d_indices.end()) {
+	    d_indices[levelnum] = 0;
+	  } else {
+	    d_indices[levelnum] += 1;
+	  }
+	  wosd sample(sampvalue, levelnum, d_indices[levelnum]);
+	  dcoefs[levelnum].PushSampleBack(sample);
+	}
+      }
+
+      // Dependency is approx then detail ***always***
+      if ((indextime+1) % parsenum == 0) {
+	break;
+      }
+    } else {
+      cerr << "Invalid MRA type.\n";
+    }
+  }
+  parsecount = parsecount >> 0x1;
+  return parsecount;
+}
+
 void FlatParser::ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &acoefs,
 				    vector<WaveletOutputSampleBlock<wosd> > &dcoefs,
 				    istream &in)
