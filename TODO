@@ -1,0 +1,42 @@
+Sensors
+  => Document WatchTowerRPS sensor in readme
+
+Wavelets
+  => Need README.Wavelets
+  => Jason
+
+TimeSeries
+  => Fix costly variance recompute bug in managed predictors
+
+
+PredComp
+  => New tools
+    => Wavelet tools to build
+      => wavelet_streaming_denoise
+      => wavelet_interval_query
+      => wavelet_predserver
+    => pred tools
+      => managed_predserver
+         wavelet_buffer, bufferclient
+         wavelet_predserver 
+         wavelet_reqresp_client/server
+         wavelet_streaming_server, wavelet_streaming_selection, wavelet_streaming_query, wavelet_streaming_client
+         wavelet_predict
+
+
+
+
+
+Tsunami TR
+  => Clarify block oriented in RPS section
+
+
+
+Windows build env
+  => Add new components
+     PredComp/wavelet*.cpp; 
+   
+
+
+Test
+  => build on windows, cygwin, linux, 
