@@ -106,8 +106,6 @@ void ParseSignalSpec(SignalSpec &spec, ifstream &file)
 	file >> levelnum;
 	spec.details.push_back(levelnum);
       }
-    } else if (c == space) {
-      file.ignore(SHRT_MAX, '\n');
     }
   }
 }
@@ -283,7 +281,7 @@ int main(int argc, char *argv[])
       *outstr.tie() << endl;
     }
 
-    *outstr.tie() << "The size of each detail level:" << endl;
+    *outstr.tie() << endl << "The size of each detail level:" << endl;
     for (i=0; i<numlevels; i++) {
       *outstr.tie() << "\tLevel " << i << " size = " << detaillevels[i]->size() << endl;
     }
