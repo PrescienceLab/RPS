@@ -3,6 +3,12 @@ export PPSDIR=$RPSDIR
 
 export PATH=${RPSDIR}/Scripts:${RPSDIR}/bin/${RPS_ARCH}/${RPS_OS}:${RPSDIR}/ResearchScripts:$PATH
 
+export LD_LIBRARY_PATH=${RPS_DIR}/JavaGUI:${LD_LIBRARY_PATH}
+
+export RPS_NEWSTYLEOUTPUT=yes
+
+export RPS_WELL_KNOWN_HOST=stingray.cs.northwestern.edu
+export RPS_WELL_KNOWN_PORT=22
 
 export HOSTLOADPREDCTRLPORT=5000
 export HOSTLOADPREDBUFFERPORT=5001

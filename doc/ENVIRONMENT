@@ -1,0 +1,67 @@
+RPS Environmental Variables
+===========================
+
+rps-help@cs.northwestern.edu
+
+RPS components use the following environmental variables.  
+Many variables are set by $RPS_DIR/build/setup_rps_env
+
+General Approach To Setting Variables
+-------------------------------------
+
+In your .bashrc or .cshrc, set RPS_DIR, RPS_ARCH, RPS_OS and source
+$RPS_DIR/build/setup_rps_env edit $RPS_DIR/build/setup_rps_env if
+needed.
+
+Require
+
+d Variables
+------------------
+
+RPS_DIR 
+ The home directory of RPS
+
+RPS_ARCH
+ The archtiture RPS is running on (I386,SUN,ALPHA)
+
+RPS_OS
+ The operating system RPS is running on (LINUX,FREEBSD,WIN32,CYGWIN,DUX,SOLARIS)
+
+RPS_WELL_KNOWN_HOST
+ A host that RPS can make a one-time
+
+RPS_WELL_KNOWN_PORT
+
+PATH
+ You should put $RPS_DIR/Scripts:$RPS_DIR/ResearchScripts:$RPS_DIR/bin/$RPS_ARCH/$RPS_OS
+ on your path.
+
+
+TCP Communication Ports Used By RPS Scripts
+-------------------------------------------
+
+$RPS_DIR/build/setup_rps_env will set the following variables.  
+They are used by the RPS scripts when instantiating prediction pipelines
+using TCP communication:
+
+HOSTLOADPREDCTRLPORT=5000
+HOSTLOADPREDBUFFERPORT=5001
+SPINSERVERPORT=6000
+HOSTLOADPREDCTRLPORT_MEAN=5050
+HOSTLOADPREDBUFFERPORT_MEAN=5051
+HOSTLOADPREDCTRLPORT_LAST=5100
+HOSTLOADPREDBUFFERPORT_LAST=5101
+HOSTLOADSERVERCTRLPORT=5150
+HOSTLOADSERVERBUFFERPORT=5151
+HOSTLOADMEASUREBUFFERPORT=5201
+
+
+Optional Variables
+------------------
+
+LD_LIBRARY_PATH
+ Add $RPS_DIR/JavaGUI if you want to use the java gui tool
+
+RPS_NEWSTYLEOUTPUT
+ If this variable exists, RPS will print using the new lisp-style output
+  

@@ -1,8 +1,6 @@
 #include "TimeSeries.h"
 #include "Wavelets.h"
 
-#include "ioutil.h"
-
 /*
  
  Input File Format:
@@ -161,26 +159,26 @@ int main(int argc, char *argv[])
 
 
   // Read the data from file into an input vector
-  vector<WaveletInputSample> samples;
+  vector<WaveletInputSample<double> > samples;
   double sample;
   while (cin >> sample) {
-    WaveletInputSample wavesample;
+    WaveletInputSample<double> wavesample;
     wavesample.SetSampleValue(sample);
     samples.push_back(wavesample);
   }
 
-  StaticForwardWaveletTransform<double, WaveletOutputSample, WaveletInputSample>
+  StaticForwardWaveletTransform<double, WaveletOutputSample<double>, WaveletInputSample<double> >
     sfwt(numlevels-1,wavelettype,2,2,0);
 
-  StaticReverseWaveletTransform<double, WaveletInputSample, WaveletOutputSample>
+  StaticReverseWaveletTransform<double, WaveletInputSample<double>, WaveletOutputSample<double> >
     srwt(numlevels-1,wavelettype,2,2);
   
   
-  vector<WaveletOutputSample> forwardout;
-  vector<WaveletOutputSample> delayout;
-  vector<WaveletOutputSample> predout;
-  vector<WaveletInputSample>  finalout;
-  vector<WaveletInputSample>  reverseout;
+  vector<WaveletOutputSample<double> > forwardout;
+  vector<WaveletOutputSample<double> > delayout;
+  vector<WaveletOutputSample<double> > predout;
+  vector<WaveletInputSample<double> >  finalout;
+  vector<WaveletInputSample<double> >  reverseout;
 
   sampletime=0;
   for (i=0; i<samples.size(); i++) {

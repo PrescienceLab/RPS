@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include "Spin.h"
 
 void usage()

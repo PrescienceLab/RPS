@@ -84,14 +84,14 @@ void Handler::ClearHandlesTimeout()  { SetMask(GetMask()&~HANDLE_TIMEOUT);}
 void Handler::ClearHandlesException()  { SetMask(GetMask()&~HANDLE_EXCEPTION);}
 
 
-int HandlerCompare::Compare(Handler &left, Handler &right) 
+int HandlerCompare::Compare(const Handler &left, const Handler &right) 
 {
   return !((left.GetFD() == right.GetFD()) &&
 	   ((left.GetWait())==(right.GetWait())) &&
 	   ((left.GetTag())==(right.GetTag())));
 }
 
-int HandlerCompare::Compare(Handler *left, Handler *right) 
+int HandlerCompare::Compare(const Handler *left, const Handler *right) 
 {
   return Compare(*left,*right);
 }

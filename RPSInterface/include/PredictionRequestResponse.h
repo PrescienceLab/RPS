@@ -3,15 +3,17 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "ioutil.h"
+
 
 #include "Serializable.h"
 #include "ModelInfo.h"
 #include "TimeStamp.h"
 
+
+
 #define MAX_SERIES_LENGTH 3600
 
-
+using namespace std;
 
 #define PREDREQ_FLAG_NONE     0
 struct PredictionRequest : public SerializeableInfo {
@@ -23,7 +25,6 @@ struct PredictionRequest : public SerializeableInfo {
   int       numsteps;
   int       serlen;
   double   *series;
-
 
   PredictionRequest(unsigned len=0);
   PredictionRequest(ModelInfo &mi, 
@@ -49,7 +50,11 @@ struct PredictionRequest : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const;
   ostream &Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const PredictionRequest &rhs) { return rhs.operator<<(os);}
+
 
 
 #define PREDFLAG_OK    0
@@ -87,40 +92,13 @@ struct PredictionResponse : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
 
+inline ostream & operator<<(ostream &os, const PredictionResponse &rhs) { return rhs.operator<<(os);}
 
 
 
-/*
-#define PREDRECONFREQ_FLAG_NONE    0
-#define PREDRECONFREQ_FLAG_NULL    1
-struct PredictionReconfigurationRequest : public SerializableInfo {
-  unsigned  tag;                 // unique tag that will be copied to response
-  unsigned  flags;               //
-  ModelInfo modelinfo;
-  TimeStamp timestamp;
-  int       numsteps;
-  
-
-  PredictionReconfigurationRequest(unsigned tag,
- 				   ModelInfo *mi,
- 				   unsigned period_usec,
- 				   int numsteps);
-  PredictionReconfigurationRequest(const PredictionReconfigurationRequest &right);
-  virtual ~PredictionReconfigurationRequest() ;
-
-  virtual PredictionReconfigurationRequest & operator = (const PredictionReconfigurationRequest &right);
-
-  int GetPackedSize() const;
-  int GetMaxPackedSize() const;
-  int Pack(Buffer &buf) const ;
-  int Unpack(Buffer &buf) ;
-
-  void MakeNullRequest();
-  bool IsNullRequest();
-};
-*/
 
 // the *semantics of numsteps are different
 // here it is the horizon for all future predictions that
@@ -153,7 +131,10 @@ struct PredictionReconfigurationResponse : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const PredictionReconfigurationResponse &rhs) { return rhs.operator<<(os);}
 
 
 #endif

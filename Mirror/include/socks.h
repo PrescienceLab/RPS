@@ -43,68 +43,68 @@ extern "C" {
 #endif
 
 
-int CreateAndSetupTcpSocket(int bufsize=SND_RCV_SOCKET_BUF_SIZE, 
-			    bool nodelay=true,
-			    bool nonblocking=false);
+int CreateAndSetupTcpSocket(const int bufsize=SND_RCV_SOCKET_BUF_SIZE, 
+			    const bool nodelay=true,
+			    const bool nonblocking=false);
 
-int CreateAndSetupUdpSocket(int bufsize=SND_RCV_SOCKET_BUF_SIZE, 
-			    bool nonblocking=false);
+int CreateAndSetupUdpSocket(const int bufsize=SND_RCV_SOCKET_BUF_SIZE, 
+			    const bool nonblocking=false);
 
-int CreateAndSetupUnixDomainSocket(int bufsize=SND_RCV_SOCKET_BUF_SIZE,
-				   bool nonblocking=false);
+int CreateAndSetupUnixDomainSocket(const int bufsize=SND_RCV_SOCKET_BUF_SIZE,
+				   const bool nonblocking=false);
 
-int SetNoDelaySocket(const int fd, bool nodelay=true);
+int SetNoDelaySocket(const int fd, const bool nodelay=true);
 
 int IsSocket(const int fd);
 int IsStreamSocket(const int fd);
 int IsDatagramSocket(const int fd);
 
-int BindSocket(int mysocket, int myport);
-int BindSocket(int mysocket, unsigned adx, int myport);
-int BindSocket(int mysocket, char *host_or_ip, int myport);
-int BindSocket(int mysocket, char *pathname);
+int BindSocket(const int mysocket, const int myport);
+int BindSocket(const int mysocket, const unsigned adx, const int myport);
+int BindSocket(const int mysocket, const char *host_or_ip, const int myport);
+int BindSocket(const int mysocket, const char *pathname);
 
-int ListenSocket(int mysocket, int max=SOMAXCONN);
+int ListenSocket(const int mysocket, const int max=SOMAXCONN);
 
-int ConnectToHost(int mysocket, int hostip, int port);
-int ConnectToHost(int mysocket, char *host, int port);
-int ConnectToPath(int mysocket, char *pathname);
+int ConnectToHost(const int mysocket, const int hostip, const int port);
+int ConnectToHost(const int mysocket, const char *host, const int port);
+int ConnectToPath(const int mysocket, const char *pathname);
 
 
 int Send(const int fd, const char *buf, const int len, bool sendall=true);
 int Receive(const int fd, char *buf, const int len, bool recvall=true);
 
-int SendTo(int mysocket, 
-	   unsigned ip, int port, 
+int SendTo(const int mysocket, 
+	   const unsigned ip, const int port, 
 	   const char *buf, const int len, bool sendall=true);
-int ReceiveFrom(int mysocket, 
-		unsigned ip, int port, 
-		char *buf, const int len, bool recvall=true);
-int SendTo(int mysocket, 
-	   char *host_or_ip, int port, 
-	   const char *buf, const int len, bool sendall=true);
-int ReceiveFrom(int mysocket, 
-		char *host_or_ip, int port, 
-		char *buf, const int len, bool recvall=true);
+int ReceiveFrom(const int mysocket, 
+		const unsigned ip, const int port, 
+		char *buf, const int len, const bool recvall=true);
+int SendTo(const int mysocket, 
+	   const char *host_or_ip, const int port, 
+	   const char *buf, const int len, const bool sendall=true);
+int ReceiveFrom(const int mysocket, 
+		const char *host_or_ip, const int port, 
+		char *buf, const int len, const bool recvall=true);
 
 
-int JoinMulticastGroup(int mysocket, char *IP);
-int JoinMulticastGroup(int mysocket, unsigned adx);
-int LeaveMulticastGroup(int mysocket, char *IP);
-int LeaveMulticastGroup(int mysocket, unsigned adx);
-int SetMulticastTimeToLive(int mysocket, const unsigned char ttl);
+int JoinMulticastGroup(const int mysocket, const char *IP);
+int JoinMulticastGroup(const int mysocket, const unsigned adx);
+int LeaveMulticastGroup(const int mysocket, const char *IP);
+int LeaveMulticastGroup(const int mysocket, const unsigned adx);
+int SetMulticastTimeToLive(const int mysocket, const unsigned char ttl);
 
 
 unsigned GetMyIPAddress();
-unsigned ToIPAddress(char *hostname);
-void     PrintIPAddress(unsigned adx, FILE *out=stderr);
-void     IPToHostname(unsigned ip, char *name, int namesize);
-int      IsValidIPMulticastAddress(unsigned ipadx);
+unsigned ToIPAddress(const char *hostname);
+void     PrintIPAddress(const unsigned adx, FILE *out=stderr);
+void     IPToHostname(const unsigned ip, char *name, const int namesize);
+int      IsValidIPMulticastAddress(const unsigned ipadx);
 
 
-int SetSignalHandler(int signum, void (*handler)(int), bool oneshot=false);
-int IgnoreSignal(int signum);
-int ListenToSignal(int signum);
+int SetSignalHandler(const int signum, void (*handler)(int), const bool oneshot=false);
+int IgnoreSignal(const int signum);
+int ListenToSignal(const int signum);
 
 
 

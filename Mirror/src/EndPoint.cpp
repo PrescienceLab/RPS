@@ -19,9 +19,15 @@ EndPoint::EndPoint()
   adx=0; port=0; file=0; pathname=0;
 }
 
-EndPoint::EndPoint(const EndPoint &right)
+EndPoint::EndPoint(const EndPoint &rhs)
 {
-  memcpy(this,&right,sizeof(EndPoint)); // XXX
+  atype=rhs.atype;
+  ctype=rhs.ctype;
+  adx=rhs.adx;
+  port=rhs.port;
+  file= rhs.file; //XXX
+  pathname= new char[strlen(rhs.pathname)+1];
+  memcpy(pathname,rhs.pathname,strlen(rhs.pathname));
 }
   
 EndPoint::~EndPoint() 
@@ -30,10 +36,10 @@ EndPoint::~EndPoint()
   CHK_DEL_MAT(pathname);
 }
   
-EndPoint & EndPoint::operator = (const EndPoint &right) 
+EndPoint & EndPoint::operator = (const EndPoint &rhs) 
 {
-  memcpy(this,&right,sizeof(EndPoint)); // XX
-  return *this;
+  this->~EndPoint();
+  return *(new(this)EndPoint(rhs));
 }
 
 
@@ -174,4 +180,21 @@ int EndPoint::Parse(const char *s)
   *this = EndPoint();
   
   return -1;
+}
+
+ostream & EndPoint::operator<<(ostream &os) const {
+  os<<"EndPoint(atype="<<atype<<" ("<<
+    (atype==EP_UNKNOWN ? "EP_UNKNOWN" :
+     atype==EP_SOURCE ? "EP_SOURCE" :
+     atype==EP_CONNECT ? "EP_CONNECT" :
+     atype==EP_TARGET ? "EP_TARGET" :
+     atype==EP_SERVER ? "EP_SERVER" : "UNKNOWN") << "), ctype="<<ctype<<" ("<<
+    (ctype==COMM_UNKNOWN ? "COMM_UNKNOWN" :
+     ctype==COMM_TCP ? "COMM_TCP" :
+     ctype==COMM_UDP ? "COMM_UDP" :
+     ctype==COMM_UNIXDOM ? "COMM_UNIXDOM" :
+     ctype==COMM_FILE ? "COMM_FILE" :
+     ctype==COMM_STDIO ? "COMM_STDIO" : "UNKNOWN")
+    <<"), adx="<<adx<<", port="<<port<<", file="<<file<<", pathname="<<pathname<<")";
+  return os;
 }

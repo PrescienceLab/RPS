@@ -1,7 +1,7 @@
 #include <math.h>
 #include <signal.h>
 
-#include <iostream.h>
+#include <iostream>
 
 #include "socks.h"
 
@@ -26,9 +26,9 @@ extern "C" {
 #define LOADMONITOR    1
 #define PREDRECONFIG   2
 
-#define LOADPREDPORT_EV "LOADPREDPORT"
-#define LOADMONITORPORT_EV "LOADMONITORPORT"
-#define PREDRECONFIGPORT_EV "PREDRECONFIGPORT"
+#define LOADPREDPORT_EV "HOSTLOADPREDBUFFERPORT"
+#define LOADMONITORPORT_EV "HOSTLOADMEASUREBUFFERPORT"
+#define PREDRECONFIGPORT_EV "HOSTLOADPREDCTRLPORT"
 
 #define ARGBUFSIZE 256
 

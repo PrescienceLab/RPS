@@ -178,7 +178,10 @@ ostream & PredictionRequest::Print(ostream &os) const
   return os;
 }
 
-
+ostream & PredictionRequest::operator<<(ostream &os) const
+{
+  return Print(os);
+}
 
 
 PredictionResponse::PredictionResponse(unsigned period_usec, int numsteps) 
@@ -335,76 +338,10 @@ ostream & PredictionResponse::Print(ostream &os) const
   return os;
 }
 
-/*
-PredictionReconfigurationRequest::PredictionReconfigurationResponse(unsigned tag,
-								    ModelInfo &mi,
-								    unsigned period_usec, 
-								    int numsteps)
+ostream & PredictionResponse::operator<<(ostream &os) const
 {
-  this->tag=tag;
-  this->flags=0;
-  this->modelinfo=mi;
-  this->period_usec=period_usec;
-  this->numsteps=numsteps;
+  return Print(os);
 }
-
-
-PredictionReconfigurationRequest::PredictionReconfigurationResponse(const PredictionReconfigurationResponse &right) 
-{
-  memcpy(this,&right,sizeof(PredictionReconfigurationResponse));
-}
-
-PredictionReconfigurationRequest::~PredictionReconfigurationResponse() 
-{}
-
-
-PredictionReconfigurationResponse & PredictionReconfigurationRequest::operator = (const PredictionReconfigurationResponse &right)
-{
-  memcpy(this,&right,sizeof(PredictionReconfigurationResponse));
-  return *this;
-}
-
-
-void PredictionReconfigurationRequest::MakeNullRequest()
-{
-  flags|=PREDRECONFREQ_FLAG_NULL;
-}
-
-bool PredictionReconfigurationRequest::IsNullRequest()
-{
-  return flags&PREDRECONFREQ_FLAG_NULL;
-}
-
-
-int PredictionReconfigurationRequest::GetPackedSize() 
-{
-  return 4+4+modelinfo.GetPackedSize()+timestamp.GetPackedSize()+4;
-}
-
-int PredictionReconfigurationRequest::GetMaxPackedSize() 
-{
-  return 4+4+modelinfo.GetMaxPackedSize()+timestamp.GetMaxPackedSize()+4;
-}
-
-int PredictionReconfigurationRequest::Pack(Buffer &buf) const 
-{
-  buf.Pack(tag);
-  buf.Pack(flags);
-  modelinfo.Pack(buf);
-  timestamp.Pack(buf);
-  buf.Pack(numsteps);
-}
-
-int PredictionReconfigurationRequest::Unpack(Buffer &buf) 
-{
-  buf.Unpack(tag);
-  buf.Unpack(flags);
-  modelinfo.Unpack(buf);
-  timestamp.Unpack(buf);
-  buf.Unpack(numsteps);
-}
-
-*/
 
 PredictionReconfigurationResponse::PredictionReconfigurationResponse(unsigned period_usec, int numsteps) 
 {
@@ -500,6 +437,10 @@ ostream &PredictionReconfigurationResponse::Print(ostream &os) const
   return os;
 }
 
+ostream &PredictionReconfigurationResponse::operator<<(ostream &os) const
+{
+  return Print(os);
+}
 
 void PredictionReconfigurationResponse::MakeMatchingResponse(const PredictionReconfigurationRequest &req)
 {

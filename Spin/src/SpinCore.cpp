@@ -53,6 +53,11 @@ void SpinRequest::Print(FILE *out) const
   fprintf(out,"SpinRequest: tag=%d secs=%f\n",tag,secs);
 }
 
+ostream & SpinRequest::operator<<(ostream &os) const
+{
+  return (os<<"SpinRequest(tag="<<tag<<", secs="<<secs<<")");
+}
+
 SpinReply::SpinReply(int tag, 
 		     double reqsecs, 
 		     double wallsecs,
@@ -122,6 +127,11 @@ void SpinReply::Print(FILE *out) const
   fprintf(out,"SpinReply: tag=%d reqsecs=%f wallsecs=%f usrsecs=%f syssecs=%f\n",tag,reqsecs,wallsecs,usrsecs,syssecs);
 }
 
+ostream & SpinReply::operator<<(ostream &os) const
+{
+  return (os<<"SpinReply(tag="<<tag<<", reqsecs="<<reqsecs<<", wallsecs="<<wallsecs<<", usrsecs="<<usrsecs<<", syssecs="<<syssecs<<")");
+}
+
 
 int SpinCompute::Compute(const SpinRequest &req, SpinReply &repl)
 {
@@ -138,7 +148,7 @@ int SpinCompute::Compute(const SpinRequest &req, SpinReply &repl)
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -390,6 +400,13 @@ int Spin::Unserialize(char *fn)
   close(fd);
   return rc;
 }
+
+
+ostream & Spin::operator<<(ostream &os) const
+{
+  return (os<<"Spin(details omitted)");
+}
+
 
 
 Spin the_global_spin;

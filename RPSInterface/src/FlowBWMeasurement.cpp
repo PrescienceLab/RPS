@@ -89,6 +89,11 @@ ostream & FlowBWMeasurement::Print(ostream &os) const
   return os;
 }
 
+ostream & FlowBWMeasurement::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
 
 FlowBWMeasurementConfigurationRequest::FlowBWMeasurementConfigurationRequest() :
   timestamp(0),  fromip(0), toip(0), period_usec(DEFAULT_PERIOD_USEC)
@@ -162,6 +167,11 @@ ostream &FlowBWMeasurementConfigurationRequest::Print(ostream &os)  const
   return os;
 }
 	  
+
+ostream & FlowBWMeasurementConfigurationRequest::operator<<(ostream &os) const
+{
+  return Print(os);
+}
 
 
 FlowBWMeasurementConfigurationReply::FlowBWMeasurementConfigurationReply() :
@@ -242,3 +252,9 @@ ostream &FlowBWMeasurementConfigurationReply::Print(ostream &os) const
      <<"["<<((const char*)tohost)<<"])";
   return os;
 }
+
+ostream & FlowBWMeasurementConfigurationReply::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+

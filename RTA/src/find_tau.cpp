@@ -31,7 +31,7 @@ double EstimateTau(double sample_period, double sample_interval)
   RPSgetloadavg(&initload,1);
   prevload=initload;
   prevtime=inittime;
-  compare=(1/exp(1))*initload;
+  compare=(1/exp(1.0))*initload;
 #if DEBUG_TAU
   fprintf(stderr,"Observing decay from %f to %f now\n",initload,compare);
 #endif
@@ -47,7 +47,7 @@ double EstimateTau(double sample_period, double sample_interval)
       timetoprev=inittoprev.GetSeconds();
       timetocur=inittocur.GetSeconds();
       /* Linear interpolation */
-      frac = ((1/exp(1))*initload - prevload)/(curload-prevload);
+      frac = ((1/exp(1.0))*initload - prevload)/(curload-prevload);
       est = timetoprev+frac*(timetocur-timetoprev);
 #if DEBUG_TAU
       fprintf(stderr,"Load at step %d is %f - est=%f \n",i,curload,est);
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     printf("\n");
   } else {
     printf("+/- %f seconds with 95%% confidence\n",
-	   CI95MEANHALF(numsamples,sum,sum2));
+	   CI95MEANHALF((double)numsamples,sum,sum2));
   }
   
 }

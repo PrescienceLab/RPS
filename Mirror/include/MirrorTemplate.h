@@ -1,6 +1,12 @@
 #ifndef _MirrorTemplate
 #define _MirrorTemplate
 
+#include <iostream>
+#include <new>
+#include <typeinfo>
+
+using namespace std;
+
 #include "Selector.h"
 #include "Queues.h"
 #include "Serializable.h"
@@ -17,105 +23,139 @@
 
 #define QUEUED_WRITES
 
+#define MAKE_EQUAL(T)          \
+T & operator=(const T &rhs) {  \
+  this->~T();                  \
+  return *(new(this)T(rhs));   \
+}
+
+#define MAKE_OUTPUT(T) inline ostream & operator<<(ostream &os, const T &rhs) { return rhs.operator<<(os);}
+
+#define MAKE_OUTPUT_TEMPLATE(X) template <class T> inline ostream & operator<<(ostream &os, const X<T> &rhs) { return rhs.operator<<(os);};
+
 class LocalSource {
  public:
+  LocalSource() {}
+  LocalSource(const LocalSource &rhs) {}
+  virtual LocalSource & operator=(const LocalSource &rhs) { return *this;}
   virtual ~LocalSource() {}
   virtual void GetData(Buffer &buf)=0;
   virtual void GetInterval(TimeValue &tv)=0;
+  virtual ostream & operator<<(ostream &os) const {
+    return (os<<"LocalSource()");
+  }
 };
+
+MAKE_OUTPUT(LocalSource)
+
 
 class LocalTarget {
  public:
+  LocalTarget() {}
+  LocalTarget(const LocalTarget &rhs) {}
   virtual ~LocalTarget() {}
+  virtual LocalTarget & operator=(const LocalTarget & rhs) { return *this;}
   virtual void ProcessData(Buffer &buf)=0;
+  virtual ostream & operator<<(ostream &os) const {
+    return (os<<"LocalTarget()");
+  }
 };
+
+MAKE_OUTPUT(LocalTarget)
 
 
 class AbstractMirror {
  public:
+  AbstractMirror() {}
+  AbstractMirror(const AbstractMirror &rhs) {}
+  virtual AbstractMirror & operator=(const AbstractMirror &rhs) {return *this;}
   virtual ~AbstractMirror() {} ;
 
-  virtual int AddEndPoint(EndPoint &ep)=0;
-  virtual int DeleteEndPoint(EndPoint &ep)=0;
+  virtual int AddEndPoint(const EndPoint &ep)=0;
+  virtual int DeleteEndPoint(const EndPoint &ep)=0;
 
-  virtual int AddFDSource(int fd)=0;
-  virtual int DeleteFDSource(int fd)=0;
+  virtual int AddFDSource(const int fd)=0;
+  virtual int DeleteFDSource(const int fd)=0;
 
   virtual int AddLocalSource(LocalSource *ls)=0;
   virtual int DeleteLocalSource(LocalSource *ls)=0;
 
-  virtual int AddRemoteSource(char *iporhost, int port, bool udp=false)=0;
-  virtual int AddRemoteSource(unsigned adx, int port, bool udp=false)=0;
-  virtual int AddRemoteSource(char *pathname, bool isunixdom=true)=0;
-  virtual int DeleteRemoteSource(char *iporhost, int port, bool udp=false)=0;
-  virtual int DeleteRemoteSource(unsigned adx, int port, bool udp=false)=0;
-  virtual int DeleteRemoteSource(char *pathname, bool isunixdom=true)=0;
+  virtual int AddRemoteSource(const char *iporhost, const int port, const bool udp=false)=0;
+  virtual int AddRemoteSource(const unsigned adx, const int port, const bool udp=false)=0;
+  virtual int AddRemoteSource(const char *pathname, const bool isunixdom=true)=0;
+  virtual int DeleteRemoteSource(const char *iporhost, const int port, const bool udp=false)=0;
+  virtual int DeleteRemoteSource(const unsigned adx, const int port, const bool udp=false)=0;
+  virtual int DeleteRemoteSource(const char *pathname, const bool isunixdom=true)=0;
 
-  virtual int AddFDConnect(int fd)=0;
-  virtual int DeleteFDConnect(int fd)=0;
+  virtual int AddFDConnect(const int fd)=0;
+  virtual int DeleteFDConnect(const int fd)=0;
 
-  virtual int AddLocalConnect(int port, bool udp=false)=0;
-  virtual int AddLocalConnect(char *pathname)=0;
-  virtual int DeleteLocalConnect(int port, bool udp=false)=0;
-  virtual int DeleteLocalConnect(char *pathname)=0;
+  virtual int AddLocalConnect(const int port, const bool udp=false)=0;
+  virtual int AddLocalConnect(const char *pathname)=0;
+  virtual int DeleteLocalConnect(const int port, const bool udp=false)=0;
+  virtual int DeleteLocalConnect(const char *pathname)=0;
 
-  virtual int AddFDRequestResponseConnect(int fd)=0;
-  virtual int DeleteFDRequestResponseConnect(int fd)=0;
+  virtual int AddFDRequestResponseConnect(const int fd)=0;
+  virtual int DeleteFDRequestResponseConnect(const int fd)=0;
 
-  virtual int AddLocalRequestResponseConnect(int port, bool udp=false)=0;
-  virtual int AddLocalRequestResponseConnect(char *pathname)=0;
-  virtual int DeleteLocalRequestResponseConnect(int port, bool udp=false)=0;
-  virtual int DeleteLocalRequestResponseConnect(char *pathname)=0;
+  virtual int AddLocalRequestResponseConnect(const int port, const bool udp=false)=0;
+  virtual int AddLocalRequestResponseConnect(const char *pathname)=0;
+  virtual int DeleteLocalRequestResponseConnect(const int port, const bool udp=false)=0;
+  virtual int DeleteLocalRequestResponseConnect(const char *pathname)=0;
 
-  virtual int AddFDRequestResponse(int fd)=0;
-  virtual int DeleteFDRequestResponse(int fd)=0;              
+  virtual int AddFDRequestResponse(const int fd)=0;
+  virtual int DeleteFDRequestResponse(const int fd)=0;              
 
-  virtual int AddFDTarget(int fd)=0;
-  virtual int DeleteFDTarget(int fd)=0;              
+  virtual int AddFDTarget(const int fd)=0;
+  virtual int DeleteFDTarget(const int fd)=0;              
 
   virtual int AddLocalTarget(LocalTarget *lt)=0;
   virtual int DeleteLocalTarget(LocalTarget *lt)=0;
 
-  virtual int AddRemoteTarget(char *ip, int port, bool udp=false, int ttl=1)=0;
-  virtual int AddRemoteTarget(unsigned, int port, bool udp=false, int ttl=1)=0;
-  virtual int AddRemoteTarget(char *pathname, bool isunixdom=true)=0;
-  virtual int DeleteRemoteTarget(char *iporhost, int port, bool udp=false)=0;  
-  virtual int DeleteRemoteTarget(unsigned adx, int port, bool udp=false)=0;  
-  virtual int DeleteRemoteTarget(char *pathname, bool isunixdom=true)=0;
+  virtual int AddRemoteTarget(const char *ip, const int port, const bool udp=false, const int ttl=1)=0;
+  virtual int AddRemoteTarget(const unsigned, const int port, const bool udp=false, const int ttl=1)=0;
+  virtual int AddRemoteTarget(const char *pathname, const bool isunixdom=true)=0;
+  virtual int DeleteRemoteTarget(const char *iporhost, const int port, const bool udp=false)=0;  
+  virtual int DeleteRemoteTarget(const unsigned adx, const int port, const bool udp=false)=0;  
+  virtual int DeleteRemoteTarget(const char *pathname, const bool isunixdom=true)=0;
 
-  virtual int DeleteMatching(int fd)=0;
+  virtual int DeleteMatching(const int fd)=0;
 
 //  virtual int PushStreamInput(void *data, const int len)=0;
 
-  virtual int Forward(char *buf, const int len)=0;
+  virtual int Forward(const char *buf, const int len)=0;
   virtual int Forward(Buffer &buf)=0;
 
 #ifdef QUEUED_WRITES
-  virtual int QueueWrite(int fd, Buffer &buf)=0;
+  virtual int QueueWrite(const int fd, const Buffer &buf)=0;
 #endif
 
   virtual int Run()=0;
+
+  virtual ostream & operator<<(ostream &os) const {
+    return (os<<"AbstractMirror()");
+  }
 };  
 
-
+MAKE_OUTPUT(AbstractMirror)
 
 
 // These comparisons return nonzero if true
 struct ComparableMirrorData {
   enum ComparableMirrorDataType {FDS,FDC,FDT,FDRR,FDRRC,LS,LC,LT,LRRC,RS,RT} datatype;
   AbstractMirror *mirror;
-  ComparableMirrorData(ComparableMirrorDataType t, 
+  ComparableMirrorData(const ComparableMirrorDataType t, 
 		       AbstractMirror *mir) : datatype(t), mirror(mir) {}
-  virtual int Compare(ComparableMirrorData &other)=0;
-  virtual int Forward(Buffer &buf, bool sendall=true)=0;
+  virtual int Compare(const ComparableMirrorData &other) const =0;
+  virtual int Forward(Buffer &buf, const bool sendall=true)=0;
 };
 
 class ComparableMirrorDataCompare {
  public:
-  static int Compare(ComparableMirrorData *left, ComparableMirrorData *right) {
+  static int Compare(const ComparableMirrorData *left, const ComparableMirrorData *right) {
     return !(left->Compare(*right));
   }
-  static int Compare(ComparableMirrorData &left, ComparableMirrorData &right) {
+  static int Compare(const ComparableMirrorData &left, const ComparableMirrorData &right) {
     return !(left.Compare(right));
   }
 };
@@ -131,46 +171,50 @@ typedef SearchableQueue<ComparableMirrorData,ComparableMirrorDataCompare> Compar
 #define FD_BASED(name)						\
 struct name : public ComparableMirrorData {			\
   int fd;							\
-  name(int thefd, AbstractMirror *mir) :			\
+  name(const int thefd, AbstractMirror *mir) :		        \
      ComparableMirrorData(ComparableMirrorData::name,mir),	\
 			  fd(thefd) {}				\
-  virtual int Compare(ComparableMirrorData &other) {		\
+  virtual int Compare(const ComparableMirrorData &other)  const {           \
     if (datatype==other.datatype) {				\
-      return this->Compare((struct name &)other);		\
+      return this->Compare((const struct name &)other);		\
     } else {							\
       return 0;							\
     }								\
   }								\
-  virtual int Compare(struct name &other) {			\
+  virtual int Compare(const struct name &other) const {               \
     return fd==other.fd;					\
   }								\
-  virtual int Forward(Buffer &buf, bool sendall=true) {		\
+  virtual int Forward(Buffer &buf, const bool sendall=true) {		\
     return SEND_DATA(mirror,fd,buf,sendall);			\
   }								\
 };
+
 
 //XXX
 #define PTR_BASED(name,ptrtype,ptrname,fwd)					\
 struct name : public ComparableMirrorData {					\
   ptrtype *ptrname;								\
   Handler *handler;								\
-  name(ptrtype *theptrname, Handler *h,AbstractMirror *mir)  :			\
+  name(ptrtype *theptrname, Handler *h, AbstractMirror *mir)  :		\
     ComparableMirrorData(ComparableMirrorData::name,mir),			\
     ptrname(theptrname), handler(h) {}						\
-  virtual int Compare(ComparableMirrorData &other) {				\
+  virtual int Compare(const ComparableMirrorData &other) const {				\
     if (datatype==other.datatype) {						\
-        return this->Compare((struct name &)other);				\
+        return this->Compare((const struct name &)other);				\
     } else {									\
         return 0;								\
     }										\
   }										\
-  virtual int Compare(struct name &other) {					\
+  virtual int Compare(const struct name &other) const {					\
     return ptrname==other.ptrname;						\
   }										\
-  virtual int Forward(Buffer &buf, bool sendall=true) {				\
-    ((LocalTarget*)ptrname)->ProcessData(buf); sendall=true; return buf.Size();	\
+  virtual int Forward(Buffer &buf, const bool sendall=true) {				\
+    ((LocalTarget*)ptrname)->ProcessData(buf); return buf.Size();	\
   }										\
 };
+
+
+
 
 #define ADX_BASED(name)							     \
 struct name : public ComparableMirrorData {				     \
@@ -183,25 +227,26 @@ struct name : public ComparableMirrorData {				     \
   virtual ~name() {							     \
     CHK_DEL_MAT(pathname);						     \
   }									     \
-  name(char *path, bool isunixdom,AbstractMirror *mir) :		     \
+  name(const char *path, const bool isunixdom, AbstractMirror *mir) :		     \
 	  ComparableMirrorData(ComparableMirrorData::name,mir),	     \
           adx(0), port(0), fd(-1) {					     \
           if (isunixdom) {addresstype=UNIXDOM;} else {addresstype=AFILE;}    \
 	  pathname=new char [strlen(path)+1];				     \
+          strcpy(pathname,path);                                             \
   }									     \
-  name(unsigned theadx, int theport, bool isudp,AbstractMirror *mir):	     \
+  name(const unsigned theadx, const int theport, const bool isudp, AbstractMirror *mir):	     \
 	  ComparableMirrorData(ComparableMirrorData::name,mir),	     \
           adx(theadx), port(theport), pathname(0), fd(-1) {                  \
           if (isudp) {addresstype=UDP;} else {addresstype=TCP;}              \
   }									     \
-  virtual int Compare(ComparableMirrorData &other) {			     \
+  virtual int Compare(const ComparableMirrorData &other) const {			     \
     if (datatype==other.datatype) {					     \
-        return this->Compare((struct name &)other);			     \
+        return this->Compare((const struct name &)other);			     \
     } else {								     \
         return 0;							     \
     }									     \
   }									     \
-  virtual int Compare(struct name &other) {				     \
+  virtual int Compare(const struct name &other) const {				     \
     switch (addresstype) {						     \
     case TCP:								     \
     case UDP:								     \
@@ -218,7 +263,7 @@ struct name : public ComparableMirrorData {				     \
       break;                                                                 \
     }									     \
   }									     \
-  virtual int Forward(Buffer &buf, bool sendall=true) {			     \
+  virtual int Forward(Buffer &buf, const bool sendall=true) {			     \
     return SEND_DATA(mirror,fd,buf,sendall);				     \
   }                                                                          \
 };									     
@@ -255,29 +300,41 @@ class MirrorHandler : public Handler {
  protected:
   AbstractMirror *mymirror;
  public:
+  MirrorHandler() : Handler(), mymirror(0) {}
+  MirrorHandler(const MirrorHandler &rhs) : Handler(rhs), mymirror(rhs.mymirror) {}
+  virtual MirrorHandler & operator=(const MirrorHandler &rhs) { mymirror=rhs.mymirror; return *this; }
   MirrorHandler(AbstractMirror *mirror) { mymirror=mirror;}
   virtual ~MirrorHandler() { mymirror=0;}
-  virtual Handler *Clone()=0;
+  virtual Handler *Clone() const =0;
+  ostream & operator<<(ostream &os) const {
+    return (os<<"MirrorHandler(mymirror="<<*mymirror<<")");
+  }
 };
+
+MAKE_OUTPUT(MirrorHandler)
 
 
 class NullHandler : public MirrorHandler {
 public:
+  NullHandler() : MirrorHandler() {}
+  NullHandler(const NullHandler &rhs) : MirrorHandler(rhs) {}
+  virtual ~NullHandler() {};
   NullHandler(AbstractMirror *m) :  MirrorHandler(m) {
      fprintf(stderr, "Warning: Instantiating NullHandler\n");
   }
-  Handler *Clone() { 
+  virtual MAKE_EQUAL(NullHandler)
+  Handler *Clone() const { 
     return new NullHandler(*this);
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -285,24 +342,51 @@ public:
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os<<"NullHandler(";
+    MirrorHandler::operator<<(os);
+    os<<")";
+    return os;
+  }
 };
+
+MAKE_OUTPUT(NullHandler)
 
 template <class SERIN, class SEROUT>
 class NullCompute {
  public:
+  NullCompute() {}
+  NullCompute(const NullCompute &rhs) {}
+  virtual ~NullCompute() {}
+  virtual NullCompute<SERIN,SEROUT> & operator=(const NullCompute<SERIN,SEROUT> &rhs) {
+    this->~NullCompute();
+    return *(new(this)NullCompute<SERIN,SEROUT>(rhs));
+  }
   static int Compute(const SERIN &in, SEROUT &out) { out=in; return 0;}
+  ostream & operator<<(ostream &os) const {
+    os<<"NullCompute<"<<typeid(SERIN).name()<<", "<<typeid(SEROUT).name()<<">()";
+    return os;
+  }
 };
 
+template <class SERIN, class SEROUT> 
+inline ostream & operator<<(ostream &os, const NullCompute<SERIN,SEROUT> &rhs) {
+  return rhs.operator<<(os);
+}
 
 class GenericMirrorInputHandler : public MirrorHandler {
  public:
+  GenericMirrorInputHandler() : MirrorHandler() {}
+  GenericMirrorInputHandler(const GenericMirrorInputHandler &rhs) : MirrorHandler(rhs) {}
+  virtual ~GenericMirrorInputHandler() {}
+  virtual MAKE_EQUAL(GenericMirrorInputHandler)
   GenericMirrorInputHandler(AbstractMirror *m) : MirrorHandler(m) {
     SetHandlesRead();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new GenericMirrorInputHandler(*this);
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     char buf[65536];
     int len=Receive(fd,buf,65536,false);
     if (len<1) {
@@ -313,11 +397,11 @@ class GenericMirrorInputHandler : public MirrorHandler {
       return 0;
     }
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -325,19 +409,31 @@ class GenericMirrorInputHandler : public MirrorHandler {
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os<<"GenericMirrorInputHandler(";
+    MirrorHandler::operator<<(os);
+    os<<")";
+    return os;
+  }
 };
+
+MAKE_OUTPUT(GenericMirrorInputHandler)
 
 class GenericMirrorNewConnectionHandler : public MirrorHandler {
 public:
+  GenericMirrorNewConnectionHandler() : MirrorHandler() {}
+  GenericMirrorNewConnectionHandler(const GenericMirrorNewConnectionHandler &rhs) : MirrorHandler(rhs) {}
+  virtual ~GenericMirrorNewConnectionHandler() {}
+  virtual MAKE_EQUAL(GenericMirrorNewConnectionHandler)
   GenericMirrorNewConnectionHandler(AbstractMirror *mirror) : MirrorHandler(mirror) {
     SetHandlesRead();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new GenericMirrorNewConnectionHandler(*this);
   }
   
   // Accept new connection
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     int acc = accept(fd,0,0);
     if (acc>=0) {
       SetNoDelaySocket(acc);
@@ -347,11 +443,11 @@ public:
       return -1;
     }
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -359,21 +455,31 @@ public:
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os<<"GenericMirrorNewConnectionHandler(";
+    MirrorHandler::operator<<(os);
+    os<<")";
+    return os;
+  }
 };
 
-
+MAKE_OUTPUT(GenericMirrorNewConnectionHandler)
 
 class GenericMirrorNewRequestResponseConnectionHandler : public MirrorHandler {
 public:
+  GenericMirrorNewRequestResponseConnectionHandler() : MirrorHandler() {}
+  GenericMirrorNewRequestResponseConnectionHandler(const GenericMirrorNewRequestResponseConnectionHandler &rhs) : MirrorHandler(rhs) {}
+  virtual ~GenericMirrorNewRequestResponseConnectionHandler() {};
+  virtual MAKE_EQUAL(GenericMirrorNewRequestResponseConnectionHandler)
   GenericMirrorNewRequestResponseConnectionHandler(AbstractMirror *mirror) : MirrorHandler(mirror) {
     SetHandlesRead();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new GenericMirrorNewRequestResponseConnectionHandler(*this);
   }
   
   // Accept new connection
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     int acc = accept(fd,0,0);
     if (acc>=0) { 
       SetNoDelaySocket(acc);
@@ -383,11 +489,11 @@ public:
       return -1;
     }
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -395,21 +501,34 @@ public:
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os<<"GenericMirrorNewRequestResponseConnectionHandler(";
+    MirrorHandler::operator<<(os);
+    os<<")";
+    return os;
+  }
 };
 
-
+MAKE_OUTPUT(GenericMirrorNewRequestResponseConnectionHandler)
 
 template <class SERIALIZEABLEINFO>
 class SerializeableMirrorInputHandler : public MirrorHandler {
 public:
+  SerializeableMirrorInputHandler() : MirrorHandler() {}
+  SerializeableMirrorInputHandler(const SerializeableMirrorInputHandler<SERIALIZEABLEINFO> & rhs) : MirrorHandler(rhs) {}
+  virtual ~SerializeableMirrorInputHandler() {}
+  SerializeableMirrorInputHandler<SERIALIZEABLEINFO> & operator=(const SerializeableMirrorInputHandler<SERIALIZEABLEINFO> &rhs) {
+    this->~SerializeableMirrorInputHandler();
+    return *(new(this)SerializeableMirrorInputHandler<SERIALIZEABLEINFO>(rhs));
+  }
   SerializeableMirrorInputHandler(AbstractMirror *mirror) : MirrorHandler(mirror) {
     SetHandlesRead();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new SerializeableMirrorInputHandler(*this);
   }
   
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     SERIALIZEABLEINFO t;
     Buffer buf;
     if (t.Unserialize(fd)) { 
@@ -421,11 +540,11 @@ public:
       return 0;
     }
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -433,20 +552,38 @@ public:
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os<<"GenericMirrorInputHandler<"<<typeid(SERIALIZEABLEINFO).name()<<">(";
+    MirrorHandler::operator<<(os);
+    os<<")";
+    return os;
+  }
 };
+
+template <class SERIALIZEABLEINFO>
+inline ostream & operator<<(ostream &os, const SerializeableMirrorInputHandler<SERIALIZEABLEINFO> &rhs) {
+  return rhs.operator<<(os);
+}
 
 
 template <class SERIN, class COMPUTE, class SEROUT>
 class SerializeableMirrorRequestResponseHandler : public MirrorHandler {
 public:
+  SerializeableMirrorRequestResponseHandler() : MirrorHandler() {}
+  SerializeableMirrorRequestResponseHandler(const SerializeableMirrorRequestResponseHandler<SERIN,COMPUTE,SEROUT> &rhs) : MirrorHandler(rhs) {}
+  virtual ~SerializeableMirrorRequestResponseHandler() {}
+  virtual SerializeableMirrorRequestResponseHandler<SERIN,COMPUTE,SEROUT> & operator=(const SerializeableMirrorRequestResponseHandler<SERIN,COMPUTE,SEROUT> & rhs) {
+    this->~SerializeableMirrorRequestResponseHandler();
+    return *(new(this)SerializeableMirrorRequestResponseHandler<SERIN,COMPUTE,SEROUT>(rhs));
+  }
   SerializeableMirrorRequestResponseHandler(AbstractMirror *mirror) : MirrorHandler(mirror) {
     SetHandlesRead();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new SerializeableMirrorRequestResponseHandler(*this);
   }
   
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     SERIN t;
     Buffer buf;
     if (t.Unserialize(fd)) { 
@@ -459,11 +596,11 @@ public:
       return 0;
     }
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -471,13 +608,28 @@ public:
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os<<"SerializeableMirrorRequestResponseHandler<"<<typeid(SERIN).name()
+      <<", "<<typeid(COMPUTE).name()<<", "<<typeid(SEROUT).name()<<">(";
+    MirrorHandler::operator<<(os);
+    os<<")";
+    return os;
+  }
 };
 
+template <class SERIN, class COMPUTE, class SEROUT>
+inline ostream & operator<<(ostream &os, const SerializeableMirrorRequestResponseHandler<SERIN,COMPUTE,SEROUT> &rhs) {
+  return rhs.operator<<(os);
+}
 
 class LocalSourceHandler : public MirrorHandler {
  private:
   LocalSource *source;
  public:
+  LocalSourceHandler() : MirrorHandler(), source(0) {}
+  LocalSourceHandler(const LocalSourceHandler &rhs) : MirrorHandler(rhs), source(rhs.source) {}
+  virtual ~LocalSourceHandler() {}
+  virtual MAKE_EQUAL(LocalSourceHandler)
   LocalSourceHandler(AbstractMirror *mir, LocalSource *ls) :
     MirrorHandler(mir) {
     source=ls;
@@ -486,19 +638,19 @@ class LocalSourceHandler : public MirrorHandler {
     SetWait(tv);
     SetHandlesTimeout();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new LocalSourceHandler(*this);
   }
 
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -508,17 +660,34 @@ class LocalSourceHandler : public MirrorHandler {
     mymirror->Forward(buf);
     return -1;
   }
-  LocalSource *GetSource() { return source;}
+  LocalSource *GetSource() const { return source;}
+  ostream & operator<<(ostream &os) const {
+    os << "LocalSourceHandler(";
+    MirrorHandler::operator<<(os);
+    os << ", source="<<*source<<")";
+    return os;
+  }
 };
 
+MAKE_OUTPUT(LocalSourceHandler)
 
 class QueuedBuffer : public Buffer {
  public:
   int    left;
+  QueuedBuffer() : Buffer() {}
+  QueuedBuffer(const QueuedBuffer &rhs) : Buffer(rhs), left(rhs.left) {}
+  virtual MAKE_EQUAL(QueuedBuffer)
   QueuedBuffer(const Buffer &thebuf) : Buffer(thebuf) { left=Size(); }
   virtual ~QueuedBuffer() { left=0; }
+  ostream & operator<<(ostream &os) const {
+    os <<"QueuedBuffer(";
+    Buffer::operator<<(os);
+    os <<", left="<<left<<")";
+    return os;
+  }
 };
-    
+   
+MAKE_OUTPUT(QueuedBuffer) 
 
 const int QUEUED_WRITE_HANDLER_TAG=0xbeefdead;
 
@@ -527,6 +696,12 @@ class QueuedWriteHandler : public MirrorHandler {
   Queue<QueuedBuffer> bufs;
   int  curoff;
  public:
+  QueuedWriteHandler() : MirrorHandler() {}
+  QueuedWriteHandler(const QueuedWriteHandler &rhs) : MirrorHandler(rhs) {
+    DupeQueue(bufs,rhs.bufs);
+    curoff=rhs.curoff;
+  }
+  virtual MAKE_EQUAL(QueuedWriteHandler)
   QueuedWriteHandler(AbstractMirror *mir, int fd) :
     MirrorHandler(mir) {
     curoff=0;
@@ -535,7 +710,7 @@ class QueuedWriteHandler : public MirrorHandler {
   virtual ~QueuedWriteHandler() { 
     bufs.Clear();
   }
-  Handler *Clone() { 
+  Handler *Clone() const { 
     return new QueuedWriteHandler(*this);
   }
   int QueueWrite(const Buffer &thebuf) {
@@ -547,15 +722,15 @@ class QueuedWriteHandler : public MirrorHandler {
     SetHandlesWrite();
     return buf->Size();
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     QueuedBuffer *buf;
     int bytessent;
     while ((buf=bufs.RemoveFromFront())) {
@@ -589,9 +764,25 @@ class QueuedWriteHandler : public MirrorHandler {
     assert(0);
     return -1;
   }
+  ostream & operator<<(ostream &os) const {
+    os <<"QueuedWriteHandler(";
+    MirrorHandler::operator<<(os);
+    os << ", curoff="<<curoff<<"bufs=(";
+    bool next=false;
+    QueuedBuffer *b;
+    FOREACH_BEGIN(b,const_cast<Queue<QueuedBuffer>&>(bufs)) {
+      if (!next) {
+	os <<", ";
+      }
+      os <<*b;
+      next=true;
+    } FOREACH_END(const_cast<Queue<QueuedBuffer>&>(bufs))
+    os <<"))";
+    return os;
+  }
 };
 
-
+MAKE_OUTPUT(QueuedWriteHandler)
 
 template <class SOURCEHANDLER, 
           class SOURCECONNECTHANDLER, 
@@ -605,7 +796,7 @@ class Mirror : public AbstractMirror {
   ComparableMirrorDataQueue sources, connects, targets, rrconnects, rrsources;
   ComparableMirrorDataQueue adds, deletes;
  protected:
-  int Add(ComparableMirrorData *x) {
+  int Add(const ComparableMirrorData *x) {
     switch (x->datatype) {
     case ComparableMirrorData::FDS:
       return AddFDSource(((FDS*)x)->fd);
@@ -704,7 +895,7 @@ class Mirror : public AbstractMirror {
     return 0;
   }
   
-  int Delete(ComparableMirrorData *x) {
+  int Delete(const ComparableMirrorData *x) {
     switch (x->datatype) {
     case ComparableMirrorData::FDS:
       return DeleteFDSource(((FDS*)x)->fd);
@@ -819,8 +1010,21 @@ class Mirror : public AbstractMirror {
   
  public:
   
+  Mirror(const Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER> &rhs) {
+    DupeQueue(sources,rhs.sources);
+    DupeQueue(connects,rhs.connects);
+    DupeQueue(targets,rhs.targets);
+    DupeQueue(rrconnects, rhs.rrconnects);
+    DupeQueue(rrsources,rhs.rrsources);
+    DupeQueue(adds,rhs.adds);
+    DupeQueue(deletes,rhs.deletes);
+    forwarding=rhs.forwarding;
+    sharedselector=true;
+    sel=rhs.sel;
+  }
 
-  Mirror(Selector *sharedsel=0) {
+
+  Mirror(Selector *sharedsel=0) : AbstractMirror() {
     forwarding=false;
     if (sharedsel) { 
        sel=sharedsel;
@@ -831,7 +1035,6 @@ class Mirror : public AbstractMirror {
     }
   }
  
-  
   virtual ~Mirror() {
     // Now the only items are on the actual queuss
     ComparableMirrorData *x;
@@ -858,7 +1061,12 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int AddEndPoint(EndPoint &ep) {
+  virtual Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER> & operator= (const Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER> &rhs) {
+    this->~Mirror();
+    return *(new(this)Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER>(rhs));
+  }
+
+  int AddEndPoint(const EndPoint &ep) {
     switch (ep.atype) {
     case EndPoint::EP_SOURCE:
       switch (ep.ctype) {
@@ -946,7 +1154,7 @@ class Mirror : public AbstractMirror {
     return -1;
   }
   
-  int DeleteEndPoint(EndPoint &ep) {
+  int DeleteEndPoint(const EndPoint &ep) {
     switch (ep.atype) {
     case EndPoint::EP_SOURCE:
       switch (ep.ctype) {
@@ -1034,7 +1242,7 @@ class Mirror : public AbstractMirror {
     return -1;
   }
 
-  int AddFDSource(int fd) {
+  int AddFDSource(const int fd) {
     if (forwarding) {
       adds.AddAtBack(new FDS(fd,this));
       return 0;
@@ -1047,7 +1255,7 @@ class Mirror : public AbstractMirror {
     return 0;
   }
   
-  int DeleteFDSource(int fd) {
+  int DeleteFDSource(const int fd) {
     if (forwarding) { 
       deletes.AddAtBack(new FDS(fd,this));
       return 0;
@@ -1093,11 +1301,11 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddRemoteSource(char *iporhost, int port, bool udp=false) {
+  int AddRemoteSource(const char *iporhost, const int port, const bool udp=false) {
     return AddRemoteSource(ToIPAddress(iporhost),port,udp);
   }
   
-  int AddRemoteSource(unsigned adx, int port, bool udp=false) {
+  int AddRemoteSource(const unsigned adx, const int port, const bool udp=false) {
     if (forwarding) {
       adds.AddAtBack(new RS(adx,port,udp,this));
       return 0;
@@ -1147,7 +1355,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddRemoteSource(char *pathname, bool isunixdom=true) {
+  int AddRemoteSource(const char *pathname, const bool isunixdom=true) {
     if (forwarding) {
       adds.AddAtBack(new RS(pathname,isunixdom,this));
       return 0;
@@ -1178,11 +1386,11 @@ class Mirror : public AbstractMirror {
       return 0;
     }
   }
-  int DeleteRemoteSource(char *iporhost, int port, bool udp=false) {
+  int DeleteRemoteSource(const char *iporhost, const int port, const bool udp=false) {
     return DeleteRemoteSource(ToIPAddress(iporhost),port,udp);
   }
   
-  int DeleteRemoteSource(unsigned adx, int port, bool udp=false) {
+  int DeleteRemoteSource(const unsigned adx, const int port, const bool udp=false) {
     if (forwarding) {
       deletes.AddAtBack(new RS(adx,port,udp,this));
       return 0;
@@ -1203,7 +1411,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int DeleteRemoteSource(char *pathname, bool isunixdom=true) {
+  int DeleteRemoteSource(const char *pathname, const bool isunixdom=true) {
     if (forwarding) {
       deletes.AddAtBack(new RS(pathname,isunixdom,this));
       return 0;
@@ -1221,7 +1429,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddFDConnect(int fd) {
+  int AddFDConnect(const int fd) {
     if (forwarding) {
       adds.AddAtBack(new FDC(fd,this));
       return 0;
@@ -1234,7 +1442,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int DeleteFDConnect(int fd) {
+  int DeleteFDConnect(const int fd) {
     if (forwarding) {
       deletes.AddAtBack(new FDC(fd,this));
       return 0;
@@ -1251,7 +1459,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddLocalConnect(int port, bool udp=false) {
+  int AddLocalConnect(const int port, const bool udp=false) {
     if (forwarding) {
       adds.AddAtBack(new LC(GetMyIPAddress(),port,udp,this));
       return 0;
@@ -1284,7 +1492,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int AddLocalConnect(char *pathname) {
+  int AddLocalConnect(const char *pathname) {
     if (forwarding) {
       adds.AddAtBack(new LC(pathname,true,this));
       return 0;
@@ -1313,7 +1521,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int DeleteLocalConnect(int port, bool udp=false) {
+  int DeleteLocalConnect(const int port, const bool udp=false) {
     if (forwarding) {
       deletes.AddAtBack(new LC(GetMyIPAddress(),port,udp,this));
       return 0;
@@ -1330,7 +1538,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int DeleteLocalConnect(char *pathname) {
+  int DeleteLocalConnect(const char *pathname) {
     if (forwarding) {
       deletes.AddAtBack(new LC(pathname,true,this));
       return 0;
@@ -1347,7 +1555,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int AddFDRequestResponse(int fd) {
+  int AddFDRequestResponse(const int fd) {
     if (forwarding) {
       adds.AddAtBack(new FDRR(fd,this));
       return 0;
@@ -1360,7 +1568,7 @@ class Mirror : public AbstractMirror {
     return 0;
   }
   
-  int DeleteFDRequestResponse(int fd) {
+  int DeleteFDRequestResponse(const int fd) {
     if (forwarding) { 
       deletes.AddAtBack(new FDRR(fd,this));
       return 0;
@@ -1377,7 +1585,7 @@ class Mirror : public AbstractMirror {
     }
   }	
 
-  int AddFDRequestResponseConnect(int fd) {
+  int AddFDRequestResponseConnect(const int fd) {
     if (forwarding) {
       adds.AddAtBack(new FDRR(fd,this));
       return 0;
@@ -1390,7 +1598,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int DeleteFDRequestResponseConnect(int fd) {
+  int DeleteFDRequestResponseConnect(const int fd) {
     if (forwarding) {
       deletes.AddAtBack(new FDRR(fd,this));
       return 0;
@@ -1407,7 +1615,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddLocalRequestResponseConnect(int port, bool udp=false) {
+  int AddLocalRequestResponseConnect(const int port, const bool udp=false) {
     if (forwarding) {
       adds.AddAtBack(new LRRC(GetMyIPAddress(),port,udp,this));
       return 0;
@@ -1440,7 +1648,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int AddLocalRequestResponseConnect(char *pathname) {
+  int AddLocalRequestResponseConnect(const char *pathname) {
     if (forwarding) {
       adds.AddAtBack(new LRRC(pathname,true,this));
       return 0;
@@ -1469,7 +1677,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int DeleteLocalRequestResponseConnect(int port, bool udp=false) {
+  int DeleteLocalRequestResponseConnect(const int port, const bool udp=false) {
     if (forwarding) {
       deletes.AddAtBack(new LRRC(GetMyIPAddress(),port,udp,this));
       return 0;
@@ -1486,7 +1694,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int DeleteLocalRequestResponseConnect(char *pathname) {
+  int DeleteLocalRequestResponseConnect(const char *pathname) {
     if (forwarding) {
       deletes.AddAtBack(new LRRC(pathname,true,this));
       return 0;
@@ -1503,7 +1711,7 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int AddFDTarget(int fd) {
+  int AddFDTarget(const int fd) {
     if (forwarding) {
       adds.AddAtBack(new FDT(fd,this));
       return 0;
@@ -1513,7 +1721,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int DeleteFDTarget(int fd) {
+  int DeleteFDTarget(const int fd) {
     if (forwarding) { 
       deletes.AddAtBack(new FDT(fd,this));
       return 0;
@@ -1553,11 +1761,11 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddRemoteTarget(char *iporhost, int port, bool udp=false, int ttl=1) {
+  int AddRemoteTarget(const char *iporhost, const int port, const bool udp=false, const int ttl=1) {
     return AddRemoteTarget(ToIPAddress(iporhost),port,udp,ttl);
   }
   
-  int AddRemoteTarget(unsigned adx, int port, bool udp=false, int ttl=1) {
+  int AddRemoteTarget(const unsigned adx, const int port, const bool udp=false, const int ttl=1) {
     if (forwarding) {
       adds.AddAtBack(new RT(adx,port,udp,this));
       return 0;
@@ -1583,7 +1791,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int AddRemoteTarget(char *pathname, bool isunixdom=true) {
+  int AddRemoteTarget(const char *pathname, const bool isunixdom=true) {
     if (forwarding) {
       adds.AddAtBack(new RT(pathname,isunixdom,this));
       return 0;
@@ -1612,11 +1820,11 @@ class Mirror : public AbstractMirror {
     }
   }
 
-  int DeleteRemoteTarget(char *iporhost, int port, bool udp=false) {
+  int DeleteRemoteTarget(const char *iporhost, const int port, const bool udp=false) {
     return DeleteRemoteTarget(ToIPAddress(iporhost),port,udp);
   }
   
-  int DeleteRemoteTarget(unsigned adx, int port, bool udp=false) {
+  int DeleteRemoteTarget(const unsigned adx, const int port, const bool udp=false) {
     if (forwarding) {
       deletes.AddAtBack(new RT(adx,port,udp,this));
       return 0;
@@ -1634,7 +1842,7 @@ class Mirror : public AbstractMirror {
     }
   }
   
-  int DeleteRemoteTarget(char *pathname, bool isunixdom=true) {
+  int DeleteRemoteTarget(const char *pathname, const bool isunixdom=true) {
     if (forwarding) {
       deletes.AddAtBack(new RT(pathname,isunixdom,this));
       return 0;
@@ -1648,8 +1856,8 @@ class Mirror : public AbstractMirror {
       return 0;
     }
   }
-
-  virtual int DeleteMatching(int fd) {
+  
+  virtual int DeleteMatching(const int fd) {
     DeleteFDSource(fd);
     DeleteFDConnect(fd);
     DeleteFDTarget(fd);
@@ -1674,14 +1882,14 @@ class Mirror : public AbstractMirror {
     return 0;
   }
   
-  virtual int Forward(char *buf, const int len) {
+  virtual int Forward(const char *buf, const int len) {
     Buffer b;
     b.Resize(len);
     memcpy(b.Data(),buf,len);
     return Forward(b);
   }
   
-  virtual int QueueWrite(int fd, Buffer &buf) {
+  virtual int QueueWrite(const int fd, const Buffer &buf) {
     Queue<Handler> *hw = sel->FindMatchingHandlers(fd);
     Handler *h;
     QueuedWriteHandler *qwh;
@@ -1699,14 +1907,21 @@ class Mirror : public AbstractMirror {
     sel->AddHandler(qwh);
     return qwh->QueueWrite(buf);
   }
-
-
+  
   virtual int Run() {
     assert(forwarding==false);
     return sel->Run();
   }
 };
 
+
+template <class SOURCEHANDLER, 
+          class SOURCECONNECTHANDLER, 
+          class REQUESTRESPONSEHANDLER, 
+          class REQUESTRESPONSECONNECTHANDLER>
+inline ostream & operator<<(ostream &os, const Mirror<SOURCEHANDLER, SOURCECONNECTHANDLER, REQUESTRESPONSEHANDLER, REQUESTRESPONSECONNECTHANDLER> &rhs) {
+  return rhs.operator<<(os);
+}
 
 
 
@@ -1715,28 +1930,63 @@ template <class SERIALIZEABLEINFO,
           class SOURCECONNECTHANDLER,
           class REQUESTRESPONSEHANDLER,
           class REQUESTRESPONSECONNECTHANDLER>
-class SerializeableMirror : 
+		      class SerializeableMirror : 
   public Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER, REQUESTRESPONSEHANDLER, REQUESTRESPONSECONNECTHANDLER>
 {
  public:
+  SerializeableMirror() : Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER>() {}
+  SerializeableMirror(const SerializeableMirror<SERIALIZEABLEINFO,SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER> &rhs) : Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER>(rhs) {}
+  virtual ~SerializeableMirror() {};
+  virtual SerializeableMirror<SERIALIZEABLEINFO,SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER> & operator=(const SerializeableMirror<SERIALIZEABLEINFO,SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER> &rhs) {
+    this->~SerializeableMirror();
+    return *(new(this) SerializeableMirror<SERIALIZEABLEINFO,SOURCEHANDLER,SOURCECONNECTHANDLER,REQUESTRESPONSEHANDLER,REQUESTRESPONSECONNECTHANDLER>(rhs));
+  }
+  
   virtual int ForwardSer(const SERIALIZEABLEINFO &s) {
     Buffer buf;
     s.Serialize(buf);
     return Forward(buf);
   }
+  
+  ostream & operator<<(ostream &os) const {
+    os << "SerializeableMirror<"<<typeid(SERIALIZEABLEINFO).name()<<","<<typeid(SOURCEHANDLER).name()<<","
+       << typeid(SOURCECONNECTHANDLER).name()<<","<<typeid(REQUESTRESPONSEHANDLER).name()
+       << ","<<typeid(REQUESTRESPONSECONNECTHANDLER).name()<<">(";
+    Mirror<SOURCEHANDLER,SOURCECONNECTHANDLER, REQUESTRESPONSEHANDLER, REQUESTRESPONSECONNECTHANDLER>::operator<<(os);
+    os << ")";
+    return os;
+  }
 };
+
+template <class SERIALIZEABLEINFO, 
+          class SOURCEHANDLER, 
+          class SOURCECONNECTHANDLER,
+          class REQUESTRESPONSEHANDLER,
+          class REQUESTRESPONSECONNECTHANDLER>
+inline ostream & operator<<(ostream &os, const SerializeableMirror<SERIALIZEABLEINFO, SOURCEHANDLER, SOURCECONNECTHANDLER, REQUESTRESPONSEHANDLER, REQUESTRESPONSECONNECTHANDLER> &rhs) {
+return rhs.operator<<(os);
+}
 
 
 template <class INSER, class COMPUTE, class OUTSER> 
 class SerializeableMirrorInputComputeOutputHandler : 
 public SerializeableMirrorInputHandler<INSER> {
 public:
+  SerializeableMirrorInputComputeOutputHandler() : SerializeableMirrorInputHandler<INSER>() {}
   SerializeableMirrorInputComputeOutputHandler(AbstractMirror *m) 
     : SerializeableMirrorInputHandler<INSER>(m) { SetHandlesRead(); }
-  Handler *Clone() { 
+  SerializeableMirrorInputComputeOutputHandler(const SerializeableMirrorInputComputeOutputHandler<INSER,COMPUTE,OUTSER> &rhs) 
+    : SerializeableMirrorInputHandler<INSER>(rhs) { SetHandlesRead(); }
+  virtual ~SerializeableMirrorInputComputeOutputHandler() {}
+  virtual SerializeableMirrorInputComputeOutputHandler<INSER,COMPUTE,OUTSER> & operator = (const SerializeableMirrorInputComputeOutputHandler<INSER,COMPUTE,OUTSER> &rhs) {
+    this->~SerializeableMirrorInputComputeOutputHandler();
+    return *(new(this)SerializeableMirrorInputComputeOutputHandler<INSER,COMPUTE,OUTSER>(rhs));
+  }
+  
+  Handler *Clone() const { 
     return new SerializeableMirrorInputComputeOutputHandler(*this);
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     int rc;
     INSER in;
     OUTSER out;
@@ -1750,18 +2000,38 @@ public:
       return mymirror->Forward(buf);
     }
   }
+  ostream & operator <<(ostream & os) const {
+    os << "SerializeableMirrorInputComputeOutputHandler<"<<typeid(INSER).name()<<","
+       << typeid(COMPUTE).name()<<","<<typeid(OUTSER).name()<<">(";
+    SerializeableMirrorInputHandler<INSER>::operator<<(os);
+    os << ")";
+    return os;
+  }
+};
+
+template <class INSER, class COMPUTE, class OUTSER> 
+inline ostream & operator<<(ostream &os, const SerializeableMirrorInputComputeOutputHandler<INSER,COMPUTE,OUTSER> &rhs) {
+return rhs.operator<<(os);
 };
 
 
 template <class INSER, class COMPUTE, class OUTSER> 
-class SerializeableRequestResponseHandler : public MirrorHandler {
+	  class SerializeableRequestResponseHandler : public MirrorHandler {
 public:
-  SerializeableRequestResponseHandler(AbstractMirror *m) 
+   SerializeableRequestResponseHandler() : MirrorHandler() {}
+   SerializeableRequestResponseHandler(const SerializeableRequestResponseHandler<INSER,COMPUTE,OUTSER> &rhs) :
+    MirrorHandler(rhs) {}
+   SerializeableRequestResponseHandler(AbstractMirror *m) 
     : MirrorHandler(m) { SetHandlesRead(); }
-  Handler *Clone() { 
+   virtual ~SerializeableRequestResponseHandler() {}
+   virtual SerializeableRequestResponseHandler<INSER,COMPUTE,OUTSER> & operator=(const SerializeableRequestResponseHandler<INSER,COMPUTE,OUTSER> &rhs) { 
+      this->~SerializeableRequestResponseHandler();
+      return *(new(this)SerializeableRequestResponseHandler<INSER,COMPUTE,OUTSER>(rhs));
+   }
+  Handler *Clone() const { 
     return new SerializeableRequestResponseHandler(*this);
   }
-  int HandleRead(int fd, Selector &s) {
+  int HandleRead(const int fd, Selector &s) {
     int rc;
     INSER in;
     OUTSER out;
@@ -1777,11 +2047,11 @@ public:
       }
     }
   }
-  int HandleWrite(int fd, Selector &s) {
+  int HandleWrite(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
-  int HandleException(int fd, Selector &s) {
+  int HandleException(const int fd, Selector &s) {
     assert(0);
     return -1;
   }
@@ -1789,17 +2059,45 @@ public:
     assert(0);
     return -1;
   }
+
+  ostream & operator <<(ostream & os) const {
+    os << "SerializeableRequestResponseHandler<"<<typeid(INSER).name()<<","
+       << typeid(COMPUTE).name()<<","<<typeid(OUTSER).name()<<">(";
+    MirrorHandler::operator<<(os);
+    os << ")";
+    return os;
+  }
+
 };
 
-
+template <class INSER, class COMPUTE, class OUTSER> 
+inline ostream & operator<<(ostream &os, const SerializeableRequestResponseHandler<INSER,COMPUTE,OUTSER> &rhs) {
+  return rhs.operator<<(os);
+}
 
 // Generic behavior is simply to forward from sources->targets
 // And to forward from requests -> targets
 
 class GenericMirror : public Mirror<GenericMirrorInputHandler,
 		                    GenericMirrorNewConnectionHandler,
-		      NullHandler, NullHandler> {};
+		                    NullHandler, 
+                                    NullHandler> {
+public:
+  GenericMirror() : Mirror<GenericMirrorInputHandler,GenericMirrorNewConnectionHandler,NullHandler,NullHandler>() {}
+  GenericMirror(const GenericMirror &rhs) : Mirror<GenericMirrorInputHandler,GenericMirrorNewConnectionHandler,NullHandler,NullHandler>(rhs) {}
+  virtual ~GenericMirror() {}
+  virtual MAKE_EQUAL(GenericMirror)
+   
+  ostream & operator <<(ostream & os) const {
+    os << "GenericMirror(";
+    Mirror<GenericMirrorInputHandler,GenericMirrorNewConnectionHandler,NullHandler,NullHandler>::operator<<(os);
+    os << ")";
+    return os;
+  }
 
+};
+
+MAKE_OUTPUT(GenericMirror)
 
 
 
@@ -1808,8 +2106,33 @@ class GenericSerializeableInputComputeOutputMirror :
 public SerializeableMirror<SERIN,
                            SerializeableMirrorInputComputeOutputHandler<SERIN,COMPUTE,SEROUT>,
 			   GenericMirrorNewConnectionHandler, 
-                           NullHandler, NullHandler> {};
+                           NullHandler, NullHandler> {
+public:
+  GenericSerializeableInputComputeOutputMirror() : 
+    SerializeableMirror<SERIN, SerializeableMirrorInputComputeOutputHandler<SERIN,COMPUTE,SEROUT>,
+    GenericMirrorNewConnectionHandler, NullHandler, NullHandler>() {}
+  GenericSerializeableInputComputeOutputMirror(const GenericSerializeableInputComputeOutputMirror<SERIN,COMPUTE,SEROUT> &rhs) : SerializeableMirror<SERIN, SerializeableMirrorInputComputeOutputHandler<SERIN,COMPUTE,SEROUT>,								 GenericMirrorNewConnectionHandler, NullHandler, NullHandler>(rhs) {}
+  virtual ~GenericSerializeableInputComputeOutputMirror() {}
+  virtual GenericSerializeableInputComputeOutputMirror<SERIN,COMPUTE,SEROUT> & operator=(const GenericSerializeableInputComputeOutputMirror<SERIN,COMPUTE,SEROUT> &rhs) {
+     this->~GenericSerializeableInputComputeOutputMirror();  
+     return *(new(this)GenericSerializeableInputComputeOutputMirror<SERIN,COMPUTE,SEROUT>(rhs));
+  }
 
+  ostream &operator<<(ostream &os) const {
+    os << "GenericSerializeableInputComputeOutputMirror<"<<typeid(SERIN).name()<<","
+       << typeid(COMPUTE).name()<<","<<typeid(SEROUT).name()<<">(";
+    SerializeableMirror<SERIN, SerializeableMirrorInputComputeOutputHandler<SERIN,COMPUTE,SEROUT>,
+    GenericMirrorNewConnectionHandler, NullHandler, NullHandler>::operator<<(os);
+    os << ")";
+    return os;
+  }
+};
+
+template <class SERIN, class COMPUTE, class SEROUT> 
+inline ostream & operator<<(ostream &os, const GenericSerializeableInputComputeOutputMirror<SERIN,COMPUTE,SEROUT> &rhs)
+{
+  return rhs.operator<<(os);
+};
 
 template <class SERIN, class COMPUTE, class SEROUT> 
 class SerializeableRequestResponseMirror :
@@ -1817,7 +2140,34 @@ public SerializeableMirror<SERIN,
                            NullHandler,
                            NullHandler,
                            SerializeableRequestResponseHandler<SERIN,COMPUTE,SEROUT>,
-			   GenericMirrorNewRequestResponseConnectionHandler> {};
+			   GenericMirrorNewRequestResponseConnectionHandler> {
+public:
+  SerializeableRequestResponseMirror() : 
+    SerializeableMirror<SERIN, NullHandler,NullHandler,
+      SerializeableRequestResponseHandler<SERIN,COMPUTE,SEROUT>, GenericMirrorNewRequestResponseConnectionHandler>() {}
+  SerializeableRequestResponseMirror(const SerializeableRequestResponseMirror<SERIN,COMPUTE,SEROUT> &rhs) : 
+    SerializeableMirror<SERIN, NullHandler,NullHandler,
+      SerializeableRequestResponseHandler<SERIN,COMPUTE,SEROUT>, GenericMirrorNewRequestResponseConnectionHandler>(rhs) {}
+  virtual ~SerializeableRequestResponseMirror() {}
+  virtual SerializeableRequestResponseMirror<SERIN,COMPUTE,SEROUT> & operator=(const SerializeableRequestResponseMirror<SERIN,COMPUTE,SEROUT> &rhs) {
+    this->~SerializeableRequestResponseMirror();
+    return *(new(this)SerializeableRequestResponseMirror<SERIN,COMPUTE,SEROUT>(rhs));
+  }
+      
+  ostream &operator<<(ostream &os) const {
+    os << "SerializeableRequestResponseMirror<"<<typeid(SERIN).name()<<","
+       << typeid(COMPUTE).name()<<","<<typeid(SEROUT).name()<<">(";
+     SerializeableMirror<SERIN, NullHandler,NullHandler,SerializeableRequestResponseHandler<SERIN,COMPUTE,SEROUT>, GenericMirrorNewRequestResponseConnectionHandler>::operator<<(os);
+    os << ")";
+    return os;
+  }
+};
+
+
+template <class SERIN, class COMPUTE, class SEROUT> 
+inline ostream & operator<<(ostream &os, const SerializeableRequestResponseMirror<SERIN,COMPUTE,SEROUT> &rhs) {
+  return rhs.operator<<(os);
+};
 
 
 template <class DATASERIN, class DATACOMPUTE, class DATASEROUT, 
@@ -1827,19 +2177,67 @@ public SerializeableMirror<DATASERIN,
                            SerializeableMirrorInputComputeOutputHandler<DATASERIN,DATACOMPUTE,DATASEROUT>,
 			   GenericMirrorNewConnectionHandler, 
                            SerializeableRequestResponseHandler<CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT>,
-			   GenericMirrorNewRequestResponseConnectionHandler> {};
+			   GenericMirrorNewRequestResponseConnectionHandler> {
 
 
+public:
+  GenericSerializeableInputComputeOutputWithRequestResponseControlMirror() : 
+    SerializeableMirror<DATASERIN, SerializeableMirrorInputComputeOutputHandler<DATASERIN,DATACOMPUTE,DATASEROUT>,
+    GenericMirrorNewConnectionHandler, SerializeableRequestResponseHandler<CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT>,
+    GenericMirrorNewRequestResponseConnectionHandler>() {}
+  GenericSerializeableInputComputeOutputWithRequestResponseControlMirror(const GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATASERIN,DATACOMPUTE,DATASEROUT,CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT> &rhs) : 
+    SerializeableMirror<DATASERIN, SerializeableMirrorInputComputeOutputHandler<DATASERIN,DATACOMPUTE,DATASEROUT>,
+    GenericMirrorNewConnectionHandler, SerializeableRequestResponseHandler<CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT>,
+    GenericMirrorNewRequestResponseConnectionHandler>(rhs) {}
+  virtual ~GenericSerializeableInputComputeOutputWithRequestResponseControlMirror() {}
+  virtual GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATASERIN,DATACOMPUTE,DATASEROUT,CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT> & operator=(const GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATASERIN,DATACOMPUTE,DATASEROUT,CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT> &rhs) {
+    this->~GenericSerializeableInputComputeOutputWithRequestResponseControlMirror();
+    return *(new(this)GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATASERIN,DATACOMPUTE,DATASEROUT,CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT>(rhs));
+  }
+  ostream &operator<<(ostream &os) const {
+    os << "GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<";
+    os <<typeid(DATASERIN).name()<<","<< typeid(DATACOMPUTE).name()<<","<<typeid(DATASEROUT).name()<<",";
+    os <<typeid(CTRLSERIN).name()<<","<< typeid(CTRLCOMPUTE).name()<<","<<typeid(CTRLSEROUT).name()<<">(";
+    SerializeableMirror<DATASERIN, SerializeableMirrorInputComputeOutputHandler<DATASERIN,DATACOMPUTE,DATASEROUT>,
+    GenericMirrorNewConnectionHandler, SerializeableRequestResponseHandler<CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT>,
+    GenericMirrorNewRequestResponseConnectionHandler>::operator<<(os);
+    os << ")";
+    return os;
+  }
+};
+
+template <class DATASERIN, class DATACOMPUTE, class DATASEROUT, class CTRLSERIN, class CTRLCOMPUTE, class CTRLSEROUT> 
+inline ostream &operator<<(ostream &os, const GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATASERIN,DATACOMPUTE,DATASEROUT,CTRLSERIN,CTRLCOMPUTE,CTRLSEROUT> &rhs) {
+  return rhs.operator<<(os);
+};
+  
 template <class SERIALIZEABLEINFO>
 class GenericSerializeableMirror : 
 public GenericSerializeableInputComputeOutputMirror<SERIALIZEABLEINFO,
          NullCompute<SERIALIZEABLEINFO,SERIALIZEABLEINFO>,
-         SERIALIZEABLEINFO> {};
+         SERIALIZEABLEINFO> {
+public:
+  GenericSerializeableMirror() : GenericSerializeableInputComputeOutputMirror<SERIALIZEABLEINFO, NullCompute<SERIALIZEABLEINFO,SERIALIZEABLEINFO>, SERIALIZEABLEINFO>() {}
+  GenericSerializeableMirror(const GenericSerializeableMirror<SERIALIZEABLEINFO> &rhs) : GenericSerializeableInputComputeOutputMirror<SERIALIZEABLEINFO, NullCompute<SERIALIZEABLEINFO,SERIALIZEABLEINFO>, SERIALIZEABLEINFO>(rhs) {}
+  virtual ~GenericSerializeableMirror() {}
+  virtual GenericSerializeableMirror<SERIALIZEABLEINFO> & operator= (const GenericSerializeableMirror<SERIALIZEABLEINFO> &rhs) {
+    this->~GenericSerializeableMirror();
+    return *(new(this) GenericSerializeableMirror<SERIALIZEABLEINFO>(rhs));
+  }
 
-/*
-template <class DATAIN, class COMPUTE, class DATAOUT>
-class Filter : public GenericSerializeableInputComputeOutputMirror<DATAIN,COMPUTE,DATAOUT> {};
-*/
+  ostream &operator<<(ostream &os) const {
+    os << "GenericSerializeableMirror<"<<typeid(SERIALIZEABLEINFO).name()<<">(";
+    GenericSerializeableInputComputeOutputMirror<SERIALIZEABLEINFO, NullCompute<SERIALIZEABLEINFO,SERIALIZEABLEINFO>, SERIALIZEABLEINFO>::operator<<(os);
+    os << ")";
+    return os;
+  }
+
+};
+
+template <class SERIALIZEABLEINFO> 
+inline ostream & operator<<(ostream &os, const GenericSerializeableMirror<SERIALIZEABLEINFO> &rhs) {
+  return rhs.operator<<(os);
+};
 
 template <class DATAIN, class DATACOMPUTE, class DATAOUT, 
           class CTRLIN, class CTRLCOMPUTE, class CTRLOUT> 
@@ -1848,8 +2246,32 @@ public
 GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<
 DATAIN,DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT
 >
-{};
+{
+public:
+  FilterWithControl() : 
+    GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATAIN, DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT>() {}
+  FilterWithControl(const FilterWithControl<DATAIN,DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT> &rhs) : 
+    GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATAIN, DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT>(rhs) {}
+  virtual ~FilterWithControl() {}
+  virtual FilterWithControl<DATAIN,DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT> & operator=(const FilterWithControl<DATAIN,DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT> &rhs) {
+    this->~FilterWithControl();
+    return *(new(this)FilterWithControl<DATAIN,DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT>(rhs));
+  }
+    
+  ostream &operator<<(ostream &os) const {
+    os << "FilterWithControl<"
+       <<typeid(DATAIN).name()<<","<< typeid(DATACOMPUTE).name()<<","<<typeid(DATAOUT).name()<<","
+       <<typeid(CTRLIN).name()<<","<< typeid(CTRLCOMPUTE).name()<<","<<typeid(CTRLOUT).name()<<">(";
+    GenericSerializeableInputComputeOutputWithRequestResponseControlMirror<DATAIN, DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT>::operator<<(os);
+    os << ")";
+    return os;
+  }
+};
 
+template <class DATAIN, class DATACOMPUTE, class DATAOUT, class CTRLIN, class CTRLCOMPUTE, class CTRLOUT>
+inline ostream & operator<<(ostream &os, const FilterWithControl<DATAIN,DATACOMPUTE,DATAOUT,CTRLIN,CTRLCOMPUTE,CTRLOUT> &rhs) {
+  return rhs.operator<<(os);
+};
 
 
 

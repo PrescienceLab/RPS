@@ -3,7 +3,7 @@
 
 
 void BreakHere();
-void AttachDebuggerHere(char *execname=0);
+void AttachDebuggerHere(const char *execname=0);
 
 
 #define STRINGIZE(T) #T

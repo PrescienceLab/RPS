@@ -459,7 +459,7 @@ void Polynomial::Dump(FILE *out) const
       fprintf(out,"0\n");
    } else {
       for (i=0;i<numcoeffs;i++) { 
-         fprintf(out," %s%fx^%i",coeffs[i]>=0.0 ? "+" : "",coeffs[i],power-i);
+         fprintf(out," %s%f*x^%i",coeffs[i]>=0.0 ? "+" : "",coeffs[i],power-i);
       }
       fprintf(out,"\n");
    }

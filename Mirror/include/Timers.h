@@ -1,6 +1,10 @@
 #ifndef _timers
 #define _timers
 
+
+#include <iostream>
+#include <new>
+
 // Generic timers
 #if defined(WIN32) && !defined(__CYGWIN__)
 #if !defined(WIN32_GETTIMEOFDAY)
@@ -21,6 +25,8 @@ typedef class TimeValue IntervalValue;
 
 #define uint32 unsigned
 
+using namespace std;
+
 class TimeValue {
 private:
   unsigned sec;
@@ -29,6 +35,9 @@ public:
   inline TimeValue(unsigned sec=0, unsigned usec=0) {
     this->sec=sec; this->usec=usec;
   }
+
+  inline TimeValue(const TimeValue &rhs) : sec(rhs.sec), usec(rhs.usec) {}
+
   inline TimeValue(double secs) {
     sec = (int)secs;
     usec = (int)(1e6*(secs-(int)secs));
@@ -102,7 +111,12 @@ public:
     tv->tv_sec=sec; tv->tv_usec=usec;
   }
 
+  ostream & operator<<(ostream &os) const {
+    return (os<<"TimeValue(sec="<<sec<<", usec="<<usec<<", "<<((((double)usec)/1e6)+((double)(sec)))<<")");
+  }
 };
+
+inline ostream & operator<<(ostream &os, const TimeValue &rhs) { return rhs.operator<<(os);}
 
 const TimeValue MAXTIME(0xffffffff,999999);
 const TimeValue MINTIME(0,0);

@@ -53,7 +53,8 @@
   include/managed.h include/evaluate_core.h include/fit.h include/it.h \
   include/maths.h include/random.h include/tools.h \
   /home/pdinda/RPS-development/shared/include/banner.h
-./obj/I386/LINUX/polycalc.o: src/polycalc.cpp include/poly.h include/NewQueues.h
+./obj/I386/LINUX/polycalc.o: src/polycalc.cpp include/poly.h include/NewQueues.h \
+  /home/pdinda/RPS-development/shared/include/banner.h
 ./obj/I386/LINUX/crossval_master.o: src/crossval_master.cpp /usr/share/pvm3/include/pvm3.h \
   /usr/share/pvm3/include/pvmtev.h include/crossval_core.h include/ar.h \
   include/abstract.h include/etathetapred.h include/poly.h \

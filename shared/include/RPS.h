@@ -12,7 +12,7 @@
 #include "RTSA.h"
 #include "Finder.h"
 #include "Trace.h"
-#include "Wavlets.h"
+#include "Wavelets.h"
 
 
   

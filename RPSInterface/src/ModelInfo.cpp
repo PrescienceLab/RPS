@@ -87,3 +87,9 @@ ostream &ModelInfo::Print(ostream &os) const
   return os;
 }
 
+
+ostream &ModelInfo::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+

@@ -58,14 +58,14 @@ double TimeIt(void (*func)(int),int arg, double epsilon)
     count++;
   }
 
-  curfrac = CI95MEANHALF(count,sum,sum2)/MEANFROMSUMS(count,sum);
+  curfrac = CI95MEANHALF((double)count,sum,sum2)/MEANFROMSUMS((double)count,sum);
 
   while (curfrac > epsilon) { 
     t=TimeOnce(func,arg);	
     sum+=t;
     sum2+=t*t;
     count++;
-    curfrac = CI95MEANHALF(count,sum,sum2)/MEANFROMSUMS(count,sum);
+    curfrac = CI95MEANHALF((double)count,sum,sum2)/MEANFROMSUMS((double)count,sum);
   } 
 
   return MEANFROMSUMS(count,sum)-count*TimingOverhead;

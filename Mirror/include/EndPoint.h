@@ -2,7 +2,10 @@
 #define _EndPoint
 
 #include <stdio.h>
+#include <iostream>
+#include <new>
 
+using namespace std;
 // source:udp:host:port
 // source:tcp:host:port
 // source:file:stdin|stdout|stderr|file
@@ -28,7 +31,11 @@ struct EndPoint {
   EndPoint & operator = (const EndPoint &right);
 
   int Parse(const char *s);
+  
+  ostream & operator<<(ostream & os) const;
 };
+
+inline ostream & operator<<(ostream &os, const EndPoint &rhs) { return rhs.operator<<(os);}
   
 
 #endif

@@ -5,7 +5,8 @@
 #include <iostream>
 #include "Timers.h"
 #include "Serializable.h"
-#include "ioutil.h"
+
+using namespace std;
 
 struct TimeStamp : public timeval, public SerializeableInfo {
   TimeStamp(const unsigned sec, const unsigned usec);  
@@ -30,7 +31,10 @@ struct TimeStamp : public timeval, public SerializeableInfo {
 
   void Print(FILE *out=stdout) const;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 
 };
+
+inline ostream & operator<<(ostream &os, const TimeStamp &rhs) { return rhs.operator<<(os);}
 
 #endif

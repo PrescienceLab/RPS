@@ -13,6 +13,12 @@
 
 #include "junk.h"
 
+#include <iostream>
+#include <new>
+#include <typeinfo>
+
+using namespace std;
+
 enum ReferenceConnectionType {
 CONNECT_UNCONNECTED, 
 CONNECT_FD, 
@@ -37,9 +43,27 @@ class Reference {
   char    *pathname;
  public:
   Reference() { ctype=CONNECT_UNCONNECTED; fd=0; adx=0; port=0; udp=false; pathname=0;}
+  Reference(const Reference<SERREQ,SERRESP> &rhs) {
+    ctype=rhs.ctype;
+    fd=rhs.fd;
+    adx=rhs.adx;
+    port=rhs.port;
+    udp=rhs.udp;
+    file=rhs.file;
+    localsource=rhs.localsource;
+    pathname = new char [strlen(rhs.pathname)+1];
+    strcpy(pathname,rhs.pathname);
+  }
+
+
   virtual ~Reference() { Disconnect(); CHK_DEL_MAT(pathname);}
   
-  virtual int ConnectTo(int fd) {
+  Reference<SERREQ,SERRESP> &operator=(const Reference<SERREQ,SERRESP> &rhs) {
+    this->~Reference();
+    return *(new(this)Reference<SERREQ,SERRESP>(rhs));
+  }
+
+  virtual int ConnectTo(const int fd) {
     Disconnect();
     ctype=CONNECT_FD;
     this->fd=fd;
@@ -60,7 +84,7 @@ class Reference {
     return 0;
   }
   
-  virtual int ConnectTo(EndPoint &ep) {
+  virtual int ConnectTo(const EndPoint &ep) {
     switch (ep.atype) {
     case EndPoint::EP_SOURCE:
     case EndPoint::EP_SERVER:
@@ -96,16 +120,16 @@ class Reference {
   }
     
 
-  virtual int ConnectTo(char *hostorip, char *port, bool udp=false) {
+  virtual int ConnectTo(const char *hostorip, const char *port, const bool udp=false) {
     return ConnectTo(ToIPAddress(hostorip),atoi(port),udp);
   }
-  virtual int ConnectTo(char *hostorip, unsigned port, bool udp=false) {
+  virtual int ConnectTo(const char *hostorip, const unsigned port, const bool udp=false) {
     return ConnectTo(ToIPAddress(hostorip),port,udp);
   }
-  virtual int ConnectTo(unsigned adx, char *port, bool udp=false) {
+  virtual int ConnectTo(const unsigned adx, const char *port, const bool udp=false) {
     return ConnectTo(adx,atoi(port),udp);
   }
-  virtual int ConnectTo(unsigned adx, unsigned port,bool udp=false) {
+  virtual int ConnectTo(const unsigned adx, const unsigned port, const bool udp=false) {
     Disconnect();
     if (IsValidIPMulticastAddress(adx)) {
       assert(udp==true);
@@ -153,7 +177,7 @@ class Reference {
     return 0;
   }
 
-  virtual int ConnectTo(char *pathname, bool isunixdom=true) {
+  virtual int ConnectTo(const char *pathname, const bool isunixdom=true) {
     Disconnect();
     if (isunixdom) {
       if ((fd = CreateAndSetupUnixDomainSocket())<0) {
@@ -212,7 +236,7 @@ class Reference {
     return -1;
   }
 
-  virtual int SendRequest(SERREQ &r) {
+  virtual int SendRequest(const SERREQ &r) {
     switch (ctype) { 
     case CONNECT_FD:
     case CONNECT_REMOTE:
@@ -261,7 +285,7 @@ class Reference {
     return -1;
   }
 
-  virtual int Call(SERREQ &req, SERRESP &resp) {
+  virtual int Call(const SERREQ &req, SERRESP &resp) {
     int rc;
     rc = SendRequest(req);
     if (!rc) {
@@ -270,8 +294,25 @@ class Reference {
       return rc;
     }
   }
+
+  ostream & operator<<(ostream &os) const {
+    os << "Reference<"<<typeid(SERREQ).name()<<","<<typeid(SERRESP).name()<<">(ctype="<<ctype<<"("
+       << (ctype==CONNECT_UNCONNECTED ? "CONNECT_UNCONNECTED" :
+	   ctype==CONNECT_FD ? "CONNECT_FD" :
+	   ctype==CONNECT_STDIO ? "CONNECT_STDIO" :
+	   ctype==CONNECT_FILE ? "CONNECT_FILE" :
+	   ctype==CONNECT_REMOTE ? "CONNECT_REMOTE" :
+	   ctype==CONNECT_REMOTE_MULTICAST ? "CONNECT_REMOTE_MULTICAST" :
+	   ctype==CONNECT_LOCAL ? "CONNECT_LOCAL" : "UNKNOWN")
+       << ", fd="<<fd<<", adx="<<adx<<", port="<<port<<", udp="<<udp<<", file="<<file<<", localsource="<<localsource<<", pathname="<<pathname<<")";
+    return os;
+  }
 };
       
+template <class SERREQ, class SERRESP>
+inline ostream & operator<<(ostream &os, const Reference<SERREQ,SERRESP> &rhs) {
+  return rhs.operator<<(os);
+};
 
 class Empty : public SerializeableInfo {
  public:
@@ -291,18 +332,51 @@ class Empty : public SerializeableInfo {
   virtual int Unserialize(const int fd) {
     return 0;
   }
+
+  ostream & operator<<(ostream &os) const {
+    os <<"Empty(";
+    SerializeableInfo::operator<<(os);
+    os << ")";
+    return os;
+  }
 };
+
+inline ostream & operator<<(ostream &os, const Empty &rhs) {
+  return rhs.operator<<(os);
+}
 
 template <class SERINFO> 
 class StreamingInputReference : public Reference<Empty, SERINFO> {
  public:
   virtual int GetNextItem(SERINFO &s) { return RecvResponse(s);}
+
+  ostream & operator<<(ostream &os) const {
+    os <<"StreamingInputReference<"<<typeid(SERINFO).name()<<">(";
+    Reference<Empty,SERINFO>::operator<<(os);
+    return (os<<")");
+  }
 };
+
+template <class SERINFO>
+inline ostream & operator<<(ostream &os, const StreamingInputReference<SERINFO> &rhs) {
+  return rhs.operator<<(os);
+}
 
 template <class SERINFO> 
 class StreamingOutputReference : public Reference<SERINFO,Empty> {
  public:
-  virtual int PutNextItem(SERINFO &s) { return SendRequest(s);}
+  virtual int PutNextItem(const SERINFO &s) { return SendRequest(s);}
+
+  ostream & operator<<(ostream &os) const {
+    os <<"StreamingOutputReference<"<<typeid(SERINFO).name()<<">(";
+    Reference<SERINFO,Empty>::operator<<(os);
+    return (os<<")");
+  }
 };
+
+template <class SERINFO>
+inline ostream & operator<<(ostream &os, const StreamingOutputReference<SERINFO> &rhs) {
+  return rhs.operator<<(os);
+}
 
 #endif

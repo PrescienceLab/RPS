@@ -31,10 +31,10 @@ class Handler {
 
   Handler & operator = (const Handler &right);
 
-  virtual Handler *Clone()=0;
-  virtual int HandleRead(int fd, Selector &s)=0;
-  virtual int HandleWrite(int fd, Selector &s)=0;
-  virtual int HandleException(int fd, Selector &s)=0;
+  virtual Handler *Clone() const =0;
+  virtual int HandleRead(const int fd, Selector &s)=0;
+  virtual int HandleWrite(const int fd, Selector &s)=0;
+  virtual int HandleException(const int fd, Selector &s)=0;
   virtual int HandleTimeout(Selector &s)=0;
 
   int GetFD() const ;
@@ -68,8 +68,8 @@ class Handler {
 
 class HandlerCompare {
  public:
-  static int Compare(Handler &left, Handler &right) ;
-  static int Compare(Handler *left, Handler *right) ;
+  static int Compare(const Handler &left, const Handler &right) ;
+  static int Compare(const Handler *left, const Handler *right) ;
 };
 
 

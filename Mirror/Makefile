@@ -38,11 +38,15 @@ EXECLIST =
 
 APPOBJSLIST = $(EXECLIST:=.o)
 
-LIBOBJSLIST = socks.o 				\
+LIBOBJSLIST = \
           debug.o                               \
-          Selector.o	                        \
+          socks.o 				\
           EndPoint.o	                        \
+          MirrorTemplate.o                      \
+          Reference.o                           \
+          Selector.o	                        \
           Serializable.o                        \
+          Timers.o
 
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))

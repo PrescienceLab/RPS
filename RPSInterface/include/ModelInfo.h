@@ -7,7 +7,9 @@
 #include "Serializable.h"
 #include <stdio.h>
 #include <iostream>
-#include "ioutil.h"
+
+
+using namespace std;
 
 
 
@@ -30,42 +32,10 @@ struct ModelInfo : public ModelTemplate, public SerializeableInfo {
 
   void Print(FILE *out=stdout) const  ;
   ostream &Print(ostream &os) const  ;
-
-#if 0
-  static void MakePDQModel(ModelInfo &mi, 
-			   const ModelType modelclass, 
-			   const unsigned modelattr,
-			   const int p, 
-			   const int d, 
-			   const int q);
-
-  static void GetPDQModel(const ModelInfo &mi,
-			  ModelType &modelclass, 
-			  unsigned &modelattr,
-			  int &p, 
-			  int &d, 
-			  int &q);
-
-  static void MakeRefittingPDQModel(ModelInfo &mi, 
-				    const ModelType modelclass, 
-				    const unsigned modelattr,
-				    const int p, 
-				    const int d, 
-				    const int q,
-				    const int refitint);
-
-  static void GetRefittingPDQModel(const ModelInfo &mi,
-				   ModelType &modelclass, 
-				   unsigned &modelattr,
-				   int &p, 
-				   int &d, 
-				   int &q,
-				   int &refitint);
-
-  static void MakeModelInfo(ModelInfo &mi, const ModelTemplate &mt);
-  static void MakeModelTemplate(const ModelInfo &mi, ModelTemplate &mt);
-#endif
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const ModelInfo &rhs) { return rhs.operator<<(os);}
 
 #endif
 

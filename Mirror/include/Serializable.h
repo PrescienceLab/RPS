@@ -5,9 +5,13 @@
 #define DEBUG 0
 
 
+#include <iostream>
+
+using namespace std;
+
 #define MAKE_PACK_UNPACK_PROTO(T)	\
-  void Pack(const T *x, int num=1);	\
-  void Unpack(T *x, int num=1);         \
+  void Pack(const T *x, const int num=1);	\
+  void Unpack(T *x, const int num=1);         \
   void Pack(const T &x); 		\
   void Unpack(T &x); 
 
@@ -22,7 +26,7 @@ class Buffer {
 
  public:
 
-  Buffer(bool check=CHECKING_DEFAULT);
+  Buffer(const bool check=CHECKING_DEFAULT);
   Buffer(const Buffer &right);
   virtual ~Buffer();
 
@@ -47,9 +51,13 @@ class Buffer {
   char * Data() const;
   int Size() const ;
 
-  void Resize(int len, bool copy=true);
-  void ResizeFor(unsigned typesize, int num, bool copy=true);
+  void Resize(const int len, const bool copy=true);
+  void ResizeFor(const unsigned typesize, const int num, const bool copy=true);
+
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os,const Buffer &rhs) { return rhs.operator<<(os);}
 
 // Baseclass for information that can be shipped.
 // Subclasses should pack their data into buffer using
@@ -74,8 +82,14 @@ class SerializeableInfo {
   virtual int Unpack(Buffer &buf)=0 ;
 
   virtual int Serialize(Buffer &buf) const;
-  virtual int Unserialize(Buffer &buf, int boundary=0, int len=0) ;
+  virtual int Unserialize(Buffer &buf, const int boundary=0, const int len=0) ;
   virtual int Serialize(const int fd) const ;
   virtual int Unserialize(const int fd) ;
+
+  virtual ostream & operator<<(ostream &os) const { return (os<<"SerializeableInfo()");}
+
 };
+
+inline ostream & operator<<(ostream &os,const SerializeableInfo &rhs) { return rhs.operator<<(os);}
+
 #endif

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <stdio.h>
-#include "ioutil.h"
+
 
 #include "Serializable.h"
 #include "TimeStamp.h"
@@ -15,10 +15,12 @@
 
 #define WAVELET_MAX_BLOCK_LEN 65536
 
+using namespace std;
 
 enum WaveletRepresentationType { WAVELET_DOMAIN_APPROX, WAVELET_DOMAIN_DETAIL, TIME_DOMAIN, FREQUENCY_DOMAIN };
-enum WaveletTransformDirection { FORWARD, REVERSE };
+enum WaveletTransformDirection { WAVELET_FORWARD, WAVELET_REVERSE };
 enum WaveletBlockEncodingType  { PREORDER, INORDER, POSTORDER};
+
 
 ostream & operator<<(ostream &os, const WaveletType &x);
 ostream & operator<<(ostream &os, const WaveletRepresentationType &x);
@@ -61,7 +63,10 @@ struct WaveletRepresentationInfo : public SerializeableInfo {
   
   void Print(FILE *out=stdout) const;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletRepresentationInfo &rhs) { return rhs.operator<<(os);}
 
 
 //
@@ -97,11 +102,11 @@ struct WaveletIndividualSample : public SerializeableInfo {
   void PutAsMeasurement(Measurement &m) const;
   void GetFromMeasurement(const Measurement &m);
 
-  void PutAsWaveletInputSample(WaveletInputSample &m) const;
-  void GetFromWaveletInputSample(const WaveletInputSample &m);
+  void PutAsWaveletInputSample(WaveletInputSample<double> &m) const;
+  void GetFromWaveletInputSample(const WaveletInputSample<double> &m);
 
-  void PutAsWaveletOutputSample(WaveletOutputSample &m) const;
-  void GetFromWaveletOutputSample(const WaveletOutputSample &m);
+  void PutAsWaveletOutputSample(WaveletOutputSample<double> &m) const;
+  void GetFromWaveletOutputSample(const WaveletOutputSample<double> &m);
 
   int GetPackedSize() const;
   int GetMaxPackedSize() const;
@@ -110,7 +115,11 @@ struct WaveletIndividualSample : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletIndividualSample &rhs) { return rhs.operator<<(os);}
+
 
 //
 // For use in streaming 
@@ -134,11 +143,11 @@ struct WaveletStreamingBlock : public SerializeableInfo {
   int Resize(int len, bool copy=true);
   int SetSeries(double *ser, int len);
 
-  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock &m) const;
-  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock &m);
+  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const;
+  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m);
 
-  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock &m) const;
-  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock &m);
+  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const;
+  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m);
 
   int GetPackedSize() const;
   int GetMaxPackedSize() const;
@@ -147,7 +156,10 @@ struct WaveletStreamingBlock : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletStreamingBlock &rhs) { return rhs.operator<<(os);}
 
 
 //
@@ -183,11 +195,11 @@ struct WaveletBlock : public SerializeableInfo {
   void PutAsMeasurement(Measurement &m) const;
   void GetFromMeasurement(const Measurement &m);
 
-  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock &m) const;
-  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock &m);
+  void PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const;
+  void GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m);
 
-  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock &m) const;
-  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock &m);
+  void PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const;
+  void GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m);
 
   int GetPackedSize() const;
   int GetMaxPackedSize() const;
@@ -196,7 +208,11 @@ struct WaveletBlock : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletBlock &rhs) { return rhs.operator<<(os);}
+
 
 //
 struct WaveletTransformRequestType : public SerializeableInfo {
@@ -224,7 +240,11 @@ struct WaveletTransformRequestType : public SerializeableInfo {
   
   void Print(FILE *out=stdout) const;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletTransformRequestType &rhs) { return rhs.operator<<(os);}
+
 
 //
 // A block request and response are identical.
@@ -258,7 +278,11 @@ struct WaveletTransformBlockRequestResponse : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const;
   ostream & Print(ostream &os) const;
+  ostream & operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const WaveletTransformBlockRequestResponse &rhs) { return rhs.operator<<(os);}
+
 
 typedef WaveletTransformBlockRequestResponse WaveletTransformBlockRequest;
 typedef WaveletTransformBlockRequestResponse WaveletTransformBlockResponse;

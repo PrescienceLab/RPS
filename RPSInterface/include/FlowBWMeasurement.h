@@ -3,13 +3,14 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "ioutil.h"
 
 #include "Serializable.h"
 #include "TimeStamp.h"
 
 #define DEFAULT_PERIOD_USEC 1000000
 
+
+using namespace std;
 
 struct FlowBWMeasurement : public SerializeableInfo {
   unsigned  fromip;
@@ -31,7 +32,10 @@ struct FlowBWMeasurement : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
+  ostream &operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const FlowBWMeasurement &rhs) { return rhs.operator<<(os);}
 
 
 struct FlowBWMeasurementConfigurationRequest : public SerializeableInfo {
@@ -52,9 +56,10 @@ struct FlowBWMeasurementConfigurationRequest : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
-
+  ostream &operator<<(ostream &os) const;
 };
 
+inline ostream & operator<<(ostream &os, const FlowBWMeasurementConfigurationRequest &rhs) { return rhs.operator<<(os);}
 
 struct FlowBWMeasurementConfigurationReply: public SerializeableInfo {
   TimeStamp reqtimestamp;
@@ -75,7 +80,9 @@ struct FlowBWMeasurementConfigurationReply: public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
-
+  ostream &operator<<(ostream &os) const;
 };
+
+inline ostream & operator<<(ostream &os, const FlowBWMeasurementConfigurationReply &rhs) { return rhs.operator<<(os);}
 
 #endif

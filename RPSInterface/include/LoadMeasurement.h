@@ -3,23 +3,16 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "ioutil.h"
 
 #include "Serializable.h"
 #include "TimeStamp.h"
-#if HAVE_EXPAT
-#include "xmlint.h"
-#endif
 
 #define DEFAULT_PERIOD_USEC 1000000
 
-#define XML 0
 
+using namespace std;
 
 struct LoadMeasurement : public SerializeableInfo 
-#if XML
-, public XmlInterface 
-#endif
 {
 #define SMOOTH_UNIX 0  // Unix style 1, 5, 15 minute averages
 #define SMOOTH_MACH 1  // Mach style 5, 30, 60 second averages
@@ -43,17 +36,13 @@ struct LoadMeasurement : public SerializeableInfo
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
+  ostream &operator<<(ostream &os) const;
 
   static void SetSmoothingType(LoadMeasurement &measure);
 
-#if XML
-  int GetXMLPackedSize() const;
-  int GetMaxXMLPackedSize() const;
-  int PackToXML(Buffer &buf) const;
-  int UnpackFromXML(Buffer &buf);
-#endif
 };
 
+inline ostream & operator<<(ostream &os, const LoadMeasurement &rhs) { return rhs.operator<<(os);}
 
 struct LoadMeasurementConfigurationRequest : public SerializeableInfo {
   TimeStamp timestamp;
@@ -71,9 +60,11 @@ struct LoadMeasurementConfigurationRequest : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const;
   ostream &Print(ostream &os) const;
+  ostream &operator<<(ostream &os) const;
 
 };
 
+inline ostream & operator<<(ostream &os, const LoadMeasurementConfigurationRequest &rhs) { return rhs.operator<<(os);}
 
 struct LoadMeasurementConfigurationReply: public SerializeableInfo {
   TimeStamp reqtimestamp;
@@ -92,7 +83,10 @@ struct LoadMeasurementConfigurationReply: public SerializeableInfo {
 
   void Print(FILE *out=stdout) const ;
   ostream &Print(ostream &os) const;
+  ostream &operator<<(ostream &os) const;
 
 };
+
+inline ostream & operator<<(ostream &os, const LoadMeasurementConfigurationReply &rhs) { return rhs.operator<<(os);}
 
 #endif

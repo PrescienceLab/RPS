@@ -2,8 +2,6 @@
 #include <stdlib.h>
 
 #include "Measurement.h"
-
-
 #include "junk.h"
 
 Measurement::Measurement(int len) 
@@ -140,3 +138,6 @@ ostream &Measurement::Print(ostream &os) const
   return os;
 }
 
+
+ostream &Measurement::operator<<(ostream &os) const
+{ return Print(os);}

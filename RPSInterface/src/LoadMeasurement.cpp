@@ -6,9 +6,6 @@
 #include "LoadMeasurement.h"
 #include "socks.h"
 
-#if XML
-#include "xmlparse.h"  // expat
-#endif
 
 LoadMeasurement::LoadMeasurement() : 
   ipaddress(0), period_usec(0), smoothingtype(SMOOTH_UNIX), 
@@ -123,6 +120,12 @@ ostream &LoadMeasurement::Print(ostream &os) const
   return os;
 }
 
+ostream &LoadMeasurement::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
+
 
 void LoadMeasurement::SetSmoothingType(LoadMeasurement &measure) 
 {
@@ -138,274 +141,6 @@ void LoadMeasurement::SetSmoothingType(LoadMeasurement &measure)
 }
 
 
-#if XML
-
-const char *xml_hostload_template = 
-"<?xml version=\"1.0\"?>\n"
-"<!DOCTYPE HostLoadList [\n"
-"   <!ELEMENT HostLoadList (HostLoadInfo)+>\n"
-"   <!ELEMENT HostLoadInfo (Hostname, Period, SmoothingType, TimeStamp, Averages)>\n"
-"   <!ELEMENT Period (#PCDATA)>\n"
-"   <!ELEMENT SmoothingType (unix|mach)>\n"
-"   <!ELEMENT TimeStamp (#PCDATA)>\n"
-"   <!ELEMENT Averages (Average+)>\n"
-"   <!ELEMENT Average (#PCDATA)>\n"
-"      <!ATTLIST Average Number CDATA \"0\">\n"
-"]>\n"
-"<HostLoadList>\n"
-"   <HostLoadInfo>\n" 
-"      <Hostname>%s</Hostname>\n"
-"      <Period>%d</Period>\n"
-"      <SmoothingType>%d</SmoothingType>\n"
-"      <TimeStamp>%f</TimeStamp>\n"
-"      <Averages>\n"
-"         <Average Number=\"%d\">%f</Average>\n"
-"         <Average Number=\"%d\">%f</Average>\n"
-"         <Average Number=\"%d\">%f</Average>\n"
-"         <Average Number=\"%d\">%f</Average>\n"
-"      </Averages>\n"
-"   </HostLoadInfo>\n"
-"</HostLoadList>\n";
-
-
-#define MAX_HOSTNAME_CHARS  80
-#define MAX_NUM_CHARS 20
-#define MAX_AVG_CHARS 20
-#define MAX_TS_CHARS  20
-#define MAX_SMOOTH_CHARS 20
-#define MAX_PERIOD_CHARS 20
-
-
-int LoadMeasurement::GetXMLPackedSize() const
-{
-  return strlen(xml_hostload_template)+
-    MAX_HOSTNAME_CHARS+MAX_TS_CHARS+MAX_SMOOTH_CHARS+MAX_PERIOD_CHARS+4*(MAX_AVG_CHARS+MAX_NUM_CHARS);
-}
-
-int LoadMeasurement::GetMaxXMLPackedSize() const
-{
-  return GetXMLPackedSize();
-}
-
-int LoadMeasurement::PackToXML(Buffer &buf) const
-{
-  char *temp = new char [GetMaxXMLPackedSize()];
-  char hn[MAX_HOSTNAME_CHARS];
-  IPToHostname(ipaddress,hn,MAX_HOSTNAME_CHARS);
-  sprintf(temp,xml_hostload_template,
-	  hn,
-	  period_usec,
-	  smoothingtype,
-	  (double)timestamp,
-	  -1, unsmoothed,
-	  0,avgs[0],
-	  1,avgs[1],
-	  2,avgs[2]);
-  //  fprintf(stderr, "generated this xml:\n%s\n",temp);
-  buf.Pack(temp,strlen(temp)+1);
-  delete [] temp;
-  return 0;
-}
-
-
-#define CDATA_BUFSIZE 65536
-
-static int  LoadMeasurementXmlCDataNext;
-static char LoadMeasurementXmlCDataBuffer[CDATA_BUFSIZE];
-
-static enum {None,HostLoadList,HostLoadInfo,Hostname,Period,SmoothingType,Timestamp,Averages,Average,Done} LoadMeasurementXmlState; 
-static int LoadMeasurementXmlNum;
-
-void LoadMeasurementXmlStartElement(void *object, 
-				    const char *name,
-				    const char **atts)
-{
-  LoadMeasurement *lm = (LoadMeasurement *) object;
-
-  //fprintf(stderr,"start element %s\n",name);
-  
-  if (!strcmp(name,"HostLoadList")) { 
-    LoadMeasurementXmlState=HostLoadList;
-  } else if (!strcmp(name,"HostLoadInfo")) { 
-    LoadMeasurementXmlState=HostLoadInfo;
-  } else if (!strcmp(name,"Hostname")) { 
-    LoadMeasurementXmlState=Hostname;
-  } else if (!strcmp(name,"TimeStamp")) { 
-    LoadMeasurementXmlState=Timestamp;
-  } else if (!strcmp(name,"Period")) { 
-    LoadMeasurementXmlState=Period;
-  } else if (!strcmp(name,"SmoothingType")) { 
-    LoadMeasurementXmlState=SmoothingType;
-  } else if (!strcmp(name,"Averages")) { 
-    LoadMeasurementXmlState=Averages;
-  } else if (!strcmp(name,"Average")) { 
-    LoadMeasurementXmlState=Average;
-    int i;
-    for (i=0;atts[i]!=0;i+=2) { 
-      if (!strcmp(atts[i],"Number")) {
-	LoadMeasurementXmlNum = atoi(atts[i+1]);
-	//fprintf(stderr,"Number is now %d\n",LoadMeasurementXmlNum);
-	break;
-      }
-    }
-  }
-  LoadMeasurementXmlCDataNext=0;
-}
-
-void LoadMeasurementXmlEndElement(void *object, 
-				  const char *name)
-{
-  LoadMeasurement *lm = (LoadMeasurement *) object;
-  
-  LoadMeasurementXmlCDataBuffer[LoadMeasurementXmlCDataNext]=0;
-  
-  //fprintf(stderr,"CDATA : '%s'\n",LoadMeasurementXmlCDataBuffer);
-
-  switch (LoadMeasurementXmlState) {
-  case Hostname: 
-    lm->ipaddress=ToIPAddress(LoadMeasurementXmlCDataBuffer);
-    break;
-  case Period: 
-    lm->period_usec=atoi(LoadMeasurementXmlCDataBuffer);
-    break;
-  case SmoothingType: 
-    lm->smoothingtype=atoi(LoadMeasurementXmlCDataBuffer);
-    break;
-  case Timestamp: {
-    double t = atof(LoadMeasurementXmlCDataBuffer);
-    lm->timestamp = TimeStamp((int)t,(int)((t-(double)((int)t))*1e6));
-  } 
-  break;
-  case Average: 
-    if (LoadMeasurementXmlNum<0) { 
-      lm->unsmoothed=atof(LoadMeasurementXmlCDataBuffer);
-    } else {
-      lm->avgs[LoadMeasurementXmlNum]=atof(LoadMeasurementXmlCDataBuffer);
-    }
-    break;
-  }
-  
-  //fprintf(stderr,"End element %s\n",name);
-
-  if (!strcmp(name,"HostLoadList")) { 
-    LoadMeasurementXmlState=Done;
-  } else if (!strcmp(name,"HostLoadInfo")) { 
-    LoadMeasurementXmlState=HostLoadList;
-  } else if (!strcmp(name,"Hostname")) { 
-    LoadMeasurementXmlState=HostLoadInfo;
-  } else if (!strcmp(name,"TimeStamp")) { 
-    LoadMeasurementXmlState=HostLoadInfo;
-  } else if (!strcmp(name,"Period")) { 
-    LoadMeasurementXmlState=HostLoadInfo;
-  } else if (!strcmp(name,"SmoothingType")) { 
-    LoadMeasurementXmlState=HostLoadInfo;
-  } else if (!strcmp(name,"Averages")) { 
-    LoadMeasurementXmlState=HostLoadInfo;
-  } else if (!strcmp(name,"Average")) { 
-    LoadMeasurementXmlState=Averages;
-  }
-}
-
-
-//void LoadMeasurementXmlCDataStart(void *object)
-//{
-//  fprintf(stderr,"start cdata\n");
-//   LoadMeasurementXmlCDataNext=0;
-//}
-
-
-
-void LoadMeasurementXmlCData(void *object, const XML_Char *s, int len)
-{
-  if (LoadMeasurementXmlCDataNext+len >= (CDATA_BUFSIZE-1)) { 
-    fprintf(stderr,"out of memory for xml parse\n");
-    exit(-1);
-  }
-  strncpy(&(LoadMeasurementXmlCDataBuffer[LoadMeasurementXmlCDataNext]),
-	  s,len);
-  LoadMeasurementXmlCDataNext+=len;
-  LoadMeasurementXmlCDataBuffer[LoadMeasurementXmlCDataNext]=0;
-  //  fprintf(stderr,"cdata buffer: %s\n",LoadMeasurementXmlCDataBuffer);
-}
-
-// void LoadMeasurementXmlCDataEnd(void *object)
-// {
-//   LoadMeasurement *lm = (LoadMeasurement *) object;
-
-//   LoadMeasurementXmlCDataBuffer[LoadMeasurementXmlCDataNext]=0;
-  
-//   fprintf(stderr,"end cdata\n");
-  
-//   fprintf(stderr,"CDATA : '%s'\n",LoadMeasurementXmlCDataBuffer);
-
-//   switch (LoadMeasurementXmlState) {
-//   case Hostname: 
-//     lm->ipaddress=ToIPAddress(LoadMeasurementXmlCDataBuffer);
-//     break;
-//   case Period: 
-//     lm->period_usec=atoi(LoadMeasurementXmlCDataBuffer);
-//     break;
-//   case SmoothingType: 
-//     lm->smoothingtype=atoi(LoadMeasurementXmlCDataBuffer);
-//     break;
-//   case Timestamp: {
-//     double t = atof(LoadMeasurementXmlCDataBuffer);
-//     lm->timestamp = TimeStamp((int)t,(int)((t-(double)((int)t))*1e6));
-//   } 
-//   break;
-//   case Average: 
-//     if (LoadMeasurementXmlNum<0) { 
-//       lm->unsmoothed=atof(LoadMeasurementXmlCDataBuffer);
-//     } else {
-//       lm->avgs[LoadMeasurementXmlNum]=atof(LoadMeasurementXmlCDataBuffer);
-//     }
-//     break;
-//   }
-// }
-
-
-int LoadMeasurement::UnpackFromXML(Buffer &buf)
-{
-  XML_Parser parser = XML_ParserCreate(NULL);
-
-  XML_SetUserData(parser, this);
-  XML_SetElementHandler(parser,
-			LoadMeasurementXmlStartElement,
-			LoadMeasurementXmlEndElement);
-  XML_SetCharacterDataHandler(parser,
-			      LoadMeasurementXmlCData);
-
-  //  XML_SetCdataSectionHandler(parser,
-  //		     LoadMeasurementXmlCDataStart,
-  //		     LoadMeasurementXmlCDataEnd);
-  
-  int i;
-  char nextchar;
-  int done = 0;
-
-  LoadMeasurementXmlState=None;
-  LoadMeasurementXmlCDataNext=0;
-
-  do {
-    if (LoadMeasurementXmlState==Done) { 
-      nextchar='\n';
-    } else {
-      buf.Unpack(nextchar);
-    }
-    if (!XML_Parse(parser, &nextchar, 1, LoadMeasurementXmlState==Done)) {
-      fprintf(stderr,
-              "%s at line %d\n",
-              XML_ErrorString(XML_GetErrorCode(parser)),
-              XML_GetCurrentLineNumber(parser));
-      XML_ParserFree(parser);
-      return -1;
-    }
-  } while (LoadMeasurementXmlState!=Done);
-  
-  XML_ParserFree(parser);
-}
-			
-#endif  
 			
 
 LoadMeasurementConfigurationRequest::LoadMeasurementConfigurationRequest() :
@@ -461,6 +196,10 @@ ostream &LoadMeasurementConfigurationRequest::Print(ostream &os) const {
   return os;
 }
 	  
+ostream &LoadMeasurementConfigurationRequest::operator<<(ostream &os) const
+{
+  return Print(os);
+}
 
 
 LoadMeasurementConfigurationReply::LoadMeasurementConfigurationReply() :
@@ -520,3 +259,8 @@ ostream &LoadMeasurementConfigurationReply::Print(ostream &os) const {
   return os;
 }
 	  
+
+ostream &LoadMeasurementConfigurationReply::operator<<(ostream &os) const
+{
+  return Print(os);
+}

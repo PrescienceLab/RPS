@@ -1,7 +1,7 @@
 #include "LineGraph.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include "Buffer.h"
 #include "EndPoint.h" 
 #include "Reference.h"

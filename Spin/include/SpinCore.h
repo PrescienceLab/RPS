@@ -4,6 +4,10 @@
 #include "Mirror.h"
 #include "RPSInterface.h"
 
+#include <iostream>
+
+using namespace std;
+
 class Spin : public SerializeableInfo {
  private:
   double min_iters;
@@ -38,7 +42,11 @@ class Spin : public SerializeableInfo {
   virtual int Serialize(char *fn);
   virtual int Unserialize(char *fn);
 
+  virtual ostream & operator<<(ostream &os) const;
+
 };  
+
+inline ostream & operator<<(ostream &os, const Spin &rhs) { return rhs.operator<<(os);}
 
 
 extern Spin the_global_spin;
@@ -60,7 +68,13 @@ struct SpinRequest : public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
    void Print(FILE *out=stdout) const ;
-};
+
+  virtual ostream & operator<<(ostream &os) const;
+
+};  
+
+inline ostream & operator<<(ostream &os, const SpinRequest &rhs) { return rhs.operator<<(os);}
+
 
 
 struct SpinReply : public SerializeableInfo {
@@ -86,7 +100,12 @@ struct SpinReply : public SerializeableInfo {
   int Unpack(Buffer &buf) ;
 
   void Print(FILE *out=stdout) const ;
-};
+  virtual ostream & operator<<(ostream &os) const;
+
+};  
+
+inline ostream & operator<<(ostream &os, const SpinReply &rhs) { return rhs.operator<<(os);}
+
 
 class SpinCompute {
  public:

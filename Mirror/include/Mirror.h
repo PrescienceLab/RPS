@@ -6,7 +6,6 @@
 #include "Reference.h"
 #include "MirrorTemplate.h"
 
-#include "Filter.h"
 #include "Server.h"
 
 #include "Selector.h"

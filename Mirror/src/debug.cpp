@@ -35,14 +35,13 @@ char *GetExecName()
 #endif
 }
 
-void AttacheDebuggerHereSigHandler(int sig) 
+void AttacheDebuggerHereSigHandler(const int sig) 
 { 
-	sig=0; // avoid compiler warning 
 }
 
 
 #if defined(USE_XTERM) || defined(USE_DDD)
-void AttachDebuggerHere(char *execname=0)
+void AttachDebuggerHere(const char *execname=0)
 {
   char s[1000];
   FILE *fd;
@@ -76,7 +75,7 @@ void AttachDebuggerHere(char *execname=0)
 #endif
 
 #if defined(USE_XEMACS_GDB)
-void AttachDebuggerHere(char *execname)
+void AttachDebuggerHere(const char *execname)
 {
   char s[1000];
   execname = execname==0 ? GetExecName() : execname;
@@ -91,7 +90,7 @@ void AttachDebuggerHere(char *execname)
 #endif
 
 #if defined(USE_NT)
-void AttachDebuggerHere(char *execname)
+void AttachDebuggerHere(const char *execname)
 {
     fprintf(stderr,"AttachDebuggerHere not implemented on NT\n");
 }

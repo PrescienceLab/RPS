@@ -21,7 +21,8 @@ ostream & operator<<(ostream &os, const WaveletType &x)
 ostream & operator<<(ostream &os, const WaveletRepresentationType &x)
 {
   os << "WaveletRepresentationType(" <<
-    (x==WAVELET_DOMAIN ? "WAVELET_DOMAIN" :
+    (x==WAVELET_DOMAIN_APPROX ? "WAVELET_DOMAIN_APPROX" :
+    x==WAVELET_DOMAIN_DETAIL ? "WAVELET_DOMAIN_DETAL" :
     x==TIME_DOMAIN ? "TIME_DOMAIN" :
      x==FREQUENCY_DOMAIN ? "FREQUENCY_DOMAIN" : "UNKNOWN") << ")";
   return os;
@@ -30,8 +31,8 @@ ostream & operator<<(ostream &os, const WaveletRepresentationType &x)
 ostream & operator<<(ostream &os, const WaveletTransformDirection &x)
 {
   os << "WaveletTransformDirection("<<
-    (x==FORWARD ? "FORWARD" :
-     x==REVERSE ? "REVERSE" : "UNKNOWN")<<")";
+    (x==WAVELET_FORWARD ? "FORWARD" :
+     x==WAVELET_REVERSE ? "REVERSE" : "UNKNOWN")<<")";
   return os;
 }
 
@@ -95,10 +96,11 @@ int WaveletRepresentationInfo::Unpack(Buffer &buf)
   return 0;
 }
 
-void WaveletRepresentationInfo::Print(FILE *out=stdout) const
+void WaveletRepresentationInfo::Print(FILE *out) const
 {
   fprintf(out,"WaveletRepresentationInfo: rtype=%s, wtype=%s, levels=%u, period_usec=%u\n",
-	  rtype==WAVELET_DOMAIN ? "WAVELET_DOMAIN" :
+	  rtype==WAVELET_DOMAIN_APPROX ? "WAVELET_DOMAIN_APPROX" :
+	  rtype==WAVELET_DOMAIN_DETAIL ? "WAVELET_DOMAIN_DETAIL" :
 	  rtype==TIME_DOMAIN ? "TIME_DOMAIN" :
 	  rtype==FREQUENCY_DOMAIN ? "FREQUENCY_DOMAIN" : "UNKNOWN",
 	  wtype==DAUB2 ? "DAUB2" :
@@ -119,6 +121,12 @@ ostream& WaveletRepresentationInfo::Print(ostream &os) const
   os << "WaveletRepresentationInfo(rtype="<<rtype<<", wtype="<<wtype
      <<", levels="<<levels<<", period_usec="<<period_usec<<")";
   return os;
+}
+
+
+ostream& WaveletRepresentationInfo::operator<<(ostream &os) const
+{
+  return Print(os);
 }
 
 
@@ -173,22 +181,22 @@ void WaveletIndividualSample::GetFromMeasurement(const Measurement &m)
   }
 }
 
-void WaveletIndividualSample::PutAsWaveletInputSample(WaveletInputSample &m) const
+void WaveletIndividualSample::PutAsWaveletInputSample(WaveletInputSample<double> &m) const
 {
   // WRITE THIS
 }
 
-void WaveletIndividualSample::GetFromWaveletInputSample(const WaveletInputSample &m)
+void WaveletIndividualSample::GetFromWaveletInputSample(const WaveletInputSample<double> &m)
 {
   // WRITE THIS
 }
 
-void WaveletIndividualSample::PutAsWaveletOutputSample(WaveletOutputSample &m) const
+void WaveletIndividualSample::PutAsWaveletOutputSample(WaveletOutputSample<double> &m) const
 {
   // WRITE THIS
 }
 
-void WaveletIndividualSample::GetFromWaveletOutputSample(const WaveletOutputSample &m)
+void WaveletIndividualSample::GetFromWaveletOutputSample(const WaveletOutputSample<double> &m)
 {
   // WRITE THIS
 }
@@ -227,7 +235,7 @@ int WaveletIndividualSample::Unpack(Buffer &buf)
   return 0;
 }
 
-void WaveletIndividualSample::Print(FILE *out=stdout) const
+void WaveletIndividualSample::Print(FILE *out) const
 {
   fprintf(out,"WaveletIndividualSample: tag=%u, timestamp=%f, rinfo=", tag,(double)timestamp);
   rinfo.Print(out);
@@ -240,6 +248,12 @@ ostream & WaveletIndividualSample::Print(ostream &os) const
     <<", rinfo="<<rinfo<<", index="<<index<<", level="<<level<<", value="<<value<<")";
   return os;
 }
+
+ostream& WaveletIndividualSample::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
 
 WaveletBlock::WaveletBlock(const int len) :
   tag(0), timestamp(TimeStamp(0)), btype(PREORDER), serlen(0), series(0)
@@ -330,22 +344,22 @@ void WaveletBlock::GetFromMeasurement(const Measurement &m)
   SetSeries(m.series,m.serlen);
 }
 
-void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock &m) const
+void WaveletBlock::PutAsWaveletInputSampleBlock(WaveletInputSampleBlock<double> &m) const
 {
   // WRITE THIS
 }
 
-void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock &m)
+void WaveletBlock::GetFromWaveletInputSampleBlock(const WaveletInputSampleBlock<double> &m)
 {
   // WRITE THIS
 }
 
-void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock &m) const
+void WaveletBlock::PutAsWaveletOutputSampleBlock(WaveletOutputSampleBlock<double> &m) const
 {
   // WRITE THIS
 }
 
-void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock &m)
+void WaveletBlock::GetFromWaveletOutputSampleBlock(const WaveletOutputSampleBlock<double> &m)
 {
   // WRITE THIS
 }
@@ -387,7 +401,7 @@ int WaveletBlock::Unpack(Buffer &buf)
   return 0;
 }
 
-void WaveletBlock::Print(FILE *out=stdout) const
+void WaveletBlock::Print(FILE *out) const
 {
   int i;
   fprintf(out,"WaveletBlock: tag=%u, rinfo=",tag);
@@ -419,8 +433,14 @@ ostream & WaveletBlock::Print(ostream &os) const
   return os;
 }
 
+ostream& WaveletBlock::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
+
 WaveletTransformRequestType::WaveletTransformRequestType() :
-  direction(FORWARD)
+  direction(WAVELET_FORWARD)
 {}
 
 WaveletTransformRequestType::WaveletTransformRequestType(const WaveletTransformDirection dir,
@@ -474,11 +494,11 @@ int WaveletTransformRequestType::Unpack(Buffer &buf)
   return 0;
 }
 
-void WaveletTransformRequestType::Print(FILE *out=stdout) const
+void WaveletTransformRequestType::Print(FILE *out) const
 {
   fprintf(out,"WaveletTransformRequestType: direction=%s, rinfoin=",
-	  direction==FORWARD ? "FORWARD" : 
-	  direction==REVERSE ? "REVERSE" : "UNKNOWN");
+	  direction==WAVELET_FORWARD ? "FORWARD" : 
+	  direction==WAVELET_REVERSE ? "REVERSE" : "UNKNOWN");
   rinfoin.Print(out);
   fprintf(out,", bin=%s, rinfoout=", 
 	  bin==PREORDER ? "PREORDER" :
@@ -498,6 +518,12 @@ ostream & WaveletTransformRequestType::Print(ostream &os) const
      << rinfoin << ", bin=" << bin << ", rinfoout="<<rinfoout<<", bout="<<bout<<")";
   return os;
 }
+
+ostream& WaveletTransformRequestType::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
 
 
 WaveletTransformBlockRequestResponse::WaveletTransformBlockRequestResponse() :
@@ -569,4 +595,10 @@ ostream & WaveletTransformBlockRequestResponse::Print(ostream &os) const
     << ", timein="<<timein<<", timeout="<<timeout<<", block="<<block<<")";
   return os;
 }
+
+ostream& WaveletTransformBlockRequestResponse::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
 

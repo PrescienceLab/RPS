@@ -50,7 +50,7 @@ int IsDatagramSocket(const int fd)
 }
 
 
-int IsValidIPMulticastAddress(unsigned adx)
+int IsValidIPMulticastAddress(const unsigned adx)
 {
   
   //int x=(ntohl(port)>>24)&0xff;
@@ -63,7 +63,7 @@ int IsValidIPMulticastAddress(unsigned adx)
   }
 }
 
-void IPToHostname(unsigned ip, char *name, int namesize) 
+void IPToHostname(const unsigned ip, char *name, const int namesize) 
 { 
   struct in_addr ia; ia.s_addr=ip;
   struct hostent *he=gethostbyaddr((const char *)&(ia),
@@ -73,13 +73,13 @@ void IPToHostname(unsigned ip, char *name, int namesize)
 }
 
 
-void PrintIPAddress(unsigned adx, FILE *out)
+void PrintIPAddress(const unsigned adx, FILE *out)
 {
   fprintf(out,"%3d.%3d.%3d.%3d", (adx>>24)&0xff,
 	  (adx>>16)&0xff, (adx>>8)&0xff, (adx)&0xff);
 }
 
-unsigned ToIPAddress(char *hostname)
+unsigned ToIPAddress(const char *hostname)
 {
     unsigned x;
 
@@ -104,7 +104,6 @@ unsigned ToIPAddress(char *hostname)
 
 unsigned GetMyIPAddress()
 {
-#if 1
   static unsigned adx=0;
   static bool setup=false;
   char *host;
@@ -141,41 +140,9 @@ unsigned GetMyIPAddress()
       return adx;
     }
   }
-#else       
-
-  unsigned localhost = htonl(ToIPAddress("127.0.0.1"));
-  struct hostent *he = gethostbyaddr((const char*)&localhost,sizeof(unsigned),AF_INET);
-
-  if (!he) {
-    return ntohl(localhost);
-  } else {
-    int i;
-    unsigned addr;
-    assert(he->h_length==4 && he->h_addrtype==AF_INET);
-    for (i=0; (he->h_addr_list[i] != 0); i++) {
-      memcpy(&addr,he->h_addr_list[i],he->h_length);
-      if (addr!=localhost) {
-	break;
-      }
-    }
-    if (addr!=localhost) {
-      return ntohl(addr);
-    } else {
-      return ntohl(localhost);
-    }
-  }
-#if 0
-  char hostname[1024];
-
-  gethostname(hostname,1024);
-
-  return ToIPAddress(hostname);
-#endif
-#endif
-
 }
 
-int CreateAndSetupUdpSocket(int bufsize,bool nonblocking)
+int CreateAndSetupUdpSocket(const int bufsize, const bool nonblocking)
 {
   int mysocket;
   int val;
@@ -218,7 +185,7 @@ int CreateAndSetupUdpSocket(int bufsize,bool nonblocking)
 }
 
 
-int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
+int CreateAndSetupTcpSocket(const int bufsize, const bool nodelay, const bool nonblocking)
 {
   int mysocket;
   int val;
@@ -270,7 +237,7 @@ int CreateAndSetupTcpSocket(int bufsize, bool nodelay, bool nonblocking)
 }
 
 
-int CreateAndSetupUnixDomainSocket(int bufsize, bool nonblocking)
+int CreateAndSetupUnixDomainSocket(const int bufsize, const bool nonblocking)
 {
   int mysocket;
   int val;
@@ -314,7 +281,7 @@ int CreateAndSetupUnixDomainSocket(int bufsize, bool nonblocking)
 }
 
 
-int SetNoDelaySocket(const int fd, bool nodelay)
+int SetNoDelaySocket(const int fd, const bool nodelay)
 {
   int val = nodelay == true;
 
@@ -323,7 +290,7 @@ int SetNoDelaySocket(const int fd, bool nodelay)
 }
 
 
-int BindSocket(int mysocket, unsigned adx, int myport)
+int BindSocket(const int mysocket, const unsigned adx, const int myport)
 {  
   struct sockaddr_in my_sa;
 
@@ -338,17 +305,17 @@ int BindSocket(int mysocket, unsigned adx, int myport)
   return 0;
 }
 
-int BindSocket(int mysocket, int myport)
+int BindSocket(const int mysocket, const int myport)
 {
   return BindSocket(mysocket,(unsigned) INADDR_ANY,myport);
 }  
 
-int BindSocket(int mysocket, char *host_or_ip, int myport)
+int BindSocket(const int mysocket, const char *host_or_ip, const int myport)
 {
   return BindSocket(mysocket, ToIPAddress(host_or_ip), myport);
 }
 
-int BindSocket(int mysocket, char *pathname)
+int BindSocket(const int mysocket, const char *pathname)
 {
 #if defined(WIN32) && !defined(__CYGWIN__)
   return -1;
@@ -369,13 +336,13 @@ int BindSocket(int mysocket, char *pathname)
 }  
 
 
-int ListenSocket(int mysocket, int maxcon)
+int ListenSocket(const int mysocket, const int maxc)
 {
-  maxcon = MIN(maxcon,SOMAXCONN);
+  int maxcon = MIN(maxc,SOMAXCONN);
   return listen(mysocket,maxcon);
 }
 
-int ConnectToHost(int mysocket, int hostip, int port)
+int ConnectToHost(const int mysocket, const int hostip, const int port)
 {
   struct sockaddr_in sa;
 
@@ -388,13 +355,13 @@ int ConnectToHost(int mysocket, int hostip, int port)
 }
   
 
-int ConnectToHost(int mysocket, char *host, int port)
+int ConnectToHost(const int mysocket, const char *host, const  int port)
 {
   return ConnectToHost(mysocket,ToIPAddress(host),port);
 }
 
 
-int ConnectToPath(int mysocket, char *pathname)
+int ConnectToPath(const int mysocket, const char *pathname)
 {
 #if defined(WIN32) && !defined(__CYGWIN__)
   return -1;
@@ -416,7 +383,7 @@ int ConnectToPath(int mysocket, char *pathname)
   
 
 
-int JoinMulticastGroup(int mysocket, unsigned adx)
+int JoinMulticastGroup(const int mysocket, const unsigned adx)
 {
   if (!IsValidIPMulticastAddress(adx)) {
     return -1;
@@ -436,13 +403,13 @@ int JoinMulticastGroup(int mysocket, unsigned adx)
   return 0;
 }
 
-int JoinMulticastGroup(int mysocket, char *IP)
+int JoinMulticastGroup(const int mysocket, const char *IP)
 {
   return JoinMulticastGroup(mysocket,ToIPAddress(IP));
 }
 
 
-int LeaveMulticastGroup(int mysocket, unsigned adx)
+int LeaveMulticastGroup(const int mysocket, const unsigned adx)
 {
   if (!IsValidIPMulticastAddress(adx)) {
     return -1;
@@ -463,14 +430,14 @@ int LeaveMulticastGroup(int mysocket, unsigned adx)
 }
 
 
-int LeaveMulticastGroup(int mysocket, char *IP)
+int LeaveMulticastGroup(const int mysocket, const char *IP)
 {
   return LeaveMulticastGroup(mysocket,ToIPAddress(IP));
 }
 
 
 
-int SetMulticastTimeToLive(int mysocket, const unsigned char ttl)
+int SetMulticastTimeToLive(const int mysocket, const unsigned char ttl)
 {
   if (setsockopt(mysocket,IPPROTO_IP,IP_MULTICAST_TTL,
 		 (SOCKOPT_TYPE)&ttl,(SOCKOPT_LEN_TYPE)sizeof(ttl))<0) {
@@ -479,9 +446,9 @@ int SetMulticastTimeToLive(int mysocket, const unsigned char ttl)
   return 0;
 }
 
-int SendTo(int mysocket, 
-	   unsigned ip, int port, 
-	   const char *buf, const int len, bool sendall)
+int SendTo(int const mysocket, 
+	   const unsigned ip, const int port, 
+	   const char *buf, const int len, const bool sendall)
 {
   struct sockaddr_in sa;
   
@@ -510,10 +477,10 @@ int SendTo(int mysocket,
 }
 
 
-int ReceiveFrom(int mysocket, 
-		unsigned ip, int port, 
+int ReceiveFrom(const int mysocket, 
+		const unsigned ip, const int port, 
 		char *buf, const int len,
-		bool recvall)
+		const bool recvall)
 {
   struct sockaddr_in sa;
   SOCKOPT_LEN_TYPE size=sizeof(sockaddr_in);
@@ -542,22 +509,22 @@ int ReceiveFrom(int mysocket,
   }
 }
 
-int SendTo(int mysocket, 
-	   char *host_or_ip, int port, 
-	   const char *buf, const int len, bool sendall)
+int SendTo(const int mysocket, 
+	   const char *host_or_ip, const int port, 
+	   const char *buf, const int len, const bool sendall)
 {
   return SendTo(mysocket,ToIPAddress(host_or_ip),port,buf,len,sendall);
 }
 
-int ReceiveFrom(int mysocket, 
-		char *host_or_ip, int port, 
-		char *buf, const int len, bool recvall)
+int ReceiveFrom(const int mysocket, 
+		const char *host_or_ip, const int port, 
+		char *buf, const int len, const bool recvall)
 {
   return ReceiveFrom(mysocket,ToIPAddress(host_or_ip),port,buf,len,recvall);
 }
 
 
-int Send(const int fd, const char *buf, const int len, bool sendall)
+int Send(const int fd, const char *buf, const int len, const bool sendall)
 {
   if (!sendall) {
     return WRITE(fd,buf,len);
@@ -579,7 +546,7 @@ int Send(const int fd, const char *buf, const int len, bool sendall)
 }
     
 
-int Receive(const int fd, char *buf, const int len, bool recvall)
+int Receive(const int fd, char *buf, const int len, const bool recvall)
 {
   if (!recvall) {
     return READ(fd,buf,len);
@@ -601,7 +568,7 @@ int Receive(const int fd, char *buf, const int len, bool recvall)
 }
 
 
-int SetSignalHandler(int signum, void (*handler)(int), bool oneshot)
+int SetSignalHandler(const int signum, void (*handler)(int), const bool oneshot)
 {
 #if defined(WIN32) || defined(CYGWIN) // cygwin does not appear to have sigaction, so...
   signal(signum,handler);  //notice that this is oneshot
@@ -633,12 +600,12 @@ int SetSignalHandler(int signum, void (*handler)(int), bool oneshot)
 }
 
 
-int IgnoreSignal(int signum)
+int IgnoreSignal(const int signum)
 {
   return SetSignalHandler(signum,SIG_IGN);
 }
 
-int ListenToSignal(int signum)
+int ListenToSignal(const int signum)
 {
   return SetSignalHandler(signum,SIG_DFL);
 }

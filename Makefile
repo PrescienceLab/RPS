@@ -16,6 +16,14 @@ else
   HGFB_DEP =
 endif
 
+ifeq ($(HAVE_WATCHTOWER),YES)
+  HWT_DEP = 
+  HWT_CLEAN = 	cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean
+  HWT_DEPEND = cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) depend
+else
+  HWT_DEP =
+endif
+
 ifeq ($(HAVE_TIMESERIES),YES)
   HTS_DEP = TimeSeries
   HTS_CLEAN = cd $(TS_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) clean
@@ -159,7 +167,14 @@ GetFlowBW: force
 	cp `find $(GETFLOWBW_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 	cp `find $(GETFLOWBW_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
-Sensors : $(HGLA_DEP) $(HGFB_DEP) force
+WatchTower: force
+	cd $(WATCHTOWER_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
+	cp `find $(WATCHTOWER_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
+	cp `find $(WATCHTOWER_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
+	cp `find $(WATCHTOWER_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
+	cp `find $(WATCHTOWER_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
+
+Sensors : $(HGLA_DEP) $(HGFB_DEP) $(HWT_DEP) force
 	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
 TimeSeries: $(HFD_DEP) $(HT_DEP) force
@@ -208,7 +223,7 @@ RemosInterface:  $(HRPSI_DEP) force
 	cp `find $(REMOSINT_DIR)/obj/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
 
-PredComp: $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HMT_DEP) $(HRPSI_DEP) force
+PredComp: $(HSE_DEP) $(HT_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HMT_DEP) $(HRPSI_DEP) force
 
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(PREDCOMP_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
@@ -267,6 +282,7 @@ ResearchTools: $(HRTSA_DEP) force
 clean:
 	$(HGLA_CLEAN)
 	$(HGFB_CLEAN)
+	$(HWT_CLEAN)
 	$(HTS_CLEAN)
 	$(HWA_CLEAN)
 	$(HFD_CLEAN)
@@ -288,6 +304,7 @@ clean:
 depend:
 	$(HGLA_DEPEND)
 	$(HGFB_DEPEND)
+	$(HWT_DEPEND)
 	$(HTS_DEPEND)
 	$(HWA_DEPEND)
 	$(HFD_DEPEND)

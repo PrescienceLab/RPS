@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "ioutil.h"
 
 #include "Serializable.h"
 #include "ModelInfo.h"
@@ -43,7 +42,9 @@ struct Measurement : public SerializeableInfo {
 
   void Print(FILE *out=stdout) const;
   ostream &Print(ostream &os) const;
+  ostream &operator<<(ostream &os) const;
 };  
 
+inline ostream & operator<<(ostream &os, const Measurement &rhs) { return rhs.operator<<(os);}
 
 #endif

@@ -31,7 +31,7 @@ int SerializeableInfo::BOUNDARY=0xdeadbeef;
 
 
 #define MAKE_PACK_UNPACK(T)				\
-  void Buffer::Pack(const T *x, int num) {	\
+  void Buffer::Pack(const T *x, const int num) {	\
     int i;						\
     DEBUGPRTPACK(T,num);				\
     ResizeFor(sizeof(T),num);				\
@@ -40,10 +40,10 @@ int SerializeableInfo::BOUNDARY=0xdeadbeef;
       curwrite+=sizeof(T);				\
     }							\
   }							\
-  void Buffer::Unpack(T *x, int num) {		\
+  void Buffer::Unpack(T *x, const int num) {		\
     int i;						\
     DEBUGPRTUNPACK(T,num);				\
-    assert((curread+num*(int)sizeof(T))<=datalen);		\
+    assert((curread+num*(int)sizeof(T))<=datalen);	\
     for (i=0;i<num;i++) {				\
       ::Unpack(data+curread,&(x[i]));			\
       curread+=sizeof(T);				\
@@ -58,7 +58,7 @@ int SerializeableInfo::BOUNDARY=0xdeadbeef;
 
 
 
-Buffer::Buffer(bool check) 
+Buffer::Buffer(const bool check) 
 { 
   datalen=0; curread=0; curwrite=0; data=0; typecheck=check;
 }
@@ -125,7 +125,7 @@ int Buffer::Size() const
   return curwrite;
 }
 
-void Buffer::Resize(int len, bool copy) 
+void Buffer::Resize(const int len, const bool copy) 
 {
   if (len>datalen) {
     char * newdata = new char [len];
@@ -141,10 +141,35 @@ void Buffer::Resize(int len, bool copy)
   }
 }
 
-void Buffer::ResizeFor(unsigned typesize, int num, bool copy) 
+void Buffer::ResizeFor(const unsigned typesize, const int num, const bool copy) 
 {
   int needed = curwrite+typesize*num;
   Resize(needed,copy);
+}
+
+static inline ostream & hexoutnybble(ostream &os, const char val) 
+{
+  char x=val&0xf;
+  if (x>9) {
+    return (os<<('a'+(x-9)));
+  } else {
+    return (os<<x);
+  }
+}
+
+static inline ostream & hexoutbyte(ostream &os, const char val) 
+{
+  return(hexoutnybble(hexoutnybble(os,val>>4),val));
+}
+
+
+ostream & Buffer::operator<<(ostream &os) const 
+{
+  os <<"Buffer(typecheck="<<typecheck<<", curwrite="<<curwrite<<", curread="<<curread<<", datalen="<<datalen<<", data=";
+  for (int i=0;i<datalen;i++) { 
+    hexoutbyte(os,data[i]);
+  }
+  return (os<<")");
 }
 
 
@@ -167,8 +192,10 @@ int SerializeableInfo::Serialize(Buffer &buf) const
 }
 
 
-int SerializeableInfo::Unserialize(Buffer &buf, int boundary, int len) 
+int SerializeableInfo::Unserialize(Buffer &buf, const int b, const int l) 
 {
+  int boundary=b; 
+  int len=l;
   if (!boundary) {
     buf.Unpack(&boundary,1);
   }

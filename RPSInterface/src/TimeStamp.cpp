@@ -110,3 +110,9 @@ ostream &TimeStamp::Print(ostream &os) const
   os << "TimeStamp(tv_sec="<<tv_sec<<", tv_usec="<<tv_usec<<")";
   return os;
 }
+
+ostream &TimeStamp::operator<<(ostream &os) const
+{
+  return Print(os);
+}
+
