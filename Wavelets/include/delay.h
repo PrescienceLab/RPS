@@ -344,6 +344,8 @@ StreamingBlockOperation(vector<WaveletOutputSampleBlock<SAMPLE> > &outblock,
   for (i=0; i<inblock.size(); i++) {
     if (StreamBlock(block, inblock[i])) {
       outblock.push_back(block);
+    } else {
+      outblock.push_back(WaveletOutputSampleBlock<SAMPLE>(i));
     }
     block.ClearBlock();
   }

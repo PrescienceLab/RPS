@@ -33,6 +33,7 @@ public:
 
   virtual ~WaveletOutputSampleBlock();
 
+  WaveletOutputSampleBlock & operator=(const WaveletOutputSampleBlock &rhs);
   virtual WaveletOutputSampleBlock* clone() const;
   inline void SetBlockLevel(const int level);
   inline int GetBlockLevel() const;
@@ -93,6 +94,16 @@ template <class SAMPLETYPE>
 WaveletOutputSampleBlock<SAMPLETYPE>::
 ~WaveletOutputSampleBlock()
 {
+}
+
+template <class SAMPLETYPE>
+WaveletOutputSampleBlock<SAMPLETYPE> & WaveletOutputSampleBlock<SAMPLETYPE>::
+operator=(const WaveletOutputSampleBlock &rhs)
+{
+  this->samples = rhs.samples;
+  this->blockindex = rhs.blockindex;
+  this->level = rhs.level;
+  return *this;
 }
 
 template <class SAMPLETYPE>

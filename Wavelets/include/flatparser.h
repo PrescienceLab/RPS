@@ -42,6 +42,12 @@ public:
 			   istream &in);
 
   bool ParseMRACoefsSample(vector<wosd> &acoefs, vector<wosd> &dcoefs, istream &in);
+
+  void ParseMRACoefsBlock(const SignalSpec &spec,
+			  vector<WaveletOutputSampleBlock<wosd> > &acoefs,
+			  vector<WaveletOutputSampleBlock<wosd> > &dcoefs,
+			  istream &in);
+
   void ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &acoefs,
 			  vector<WaveletOutputSampleBlock<wosd> > &dcoefs,
 			  istream &in);

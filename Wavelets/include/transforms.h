@@ -306,10 +306,8 @@ public:
   // This routine performs a streaming transform, but zero fills missing samples
   //  based on the zerolevels specification.  Assumes that the first call to this
   //  routine comes at a sampletime of sample % 2^numstages in order to synchronize
-  //  the zero filling.  This is also at a time when we should receive a sample from
-  //  each level.  Indices do not correspond to incoming indices.  The first call
-  //  will zero fill missing samples. Also assumes that this is called every sample
-  //  time so that it can keep track of its internal state.
+  //  the zero filling.  This is also the time when we should receive a sample from
+  //  each level.
   bool StreamingTransformZeroFillSampleOperation(vector<OUTSAMPLE> &out,
 						 const vector<INSAMPLE> &in,
 						 const vector<int> &zerolevels);
@@ -327,6 +325,12 @@ public:
     (SampleBlock<OUTSAMPLE> &outblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock);
 
+
+  // This routine performs a streaming transform, but zero fills missing samples
+  //  based on the zerolevels specification.  Assumes that the first call to this
+  //  routine comes at a sampletime of sample % 2^numstages in order to synchronize
+  //  the zero filling.  This is also the time when we should receive a sample from
+  //  each level.
   unsigned StreamingTransformZeroFillBlockOperation
     (SampleBlock<OUTSAMPLE> &outblock,
      const vector<WaveletOutputSampleBlock<INSAMPLE> > &inblock,
@@ -1742,7 +1746,7 @@ StreamingTransformBlockOperation
   deque<INSAMPLE> zerodeque((size));                                \
   WaveletOutputSampleBlock<INSAMPLE> zeroblock(zerodeque, (index)); \
   zeroblock.SetBlockLevel((level));                                 \
-  (outblock).push_back(zeroblock);                                  \
+  (outblock) = zeroblock;                                           \
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
 unsigned StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
@@ -1758,38 +1762,69 @@ StreamingTransformZeroFillBlockOperation
   unsigned i, j;
   vector<WaveletOutputSampleBlock<INSAMPLE> > newinblock(inblock);
 
-  unsigned ref_blksize=newinblock[0].GetBlockSize();
-  unsigned n_blklevel=newinblock[0].GetBlockLevel()-lowest_inlvl;
+  // If unsynced, sync up and find the reference level
+  if (!this->sync) {
+    for (i=0; i<newinblock.size(); i++) {
+      if (newinblock[i].GetBlockSize()) {
+	this->sync_level=
+	  (unsigned)(newinblock[i].GetBlockLevel() - this->lowest_inlvl);
+	break;
+      }
+    }
+    this->sync=true;    
+  }
+  unsigned ref_blksize=newinblock[this->sync_level].GetBlockSize();
 
   // Create missing blocks that are smaller than reference blocksize
-  for (i=n_blklevel; i==0; i--) {
-    for (j=0; j<zerolevels.size(); j++) {
-      if ( (int)(lowest_inlvl + i) == zerolevels[j]) {
-	ref_blksize *= 2;
-	CREATE_ZERO_BLOCK(newinblock,
-			  ref_blksize,
-			  //incoming_index[i],
-			  sampletime,
-			  i+lowest_inlvl);
+  if (this->sync_level > 0) {
+    for (i=this->sync_level-1; i==0; i--) {
+      ref_blksize *= 2;
+      for (j=0; j<zerolevels.size(); j++) {
+	if ( (int)(lowest_inlvl + i) == zerolevels[j]) {
+	  CREATE_ZERO_BLOCK(newinblock[i],
+			    ref_blksize,
+			    indices[i],
+			    i+lowest_inlvl);
+	  break;
+	}
       }
     }
   }
 
-  // Create missing blocks bigger than minindex
-  ref_blksize=newinblock[0].GetBlockSize();
-  for (i=n_blklevel+1; i<numlevels; i++) {
+  // Block 0 if in zerolevels spec
+  ref_blksize *= 2;
+  for (i=0, j=0; j<zerolevels.size(); j++) {
+    if ( (int)(lowest_inlvl + i) == zerolevels[j]) {
+      CREATE_ZERO_BLOCK(newinblock[i],
+			ref_blksize,
+			indices[i],
+			i+lowest_inlvl);
+      break;
+    }
+  }
+
+  // Create missing blocks bigger than reference blocksize
+  ref_blksize=newinblock[this->sync_level].GetBlockSize();
+  for (i=this->sync_level+1; i<numlevels; i++) {
     for (j=0; j<zerolevels.size(); j++) {
+      unsigned round = ref_blksize & 0x1;
       ref_blksize = (i==numlevels-1) ? ref_blksize : ref_blksize >> 1;
+      ref_blksize += round;
       if ((ref_blksize) && ( (int)(i + lowest_inlvl) == zerolevels[j])) {
-	CREATE_ZERO_BLOCK(newinblock,
+	CREATE_ZERO_BLOCK(newinblock[i],
 			  ref_blksize,
-			  //incoming_index[i],
-			  sampletime,
+			  indices[i],
 			  i+lowest_inlvl);
+	break;
       }
     }
   }
-  return StreamingTransformBlockOperation(outblock,newinblock);
+  // Update the sampletime
+  this->sampletime += newinblock[this->sync_level].GetBlockSize() * 
+    2 << (this->sync_level==numlevels-1 ?
+	  this->sync_level-1 : this->sync_level);
+
+  return StreamingTransformBlockOperation(outblock, newinblock);
 }
 
 template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>

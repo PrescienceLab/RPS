@@ -112,42 +112,69 @@ int main(int argc, char *argv[])
   ParseSignalSpec(sigspec, specfile);
   specfile.close();
 
-  vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
-  vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
-  for (unsigned i=0; i<(unsigned)numstages; i++) {
-    approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
-    detailcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
-  }
-
-  // Read in the MRA coefficients
-  FlatParser fp;
-  fp.ParseMRACoefsBlock(approxcoefs, detailcoefs, cin);
+  // Optimize the operations
+  SignalSpec optim_spec;
+  unsigned optim_stages;
+  bool transform=StructureOptimizer(optim_spec, optim_stages, numstages, 0, sigspec);
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[numstages];
-  CalculateMRADelayBlock(wtcoefnum, numstages, delay);
-  DelayBlock<wosd> approx_dlyblk(numstages, 0, delay);
-  DelayBlock<wosd> detail_dlyblk(numstages, 0, delay);
+  int *delay = new int[optim_stages+1];
+  CalculateWaveletDelayBlock(wtcoefnum, optim_stages+1, delay);
+  DelayBlock<wosd> dlyblk(optim_stages+1, 0, delay);
 
   // Instantiate a static reverse wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
+  StaticReverseWaveletTransform<double, wisd, wosd> srwt(optim_stages,wt,2,2,0);
 
   // Create output buffers
-  vector<WaveletOutputSampleBlock<wosd> > approx_dlyoutput;
-  vector<WaveletOutputSampleBlock<wosd> > detail_dlyoutput;
+  vector<WaveletOutputSampleBlock<wosd> > approxcoefs;
+  vector<WaveletOutputSampleBlock<wosd> > detailcoefs;
+  vector<WaveletOutputSampleBlock<wosd> > wavecoefs;
+  for (unsigned i=0; i<optim_stages; i++) {
+    approxcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
+    detailcoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
+    wavecoefs.push_back( WaveletOutputSampleBlock<wosd>(i) );
+  }
+  wavecoefs.push_back( WaveletOutputSampleBlock<wosd>(optim_stages));
+
+  vector<WaveletOutputSampleBlock<wosd> > dlysamples;
   WaveletInputSampleBlock<wisd> reconst;
 
-  // The operations
-  approx_dlyblk.StreamingBlockOperation(approx_dlyoutput, approxcoefs);
-  detail_dlyblk.StreamingBlockOperation(detail_dlyoutput, detailcoefs);
-  srwt.StreamingMixedBlockOperation(reconst,
-				    approx_dlyoutput,
-				    detail_dlyoutput,
-				    sigspec);
+  // Read in the MRA coefficients
+  FlatParser fp;
+  fp.ParseMRACoefsBlock(optim_spec, approxcoefs, detailcoefs, cin);
+
+  // Transform the coefficients into wavecoefs and change level of approx
+  for (unsigned i=0; i<optim_stages; i++) {
+    if (approxcoefs[i].GetBlockSize() > 0) {
+      approxcoefs[i].SetBlockLevel( approxcoefs[i].GetBlockLevel()+1);
+      wavecoefs[approxcoefs[i].GetBlockLevel()] = approxcoefs[i];
+    }
+
+    if (detailcoefs[i].GetBlockSize() > 0) {
+      wavecoefs[i] = detailcoefs[i];
+    }
+  }
 
   if (!flat) {
-    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,numstages)-1;
+    OutputLevelMetaData(outstr, wavecoefs, optim_stages+1);
+  }
+
+  // The operations
+  dlyblk.StreamingBlockOperation(dlysamples, wavecoefs);
+
+  if (transform) {
+    srwt.StreamingTransformBlockOperation(reconst, dlysamples);
+  } else {
+    vector<int> zerospec;
+    vector<int> specs;
+    FlattenSignalSpec(specs, optim_spec);
+    InvertSignalSpec(zerospec, specs, optim_stages+1, 0);
+    srwt.StreamingTransformZeroFillBlockOperation(reconst, dlysamples, zerospec);
+  }
+
+  if (!flat) {
+    unsigned sampledelay = CalculateStreamingRealTimeDelay(wtcoefnum,optim_stages)-1;
     *outstr.tie() << "The real-time system delay is " << sampledelay << endl;
     *outstr.tie() << endl;
     *outstr.tie() << "Index\tValue\n" << endl;
