@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
     // Find the number of tests
     unsigned datasize = numblocks * blocksize;
 
-    const unsigned NUMTESTS = 10;
+    const unsigned NUMTESTS = 8;
     const unsigned BLOCKS_IN_TEST = 1024;
 
     // Sleep 50 seconds

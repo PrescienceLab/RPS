@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
   WaveletInputSampleBlock<wisd> inputblock(samples);
   WaveletInputSampleBlock<wisd> block;
 
-  const unsigned NUMTESTS = 10;
+  const unsigned NUMTESTS = 8;
   const unsigned BLOCKS_IN_TEST = 1024;
 
   unsigned numblocks = samples.size() / blocksize;
