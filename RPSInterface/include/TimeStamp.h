@@ -5,7 +5,6 @@
 #include <iostream>
 #include "Timers.h"
 #include "Serializable.h"
-#include "util.h"
 #include "ioutil.h"
 
 struct TimeStamp : public timeval, public SerializeableInfo {

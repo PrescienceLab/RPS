@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   }
 
   if (the_global_spin.Unserialize(argv[1])) { 
-    cerr << "Can't read "<< argv[1]<<"\n";
+    cerr << "Can't read "<< ((const char*)(argv[1]))<<"\n";
     exit(-1);
   }
 

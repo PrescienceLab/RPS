@@ -8,5 +8,6 @@ ostream & operator<<(ostream &os, const T &x)
   return os;
 };
 
+
 #endif
 

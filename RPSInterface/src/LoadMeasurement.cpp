@@ -109,7 +109,7 @@ ostream &LoadMeasurement::Print(ostream &os) const
   
   os << "LoadMeasurement(ipaddress="<<ipaddress;
 #if LOOKUP_HOST
-  os << "[" << (he ? he->h_name : inet_ntoa(ia))<<"]";
+  os << "[" << ((const char*)(he ? he->h_name : inet_ntoa(ia)))<<"]";
 #else
   os << "[" <<inet_ntoa(ia)<<"]";
 #endif

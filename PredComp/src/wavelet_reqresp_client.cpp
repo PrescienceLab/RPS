@@ -46,25 +46,25 @@ int main(int argc, char *argv[])
    req.ttype.rinfoout=WaveletRepresentationInfo(WAVELET_DOMAIN,DAUB2,0,1);
    req.ttype.bout=POSTORDER;
    
-   if (!stricmp(argv[2],"DAUB2")) {
+   if (!strcasecmp(argv[2],"DAUB2")) {
      req.ttype.rinfoout.wtype=DAUB2;
-   } else if (!stricmp(argv[2],"DAUB4")) { 
+   } else if (!strcasecmp(argv[2],"DAUB4")) { 
      req.ttype.rinfoout.wtype=DAUB4;
-   } else if (!stricmp(argv[2],"DAUB6")) { 
+   } else if (!strcasecmp(argv[2],"DAUB6")) { 
      req.ttype.rinfoout.wtype=DAUB6;
-   } else if (!stricmp(argv[2],"DAUB8")) { 
+   } else if (!strcasecmp(argv[2],"DAUB8")) { 
      req.ttype.rinfoout.wtype=DAUB8;
-   } else if (!stricmp(argv[2],"DAUB10")) { 
+   } else if (!strcasecmp(argv[2],"DAUB10")) { 
      req.ttype.rinfoout.wtype=DAUB10;
-   } else if (!stricmp(argv[2],"DAUB12")) { 
+   } else if (!strcasecmp(argv[2],"DAUB12")) { 
      req.ttype.rinfoout.wtype=DAUB12;
-   } else if (!stricmp(argv[2],"DAUB14")) { 
+   } else if (!strcasecmp(argv[2],"DAUB14")) { 
      req.ttype.rinfoout.wtype=DAUB14;
-   } else if (!stricmp(argv[2],"DAUB16")) { 
+   } else if (!strcasecmp(argv[2],"DAUB16")) { 
      req.ttype.rinfoout.wtype=DAUB16;
-   } else if (!stricmp(argv[2],"DAUB18")) { 
+   } else if (!strcasecmp(argv[2],"DAUB18")) { 
      req.ttype.rinfoout.wtype=DAUB18;
-   } else if (!stricmp(argv[2],"DAUB20")) { 
+   } else if (!strcasecmp(argv[2],"DAUB20")) { 
      req.ttype.rinfoout.wtype=DAUB20;
    } else {
      fprintf(stderr,"wavelet_reqresp_client: Unknown wavelet type\n");

@@ -44,6 +44,10 @@ HAVE_GETFLOWBW = YES
 # Whether to build the Time Series Prediction Library (TS)
 HAVE_TIMESERIES = YES
 
+# This provides the wavelet library
+#
+HAVE_WAVELETS = YES
+
 # Whether to build the FracDiff library (used to implement ARFIMA models)
 # Notice that you need a fortran 77 compiles (f77) to build this
 HAVE_FRACDIFF = YES

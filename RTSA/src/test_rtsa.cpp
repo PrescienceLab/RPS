@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     cerr << "RTSAAdviseTask failed.\n";
     exit(-1);
   } else {
-    cout <<resp.tnom<<" second task with sf="<<resp.sf<<" (deadline "<<resp.tnom*(1+resp.sf)<<") and confidence "<<resp.conf<<" advised to go to host "<<resp.host.name<<" with running time ["<<resp.runningtime.tlb<<","<<resp.runningtime.tub<<"] ("<<resp.runningtime.texp<<")"<<endl;
+    cout <<resp.tnom<<" second task with sf="<<resp.sf<<" (deadline "<<resp.tnom*(1+resp.sf)<<") and confidence "<<resp.conf<<" advised to go to host "<<((const char*)resp.host.name)<<" with running time ["<<resp.runningtime.tlb<<","<<resp.runningtime.tub<<"] ("<<resp.runningtime.texp<<")"<<endl;
   }
   return 0;
 }

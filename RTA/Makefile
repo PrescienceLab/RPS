@@ -24,6 +24,7 @@ endif
 CFLAGS += -I$(INCDIR) \
           $(GETLOADAVG_CFLAGS) \
           $(TIMESERIES_CFLAGS) \
+	  $(WAVELETS_CFLAGS) \
           $(RPSINT_CFLAGS) \
           $(MIRROR_CFLAGS) \
           $(SPIN_CFLAGS) \
@@ -36,6 +37,7 @@ LD2FLAGS = -L$(LIBDIR) -l$(LIBNAME) \
            $(GETLOADAVG_LDFLAGS) \
            $(SPIN_LDFLAGS) \
            $(TIMESERIES_LDFLAGS) \
+	   $(WAVELETS_LDFLAGS) \
            $(FRACDIFF_LDFLAGS) \
            $(RECIPES_LDFLAGS) \
           -lm 

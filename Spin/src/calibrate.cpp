@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
   the_global_spin.Serialize(argv[1]);
 
-  cout << "Calibration data written to "<<argv[1]<<"\n";
+  cout << "Calibration data written to "<< (const char*)(argv[1])<<"\n";
   
   return 0;
 }

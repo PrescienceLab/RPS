@@ -1,4 +1,4 @@
-./obj/I386/LINUX/loadclient.o: src/loadclient.cpp include/PredComp.h \
+./obj/I386/LINUX/loadclient.o: ./src/loadclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -21,54 +21,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
-  /home/pdinda/RPS-development/TimeSeries/include/it.h \
-  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
-  /home/pdinda/RPS-development/TimeSeries/include/random.h \
-  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
-  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
-  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
-  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
-  /home/pdinda/RPS-development/Mirror/include/Reference.h \
-  /home/pdinda/RPS-development/Mirror/include/socks.h \
-  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
-  /home/pdinda/RPS-development/Mirror/include/Selector.h \
-  /home/pdinda/RPS-development/Mirror/include/Queues.h \
-  /home/pdinda/RPS-development/Mirror/include/Timers.h \
-  /home/pdinda/RPS-development/Mirror/include/junk.h \
-  /home/pdinda/RPS-development/Mirror/include/Filter.h \
-  /home/pdinda/RPS-development/Mirror/include/Server.h \
-  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
-  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
-  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
-  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
-  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
-  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
-  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
-  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/predserver.o: src/predserver.cpp include/PredComp.h \
-  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
-  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
-  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
-  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
-  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
-  /home/pdinda/RPS-development/TimeSeries/include/none.h \
-  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
-  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
-  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
-  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
-  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
-  /home/pdinda/RPS-development/TimeSeries/include/last.h \
-  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
-  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
-  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
-  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
-  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
-  /home/pdinda/RPS-development/TimeSeries/include/util.h \
-  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
-  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
-  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
-  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -94,8 +47,71 @@
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/predserver.o: ./src/predserver.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
+  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/none.h \
+  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
+  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
+  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
+  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/last.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
+  /home/pdinda/RPS-development/TimeSeries/include/it.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Filter.h \
+  /home/pdinda/RPS-development/Mirror/include/Server.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
+  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/predserver_core.h
-./obj/I386/LINUX/predserver_core.o: src/predserver_core.cpp include/PredComp.h \
+./obj/I386/LINUX/predserver_core.o: ./src/predserver_core.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -118,6 +134,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -143,8 +160,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/predserver_core.h
-./obj/I386/LINUX/predclient.o: src/predclient.cpp include/PredComp.h \
+./obj/I386/LINUX/predclient.o: ./src/predclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -167,6 +191,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -191,8 +216,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/pred_reqresp_server.o: src/pred_reqresp_server.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/pred_reqresp_server.o: ./src/pred_reqresp_server.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -215,6 +247,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -239,8 +272,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/pred_reqresp_client.o: src/pred_reqresp_client.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/pred_reqresp_client.o: ./src/pred_reqresp_client.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -263,6 +303,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -287,8 +328,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/loadbuffer.o: src/loadbuffer.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/loadbuffer.o: ./src/loadbuffer.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -311,6 +359,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -335,8 +384,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/loadbufferclient.o: src/loadbufferclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/loadbufferclient.o: ./src/loadbufferclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -359,6 +415,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -383,8 +440,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/load2measure.o: src/load2measure.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/load2measure.o: ./src/load2measure.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -407,6 +471,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -431,8 +496,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/predbuffer.o: src/predbuffer.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/predbuffer.o: ./src/predbuffer.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -455,6 +527,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -479,8 +552,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/predbufferclient.o: src/predbufferclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/predbufferclient.o: ./src/predbufferclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -503,6 +583,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -527,8 +608,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/measureclient.o: src/measureclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/measureclient.o: ./src/measureclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -551,6 +639,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -575,8 +664,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/measurebuffer.o: src/measurebuffer.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/measurebuffer.o: ./src/measurebuffer.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -599,6 +695,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -623,8 +720,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/measurebufferclient.o: src/measurebufferclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/measurebufferclient.o: ./src/measurebufferclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -647,6 +751,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -671,8 +776,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/predreconfig.o: src/predreconfig.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/predreconfig.o: ./src/predreconfig.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -695,6 +807,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -719,8 +832,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/evalfit.o: src/evalfit.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/evalfit.o: ./src/evalfit.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -743,6 +863,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -767,8 +888,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/predlatclient.o: src/predlatclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/predlatclient.o: ./src/predlatclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -791,6 +919,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -815,8 +944,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/loadlatclient.o: src/loadlatclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/loadlatclient.o: ./src/loadlatclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -839,6 +975,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -863,8 +1000,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/loadreconfig.o: src/loadreconfig.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/loadreconfig.o: ./src/loadreconfig.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -887,6 +1031,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -911,8 +1056,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/fileloadserver.o: src/fileloadserver.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/fileloadserver.o: ./src/fileloadserver.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -935,6 +1087,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -959,8 +1112,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/memperf.o: src/memperf.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/memperf.o: ./src/memperf.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -983,6 +1143,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1007,8 +1168,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/flowbwclient.o: src/flowbwclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/flowbwclient.o: ./src/flowbwclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1031,6 +1199,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1055,8 +1224,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/flowbwbuffer.o: src/flowbwbuffer.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/flowbwbuffer.o: ./src/flowbwbuffer.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1079,6 +1255,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1103,8 +1280,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/flowbwbufferclient.o: src/flowbwbufferclient.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/flowbwbufferclient.o: ./src/flowbwbufferclient.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1127,6 +1311,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1151,8 +1336,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/flowbw2measure.o: src/flowbw2measure.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/flowbw2measure.o: ./src/flowbw2measure.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1175,6 +1367,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1199,8 +1392,15 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/flowbwreconfig.o: src/flowbwreconfig.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/flowbwreconfig.o: ./src/flowbwreconfig.cpp include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1223,6 +1423,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1247,10 +1448,18 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/text2measure.o: src/text2measure.cpp \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/text2measure.o: ./src/text2measure.cpp \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/Mirror/include/Serializable.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
   /home/pdinda/RPS-development/Mirror/include/Timers.h \
@@ -1263,6 +1472,13 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
@@ -1297,7 +1513,8 @@
   /home/pdinda/RPS-development/Mirror/include/Filter.h \
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h
-./obj/I386/LINUX/loadserver.o: src/loadserver.cpp include/PredComp.h \
+./obj/I386/LINUX/wavelet_reqresp_server.o: ./src/wavelet_reqresp_server.cpp \
+  include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1320,6 +1537,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1344,8 +1562,16 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/sensorperf.o: src/sensorperf.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/wavelet_reqresp_client.o: ./src/wavelet_reqresp_client.cpp \
+  include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1368,6 +1594,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1392,8 +1619,16 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/hostloadpred.o: src/hostloadpred.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/wavelet_streaming_server.o: ./src/wavelet_streaming_server.cpp \
+  include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1416,6 +1651,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1440,8 +1676,16 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
-./obj/I386/LINUX/flowbwserver.o: src/flowbwserver.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/wavelet_streaming_selection.o: ./src/wavelet_streaming_selection.cpp \
+  include/PredComp.h \
   /home/pdinda/RPS-development/Sensors/include/Sensors.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
@@ -1464,6 +1708,7 @@
   /home/pdinda/RPS-development/TimeSeries/include/refit.h \
   /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
   /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/TimeSeries/include/it.h \
   /home/pdinda/RPS-development/TimeSeries/include/maths.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
@@ -1488,4 +1733,292 @@
   /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
-  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/wavelet_streaming_client.o: ./src/wavelet_streaming_client.cpp \
+  include/PredComp.h \
+  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
+  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/none.h \
+  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
+  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
+  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
+  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/last.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
+  /home/pdinda/RPS-development/TimeSeries/include/it.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Filter.h \
+  /home/pdinda/RPS-development/Mirror/include/Server.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
+  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/loadserver.o: ./src/loadserver.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
+  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/none.h \
+  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
+  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
+  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
+  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/last.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
+  /home/pdinda/RPS-development/TimeSeries/include/it.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Filter.h \
+  /home/pdinda/RPS-development/Mirror/include/Server.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
+  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/sensorperf.o: ./src/sensorperf.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
+  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/none.h \
+  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
+  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
+  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
+  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/last.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
+  /home/pdinda/RPS-development/TimeSeries/include/it.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Filter.h \
+  /home/pdinda/RPS-development/Mirror/include/Server.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
+  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/hostloadpred.o: ./src/hostloadpred.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
+  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/none.h \
+  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
+  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
+  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
+  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/last.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
+  /home/pdinda/RPS-development/TimeSeries/include/it.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Filter.h \
+  /home/pdinda/RPS-development/Mirror/include/Server.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
+  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h
+./obj/I386/LINUX/flowbwserver.o: ./src/flowbwserver.cpp include/PredComp.h \
+  /home/pdinda/RPS-development/Sensors/include/Sensors.h \
+  /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
+  /home/pdinda/RPS-development/Sensors/GetFlowBW/include/GetFlowBW.h \
+  /home/pdinda/RPS-development/TimeSeries/include/TimeSeries.h \
+  /home/pdinda/RPS-development/TimeSeries/include/abstract.h \
+  /home/pdinda/RPS-development/TimeSeries/include/none.h \
+  /home/pdinda/RPS-development/TimeSeries/include/mean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/linear.h \
+  /home/pdinda/RPS-development/TimeSeries/include/etathetapred.h \
+  /home/pdinda/RPS-development/TimeSeries/include/poly.h \
+  /home/pdinda/RPS-development/TimeSeries/include/bestmean.h \
+  /home/pdinda/RPS-development/TimeSeries/include/last.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ar.h \
+  /home/pdinda/RPS-development/TimeSeries/include/pdqparamsets.h \
+  /home/pdinda/RPS-development/TimeSeries/include/ma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arma.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/util.h \
+  /home/pdinda/RPS-development/TimeSeries/include/arfima.h \
+  /home/pdinda/RPS-development/TimeSeries/include/refit.h \
+  /home/pdinda/RPS-development/TimeSeries/include/evaluate_core.h \
+  /home/pdinda/RPS-development/TimeSeries/include/fit.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
+  /home/pdinda/RPS-development/TimeSeries/include/it.h \
+  /home/pdinda/RPS-development/TimeSeries/include/maths.h \
+  /home/pdinda/RPS-development/TimeSeries/include/random.h \
+  /home/pdinda/RPS-development/TimeSeries/include/tools.h \
+  /home/pdinda/RPS-development/Mirror/include/Mirror.h \
+  /home/pdinda/RPS-development/Mirror/include/Serializable.h \
+  /home/pdinda/RPS-development/Mirror/include/EndPoint.h \
+  /home/pdinda/RPS-development/Mirror/include/Reference.h \
+  /home/pdinda/RPS-development/Mirror/include/socks.h \
+  /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
+  /home/pdinda/RPS-development/Mirror/include/Selector.h \
+  /home/pdinda/RPS-development/Mirror/include/Queues.h \
+  /home/pdinda/RPS-development/Mirror/include/Timers.h \
+  /home/pdinda/RPS-development/Mirror/include/junk.h \
+  /home/pdinda/RPS-development/Mirror/include/Filter.h \
+  /home/pdinda/RPS-development/Mirror/include/Server.h \
+  /home/pdinda/RPS-development/Mirror/include/Buffer.h \
+  /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
+  /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/Measurement.h \
+  /home/pdinda/RPS-development/RPSInterface/include/ModelInfo.h \
+  /home/pdinda/RPS-development/RPSInterface/include/shared.h \
+  /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h

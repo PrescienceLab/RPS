@@ -1,9 +1,9 @@
-./obj/I386/LINUX/timing.o: src/timing.cpp \
+./obj/I386/LINUX/timing.o: ./src/timing.cpp \
   /home/pdinda/RPS-development/Mirror/include/Timers.h include/timing.h
-./obj/I386/LINUX/apply.o: src/apply.cpp \
+./obj/I386/LINUX/apply.o: ./src/apply.cpp \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
   include/timing.h include/apply.h
-./obj/I386/LINUX/SpinCore.o: src/SpinCore.cpp include/Spin.h \
+./obj/I386/LINUX/SpinCore.o: ./src/SpinCore.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -19,6 +19,7 @@
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
@@ -30,10 +31,17 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h \
   /home/pdinda/RPS-development/TimeSeries/include/tools.h
-./obj/I386/LINUX/test_apply.o: src/test_apply.cpp include/Spin.h \
+./obj/I386/LINUX/test_apply.o: ./src/test_apply.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -49,6 +57,7 @@
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
@@ -60,9 +69,16 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/calibrate.o: src/calibrate.cpp include/Spin.h \
+./obj/I386/LINUX/calibrate.o: ./src/calibrate.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -78,6 +94,7 @@
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
@@ -89,9 +106,16 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/testspin.o: src/testspin.cpp include/Spin.h \
+./obj/I386/LINUX/testspin.o: ./src/testspin.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -107,6 +131,7 @@
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
@@ -118,9 +143,16 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/spinserver.o: src/spinserver.cpp include/Spin.h \
+./obj/I386/LINUX/spinserver.o: ./src/spinserver.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -136,6 +168,7 @@
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
@@ -147,9 +180,16 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h
-./obj/I386/LINUX/spinclient.o: src/spinclient.cpp include/Spin.h \
+./obj/I386/LINUX/spinclient.o: ./src/spinclient.cpp include/Spin.h \
   /home/pdinda/RPS-development/Sensors/GetLoadAvg/include/GetLoadAvg.h \
   /home/pdinda/RPS-development/Mirror/include/MirrorTemplate.h \
   /home/pdinda/RPS-development/Mirror/include/Selector.h \
@@ -165,6 +205,7 @@
   /home/pdinda/RPS-development/Mirror/include/Server.h \
   /home/pdinda/RPS-development/Mirror/include/Buffer.h \
   /home/pdinda/RPS-development/RPSInterface/include/TimeStamp.h \
+  /home/pdinda/RPS-development/shared/include/ioutil.h \
   /home/pdinda/RPS-development/RPSInterface/include/RPSInterface.h \
   /home/pdinda/RPS-development/RPSInterface/include/FlowBWMeasurement.h \
   /home/pdinda/RPS-development/RPSInterface/include/LoadMeasurement.h \
@@ -176,5 +217,12 @@
   /home/pdinda/RPS-development/TimeSeries/include/util.h \
   /home/pdinda/RPS-development/RPSInterface/include/shared.h \
   /home/pdinda/RPS-development/RPSInterface/include/PredictionRequestResponse.h \
+  /home/pdinda/RPS-development/RPSInterface/include/WaveletInterface.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletinfo.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsample.h \
+  /home/pdinda/RPS-development/Wavelets/include/util.h \
+  /home/pdinda/RPS-development/Wavelets/include/sample.h \
+  /home/pdinda/RPS-development/Wavelets/include/waveletsampleblock.h \
+  /home/pdinda/RPS-development/Wavelets/include/sampleblock.h \
   include/apply.h include/timing.h \
   /home/pdinda/RPS-development/TimeSeries/include/random.h

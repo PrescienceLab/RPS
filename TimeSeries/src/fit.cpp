@@ -404,7 +404,7 @@ ostream &ModelTemplate::Print(ostream &os) const
 {
   char *temp = GetName();
 
-  os<<"ModelTemplate("<<temp<<")";
+  os<<"ModelTemplate("<<((const char*)temp)<<")";
   
   delete [] temp;
   

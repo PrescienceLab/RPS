@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   if (PredictRunningTime(req,resp)) { 
     cerr <<"Prediction Failed."<<endl;
   } else {
-    cout <<tnom<<" second task on "<<resp.host.name<<" at "<<resp.conf<<" Confidence: ["<<resp.tlb<<","<<resp.tub<<"] ("<<resp.texp<<")"<<endl;
+    cout <<tnom<<" second task on "<<((const char*)resp.host.name)<<" at "<<resp.conf<<" Confidence: ["<<resp.tlb<<","<<resp.tub<<"] ("<<resp.texp<<")"<<endl;
   }
   return 0;
 }

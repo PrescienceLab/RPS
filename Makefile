@@ -161,14 +161,14 @@ GetFlowBW: force
 Sensors : $(HGLA_DEP) $(HGFB_DEP) force
 	cp `find $(SENSORS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 
-TimeSeries: $(HFD_DEP)
+TimeSeries: $(HFD_DEP) force
 	cd $(TS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp `find $(TS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(TS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp `find $(TS_DIR)/bin/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/bin/$(ARCH)/$(OS)
 	cp `find $(TS_DIR)/obj/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
-Wavelets: force
+Wavelets: $(HTS_DEP) force
 	cd $(WAVELETS_DIR); $(MAKE)   RPS_DIR=$(RPS_DIR)  all
 	cp `find $(WAVELETS_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(WAVELETS_DIR)/lib/$(ARCH)/$(OS) -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -207,7 +207,7 @@ RemosInterface:  $(HRPSI_DEP) force
 	cp `find $(REMOSINT_DIR)/obj/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/obj/$(ARCH)/$(OS)
 
 
-PredComp: $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HMT_DEP) $(HRPSI_DEP) 
+PredComp: $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HWA_DEP) $(HMT_DEP) $(HRPSI_DEP) force
 
 	cd $(PREDCOMP_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(PREDCOMP_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
@@ -221,7 +221,7 @@ JavaGUI:  $(HSE_DEP) $(HFD_DEP) $(HTS_DEP) $(HMT_DEP) $(HRPSI_DEP)
 	cp $(JAVAGUI_DIR)/*.so $(RPS_DIR)/lib/$(ARCH)/$(OS)
 	cp $(JAVAGUI_DIR)/*.class $(RPS_DIR)/bin/$(ARCH)/$(OS)
 
-Spin: $(HMT_DEP) $(HRPSI_DEP) force
+Spin: $(HMT_DEP) $(HTS_DEP) $(HWA_DEP) $(HRPSI_DEP) force
 	cd $(SPIN_DIR); $(MAKE) RPS_DIR=$(RPS_DIR) all
 	cp `find $(SPIN_DIR)/include -type f | grep -v CVS` $(RPS_DIR)/include
 	cp `find $(SPIN_DIR)/lib/$(ARCH)/$(OS)/ -type f | grep -v CVS` $(RPS_DIR)/lib/$(ARCH)/$(OS)
@@ -267,6 +267,7 @@ clean:
 	$(HGLA_CLEAN)
 	$(HGFB_CLEAN)
 	$(HTS_CLEAN)
+	$(HWA_CLEAN)
 	$(HFD_CLEAN)
 	$(HMT_CLEAN)
 	$(HRPSI_CLEAN)
@@ -287,6 +288,7 @@ depend:
 	$(HGLA_DEPEND)
 	$(HGFB_DEPEND)
 	$(HTS_DEPEND)
+	$(HWA_DEPEND)
 	$(HFD_DEPEND)
 	$(HMT_DEPEND)
 	$(HRPSI_DEPEND)
