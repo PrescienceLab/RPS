@@ -169,7 +169,7 @@ class Reference {
       ctype=CONNECT_REMOTE;
       return 0;
     } else {
-      if ((fd=open(pathname,O_RDWR|O_CREAT|O_TRUNC,0644))<0) {
+      if ((fd=open(pathname,O_RDWR|O_CREAT,0644))<0) {
 	perror("Client::ConnectTo can't open file");
 	Disconnect();
 	return -1;
