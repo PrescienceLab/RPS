@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
 #define M_PI       3.1415926535897932385E0  /*Hex  2^ 1 * 1.921FB54442D18 */
 #endif
 
@@ -109,7 +109,7 @@ static inline double ChiSquaredCdf(int r, double x)
 
 static inline double Erf(double x) 
 {
-#ifdef WIN32
+#if defined(WIN32) && !defined(__CYGWIN__)
   return 0.0;
 #else
 #if 1  

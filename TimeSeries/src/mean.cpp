@@ -75,7 +75,7 @@ int MeanPredictor::Predict(int maxahead, double *preds)
 int MeanPredictor::ComputeVariances(int maxahead, double *vars,
 				    VarianceType vtype)
 {
-  int i,j;
+  int i;
   double var;
 
   if (numsamples>=2) {
@@ -105,7 +105,7 @@ int MeanPredictor::ComputeVariances(int maxahead, double *vars,
 
 void MeanPredictor::Dump(FILE *out)
 {
-  fprintf(stderr,"MeanPredictor: sum=%lf sum2=%lf numsamples=%d\n",
+  fprintf(stderr,"MeanPredictor: sum=%f sum2=%f numsamples=%d\n",
 	  sum,sum2,numsamples);
 }
 

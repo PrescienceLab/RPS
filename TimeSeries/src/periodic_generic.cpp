@@ -152,7 +152,7 @@ run:
    }
 
   numsamples=0;
-  while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
+  while ((fscanf(inp,"%f %f\n",&junk,&junk)==2)) {
     ++numsamples;
   }
   rewind(inp);
@@ -165,7 +165,7 @@ run:
 
 
    for (i=0;i<numsamples;i++) { 
-       fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
+       fscanf(inp,"%f %f\n",&junk,&(seq[i]));
    }
 
    fclose(inp);
@@ -177,7 +177,7 @@ run:
        int availsamples = MIN(i,fit_samples);
        double inputvar=Variance(&(seq[i-availsamples]),availsamples);
        double inputmean=Mean(&(seq[i-availsamples]),availsamples);	
-       fprintf(stderr,"sequence mean is %lf and variance is %lf\n",inputmean,inputvar);
+       fprintf(stderr,"sequence mean is %f and variance is %f\n",inputmean,inputvar);
        CHK_DEL(model);
        firstsample=i-availsamples; samplesused=availsamples;
        model=FitThis(mclass,&(seq[i-availsamples]),availsamples,p,d,q);
@@ -204,7 +204,7 @@ run:
        pred->ComputeVariances(numahead,variances);
        fprintf(stderr,"Lead\tVariance\tImprove\n");
        for (j=0;j<numahead;j++) {
-	 fprintf(stderr,"+%d\t%lf\t%lf%%\n",j+1,variances[j],
+	 fprintf(stderr,"+%d\t%f\t%f%%\n",j+1,variances[j],
 		 100.0*(inputvar-variances[j])/inputvar);
        }
      }
@@ -213,11 +213,11 @@ run:
      //fprintf(stderr,"Used samples %d to %d in model fitted to %d to %d to predict sample %d to %d\n",
      //     firstsample,i,firstsample,firstsample+samplesused-1,i+1,i+1+numahead);
 	     
-     fprintf(stdout,"%lf",seq[i]);
+     fprintf(stdout,"%f",seq[i]);
      for (j=0;j<numahead;j++) {
-       fprintf(stdout," %lf",predictions[j]);
+       fprintf(stdout," %f",predictions[j]);
        if (conf) {
-	 fprintf(stdout," %lf",1.96*sqrt(variances[j]));  // 95% conf
+	 fprintf(stdout," %f",1.96*sqrt(variances[j]));  // 95% conf
        }
      }
      fprintf(stdout,"\n");

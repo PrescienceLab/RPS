@@ -8,7 +8,7 @@ BINDIR = $(ROOT)/bin/$(ARCH)/$(OS)
 SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
-EXECSLIST = test
+EXECSLIST = test_getloadavg
 
 EXECS = $(foreach m, $(EXECSLIST), $(BINDIR)/$(m))
 
@@ -31,7 +31,8 @@ OBJS = $(LIBOBJS) $(MAINOBJS)
 SRCS = $(foreach m, $(OBJSLIST:.o=.c), $(SRCDIR)/$(m))
 
 
-CFLAGS = -Wall -fPIC -I$(INCDIR) 
+CFLAGS = -I$(INCDIR) 
+
 ifeq ($(OPTIMIZE),YES)
    CFLAGS += -O
 else

@@ -14,9 +14,10 @@
 //
 
 
-void main(int argc, char *argv[]) 
+int main(int argc, char *argv[]) 
 {
-  int done, i,j;
+  int done;
+  unsigned i,j;
 
   if (argc!=2) { 
     fprintf(stderr,"usage: evaluate [numpred]\n");
@@ -28,11 +29,6 @@ void main(int argc, char *argv[])
 
 
   double *row = new double [numpred+1];
-  double *maxerr = new double [numpred];
-  double *minerr = new double [numpred];
-  double *msqerr = new double [numpred];
-  double *meanabserr= new double [numpred];
-  double *meanerr = new double [numpred];
 
   eval.Initialize(numpred);
   
@@ -48,13 +44,13 @@ void main(int argc, char *argv[])
       eval.Step(row);
     }
   }
-  double conf;
+
   eval.Drain();
   PredictionStats *stats = eval.GetStats();
 
   printf("Predictor    MinErr     MaxErr     MeanAbsErr  MeanSquareError MeanErr\n");
   for (i=0;i<numpred;i++) { 
-    printf(" t+%-3u      %10.3le %10.3le %10.3le  %10.3le %10.3le\n",
+    printf(" t+%-3u      %10.3e %10.3e %10.3e  %10.3e %10.3e\n",
 	   i+1,stats->minerr[i],stats->maxerr[i],stats->meanabserr[i],stats->msqerr[i],stats->meanerr[i]);
   }
   

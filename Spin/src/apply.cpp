@@ -9,6 +9,8 @@
 #include <sys/resource.h>
 #include <math.h>
 
+#include "random.h"
+
 #include "timing.h"
 #include "apply.h"
 
@@ -137,12 +139,15 @@ void Sleep(double interval)
 #endif
 }
 
+#if 0
 double UniformRandom(double low, double high)
 {
   double val=drand48();
 
   return low+val*(high-low);
 }
+#endif
+
 
 double minrez=0.1;
 double maxrez=0.3;

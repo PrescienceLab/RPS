@@ -135,20 +135,20 @@ double ARFIMAModel::GetMean()
 
 void ARFIMAModel::Dump(FILE *out)
 {
-  fprintf(out,"ARFIMA(%d,%lf,%d) model\n",p,d,q);
+  fprintf(out,"ARFIMA(%d,%f,%d) model\n",p,d,q);
   fprintf(out,"Phis (AR coeffs):");
 
   int i;
 
   for (i=0;i<p;i++) {
-    fprintf(out," %lf",phis[i]);
+    fprintf(out," %f",phis[i]);
   }
   fprintf(out,"\n");
   fprintf(out,"Thetas (MA coeffs):");
   for (i=0;i<q;i++) {
-    fprintf(out," %lf",thetas[i]);
+    fprintf(out," %f",thetas[i]);
   }
-  fprintf(out,"\nNoise Variance=%lf\n",variance);
+  fprintf(out,"\nNoise Variance=%f\n",variance);
 }
 
 Predictor * ARFIMAModel::MakePredictor(int truncationlimit)

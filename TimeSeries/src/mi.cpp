@@ -12,7 +12,7 @@ void usage()
 }
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    char *infile;
 
@@ -22,7 +22,7 @@ void main(int argc, char *argv[])
    double *seq;
    int minlag, steplag, maxlag;
 
-   int i,j;
+   int i;
 
 
    if (argc<3) {
@@ -71,7 +71,7 @@ void main(int argc, char *argv[])
    delete [] vals;
    delete [] counts;
 
-   fprintf(stdout,"# %d samples with %d unique values (%lf bits)\n"
+   fprintf(stdout,"# %d samples with %d unique values (%f bits)\n"
 	   "# Mutual Information Profile  in  [lag] [bits] format\n",
 	   numsamples,numuniq,LOG2(numuniq));
    fflush(stdout);
@@ -80,7 +80,7 @@ void main(int argc, char *argv[])
 				  minlag,steplag,maxlag);
 
    for (i=minlag;i<=maxlag;i+=steplag) {
-     fprintf(stdout,"%d\t%lf\n",i,mutinfo[(i-minlag)/steplag]);
+     fprintf(stdout,"%d\t%f\n",i,mutinfo[(i-minlag)/steplag]);
    }
   
    

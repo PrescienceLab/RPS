@@ -74,14 +74,14 @@ void ARModel::Dump(FILE *out)
     out=stdout;
   }
 
-  fprintf(out,"AR(%d) model with mean=%lf and noise variance=%lf\n",
+  fprintf(out,"AR(%d) model with mean=%f and noise variance=%f\n",
               order,mean,variance);
   fprintf(out,"Coeffs:");
 
   int i;
 
   for (i=0;i<order;i++) {
-    fprintf(out," %lf",coeffs[i]);
+    fprintf(out," %f",coeffs[i]);
   }
 
   fprintf(out,"\n");

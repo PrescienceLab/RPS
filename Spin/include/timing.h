@@ -1,18 +1,6 @@
 #ifndef _TIMING
 #define _TIMING
 
-/* Timing code */
-/* must define TimeVal, TimeInteval, GetCurrentTime(), and DiffTimes(), and TimeIntervalToSeconds() */
-
-typedef struct {
-  int sec,usec;
-} TimeValue, TimeInterval;
-
-
-void   GetCurrentTime(TimeValue *tv);
-double TimeIntervalToSeconds(TimeInterval *ti);
-void   DiffTimes(TimeValue *earlier, TimeValue *later, TimeInterval *interval);
-
 void   CalibrateTiming(double epsilon);
 double TimeOnce(void (*func)(int),int arg);
 double TimeOnceDouble(void (*func)(double),double arg);

@@ -65,6 +65,7 @@ int ModelTemplate::_GetPackedSize() const
   // Add other types here
   default:
     assert(0);
+    return -1;
     break;
   }
 }
@@ -181,6 +182,9 @@ Model *FitThis(ModelType mclass,
    case NONE:
      return NoneModeler::Fit(seq,numsamples,params);
      break;
+   default:
+     return 0;
+     break;
    }
 }
 
@@ -228,6 +232,9 @@ Model *FitThis(ModelType mclass,
      return RefittingModeler<LastModeler>::Fit(seq,numsamples,params,refitinterval);
    case NONE:
      return RefittingModeler<NoneModeler>::Fit(seq,numsamples,params,refitinterval);
+     break;
+   default:
+     return 0;
      break;
    }
 }

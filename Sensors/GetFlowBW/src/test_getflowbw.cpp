@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
       fprintf(stderr,"getflowbw failed\n");
       exit(-1);
     }
-    fprintf(stdout,"%d\t%lf\n",i,bw);
+    fprintf(stdout,"%d\t%f\n",i,bw);
     //    usleep(interval_usec);
   }
 

@@ -139,14 +139,14 @@ void ARIMAModel::Dump(FILE *out)
   int i;
 
   for (i=0;i<GetP();i++) {
-    fprintf(out," %lf",GetARCoeff(i));
+    fprintf(out," %f",GetARCoeff(i));
   }
   fprintf(out,"\n");
   fprintf(out,"Thetas (MA coeffs):");
   for (i=0;i<GetQ();i++) {
-    fprintf(out," %lf",GetMACoeff(i));
+    fprintf(out," %f",GetMACoeff(i));
   }
-  fprintf(out,"\nNoise Variance=%lf\n",GetVariance());
+  fprintf(out,"\nNoise Variance=%f\n",GetVariance());
 }
 
 Predictor * ARIMAModel::MakePredictor()

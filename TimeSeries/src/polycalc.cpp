@@ -49,7 +49,7 @@ void GetPoly(Polynomial *p, FILE *in)
    p->SetPower(power);
    fscanf(in,"%d",&numc);
    for (i=0;i<numc;i++) {
-      fscanf(in,"%lf",&coeff);
+      fscanf(in,"%f",&coeff);
       p->SetCoeff(i,coeff);
    }
 }
@@ -151,7 +151,7 @@ int main()
       case 'd': {
 	double d;
 	int t;
-	scanf("%lf",&d);
+	scanf("%f",&d);
 	scanf("%d",&t);
 	Polynomial *poly=MakeDeltaFracD(d,t);
 	stack.Push(poly);

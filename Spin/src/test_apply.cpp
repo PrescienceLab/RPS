@@ -4,9 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "timing.h"
-#include "getloadavg.h"
-#include "apply.h"
+#include "Spin.h"
 
 /* Used internally */
 #define EPSILON  0.05
@@ -19,7 +17,7 @@
 
 extern double MAX_SPUTTER_PER_SECOND;
 
-void main() 
+int main(int argc, char *argv[]) 
 {
   int pid,i;
   double load;
@@ -32,7 +30,7 @@ void main()
   if ((pid=fork())) {
       for (i=0;i<DUR;i++) {
 	RPSgetloadavg(&load,1);
-	printf("%lf\n",load);
+	printf("%f\n",load);
 	fflush(stdout);
 	sleep(1);
       }

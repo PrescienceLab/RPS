@@ -137,19 +137,19 @@ void ARMAModel::Dump(FILE *out)
     out=stdout;
   }
 
-  fprintf(out,"ARMA(%d,%d) model with mean=%lf and noise variance=%lf\n",
+  fprintf(out,"ARMA(%d,%d) model with mean=%f and noise variance=%f\n",
               p,q,mean,variance);
   fprintf(out,"AR Coeffs:");
 
   for (i=0;i<p;i++) {
-    fprintf(out," %lf",phis[i]);
+    fprintf(out," %f",phis[i]);
   }
 
   fprintf(out,"\n");
   fprintf(out,"MA Coeffs:");
 
   for (i=0;i<q;i++) {
-    fprintf(out," %lf",thetas[i]);
+    fprintf(out," %f",thetas[i]);
   }
 
   fprintf(out,"\n");

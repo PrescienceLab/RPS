@@ -12,7 +12,7 @@ void usage()
 }
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    char *infile;
 
@@ -23,7 +23,7 @@ void main(int argc, char *argv[])
    int mindim, stepdim, maxdim;
    int spacing;
 
-   int i,j;
+   int i;
 
 
    if (argc<4) {
@@ -74,7 +74,7 @@ void main(int argc, char *argv[])
 			       15.0);
 
    for (i=mindim;i<=maxdim;i+=stepdim) {
-     fprintf(stdout,"%d\t%lf\n",i,fractfalse[(i-mindim)/stepdim]);
+     fprintf(stdout,"%d\t%f\n",i,fractfalse[(i-mindim)/stepdim]);
    }
   
    

@@ -119,7 +119,7 @@ run:
    }
 
   numsamples=0;
-  while ((fscanf(inp,"%lf %lf\n",&junk,&junk)==2)) {
+  while ((fscanf(inp,"%f %f\n",&junk,&junk)==2)) {
     ++numsamples;
   }
   rewind(inp);
@@ -132,7 +132,7 @@ run:
 
 
    for (i=0;i<numsamples;i++) { 
-       fscanf(inp,"%lf %lf\n",&junk,&(seq[i]));
+       fscanf(inp,"%f %f\n",&junk,&(seq[i]));
    }
 
    fclose(inp);
@@ -140,7 +140,7 @@ run:
    double inputvar=Variance(seq,numsamples);
    double inputmean=Mean(seq,numsamples);
    
-   fprintf(stderr,"sequence mean is %lf and variance is %lf\n",inputmean,inputvar);
+   fprintf(stderr,"sequence mean is %f and variance is %f\n",inputmean,inputvar);
 
    switch (mclass) {
    case AR:
@@ -181,7 +181,7 @@ run:
    pred->ComputeVariances(numahead,variances);
    fprintf(stderr,"Lead\tVariance\tImprove\n");
    for (i=0;i<numahead;i++) {
-     fprintf(stderr,"+%d\t%lf\t%lf%%\n",i+1,variances[i],
+     fprintf(stderr,"+%d\t%f\t%f%%\n",i+1,variances[i],
 	     100.0*(inputvar-variances[i])/inputvar);
    }
 
@@ -190,11 +190,11 @@ run:
    for (i=0;i<numsamples;i++) {
      pred->Step(seq[i]);
      pred->Predict(numahead,predictions);
-     fprintf(stdout,"%lf",seq[i]);
+     fprintf(stdout,"%f",seq[i]);
      for (j=0;j<numahead;j++) {
-       fprintf(stdout," %lf",predictions[j]);
+       fprintf(stdout," %f",predictions[j]);
        if (conf) {
-         fprintf(stdout," %lf",1.96*sqrt(variances[j]));  // 95% conf
+         fprintf(stdout," %f",1.96*sqrt(variances[j]));  // 95% conf
        }
      }
      fprintf(stdout,"\n");

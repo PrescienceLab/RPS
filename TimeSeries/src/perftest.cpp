@@ -46,9 +46,9 @@ void usage()
 }
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-  int i,j;
+  int i;
   int p,d,q,r;
 
   const int first_model=8;
@@ -171,7 +171,6 @@ void main(int argc, char *argv[])
   int step,fitfirst,testfirst,testnum,fitnum;
   double usrbegin, sysbegin, usrend, sysend;
   double stepusrbegin, stepsysbegin, stepusrend, stepsysend;
-  double ustepusrbegin, ustepsysbegin, ustepusrend, ustepsysend;
 
   double runtotal, runsteptotal;
 
@@ -201,7 +200,7 @@ void main(int argc, char *argv[])
 
     fittimes[step] = (sysend-sysbegin) + (usrend-usrbegin);
 
-    //fprintf(stderr,"%d\t%lf                   \r",step,fittimes[step]);
+    //fprintf(stderr,"%d\t%f                   \r",step,fittimes[step]);
 
     if (model==0) {
       fprintf(stderr,"model fit failed\n");
@@ -274,7 +273,7 @@ void main(int argc, char *argv[])
     bmeval.Drain();
     PredictionStats *bmstats = bmeval.GetStats();
     for (i=0;i<numahead;i++) {
-      printf("%s %d +%d %d %d %d %d %d %d %lf %lf %lf\n",
+      printf("%s %d +%d %d %d %d %d %d %d %f %f %f\n",
 	     tag,
 	     step,
 	     i+1,
@@ -287,7 +286,7 @@ void main(int argc, char *argv[])
 	     testvar,
 	     teststats->GetMeanSquaredError(i+1),
 	     bmstats->GetMeanSquaredError(i+1));
-      /*       printf("eval:\t+%d\t%lf\t%lf\t%lf%%\t%lf\t%lf%%\t%lf%%\n", 
+      /*       printf("eval:\t+%d\t%f\t%f\t%f%%\t%f\t%f%%\t%f%%\n", 
 	       i+1, 
 	       testvar, 
 	       msqerr[i],
@@ -320,7 +319,7 @@ void main(int argc, char *argv[])
 	    meanpredsteppredicttimes[step]*testnum;
 
 #if 0
-    fprintf(stderr,"%d\t%lf\t%lf\t%lf\n",
+    fprintf(stderr,"%d\t%f\t%f\t%f\n",
 	    step, steptime,steptotal,steptime-steptotal);
 #endif
 
@@ -333,7 +332,7 @@ void main(int argc, char *argv[])
   if (flat) { 
     fprintf(stdout,"# tag mt p d q r numahead numint fitint testint meanfittime stdfittime meanmakepredtime stdmakepredtime meanprimetime stdprimetime meancompvartime stdcompvartime meanpredsteptime stdpredsteptime\n");
 
-    fprintf(stdout, "%s %s %d %d %d %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    fprintf(stdout, "%s %s %d %d %d %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f\n",
 	  tag,
 	  mtstring,
 	  p,
@@ -367,16 +366,16 @@ void main(int argc, char *argv[])
 	    "numint           %d\n"
 	    "fitint           %d\n"
 	    "testint          %d\n"
-	    "meanfittime      %lf ms\n"
-	    "stdfittime       %lf ms\n"
-	    "meanmakepredtime %lf ms\n"
-	    "stdmakepredtime  %lf ms\n"
-	    "meanprimetime    %lf ms\n"
-	    "stdprimetime     %lf ms\n"
-	    "meancompvartime  %lf ms\n"
-	    "stdcompvartime   %lf ms\n"
-	    "meanpredsteptime %lf ms\n"
-	    "stdpredsteptime  %lf ms\n",
+	    "meanfittime      %f ms\n"
+	    "stdfittime       %f ms\n"
+	    "meanmakepredtime %f ms\n"
+	    "stdmakepredtime  %f ms\n"
+	    "meanprimetime    %f ms\n"
+	    "stdprimetime     %f ms\n"
+	    "meancompvartime  %f ms\n"
+	    "stdcompvartime   %f ms\n"
+	    "meanpredsteptime %f ms\n"
+	    "stdpredsteptime  %f ms\n",
 	    tag,
 	    mtstring,
 	    p,
@@ -399,7 +398,7 @@ void main(int argc, char *argv[])
 	    1000.0*StandardDeviation(meanpredsteppredicttimes,numint));	  
   }
 #if 0
-    fprintf(stderr,"runtotal=%lf, runsteptotal=%lf\n",
+    fprintf(stderr,"runtotal=%f, runsteptotal=%f\n",
 	    runtotal,runsteptotal);
 #endif
 }

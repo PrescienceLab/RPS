@@ -38,6 +38,6 @@ main()
    // Compute and display outputs
    mf.Apply(inseq,outvec,10);
    for (i=0;i<10;i++) {
-      printf("%lf\t%lf\t%lf\n",outvec[i*3+0],outvec[i*3+1],outvec[i*3+2]);
+      printf("%f\t%f\t%f\n",outvec[i*3+0],outvec[i*3+1],outvec[i*3+2]);
    }
 }

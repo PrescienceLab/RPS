@@ -21,12 +21,10 @@ void usage()
 }
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    char *infile;
    int numahead, conf;
-   int p, q;
-   double d;
 
    FILE *inp;
    int numsamples;
@@ -93,7 +91,7 @@ void main(int argc, char *argv[])
    double inputvar=Variance(seq,numsamples);
    double inputmean=Mean(seq,numsamples);
    
-   fprintf(stderr,"sequence mean is %lf and variance is %lf\n",inputmean,inputvar);
+   fprintf(stderr,"sequence mean is %f and variance is %f\n",inputmean,inputvar);
 
    model=FitThis(seq,numsamples,*mt);
 
@@ -118,7 +116,7 @@ void main(int argc, char *argv[])
    pred->ComputeVariances(numahead,variances);
    fprintf(stderr,"Lead\tVariance\tImprove\n");
    for (i=0;i<numahead;i++) {
-     fprintf(stderr,"+%d\t%lf\t%lf%%\n",i+1,variances[i],
+     fprintf(stderr,"+%d\t%f\t%f%%\n",i+1,variances[i],
 	     100.0*(inputvar-variances[i])/inputvar);
    }
 
@@ -127,11 +125,11 @@ void main(int argc, char *argv[])
    for (i=0;i<numsamples;i++) {
      pred->Step(seq[i]);
      pred->Predict(numahead,predictions);
-     fprintf(stdout,"%lf",seq[i]);
+     fprintf(stdout,"%f",seq[i]);
      for (j=0;j<numahead;j++) {
-       fprintf(stdout," %lf",predictions[j]);
+       fprintf(stdout," %f",predictions[j]);
        if (conf) {
-         fprintf(stdout," %lf",1.96*sqrt(variances[j]));  // 95% conf
+         fprintf(stdout," %f",1.96*sqrt(variances[j]));  // 95% conf
        }
      }
      fprintf(stdout,"\n");

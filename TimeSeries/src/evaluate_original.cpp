@@ -49,7 +49,7 @@ void main(int argc, char *argv[])
 
   for (i=0;i<numpred+1;i++) {
     for (j=0;j<numpred+1;j++) {
-      scanf("%lf",&(row[i][j]));
+      scanf("%f",&(row[i][j]));
     }
     ++seensamples;
   }
@@ -84,7 +84,7 @@ void main(int argc, char *argv[])
       meanerr[j]+=err;
     }
     for (j=0;j<numpred+1;j++) {
-      if (scanf("%lf",&(row[(numsamples)%(numpred+1)][j]))!=1) {
+      if (scanf("%f",&(row[(numsamples)%(numpred+1)][j]))!=1) {
 	done=1;
 	break;
       }

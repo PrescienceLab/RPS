@@ -10,7 +10,7 @@ SRCDIR = $(ROOT)/src
 INCDIR = $(ROOT)/include
 
 
-EXECSLIST = test
+EXECSLIST = test_getflowbw
 
 EXECS = $(foreach m, $(EXECSLIST), $(BINDIR)/$(m))
 
@@ -32,7 +32,7 @@ OBJS = $(LIBOBJS) $(MAINOBJS)
 
 SRCS = $(foreach m, $(OBJSLIST:.o=.cpp), $(SRCDIR)/$(m))
 
-CFLAGS = -Wall -g -gstabs -ggdb -fPIC -I$(INCDIR) $(REMOSMODELER_CFLAGS)
+CFLAGS = -I$(INCDIR) $(REMOSMODELER_CFLAGS)
 
 LD1FLAGS = -fPIC -L$(LIBDIR) -l$(LIBNAME) $(REMOSMODELER_LDFLAGS)
 LD2FLAGS =

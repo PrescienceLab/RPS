@@ -25,7 +25,7 @@ void usage()
 }
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   const int first_model=10;
    char *infile;
@@ -42,7 +42,7 @@ void main(int argc, char *argv[])
    double *bmpredictions;
    double *bmvariances;
 
-   int i,j;
+   int i;
    int p,d,q;
    
 
@@ -130,7 +130,6 @@ void main(int argc, char *argv[])
    double *meanbmmsqerr = new double [numahead];
    double *meanimproveoversig = new double [numahead];
    double *meanimproveoverbm = new double [numahead];
-   double conf;
 
    InitRandom();
 
@@ -178,8 +177,8 @@ void main(int argc, char *argv[])
      double testvar=Variance(&(seq[testfirst]),testnum);
      double testmean=Mean(&(seq[testfirst]),testnum);
 
-     fprintf(stderr,"training sequence mean is %lf and variance is %lf\n",fitmean,fitvar);
-     fprintf(stderr,"testing  sequence mean is %lf and variance is %lf\n",testmean,testvar);
+     fprintf(stderr,"training sequence mean is %f and variance is %f\n",fitmean,fitvar);
+     fprintf(stderr,"testing  sequence mean is %f and variance is %f\n",testmean,testvar);
 
      CHK_DEL(model);
      model=FitThis(&(seq[fitfirst]),fitnum,*mt);
@@ -240,7 +239,7 @@ void main(int argc, char *argv[])
      bmpred->ComputeVariances(numahead,bmvariances);
      fprintf(stderr,"Lead\tVariance\tImprove\tBMVar\tBMImprove\n");
      for (i=0;i<numahead;i++) {
-       fprintf(stderr,"+%d\t%lf\t%lf%%\t%lf\t%lf%%\n",i+1,variances[i],
+       fprintf(stderr,"+%d\t%f\t%f%%\t%f\t%f%%\n",i+1,variances[i],
 	       100.0*(fitvar-variances[i])/fitvar,
 	       bmvariances[i],
 	       100.0*(fitvar-bmvariances[i])/fitvar);
@@ -267,7 +266,7 @@ void main(int argc, char *argv[])
      bmeval.Drain();
      PredictionStats *bmstats = bmeval.GetStats();
      for (i=0;i<numahead;i++) {
-       printf("%s %d +%d %d %d %d %d %d %d %lf %lf %lf\n",
+       printf("%s %d +%d %d %d %d %d %d %d %f %f %f\n",
 	      tag,
 	      step,
 	      i+1,
@@ -280,7 +279,7 @@ void main(int argc, char *argv[])
 	      testvar,
 	      teststats->GetMeanSquaredError(i+1),
 	      bmstats->GetMeanSquaredError(i+1));
-       /*       printf("eval:\t+%d\t%lf\t%lf\t%lf%%\t%lf\t%lf%%\t%lf%%\n", 
+       /*       printf("eval:\t+%d\t%f\t%f\t%f%%\t%f\t%f%%\t%f%%\n", 
 	      i+1, 
 	      testvar, 
 	      msqerr[i],
@@ -315,7 +314,7 @@ void main(int argc, char *argv[])
      meanbmmsqerr[i]/=numint;
      meanimproveoversig[i]/=numint;
      meanimproveoverbm[i]/=numint;
-     printf("+%d\t%lf\t%lf\t%lf\t%lf(%lf%%)\t%lf(%lf%%)\n",
+     printf("+%d\t%f\t%f\t%f\t%f(%f%%)\t%f(%f%%)\n",
 	    i+1,
 	    meantestvar[i],
 	    meanmsqerr[i],

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <iostream.h>
+
 #include "Spin.h"
 
 

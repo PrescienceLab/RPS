@@ -226,8 +226,8 @@ int Simulate(double *seq,
 		  testcase->maxlag,testcase->acfconf,test);
   
 
-  //  fprintf(stderr,"training sequence mean is %lf and variance is %lf\n", *fitmean, *fitvar);
-  //fprintf(stderr,"testing  sequence mean is %lf and variance is %lf\n", *testmean, *testvar);
+  //  fprintf(stderr,"training sequence mean is %f and variance is %f\n", *fitmean, *fitvar);
+  //fprintf(stderr,"testing  sequence mean is %f and variance is %f\n", *testmean, *testvar);
 
   model=FitThis(&(seq[testcase->fitfirst]),testcase->fitnum,
 		testcase->p,testcase->d,testcase->q);
@@ -286,7 +286,7 @@ int Simulate(double *seq,
   //bmpred->ComputeVariances(numahead,bmvariances);
   //fprintf(stderr,"Lead\tVariance\tImprove\tBMVar\tBMImprove\n");
   //for (i=0;i<numahead;i++) {
-  //  fprintf(stderr,"+%d\t%lf\t%lf%%\t%lf\t%lf%%\n",i+1,variances[i],
+  //  fprintf(stderr,"+%d\t%f\t%f%%\t%f\t%f%%\n",i+1,variances[i],
   //	    100.0*(fitvar-variances[i])/fitvar,
   //    bmvariances[i],
   //    100.0*(fitvar-bmvariances[i])/fitvar);
@@ -365,7 +365,7 @@ int Simulate(double *seq,
   //  fprintf(stderr,"Checking integrity of sequence\n");
   for (i=testcase->fitfirst;i<testcase->fitfirst+testcase->fitnum;i++) {
     if (fittemp[i-testcase->fitfirst]!=seq[i]) {
-      fprintf(stderr,"seq[%d] changed from %lf to %lf\n",
+      fprintf(stderr,"seq[%d] changed from %f to %f\n",
 	     i,
 	     fittemp[i-testcase->fitfirst],
 	     seq[i]);
@@ -373,7 +373,7 @@ int Simulate(double *seq,
   }
   for (i=testcase->testfirst;i<testcase->testfirst+testcase->testnum;i++) {
     if (testtemp[i-testcase->testfirst]!=seq[i]) {
-      fprintf(stderr,"seq[%d] changed from %lf to %lf\n",
+      fprintf(stderr,"seq[%d] changed from %f to %f\n",
 	     i,
 	     testtemp[i-testcase->testfirst],
 	     seq[i]);
@@ -438,7 +438,7 @@ void OutputTestcaseResults(FILE *out,
   for (i=0;i<testcase->numahead;i++) {
     switch (outputformat) {
     case 0:
-      fprintf(out,"%s %d +%d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %d %d %d %d %d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+      fprintf(out,"%s %d +%d %d %d %f %f %f %f %f %f %f %f %f %f %d %d %f %f %f %f %f %f %f %f %f %f %d %d %d %d %d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
       	     testcase->tag,
 	     testcase->number,
 	     i+1,
@@ -496,7 +496,7 @@ void OutputTestcaseResults(FILE *out,
       fflush(out);
       break;
     case 1:
-      fprintf(out,"%s %d +%d %d %d %d %d %d %d %lf %lf %lf\n",
+      fprintf(out,"%s %d +%d %d %d %d %d %d %d %f %f %f\n",
 	     testcase->tag,
 	     testcase->number,
 	     i+1,	

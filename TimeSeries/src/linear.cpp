@@ -92,7 +92,7 @@ void FIRFilter::Dump(FILE *out)
    fprintf(out,"FIR Filter with %d extent, coeffs:",extent);
    int i;
    for (i=0;i<extent;i++) {
-      fprintf(out," %lf",GetCoefficient(i));
+      fprintf(out," %f",GetCoefficient(i));
    }
    fprintf(out,"\n");
 }

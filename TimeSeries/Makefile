@@ -13,7 +13,7 @@ LIBFILE = $(LIBDIR)/lib$(LIBNAME).a
 LIB_TS = $(LIBFILE)
 
 
-CFLAGS = -fPIC -I$(INCDIR) $(RECIPES_INCOPTS) $(FRACDIFF_INCOPTS) \
+CFLAGS = -I$(INCDIR) $(RECIPES_INCOPTS) $(FRACDIFF_INCOPTS) \
          $(PVM_INCOPTS)
 
 ifeq ($(OPTIMIZE),YES)
@@ -39,7 +39,7 @@ endif
 #
 # These are the execs this make file will build in addition to the lib
 #
-# example 	   do fit and prediction from command line
+# ts_example 	   do fit and prediction from command line
 # test_generic     different version of example
 # evaluate         standalone evaluation program
 # crossval_generic older, non-parallel crossvalidation
@@ -52,7 +52,7 @@ endif
 # mi               average mutual information profile
 #
 
-EXECLIST = example 	    \
+EXECLIST = ts_example 	    \
            test_generic     \
            evaluate         \
            crossval_generic \

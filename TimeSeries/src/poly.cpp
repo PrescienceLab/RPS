@@ -507,7 +507,7 @@ void Polynomial::Dump(FILE *out)
       fprintf(out,"0\n");
    } else {
       for (i=0;i<numcoeffs;i++) { 
-         fprintf(out," %s%lfx^%i",coeffs[i]>=0.0 ? "+" : "",coeffs[i],power-i);
+         fprintf(out," %s%fx^%i",coeffs[i]>=0.0 ? "+" : "",coeffs[i],power-i);
       }
       fprintf(out,"\n");
    }

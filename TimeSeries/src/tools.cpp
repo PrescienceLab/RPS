@@ -287,13 +287,14 @@ double AutoCov2VarianceOfSum(double *autocov, int numautocov,
 double AutoCov2Covariances(double *autocov, int numautocov,
 			   double *covars, int numrows)
 {
-  int i, j, k;
+  int i, j;
 
   for (i=0;i<numrows;i++) { 
     for (j=i;j<numrows;j++) {
       covars[j*numrows+(j-i)]=covars[(j-i)*numrows+j]= i < numautocov ? autocov[i] : 0.0 ;
     }
   }
+  return covars[0];
 }
   
 
@@ -410,7 +411,7 @@ double TurningPointTestForIID(double *seq, int len, int *numtp)
 
   assert(ntv>0.0);
   
-  //fprintf(stderr,"Found %lf turning points, expect %lf\n",nt,ntm);
+  //fprintf(stderr,"Found %f turning points, expect %f\n",nt,ntm);
   // our difference
   diff= fabs(ntf-ntm);
 
@@ -442,7 +443,7 @@ double SignTestForIID(double *seq, int len, int *nums)
   nsm = 0.5*(len-1);
   nsv = (len+1)/12.0;
   
-  //fprintf(stderr,"Found %lf turning points, expect %lf\n",nt,ntm);
+  //fprintf(stderr,"Found %f turning points, expect %f\n",nt,ntm);
   // our difference
   diff= fabs(nsf-nsm);
   
@@ -478,7 +479,7 @@ double PortmanteauTestForIID(double *seq, int len, double *qout, int maxlag)
   // Now Q is expected to be distributed as chi^2 with maxlag degrees
   // of freedom
   
-  //fprintf(stderr,"Q=%lf\n",Q);
+  //fprintf(stderr,"Q=%f\n",Q);
 
   CHK_DEL_MAT(acf);
 
@@ -537,11 +538,11 @@ double AcfTestForIID(double *seq, int len, int maxlag, int numiters)
     interval = ConfToSigmas(ci)/sqrt(len-maxlag);
     for (lag=1, num=0;lag<maxlag;lag++) {
       if (fabs(acf[lag])>interval) {
-	//fprintf(stderr,"abs(%lf)>%lf\n",acf[lag],interval);
+	//fprintf(stderr,"abs(%f)>%f\n",acf[lag],interval);
 	++num;
       }
     }
-    //fprintf(stderr,"expect %lf found %lf\n",1.0-ci, ((double)num)/((double)maxlag));
+    //fprintf(stderr,"expect %f found %f\n",1.0-ci, ((double)num)/((double)maxlag));
 
     if (((double)num)/((double)maxlag) > (1.0-ci)) {
       break;

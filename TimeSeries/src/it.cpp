@@ -211,9 +211,9 @@ double AverageMutualInformation(double *seq1, int len1, double *seq2, int len2)
   unsigned numh;
   double mean,sdev;
   h1.GetStats(&numh,&mean,&sdev);
-  printf("h1 has %u items with mean list len %lf and sdev %lf\n",numh,mean,sdev);
+  printf("h1 has %u items with mean list len %f and sdev %f\n",numh,mean,sdev);
   h2.GetStats(&numh,&mean,&sdev);
-  printf("h2 has %u items with mean list len %lf and sdev %lf\n",numh,mean,sdev);
+  printf("h2 has %u items with mean list len %f and sdev %f\n",numh,mean,sdev);
   h1.DumpListLengths(stdout);
   h2.DumpListLengths(stdout);
   */

@@ -16,7 +16,7 @@ ifeq ($(OPTIMIZE),YES)
   FFLAGS  += -O
 endif
 
-EXECSLIST = example test
+EXECSLIST = fd_example fd_test
 
 EXECS = $(foreach m, $(EXECSLIST), $(BINDIR)/$(m))
 
@@ -41,11 +41,11 @@ SRCS = $(foreach m, $(OBJSLIST:.o=.f), $(SRCDIR)/$(m))
 
 all: $(LIB) $(EXECS)
 
-$(BINDIR)/example: $(LIB) $(OBJDIR)/example.o
-	$(F77) $(FFLAGS) $(OBJDIR)/example.o $(FRACDIFF_LDFLAGS) -o $(BINDIR)/example
+$(BINDIR)/fd_example: $(LIB) $(OBJDIR)/fd_example.o
+	$(F77) $(FFLAGS) $(OBJDIR)/fd_example.o $(FRACDIFF_LDFLAGS) -o $(BINDIR)/fd_example
 
-$(BINDIR)/test: $(LIB) $(OBJDIR)/test.o
-	$(F77) $(FFLAGS) $(OBJDIR)/test.o $(FRACDIFF_LDFLAGS) -o $(BINDIR)/test
+$(BINDIR)/fd_test: $(LIB) $(OBJDIR)/fd_test.o
+	$(F77) $(FFLAGS) $(OBJDIR)/fd_test.o $(FRACDIFF_LDFLAGS) -o $(BINDIR)/fd_test
 
 $(LIB): $(LIBOBJS)
 	ar ruv $(LIB) $(LIBOBJS)

@@ -34,7 +34,7 @@ void usage()
 
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    const int first_model=3;
    char *infile;
@@ -42,7 +42,7 @@ void main(int argc, char *argv[])
    int numsamples;
    double junk;
    double *seq;
-   int i,j;
+   int i;
    int resplen;
    bool stepresp=false;
 
@@ -127,7 +127,7 @@ void main(int argc, char *argv[])
        input = i==0 ? 1.0 : 0.0;
      }
      output = pred->Step(input);
-     fprintf(stdout,"%d\t%lf\t%lf\n",i,input,output);
+     fprintf(stdout,"%d\t%f\t%f\n",i,input,output);
    }
    //pred->Dump(stderr);
    // Cleanup nicely

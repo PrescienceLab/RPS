@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "SpinServer.h"
+
+#include "Spin.h"
 
 
 void usage()

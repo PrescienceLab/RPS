@@ -56,7 +56,7 @@ void BestMeanModel::Dump(FILE *out)
     out=stdout;
   }
 
-  fprintf(out,"BestMean(%d) model with mean=%lf and noise variance=%lf\n",
+  fprintf(out,"BestMean(%d) model with mean=%f and noise variance=%f\n",
               order,mean,variance);
 }
 
@@ -214,7 +214,7 @@ int BestMeanPredictor::ComputeVariances(int maxahead, double *vars,
 
 void BestMeanPredictor::Dump(FILE *out)
 {
-  fprintf(out,"BestMeanPredictor(order=%d,variance=%lf)\n",order,variance);
+  fprintf(out,"BestMeanPredictor(order=%d,variance=%f)\n",order,variance);
 }	
 
 BestMeanModeler::BestMeanModeler()

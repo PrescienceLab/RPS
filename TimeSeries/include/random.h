@@ -5,7 +5,7 @@
 #include <time.h>
 #include <string.h>
 
-#ifdef WIN32
+#if defined(WIN32) // cygwin also does not have these
 #define srandom(x) srand(x)
 #define random() rand()
 #define srand48(x) srand(x)

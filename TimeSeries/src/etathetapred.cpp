@@ -230,8 +230,6 @@ int EtaThetaPredictor::ComputeSumVariances(int maxahead, double *ests)
 int EtaThetaPredictor::ComputeVariances(int maxahead, double *ests, 
 					enum VarianceType vtype)
 {
-   int i;
-
    switch (vtype) { 
    case POINT_VARIANCES:
      return ComputePointVariances(maxahead,ests);
@@ -253,26 +251,26 @@ void EtaThetaPredictor::Dump(FILE *out)
 {
    int i,j;
 
-   fprintf(out,"EtaThetaPredictor (numeta=%d, numtheta=%d, variance=%lf, mean=%lf)\n",
+   fprintf(out,"EtaThetaPredictor (numeta=%d, numtheta=%d, variance=%f, mean=%f)\n",
             numeta, numtheta, variance,mean);
    fprintf(out,"etas:");
    for (i=0;i<numeta;i++) {
-      fprintf(out," %lf",etas[i]);
+      fprintf(out," %f",etas[i]);
    }
    fprintf(out,"\nthetas:");
    for (i=0;i<numtheta;i++) {
-      fprintf(out," %lf",thetas[i]);
+      fprintf(out," %f",thetas[i]);
    }
    fprintf(out,"\nAfter %d samples, state is\n",numsamples);
    fprintf(out,"values:");
    for (i=0;i<MIN(numsamples,numeta);i++) {
-      fprintf(out," %lf",values[(numsamples-MIN(numsamples,numeta)+i)%numeta]);
+      fprintf(out," %f",values[(numsamples-MIN(numsamples,numeta)+i)%numeta]);
    }
    fprintf(out,"\nerrors:");
    for (i=0;i<MIN(numsamples,numtheta);i++) {
-      fprintf(out," %lf",errors[(numsamples-MIN(numsamples,numtheta)+i)%numtheta]);
+      fprintf(out," %f",errors[(numsamples-MIN(numsamples,numtheta)+i)%numtheta]);
    }
-   fprintf(out,"\nnext predicted value=%lf\n",next_val);
+   fprintf(out,"\nnext predicted value=%f\n",next_val);
 
 #if NUM_COVARS_TO_PRINT>0
    double *covars = new double [NUM_COVARS_TO_PRINT*NUM_COVARS_TO_PRINT];
@@ -280,7 +278,7 @@ void EtaThetaPredictor::Dump(FILE *out)
    fprintf(out,"First %dx%d Covariances are:\n",NUM_COVARS_TO_PRINT,NUM_COVARS_TO_PRINT);
    for (i=0;i<NUM_COVARS_TO_PRINT;i++) {
      for (j=0;j<NUM_COVARS_TO_PRINT;j++) { 
-       fprintf(out,"\t%lf",covars[i*NUM_COVARS_TO_PRINT+j]);
+       fprintf(out,"\t%f",covars[i*NUM_COVARS_TO_PRINT+j]);
      }
      fprintf(out,"\n");
    }
