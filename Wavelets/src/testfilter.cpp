@@ -6,7 +6,7 @@
 #include "coefficients.h"
 #include "filter.h"
 #include "waveletsample.h"
-#include "waveletsampleout.h"
+#include "waveletsampleblock.h"
 
 void usage()
 {
@@ -77,12 +77,11 @@ int main(int argc, char *argv[])
   }
   infile.close();
 
-  WaveletInputSampleBlock input(wisamples);
-  WaveletOutputSampleVector output;
+  WaveletInputSampleBlock  input(wisamples);
+  WaveletOutputSampleBlock output;
 
   // Create a filter
-  FIRFilter<WaveletOutputSample, WaveletInputSample, double> 
-    lpfilter(wc.GetNumCoefs());
+  FIRFilter<WaveletOutputSample, WaveletInputSample> lpfilter(wc.GetNumCoefs());
   lpfilter.SetFilterCoefs(translpf);
   
   lpfilter.GetFilterBufferOutput(output, input);

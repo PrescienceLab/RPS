@@ -1,44 +1,31 @@
-#ifndef _wavesample
-#define _wavesample
-
-#include <vector>
+#ifndef _waveletsample
+#define _waveletsample
 
 #include "util.h"
 #include "sample.h"
-#include "sampleblock.h"
 
 class WaveletInputSample : public InputSample<double> {
 public:
-  inline WaveletInputSample(double value=0.0);
+  WaveletInputSample();
   WaveletInputSample(const WaveletInputSample &rhs);
+  WaveletInputSample(double value);
   virtual ~WaveletInputSample();
 
   WaveletInputSample & operator=(const WaveletInputSample &rhs);
-
-  inline virtual void SetSampleValue(double sample);
-  inline virtual double GetSampleValue();
-
-  virtual ostream & Print(ostream &os) const;
+  WaveletInputSample & operator+=(const double rhs);
+  inline double operator*(const double rhs);
 };
 
-class WaveletInputSampleBlock : public InputSampleBlock<WaveletInputSample> {
+class WaveletOutputSample : public OutputSample<double> { 
 public:
-  WaveletInputSampleBlock();
-  WaveletInputSampleBlock(const WaveletInputSampleBlock &rhs);
-  WaveletInputSampleBlock(const vector<WaveletInputSample> &rhs);
-  virtual ~WaveletInputSampleBlock();
+  WaveletOutputSample();
+  WaveletOutputSample(const WaveletOutputSample &rhs);
+  WaveletOutputSample(double value, int level);
+  virtual ~WaveletOutputSample();
 
-  WaveletInputSampleBlock & operator=(const WaveletInputSampleBlock &rhs);
-
-  
-  inline virtual void SetSamples(const vector<WaveletInputSample> &input);
-  inline virtual void GetSamples(vector<WaveletInputSample> &outbuf);
-  inline virtual void SetSample(WaveletInputSample &input);
-  virtual void GetSample(WaveletInputSample *samp, unsigned i);
-  inline virtual void ClearBlock();
-  inline virtual unsigned GetBlockSize();
-
-  virtual ostream & Print(ostream &os) const;
+  WaveletOutputSample & operator=(const WaveletOutputSample &rhs);
+  WaveletOutputSample & operator+=(const double rhs);
+  inline double operator*(const double rhs);
 };
 
 #endif

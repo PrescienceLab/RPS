@@ -1,9 +1,16 @@
 #include "waveletsample.h"
 
-// Individual samples
-WaveletInputSample::WaveletInputSample(double value)
+/********************************************************************************
+ * Wavelet input samples
+ *******************************************************************************/
+WaveletInputSample::WaveletInputSample() :
+  InputSample<double>()
 {
-  this->value = value;
+}
+
+WaveletInputSample::WaveletInputSample(double value) :
+  InputSample<double>(value)
+{
 }
 
 WaveletInputSample::WaveletInputSample(const WaveletInputSample &rhs) :
@@ -24,89 +31,54 @@ WaveletInputSample & WaveletInputSample::operator=(const WaveletInputSample &rhs
   return *this;
 }
 
-void WaveletInputSample::SetSampleValue(double sample) 
+WaveletInputSample & WaveletInputSample::operator+=(const double rhs)
 {
-  value = sample;
+  this->InputSample<double>::operator+=(rhs);
+  return *this;
 }
 
-double WaveletInputSample::GetSampleValue() 
+double WaveletInputSample::operator*(const double rhs)
 {
-  return value;
+  return this->InputSample<double>::operator*(rhs);
 }
 
-ostream & WaveletInputSample::Print(ostream &os) const
-{
-  os << value;
-  return os;
-}
-
-// Blocks of wavelet input samples
-WaveletInputSampleBlock::WaveletInputSampleBlock()
+/********************************************************************************
+ * Output samples
+ *******************************************************************************/
+WaveletOutputSample::WaveletOutputSample() :
+  OutputSample<double>()
 {
 }
 
-WaveletInputSampleBlock::WaveletInputSampleBlock
-(const WaveletInputSampleBlock &rhs) :
-  InputSampleBlock<WaveletInputSample>(rhs)
+WaveletOutputSample::WaveletOutputSample(const WaveletOutputSample &rhs) :
+  OutputSample<double>(rhs)
 {
 }
 
-WaveletInputSampleBlock::WaveletInputSampleBlock
-(const vector<WaveletInputSample> &rhs) :
-  InputSampleBlock<WaveletInputSample>(rhs)
+WaveletOutputSample::WaveletOutputSample(double value, int level) :
+  OutputSample<double>(value,level)
 {
 }
 
-WaveletInputSampleBlock::~WaveletInputSampleBlock()
+WaveletOutputSample::~WaveletOutputSample()
 {
 }
 
-WaveletInputSampleBlock & 
-WaveletInputSampleBlock::operator=(const WaveletInputSampleBlock & rhs)
+WaveletOutputSample & WaveletOutputSample::operator=(const WaveletOutputSample &rhs)
 {
   if (&rhs != this) {
-    // invoke InputSampleBlock copy assignment operator
-    this->InputSampleBlock<WaveletInputSample>::operator=(rhs);
+    this->OutputSample<double>::operator=(rhs);
   }
   return *this;
 }
 
-void WaveletInputSampleBlock::SetSamples(const vector<WaveletInputSample> &input)
+WaveletOutputSample & WaveletOutputSample::operator+=(const double rhs)
 {
-  samples = input;
+  this->OutputSample<double>::operator+=(rhs);
+  return *this;
 }
 
-void WaveletInputSampleBlock::GetSamples(vector<WaveletInputSample> &outbuf)
+double WaveletOutputSample::operator*(const double rhs)
 {
-  outbuf = samples;
-}
-
-void WaveletInputSampleBlock::SetSample(WaveletInputSample &input)
-{
-  samples.push_back(input);
-}
-
-void WaveletInputSampleBlock::GetSample(WaveletInputSample *samp, unsigned i)
-{
-  if (i<samples.size())
-    *samp = samples[i];
-}
-
-void WaveletInputSampleBlock::ClearBlock()
-{
-  samples.clear();
-}
-
-unsigned WaveletInputSampleBlock::GetBlockSize()
-{
-  return samples.size();
-}
-
-ostream & WaveletInputSampleBlock::Print(ostream &os) const
-{
-  os << "WaveletInputSampleBlock::" << endl;
-  for (unsigned i=0; i<samples.size(); i++) {
-    cout << "\t" << i << "\t" << samples[i];
-  }
-  return os;
+  return this->OutputSample<double>::operator*(rhs);
 }

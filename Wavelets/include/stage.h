@@ -16,30 +16,30 @@
 struct EquivalenceException
 {};
 
-template <class outSample, class inSample, class inputType>
+template <class OUTSAMPLE, class INSAMPLE>
 class WaveletStageHelper {
 protected:
   WaveletType         wavetype;
   WaveletCoefficients wavecoefs;
 
-  FIRFilter<outSample, inSample, inputType> lowpass;
-  FIRFilter<outSample, inSample, inputType> highpass;
+  FIRFilter<OUTSAMPLE, INSAMPLE> lowpass;
+  FIRFilter<OUTSAMPLE, INSAMPLE> highpass;
 
 public:
-  Stage(WaveletType wavetype=DAUB2);
-  Stage(const Stage &rhs);
-  virtual ~Stage();
+  WaveletStageHelper(WaveletType wavetype=DAUB2);
+  WaveletStageHelper(const WaveletStageHelper &rhs);
+  virtual ~WaveletStageHelper();
 
-  Stage & operator=(const Stage &rhs);
+  WaveletStageHelper & operator=(const WaveletStageHelper &rhs);
 
-  void     ChangeWaveletType(WaveletType wavetype);
+  void     ChangeWaveletType(const WaveletType wavetype);
   string   GetWaveletName();
 
-  void     SetFilterCoefsLPF(vector<double> &coefs);
+  void     SetFilterCoefsLPF(const vector<double> &coefs);
   unsigned GetNumCoefsLPF();
   void     PrintCoefsLPF();
 
-  void     SetFilterCoefsHPF(vector<double> &coefs);
+  void     SetFilterCoefsHPF(const vector<double> &coefs);
   unsigned GetNumCoefsHPF();
   void     PrintCoefsHPF();
 
@@ -47,8 +47,9 @@ public:
 };
 
 
-template <class outSample, class inSample, class inputType>
-Stage<outSample, inSample, inputType>::Stage(WaveletType wavetype=DAUB2) :
+template <class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
+(WaveletType wavetype=DAUB2) :
   wavecoefs(wavetype)
 {
   this->wavetype = wavetype;
@@ -66,25 +67,26 @@ Stage<outSample, inSample, inputType>::Stage(WaveletType wavetype=DAUB2) :
   coefs.clear();
 }
 
-template <class outSample, class inSample, class inputType>
-Stage<outSample, inSample, inputType>::Stage(const Stage &rhs) :
+template <class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::WaveletStageHelper
+(const WaveletStageHelper &rhs) : 
   wavetype(rhs.wavetype), wavecoefs(rhs.wavecoefs),
   lowpass(rhs.lowpass), highpass(rhs.highpass)
 {
 }
 
-template <class outSample, class inSample, class inputType>
-Stage<outSample, inSample, inputType>::~Stage()
+template <class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::~WaveletStageHelper()
 {
 }
 
-template <class outSample, class inSample, class inputType>
-Stage<outSample, inSample, inputType> & 
-Stage<outSample, inSample, inputType>::operator=(const Stage &rhs)
+template <class OUTSAMPLE, class INSAMPLE>
+WaveletStageHelper<OUTSAMPLE, INSAMPLE> & 
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::operator=(const WaveletStageHelper &rhs)
 {
-  // Make sure that the RTT of rhs is Stage, otherwise throw an
+  // Make sure that the RTT of rhs is WaveletStageHelper, otherwise throw an
   //  exception
-  if (typeid(rhs) == typeid(Stage)) {
+  if ((typeid(rhs) == typeid(WaveletStageHelper)) && (this != rhs)) {
     // Copy
     wavetype = rhs.wavetype;
     wavecoefs = rhs.wavecoefs;
@@ -96,9 +98,10 @@ Stage<outSample, inSample, inputType>::operator=(const Stage &rhs)
   return *this;
 }
 
-template <class outSample, class inSample, class inputType>
+template <class OUTSAMPLE, class INSAMPLE>
 void 
-Stage<outSample, inSample, inputType>::ChangeWaveletType(WaveletType wavetype)
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::ChangeWaveletType
+(const WaveletType wavetype)
 {
   vector<double> &coefs;
 
@@ -116,27 +119,28 @@ Stage<outSample, inSample, inputType>::ChangeWaveletType(WaveletType wavetype)
   coefs.clear();
 }
 
-template <class outSample, class inSample, class inputType>
-string Stage<outSample, inSample, inputType>::GetWaveletName()
+template <class OUTSAMPLE, class INSAMPLE>
+string WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetWaveletName()
 {
   return wavecoefs.GetWaveletName();
 }
 
-template <class outSample, class inSample, class inputType>
+template <class OUTSAMPLE, class INSAMPLE>
 void
-Stage<outSample, inSample, inputType>::SetFilterCoefsLPF(vector<double> &coefs)
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::SetFilterCoefsLPF
+(const vector<double> &coefs)
 {
   lowpass.SetFilterCoefs(coefs);
 }
 
-template <class outSample, class inSample, class inputType>
-unsigned Stage<outSample, inSample, inputType>::GetNumCoefsLPF()
+template <class OUTSAMPLE, class INSAMPLE>
+unsigned WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetNumCoefsLPF()
 {
   return lowpass.GetNumCoefs();
 }
 
-template <class outSample, class inSample, class inputType>
-void Stage<outSample, inSample, inputType>::PrintCoefsLPF()
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsLPF()
 {
   vector<double> &coefs;
   lowpass.GetFilterCoefs(coefs);
@@ -146,21 +150,22 @@ void Stage<outSample, inSample, inputType>::PrintCoefsLPF()
   }
 }
 
-template <class outSample, class inSample, class inputType>
+template <class OUTSAMPLE, class INSAMPLE>
 void 
-Stage<outSample, inSample, inputType>::SetFilterCoefsHPF(vector<double> &coefs)
+WaveletStageHelper<OUTSAMPLE, INSAMPLE>::SetFilterCoefsHPF
+(const vector<double> &coefs)
 {
   highpass.SetFilterCoefs(coefs);
 }
 
-template <class outSample, class inSample, class inputType>
-unsigned Stage<outSample, inSample, inputType>::GetNumCoefsHPF()
+template <class OUTSAMPLE, class INSAMPLE>
+unsigned WaveletStageHelper<OUTSAMPLE, INSAMPLE>::GetNumCoefsHPF()
 {
   return highpass.GetNumCoefs();
 }
 
-template <class outSample, class inSample, class inputType>
-void Stage<outSample, inSample, inputType>::PrintCoefsHPF()
+template <class OUTSAMPLE, class INSAMPLE>
+void WaveletStageHelper<OUTSAMPLE, INSAMPLE>::PrintCoefsHPF()
 {
   vector<double> &coefs;
   highpass.GetFilterCoefs(coefs);
@@ -170,10 +175,10 @@ void Stage<outSample, inSample, inputType>::PrintCoefsHPF()
   }
 }
 
-template <class outSample, class inSample, class inputType>
-ostream & Stage<outSample, inSample, inputType>::Print(ostream &os) const
+template <class OUTSAMPLE, class INSAMPLE>
+ostream & WaveletStageHelper<OUTSAMPLE, INSAMPLE>::Print(ostream &os) const
 {
-  os << "Stage::" << endl;
+  os << "WaveletStageHelper::" << endl;
   os << wavecoefs << endl;
   os << lowpass << endl;
   os << highpass << endl;

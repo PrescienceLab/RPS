@@ -3,14 +3,48 @@
 
 #include "util.h"
 
-template <class sampleType>
-class InputSample {
+template <typename SAMPLETYPE>
+class Sample {
 protected:
-  sampleType value;
+  SAMPLETYPE value;
 
 public:
+  Sample() : value(0) {};
+  inline Sample(const Sample &rhs) { value = rhs.value;};
+  virtual ~Sample() {};
+
+  Sample & operator=(const Sample &rhs) {
+    value = rhs.value;
+    return *this;
+  };
+
+  Sample & operator+=(const SAMPLETYPE rhs) {
+    value = value + rhs;
+    return *this;
+  };
+
+  SAMPLETYPE operator*(const double rhs) {
+    return rhs*value;
+  };
+
+  virtual void SetSampleValue(SAMPLETYPE sample)=0;
+  virtual SAMPLETYPE GetSampleValue()=0;
+
+  virtual ostream & Print(ostream &os) const=0;
+};
+
+template <typename SAMPLETYPE>
+class InputSample : Sample<SAMPLETYPE> {
+public:
   InputSample() {};
-  inline InputSample(const InputSample &rhs) { value = rhs.value;};
+  InputSample(const InputSample &rhs) { 
+    value = rhs.value;
+  };
+  
+  InputSample(double value) {
+    this->value = value; 
+  };
+  
   virtual ~InputSample() {};
 
   InputSample & operator=(const InputSample &rhs) {
@@ -18,11 +52,81 @@ public:
     return *this;
   };
 
-  virtual void SetSampleValue(sampleType sample)=0;
-  virtual sampleType GetSampleValue()=0;
+  InputSample & operator+=(const SAMPLETYPE rhs) {
+    this->Sample<SAMPLETYPE>::operator+=(rhs);
+    return *this;
+  };
 
-  virtual ostream & Print(ostream &os) const = 0;
+  SAMPLETYPE operator*(const double rhs) {
+    return rhs*value;
+  };
+
+  virtual inline void SetSampleValue(SAMPLETYPE sample) {
+    value = sample;
+  };
+
+  virtual inline SAMPLETYPE GetSampleValue() {
+    return value;
+  };
+
+  virtual ostream & Print(ostream &os) const {
+    os << value;
+    return os;
+  };
 };
 
+template <typename SAMPLETYPE>
+class OutputSample : Sample<SAMPLETYPE> {
+protected:
+  int level;
+
+public:
+  OutputSample() : level(-1) {};
+  OutputSample(const OutputSample &rhs) {
+    value = rhs.value;
+    level = rhs.level;
+  };
+  OutputSample(SAMPLETYPE value, int level) {
+    this->value = value;
+    this->level = level;
+  };
+  virtual ~OutputSample() {};
+
+  OutputSample & operator=(const OutputSample &rhs) {
+    value = rhs.value;
+    level = rhs.level;
+    return *this;
+  };
+
+  OutputSample & operator+=(const SAMPLETYPE rhs) {
+    this->Sample<SAMPLETYPE>::operator+=(rhs);
+    return *this;
+  };
+
+  SAMPLETYPE operator*(const double rhs) {
+    return rhs*value;
+  };
+
+  virtual inline void SetSampleValue(SAMPLETYPE sample) {
+    value = sample;
+  };
+
+  virtual inline SAMPLETYPE GetSampleValue() {
+    return value;
+  };
+
+  virtual inline void SetSampleLevel(int level) {
+    this->level = level;
+  };
+
+  virtual inline int GetSampleLevel() {
+    return level;
+  };
+
+  virtual ostream & Print(ostream &os) const {
+    os << "level: " << level << "\tvalue: " << value << endl;
+    return os;
+  };
+};
 
 #endif

@@ -37,10 +37,8 @@ LIBOBJSLIST = coefficients.o \
               upsample.o \
               sample.o \
               sampleblock.o \
-              sampleout.o \
-              sampleblockout.o \
               waveletsample.o \
-              waveletsampleout.o \
+              waveletsampleblock.o \
               stage.o
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
