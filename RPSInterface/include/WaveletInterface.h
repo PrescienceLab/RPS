@@ -17,7 +17,7 @@
 
 using namespace std;
 
-enum WaveletRepresentationType { WAVELET_DOMAIN_APPROX, WAVELET_DOMAIN_DETAIL, TIME_DOMAIN, FREQUENCY_DOMAIN };
+enum WaveletRepresentationType { WAVELET_DOMAIN_TRANSFORM, WAVELET_DOMAIN_APPROX, WAVELET_DOMAIN_DETAIL, TIME_DOMAIN, FREQUENCY_DOMAIN };
 enum WaveletTransformDirection { WAVELET_FORWARD, WAVELET_REVERSE };
 enum WaveletBlockEncodingType  { PREORDER, INORDER, POSTORDER};
 
@@ -256,7 +256,6 @@ struct WaveletTransformBlockRequestResponse : public SerializeableInfo {
   WaveletTransformRequestType ttype;
   TimeStamp            timein;
   TimeStamp            timeout;
-  double               dc;
   WaveletBlock         block;
 
   WaveletTransformBlockRequestResponse();

@@ -13,7 +13,7 @@ $#ARGV>=6 or die
 "stream_port    = listening port number for streaming connections\n".
 "buffer_port    = listening port number for request/response connections\n".
 "numitems       = number of predictions to buffer\n".
-"period         = period of input in ns\n".
+"period         = period of input in us\n".
 "text-generator = code to run to generate measurements\n".
 "               one (value) or two (timestamp value) columns\n\n".
 "RPS: Resource Prediction System Toolkit\n".

@@ -169,7 +169,7 @@ operator=(const DelayBlock &rhs)
   }
   this->delay_vals = new int[numlevels];
 
-  for (i=0; i<numlevels; i++) {
+  for (unsigned i=0; i<numlevels; i++) {
     this->delay_vals[i] = rhs.delay_vals[i];
   }
   dbanks = rhs.dbanks;

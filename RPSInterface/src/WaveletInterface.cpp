@@ -21,8 +21,9 @@ ostream & operator<<(ostream &os, const WaveletType &x)
 ostream & operator<<(ostream &os, const WaveletRepresentationType &x)
 {
   os << "WaveletRepresentationType(" <<
-    (x==WAVELET_DOMAIN_APPROX ? "WAVELET_DOMAIN_APPROX" :
-    x==WAVELET_DOMAIN_DETAIL ? "WAVELET_DOMAIN_DETAL" :
+    (x==WAVELET_DOMAIN_TRANSFORM ? "WAVELET_DOMAIN_TRANSFORM" :
+    x==WAVELET_DOMAIN_APPROX ? "WAVELET_DOMAIN_APPROX" :
+    x==WAVELET_DOMAIN_DETAIL ? "WAVELET_DOMAIN_DETAIL" :
     x==TIME_DOMAIN ? "TIME_DOMAIN" :
      x==FREQUENCY_DOMAIN ? "FREQUENCY_DOMAIN" : "UNKNOWN") << ")";
   return os;
@@ -65,6 +66,7 @@ WaveletRepresentationInfo::~WaveletRepresentationInfo()
 
 WaveletRepresentationInfo & WaveletRepresentationInfo::operator = (const WaveletRepresentationInfo &rhs)
 {
+  this->~WaveletRepresentationInfo();
   return *(new (this) WaveletRepresentationInfo(rhs));
 }
 
@@ -99,6 +101,7 @@ int WaveletRepresentationInfo::Unpack(Buffer &buf)
 void WaveletRepresentationInfo::Print(FILE *out) const
 {
   fprintf(out,"WaveletRepresentationInfo: rtype=%s, wtype=%s, levels=%u, period_usec=%u\n",
+	  rtype==WAVELET_DOMAIN_TRANSFORM ? "WAVELET_DOMAIN_TRANSFORM" :
 	  rtype==WAVELET_DOMAIN_APPROX ? "WAVELET_DOMAIN_APPROX" :
 	  rtype==WAVELET_DOMAIN_DETAIL ? "WAVELET_DOMAIN_DETAIL" :
 	  rtype==TIME_DOMAIN ? "TIME_DOMAIN" :
@@ -183,22 +186,32 @@ void WaveletIndividualSample::GetFromMeasurement(const Measurement &m)
 
 void WaveletIndividualSample::PutAsWaveletInputSample(WaveletInputSample<double> &m) const
 {
-  // WRITE THIS
+  m.SetSampleValue(value);
+  m.SetSampleIndex(index);
 }
 
 void WaveletIndividualSample::GetFromWaveletInputSample(const WaveletInputSample<double> &m)
 {
-  // WRITE THIS
+  assert(rinfo.rtype==TIME_DOMAIN);
+  index=m.GetSampleIndex();
+  value=m.GetSampleValue();
+  level=0;
+  rinfo=WaveletRepresentationInfo(TIME_DOMAIN,DAUB2,0,1);
 }
 
 void WaveletIndividualSample::PutAsWaveletOutputSample(WaveletOutputSample<double> &m) const
 {
-  // WRITE THIS
+  assert(rinfo.rtype==WAVELET_DOMAIN_APPROX || rinfo.rtype==WAVELET_DOMAIN_DETAIL || rinfo.rtype==WAVELET_DOMAIN_TRANSFORM);
+  m.SetSampleLevel(level);
+  m.SetSampleValue(value);
+  m.SetSampleIndex(index);
 }
 
 void WaveletIndividualSample::GetFromWaveletOutputSample(const WaveletOutputSample<double> &m)
 {
-  // WRITE THIS
+  index=m.GetSampleIndex();
+  level=m.GetSampleLevel();
+  value=m.GetSampleValue();
 }
 
 int WaveletIndividualSample::GetPackedSize() const

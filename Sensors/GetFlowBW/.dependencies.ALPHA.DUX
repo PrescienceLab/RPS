@@ -1,2 +1,0 @@
-./obj/ALPHA/DUX/getflowbw.o: ./src/getflowbw.cpp
-./obj/ALPHA/DUX/test_getflowbw.o: ./src/test_getflowbw.cpp include/GetFlowBW.h

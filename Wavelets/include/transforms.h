@@ -461,12 +461,13 @@ StaticForwardWaveletTransform(const unsigned numstages,
   this->numlevels = this->numstages + 1;
   this->lowest_outlvl = lowest_outlvl;
 
+  unsigned i;
+
   for (i=0; i<numlevels; i++) {
     index_a[i] = 0;
     index_d[i] = 0;
   }
 
-  unsigned i;
   int outlvl = lowest_outlvl;
 
   // The lowest stage converts from INSAMPLES to OUTSAMPLES
@@ -1302,6 +1303,9 @@ StreamingTransformSampleOperation(vector<OUTSAMPLE> &out,
     r_iter++;
     for (i=numstages-2; r_iter != stages.rend(); r_iter++, i--) {
       tempout.clear();
+      cerr << "Stage: "<< *r_iter << endl;
+      cerr << "Intersignal blocksize: " << intersignals[i]->GetBlockSize() << endl;
+      cerr << "Insignal blocksize: " << insignals[i]->GetBlockSize() << endl;
       RUN_STAGE_SAMPLE_OPERATION(*r_iter,
 				 tempout,
 				 *intersignals[i],

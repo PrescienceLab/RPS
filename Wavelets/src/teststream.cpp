@@ -118,6 +118,10 @@ int main(int argc, char *argv[])
   for (i=0; i<samples.size(); i++) {
     cout << endl << "Sample time: " << i << endl;
     sfwt.StreamingTransformSampleOperation(outsamples, samples[i]);
+
+    for (unsigned j=0; j<outsamples.size(); j++) {
+      cerr << outsamples[j] << endl;
+    }
     
     dlyblk.StreamingSampleOperation(delaysamples, outsamples);
 

@@ -1,8 +1,0 @@
-./obj/I386/WIN32/socks.o: ./src/socks.cpp include/socks.h include/junk.h
-./obj/I386/WIN32/debug.o: ./src/debug.cpp include/debug.h
-./obj/I386/WIN32/Selector.o: ./src/Selector.cpp include/socks.h include/Selector.h \
- include/Queues.h include/Timers.h include/junk.h
-./obj/I386/WIN32/EndPoint.o: ./src/EndPoint.cpp include/socks.h include/EndPoint.h \
- include/junk.h
-./obj/I386/WIN32/Serializable.o: ./src/Serializable.cpp include/Serializable.h \
- include/socks.h include/junk.h include/XDRpack.h include/debug.h

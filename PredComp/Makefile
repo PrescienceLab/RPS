@@ -79,12 +79,12 @@ EXECLIST = loadclient 				\
         flowbw2measure                          \
         flowbwreconfig                          \
         text2measure                            \
-	wavelet_reqresp_server			\
 	wavelet_reqresp_client			\
 	wavelet_streaming_server		\
 	wavelet_streaming_selection             \
 	wavelet_streaming_client
 
+#	wavelet_reqresp_server			\
 
 
 ifeq ($(HAVE_GETLOADAVG),YES)

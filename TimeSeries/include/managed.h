@@ -33,9 +33,9 @@ class ManagedPredictor : public Predictor {
   void FitNow() {
    // cur points to the *oldest* data item - the one that
     // will be replaced bext
-    cerr << "FitNow!";
-    this->operator<<(cerr);
-    cerr << endl;
+    //cerr << "FitNow!";
+    //this->operator<<(cerr);
+    //cerr << endl;
     int numoldest = num_refit - (cur%num_refit);
     int i;
     CHK_DEL(curmodel);
