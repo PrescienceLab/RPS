@@ -199,9 +199,6 @@ public class LineGraph extends JPanel
 	for (int i = 0 ; i < predictionLineVals.length ; i++) {
 	    uprPredictionLineVals[i] = predictionLineVals[i] + predictionLineErrors[i];
 	    lwrPredictionLineVals[i] = predictionLineVals[i] - predictionLineErrors[i];
-	    if (lwrPredictionLineVals[i] < 0) {
-		lwrPredictionLineVals[i] = 0;
-	    }
 	}
 	
 	// move the data to the display buffer
@@ -236,10 +233,14 @@ public class LineGraph extends JPanel
     // If necessary, based on new data, calcs a new range for actual display
     private void setRange() {
 	// Find Max from Prediction data and Standard Line data, set curMaxY
-	double max = 0;
+	double max = -99e99;
+	double min = +99e99;
 	for (int i = 0; i < lengthToDispLeft ; i++) {
 	    if (stdLineDispVals[i] > max) {
 		max = stdLineDispVals[i];
+	    }
+	    if (stdLineDispVals[i] < min) {
+		min = stdLineDispVals[i];
 	    }
 	}
 	for (int i = 0; i < lengthToDispRight ; i++) {
@@ -249,8 +250,17 @@ public class LineGraph extends JPanel
 	    if (errorBars && (uprPrdLineDispVals[i] > max)) {
 		max = uprPrdLineDispVals[i];
 	    }
+	    if (predictionLine && (prdLineDispVals[i] < min)) {
+		min = prdLineDispVals[i];
+	    }
+	    if (errorBars && (lwrPrdLineDispVals[i] <min)) {
+		min = uprPrdLineDispVals[i];
+	    }
 	}
-	curMaxY = max + (5 - (max % 5));
+	curMaxY = max;
+	curMinY = min;
+	//curMaxY = max + (5 - (max % 5));
+	//curMaxY = max + (5 - (max % 5));
 	maxY.setText(curMaxY + ""); // Updates the control panel
 	minY.setText(curMinY + "");
     }
