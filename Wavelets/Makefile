@@ -26,17 +26,7 @@ LD1FLAGS+=  -L$(LIBDIR) -l$(LIBNAME)
 
 LD2FLAGS =  
 
-EXECLIST = testcoefs  \
-	   testfilter \
-           teststage  \
-           testSFWT   \
-           testdelay  \
-           teststream \
-           testblock  \
-           testSFWTapprox \
-	   testSFWTblock \
-	   testSFWTmixed \
-	   setup_wavelet_delay \
+EXECLIST = setup_wavelet_delay \
 	   sample_static_sfwt \
 	   block_static_sfwt \
 	   sample_static_mixed_sfwt \
@@ -59,7 +49,9 @@ LIBOBJSLIST = coefficients.o       \
               waveletsampleblock.o \
               stage.o              \
               transforms.o         \
-              delay.o
+              delay.o              \
+	      cmdlinefuncs.o
+
 
 EXECS   = $(foreach m, $(EXECLIST),$(BINDIR)/$(m))
 LIBOBJS = $(foreach m, $(LIBOBJSLIST),$(OBJDIR)/$(m))
