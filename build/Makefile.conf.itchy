@@ -25,8 +25,11 @@ DEBUG    = YES
 # Architecture of this machine: ALPHA, SUN, I386
 ARCH     = I386
 
-# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, WIN32
-OS       = WIN32
+# Operating system it runs: DUX, LINUX, SOLARIS, FREEBSD, CYGWIN
+#
+# if you want to build the native windows version, do not use make!
+# instead, run build/build_windows.bat - this will build in .../WIN32
+OS       = CYGWIN
 
 
 ####################################################################################
@@ -410,3 +413,7 @@ endif
 
 
 CC += -D$(ARCH) -D$(OS) -Wall
+
+ifeq ($(OS),CYGWIN)
+  CC += -DWIN32
+endif
