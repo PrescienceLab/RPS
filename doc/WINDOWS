@@ -17,15 +17,23 @@ a client.
 To build natively using visual studio
 
 0. set RPS_DIR=your rps directory
+   set RPS_ARCH=I386
+   set RPS_OS=WIN32
 1. make sure MSDEV.EXE is on your path and INCLUDE and LIB are set reasonably.
 2. build\build_windows.bat
+
+You can install after building by
+
+0. set RPS_INSTALL_DIR=your target dir 
+   (other RPS_ vars need to be set)
+1. build\install_windows.bat
 
 This will build the debug and release versions of the tools and copy
 the debug versions into {lib,bin}/I386/WIN32
 
 You can also build RPS by using the Visual Studio GUI.  The file
 "RPS.dsw" in the RPS base directory is the workspace.  There are some
-40-odd project (.dsp) files scattered throughout the package
+100-odd project (.dsp) files scattered throughout the package
 directories.
 
 What follows is a description of the missing functionality in the
@@ -35,47 +43,29 @@ native windows build on a package by package basis.
 Extra
  - not built
 
-Finder
- - no missing functionality
-
 JavaGUI
  - not built
-
-Mirror
- - no missing functionality
 
 PredComp
  - predserver and predserver_core are not built
 
-RPSInterface
- - no missing functionality
-
 RemosInterface
  - not built
-
-ResearchScripts
- - n/a
 
 ResearchTools
  - not built
 
-Scripts
- - n/a
-
 Sensors
  - both GetLoadAvg and GetFlowBW do not work and return errors
+ - proc is not built
+ - you will get watchtower
 
 Spin
  - not built
 
 TimeSeries
  - FracDiff is not built (no fortran compiler)
- - Only MEAN, LAST, BM, and AR models are built, the others return errors
-    - the main issue here is that recipes in c is assumed not to exist
  - parallel crossvalidation system is not built
-
-Trace
- - not built
 
 
 
