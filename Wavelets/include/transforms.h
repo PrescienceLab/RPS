@@ -26,8 +26,14 @@ struct SignalSpec {
 
 // Returns true if TRANSFORM, false if ZEROFILL
 bool StructureOptimizer(SignalSpec &optim, 
-			unsigned numlevels,
+			unsigned numstages,
 			const SignalSpec &spec);
+
+void InvertSignalSpec(vector<int> &inversion,
+		      const vector<int> &spec,
+		      const unsigned numlevels);
+
+void FlattenSignalSpec(vector<int> &flatspec, const SignalSpec &spec);
 
 template <class SAMPLE>
 void OutputSamplesToSpec(vector<SAMPLE> &out,
@@ -244,8 +250,6 @@ protected:
 
   void AddBlockToIntersignals(const SampleBlock<INSAMPLE> &block,
 			      const unsigned level);
-
-  void InvertSignalSpec(vector<int> &inversion, const vector<int> &spec);
 
 public:
   StaticReverseWaveletTransform(const unsigned numstages=1,
@@ -1568,7 +1572,7 @@ StreamingMixedSampleOperation(vector<OUTSAMPLE> &out,
 
   // Build the zero sample specification based on !levels
   vector<int> zerolevels;
-  InvertSignalSpec(zerolevels, levels);
+  InvertSignalSpec(zerolevels, levels, this->numlevels);
 
   return StreamingTransformZeroFillSampleOperation(out,newin,zerolevels);
 }
@@ -1795,7 +1799,7 @@ StreamingMixedBlockOperation
 
   // Build the zero sample specification based on !levels
   vector<int> zerolevels;
-  InvertSignalSpec(zerolevels, levels);
+  InvertSignalSpec(zerolevels, levels, this->numlevels);
 
   return StreamingTransformZeroFillBlockOperation(outblock,
 						  newinblock,
@@ -1907,26 +1911,6 @@ void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
 AddBlockToIntersignals(const SampleBlock<INSAMPLE> &block, const unsigned level)
 {
   AddRemainingBlockToIntersignals(block, 0, level);
-}
-
-template <typename SAMPLETYPE, class OUTSAMPLE, class INSAMPLE>
-void StaticReverseWaveletTransform<SAMPLETYPE, OUTSAMPLE, INSAMPLE>::
-InvertSignalSpec(vector<int> &inversion, const vector<int> &spec)
-{
-  unsigned i, j;
-  bool in_levels;
-  for (i=0; i<numlevels; i++) {
-    in_levels = false;
-    for (j=0; j<spec.size(); j++) {
-      if ((lowest_inlvl + (int)i) == spec[j]) {
-	in_levels = true;
-	break;
-      }
-    }
-    if (!in_levels) {
-      inversion.push_back(lowest_inlvl+i);
-    }
-  }
 }
 
 /********************************************************************************

@@ -9,9 +9,7 @@
 
 #include "waveletsample.h"
 #include "waveletsampleblock.h"
-
-//typedef WaveletInputSample<double> wisd;
-//typedef WaveletOutputSample<double> wosd;
+#include "transforms.h"
 
 class FlatParser {
 private:
@@ -21,6 +19,9 @@ private:
   // Used for keeping track of MRA indices
   map<int, unsigned, less<int> > a_indices;
   map<int, unsigned, less<int> > d_indices;
+
+  bool LevelInSpec(const vector<int> &mra, const int levelnum);
+
 public:
   typedef WaveletInputSample<double> wisd;
   typedef WaveletOutputSample<double> wosd;
@@ -34,6 +35,11 @@ public:
   bool ParseWaveletCoefsSample(vector<wosd> &wavecoefs, istream &in);
   void ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
 			      istream &in);
+
+  bool ParseMRACoefsSample(const SignalSpec &spec,
+			   vector<wosd> &acoefs,
+			   vector<wosd> &dcoefs,
+			   istream &in);
 
   bool ParseMRACoefsSample(vector<wosd> &acoefs, vector<wosd> &dcoefs, istream &in);
   void ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &acoefs,

@@ -115,43 +115,64 @@ int main(int argc, char *argv[])
 
   // Optimize the operations
   SignalSpec optim_spec;
-  unsigned optim_numlevels;
-  StructureOptimizer(optim_spec, optim_numlevels, sigspec);
-
+  unsigned optim_stages;
+  bool transform=StructureOptimizer(optim_spec, optim_stages, sigspec);
 
   // Parameterize and instantiate the delay block
   unsigned wtcoefnum = numberOfCoefs[wt];
-  int *delay = new int[numstages];
-  CalculateMRADelayBlock(wtcoefnum, numstages, delay);
-  DelayBlock<wosd> approx_dlyblk(numstages, 0, delay);
-  DelayBlock<wosd> detail_dlyblk(numstages, 0, delay);
+  int *delay = new int[optim_stages];
+  CalculateWaveletDelayBlock(wtcoefnum, optim_stages, delay);
+  DelayBlock<wosd> dlyblk(optim_stages, 0, delay);
+
+  cerr << "The number of stages: " << optim_stages << endl;
 
   // Instantiate a static reverse wavelet transform
-  StaticReverseWaveletTransform<double, wisd, wosd> srwt(numstages,wt,2,2,0);
+  StaticReverseWaveletTransform<double, wisd, wosd> srwt(optim_stages,wt,2,2,0);
 
   // Create buffers
   vector<wosd> approxcoefs;
   vector<wosd> detailcoefs;
-  vector<wosd> approx_dlysamples;
-  vector<wosd> detail_dlysamples;
+  vector<wosd> wavecoefs;
+  vector<wosd> dlysamples;
   vector<wisd> currentoutput;
   vector<wisd> reconst;
 
   FlatParser fp;
-  while ( fp.ParseMRACoefsSample(approxcoefs, detailcoefs, cin) ) {
-    approx_dlyblk.StreamingSampleOperation(approx_dlysamples, approxcoefs);
-    detail_dlyblk.StreamingSampleOperation(detail_dlysamples, detailcoefs);
-
-    if (srwt.StreamingMixedSampleOperation(currentoutput, 
-					   approx_dlysamples,
-					   detail_dlysamples,
-					   sigspec)) {
-      for (unsigned j=0; j<currentoutput.size(); j++) {
-	reconst.push_back(currentoutput[j]);
-      }
-      approxcoefs.clear();
-      detailcoefs.clear();
+  while ( fp.ParseMRACoefsSample(optim_spec, approxcoefs, detailcoefs, cin) ) {
+    // Transfer the coefficients into wavecoefs and change level of approx
+    if (approxcoefs.size()) {
+      wosd asamp=approxcoefs[0];
+      asamp.SetSampleLevel(asamp.GetSampleLevel()+1);
+      wavecoefs.push_back(asamp);
     }
+    for (unsigned i=0; i<detailcoefs.size(); i++) {
+      wavecoefs.push_back(detailcoefs[i]);
+    }
+
+    dlyblk.StreamingSampleOperation(dlysamples, wavecoefs);
+
+    if (transform) {
+      if (srwt.StreamingTransformSampleOperation(currentoutput, dlysamples)) {
+	for (unsigned j=0; j<currentoutput.size(); j++) {
+	  reconst.push_back(currentoutput[j]);
+	}
+      }
+    } else {
+      vector<int> zerospec;
+      vector<int> specs;
+      FlattenSignalSpec(specs, optim_spec);
+      InvertSignalSpec(zerospec, specs, optim_stages+1);
+      if (srwt.StreamingTransformZeroFillSampleOperation(currentoutput,
+							 dlysamples,
+							 zerospec)) {
+	for (unsigned j=0; j<currentoutput.size(); j++) {
+	  reconst.push_back(currentoutput[j]);
+	}
+      }
+    }
+    approxcoefs.clear();
+    detailcoefs.clear();
+    wavecoefs.clear();
   }
 
   if (!flat) {

@@ -74,6 +74,51 @@ ParseWaveletCoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &wavecoefs,
   }
 }
 
+bool FlatParser::ParseMRACoefsSample(const SignalSpec &spec,
+				     vector<wosd> &acoefs,
+				     vector<wosd> &dcoefs,
+				     istream &in)
+{
+  if (in.eof()) {
+    return false;
+  }
+
+  unsigned sampletime, numsamples;
+  char mratype;
+  int levelnum;
+  double sampvalue;
+
+  in >> sampletime >> mratype >> numsamples;
+  for (unsigned i=0; i<numsamples; i++) {
+    in >> levelnum >> sampvalue;
+
+    if (mratype == 'A') {
+      if (LevelInSpec(spec.approximations, levelnum)) {
+	if (a_indices.find(levelnum) == a_indices.end()) {
+	  a_indices[levelnum] = 0;
+	} else {
+	  a_indices[levelnum] += 1;
+	}
+	wosd sample(sampvalue, levelnum, indices[levelnum]);
+	acoefs.push_back(sample);
+      }
+    } else if (mratype == 'D') {
+      if (LevelInSpec(spec.details, levelnum)) {
+	if (d_indices.find(levelnum) == d_indices.end()) {
+	  d_indices[levelnum] = 0;
+	} else {
+	  d_indices[levelnum] += 1;
+	}
+	wosd sample(sampvalue, levelnum, indices[levelnum]);
+	dcoefs.push_back(sample);
+      }
+    } else {
+      cerr << "Invalid MRA type.\n";
+    }
+  }
+  return true;
+}
+
 
 bool FlatParser::ParseMRACoefsSample(vector<wosd> &acoefs,
 				     vector<wosd> &dcoefs,
@@ -152,4 +197,17 @@ void FlatParser::ParseMRACoefsBlock(vector<WaveletOutputSampleBlock<wosd> > &aco
       cerr << "Invalid MRA type.\n";
     }
   }
+}
+
+// Private functions
+bool FlatParser::LevelInSpec(const vector<int> &mra, const int levelnum)
+{
+  bool inspec=false;
+  for (unsigned i=0; i<mra.size(); i++) {
+    if (levelnum==mra[i]) {
+      inspec=true;
+      break;
+    }
+  }
+  return inspec;
 }
